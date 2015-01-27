@@ -1,0 +1,151 @@
+<page-title ng-if="layoutOptions.pageTitles" title="Contacts" description="Some text"></page-title>
+
+<div class="row" ng-controller="ContactsSearch">
+	<div class="col-sm-12">
+		<div class="panel panel-default collapsed">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="linecons-search"></i>&nbspSearch Filter</h3>
+			</div>
+			<div class="panel-body always-visible">
+
+				<form role="form" class="form-horizontal" role="form">
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact_id">Donor #</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact_id" ng-model="contact.id" ng-model-options="" placeholder="Donor #">
+						</div>
+					</div>
+
+				</form>
+			</div>
+			<div class="panel-heading panel-second-heading">
+				<h3 class="panel-title">Advanced Criteria</h3>
+				<div class="panel-options">
+					<a href="" data-toggle="panel">
+						<span class="collapse-icon">&ndash;</span>
+						<span class="expand-icon">+</span>
+					</a>
+				</div>
+			</div>
+			<div class="panel-body">
+
+				<form role="form" class="form-horizontal" role="form">
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact_id2">Donor 2#</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact_id2" ng-model="contact.donor2" ng-model-options="" placeholder="Donor 2#">
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div class="panel panel-default" ng-controller="ContactsDatatable as showCase">
+	<div class="panel-heading">
+		<h3 class="panel-title">Contacts</h3>
+		
+		<div class="panel-options">
+			<a href="" data-toggle="panel">
+				<span class="collapse-icon">&ndash;</span>
+				<span class="expand-icon">+</span>
+			</a>
+			<a href="" data-toggle="remove">
+				&times;
+			</a>
+		</div>
+	</div>
+	{{message}}
+	<div class="panel-body">
+		
+		
+		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="row-border hover table table-striped table-bordered">
+	        <thead>
+	        	<tr>
+					<th>Name</th>
+					<th>firstName</th>
+					<th>lastName</th>
+				</tr>
+	        </thead>
+	        <tbody></tbody>
+	    </table>
+		
+	</div>
+</div>
+
+
+<div class="row" ng-controller="ContactSections">
+	<div ng-if="contact.id" class="col-md-12">
+		<tabset class="nav-tabs-justified">
+			<tab heading="Home">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="pull-right-sm">
+							<button class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact_modified == false]" ng-click="saveContact()">Save</button>
+						</div>
+						<div ng-show="contact_modified" class="pull-right-sm">
+							Changes Pending
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Contact Information</h3>
+							</div>
+							<div class="panel-body">
+								<form role="form" class="form-horizontal" role="form">
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_last_name">Last Name:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" id="contact_last_name" ng-model="contact.LNAME" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_first_name">First Name:</label>
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" id="contact_first_name" ng-model="contact.FNAME" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label">Title:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<select ng-options="title.label for title in titles track by title.id" ng-model="contact.TITLE"></select>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						bcde
+					</div>
+				</div>
+						
+			</tab>
+			
+			<tab ng-if="profile" heading="Profile">
+				<p>Fulfilled direction use continual set him propriety continued. Saw met applauded favourite deficient engrossed concealed and her. Concluded boy perpetual old supposing. Farther related bed and passage comfort civilly. Dashwoods see frankness objection abilities the. As hastened oh produced prospect formerly up am. Placing forming nay looking old married few has. Margaret disposed add screened rendered six say his striking confined. </p>
+				<p>When be draw drew ye. Defective in do recommend suffering. House it seven in spoil tiled court. Sister others marked fat missed did out use. Alteration possession dispatched collecting instrument travelling he or on. Snug give made at spot or late that mr. </p>
+			</tab>
+			<tab heading="Messages">
+				<p>When be draw drew ye. Defective in do recommend suffering. House it seven in spoil tiled court. Sister others marked fat missed did out use. Alteration possession dispatched collecting instrument travelling he or on. Snug give made at spot or late that mr. </p>
+				<p>Carriage quitting securing be appetite it declared. High eyes kept so busy feel call in. Would day nor ask walls known. But preserved advantage are but and certainty earnestly enjoyment. Passage weather as up am exposed. And natural related man subject. Eagerness get situation his was delighted. </p>
+			</tab>
+			<tab heading="Settings">
+				<p>Luckily friends do ashamed to do suppose. Tried meant mr smile so. Exquisite behaviour as to middleton perfectly. Chicken no wishing waiting am. Say concerns dwelling graceful six humoured. Whether mr up savings talking an. Active mutual nor father mother exeter change six did all. </p>
+				<p>Carriage quitting securing be appetite it declared. High eyes kept so busy feel call in. Would day nor ask walls known. But preserved advantage are but and certainty earnestly enjoyment. Passage weather as up am exposed. And natural related man subject. Eagerness get situation his was delighted. </p>
+			</tab>
+		</tabset>
+	</div>
+</div>

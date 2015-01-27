@@ -1,0 +1,18 @@
+.panel .panel-second-heading{
+	padding-top:18px;
+}
+
+.panel.collapsed .panel-body.always-visible{
+	display:block;
+}
+
+table.dataTable{
+	width: 100% !important;
+}
+
+table.dataTable tbody tr{
+	cursor:pointer;
+}
+.nav.nav-tabs+.tab-content {
+	padding: 5px;
+}
