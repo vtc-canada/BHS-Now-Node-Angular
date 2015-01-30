@@ -12,6 +12,10 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded) {
     jQuery(window).load(function() {
 	public_vars.$pageLoadingOverlay.addClass('loaded');
     });
+    
+    
+    
+    
 
     /*$rootScope.$on('$stateChangeStart',
 	    function(event, toState, toParams, fromState, fromParams){
@@ -53,7 +57,15 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
     // Dashboards
     state('app.contacts', {
 	url : '/contacts',
-	templateUrl : appHelper.templatePath('contacts/contacts')
+	templateUrl : appHelper.templatePath('contacts/contacts'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    }
+	},
     }).state('app.dashboard-variant-1', {
 	url : '/dashboard-variant-1',
 	templateUrl : appHelper.templatePath('dashboards/variant-1'),

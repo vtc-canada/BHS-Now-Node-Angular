@@ -53,7 +53,7 @@ module.exports.connections = {
 	host : '10.1.1.60',
 	user : 'root',
 	password : 'Glasgow931',
-	database : 'fatima_converted_from_dbf',
+	database : 'fatima_center_donor_tracker',
 	timezone : 'utc'
   },
 

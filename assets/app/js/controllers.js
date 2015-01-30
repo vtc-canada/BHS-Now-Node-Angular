@@ -1,33 +1,59 @@
 'use strict';
 
-angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $contact, $sails) {
+angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $contact, $sails, Utility) {
     var vm = this;
-    $scope.contact = {};
+    $scope.contact = $contact;
+    /*
     $scope.contact.FNAME = '';
     $scope.contact.LNAME = '';
+    $scope.contact.PTITLE = '';
+    $scope.contact.PETSIGN = '';
+    $scope.contact.LASTCONT_DATE = '';
+
     $scope.contact.TITLE = null;
     $scope.profile = true;
     $contact.id = $scope.contact.id = null;
-    $contact.modified = $scope.contact_modified = false;
+    $contact.is_modified = $scope.is_modified = false;*/
+
     vm.watchEnabled = false;
 
-    $scope.saveContact = function() {
-	// ?//$sailsSocket.get('/contacts/save').success(function(err,response){
-	// alert(err.toString());
-	// });
-	$sails.post("/contacts/save", $scope.contact).success(function(data) {
-	    if (data.success) {
-		$timeout(function() {
-		    updateContact(data.contact);
-		    $rootScope.updateContactsTable();
-		}, 0);
-		//$scope.$apply(function() {
-		//});
-	    }
+    vm.tabs = [ 'layman', 'ecclesiastical', 'volunteer', 'orders' ];
 
-	}).error(function(data) {
-	    alert('Houston, we got a problem!');
-	});
+    $scope.saveContact = function(tab) {
+	$timeout(function() {
+	    // Order it, so we check the tabs in a sensible manner.
+	    Utility.remove(vm.tabs, tab);
+	    vm.tabs.splice(0, 0, tab);
+
+	    var founderrors = false;
+	    angular.forEach(vm.tabs, function(tabval) {
+		if (!founderrors) {
+		    if (tabval != tab) { // make sure to check the validity
+			// of other tabs.
+			$('#' + tabval).valid();
+		    }
+		    if ($rootScope.validator[tabval].numberOfInvalids() > 0) { // error
+			founderrors = true;
+			$('#' + tabval + '_tab a').click();
+		    }
+		}
+	    });
+
+	    if (!founderrors) {
+		$sails.post("/contacts/save", $scope.contact).success(function(data) {
+		    if (data.success) {
+			$timeout(function() {
+			    $contact.set(data.contact);
+			    resetContactForms();
+			    $rootScope.updateContactsTable();
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	}, 0);
+
 	/*
 	 * $sailsSocket({method: 'GET', url: '/contacts/save'}).
 	 * success(function(data, status, headers, config) { // this callback
@@ -39,12 +65,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.$watchCollection('contact', function(newValue, oldValue) {
-	if (!vm.watchEnabled) {
+	if (!vm.watchEnabled) { // Latch. Make watchEnabled False to make it ignore one update.
 	    vm.watchEnabled = true;
 	    return;
 	}
 	if (newValue !== oldValue) {
-	    $contact.modified = $scope.contact_modified = true;
+	    $contact.is_modified = $scope.is_modified = true;
 	}
     });
 
@@ -52,45 +78,50 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.$apply(function() {
 	    vm.watchEnabled = false;
 	    if (message.id == 'new') {
-		var contact = {};
-		contact.FNAME = '';
+		//var contact = //{};
+		/*contact.FNAME = '';
 		contact.LNAME = '';
+		contact.PTITLE = '';
+		contact.PETSIGN = '';
+		contact.LASTCONT_DATE = '';
 		$scope.contact.TITLE = null;
-		contact.id = 'new';
-		updateContact(contact);
+		contact.id = 'new';*/
+		//$contact.set(data.contact);
+		$contact.init();
+		resetContactForms();
 	    } else {
 		$sails.post("/contacts/getcontact", {
 		    id : message.id
 		}).success(function(data) {
 		    if (data.success) {
 			$timeout(function() {
-			    updateContact(data.contact);
+			    $contact.set(data.contact);
+			    resetContactForms();
 			}, 0);
 		    }
 		}).error(function(data) {
-		    alert('Houston, we got a problem!');
+		    alert('err!');
 		});
 	    }
 	});
     });
 
-    function updateContact(contact) {
+    function resetContactForms() {  
+	// $scope.$apply(function() {
 	vm.watchEnabled = false;
-	$scope.contact = {};
-	$scope.contact.FNAME = contact.FNAME;
-	$scope.contact.LNAME = contact.LNAME;
-	$scope.contact.TITLE = {
-	    id : contact.TITLE,
-	    label : contact.TITLE + '.'
-	};
-	$contact.id = $scope.contact.id = contact.id;
-	$contact.modified = $scope.contact_modified = false;
+	$scope.contact = $contact;  // this applies the contact to the scope.. seems needed a bunch verified.
+	angular.forEach(vm.tabs, function(tabval) {
+	    if ($rootScope.validator && $rootScope.validator[tabval]) {
+		$rootScope.validator[tabval].resetForm();
+		$('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
+	    }
+	});
     }
 
     // initialization routine.
     (function() {
 	if ($scope.titles) {
-	    //get an existing object
+	    // get an existing object
 	} else {
 	    $sails.get('/contacts/gettitles').success(function(data) {
 		$scope.titles = [];
@@ -101,16 +132,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    });
 		}
 	    }).error(function(data) {
-		alert('Houston, we got a problem!');
+		alert('err!');
 	    });
 	    /*
-	    $scope.titles = [{ //create a new object
-	      id: 'Mr',
-	      label: 'Mr.'
-	    }, {
-	      id: 'Mrs',
-	      label: 'Mrs.'
-	    }];*/
+	     * $scope.titles = [{ //create a new object id: 'Mr', label: 'Mr.' }, {
+	     * id: 'Mrs', label: 'Mrs.' }];
+	     */
 	}
     })()
 }).controller('ContactsSearch', function($scope, $rootScope) {
@@ -182,12 +209,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$rootScope.$broadcast("getcontact", {
 		    id : aData.id
 		});
-		//if(aData.id == $contact.id){
+		// if(aData.id == $contact.id){
 		$('tr').removeClass('selected');
 		$(nRow).addClass('selected');
-		//}
-		//console.log('here');
-		//vm.message = info.DONOR2 + ' - ' + info.FNAME;
+		// }
+		// console.log('here');
+		// vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	    }
 
 	}).controller('LoginCtrl', function($scope, $rootScope) {
@@ -308,7 +335,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     // Set Scroll to 0 When page is changed
     $rootScope.$on('$stateChangeStart', function() {
-	if ($contact.modified) {
+	if ($contact.is_modified) {
 	    return;
 	}
 	var obj = {
