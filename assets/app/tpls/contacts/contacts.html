@@ -515,22 +515,22 @@
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="donation_ask_amount">Ask Amount:</label>
 												<div class="col-sm-7">
-													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_ask_amount" id="donation_ask_amount" ng-model="donation.ASKAMT" >
+													<input type="text" class="form-control" currency name="donation_ask_amount" id="donation_ask_amount" ng-model="donation.ASKAMT" value="donation.ASKAMT|currency" >
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="donation_pledge_amount">Total Pledged:</label>
 												<div class="col-sm-7">
-													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_pledge_amount" id="donation_pledge_amount" ng-model="donation.PLEDAMT" >
+													<input type="text" class="form-control" currency name="donation_pledge_amount" id="donation_pledge_amount" ng-model="donation.PLEDAMT" value="donation.PLEDAMT|currency" >
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="donation_paid_amount">Total Paid:</label>
 												<div class="col-sm-7">
-													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_paid_amount" id="donation_paid_amount" ng-model="donation.PAIDAMT" >
+													<input type="text" class="form-control" currency name="donation_paid_amount" id="donation_paid_amount" ng-model="donation.PAIDAMT" value="donation.PAIDAMT|currency" >
 												</div>
 											</div>
-											<div class="form-group">
+											<div ng-show="showPledgeBalance(donation)" class="form-group">
 												<label class="col-sm-5 control-label" for="donation_balance_amount">Balance:</label>
 												<div class="col-sm-7 form-block">
 													{{getPledgeBalance(donation) | currency}}

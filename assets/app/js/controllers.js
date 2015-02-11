@@ -16,27 +16,29 @@ angular.module('xenon.controllers', []).controller(
 	    }
 
 	    // Elements Common
-	    
+
 	    $scope.toggleDeleted = function(elementType, element) {
 		$contact.toggleDeleted(elementType, element);
 		$timeout(function() {
 		    $scope.contact = $contact;
 		}, 0);
 	    }
-	    
-	    
+
 	    // DT Major
-	    $scope.addNewDtMajor = function(){
+	    $scope.addNewDtMajor = function() {
 		$contact.addNewDtMajor();
 		$timeout(function() {
 		    $scope.contact = $contact;
 		}, 0);
 	    }
-	    $scope.getPledgeBalance = function(donation){
-		if(donation.PLEDSCHED==2||donation.PLEDSCHED==3||donation.PLEDSCHED==4||donation.PLEDSCHED==5){
-			return (donation.PLEDAMT - donation.PAIDAMT);
+	    $scope.getPledgeBalance = function(donation) {
+		if ($scope.showPledgeBalance(donation)) {
+		    return (donation.PLEDAMT - donation.PAIDAMT);
 		}
 		return '';
+	    }
+	    $scope.showPledgeBalance = function(donation) {
+		return (donation.PLEDSCHED == 2 || donation.PLEDSCHED == 3 || donation.PLEDSCHED == 4 || donation.PLEDSCHED == 5);
 	    }
 
 	    // DTMAIL /////////////////////////////
@@ -190,7 +192,7 @@ angular.module('xenon.controllers', []).controller(
 		    }
 		    vm.updateModified = setTimeout(function() {
 			if (!vm.watchEnabled) { // Latch. Make watchEnabled
-						// False to
+			    // False to
 			    // make it ignore one update.
 			    vm.watchEnabled = true;
 			    return;
@@ -220,8 +222,8 @@ angular.module('xenon.controllers', []).controller(
 			}).success(
 				function(data) {
 				    $scope.selectedTransaction = null; // wipes
-									// out
-									// selected
+				    // out
+				    // selected
 				    // Transaction
 				    if (data.success) {
 					$timeout(function() {
@@ -265,14 +267,14 @@ angular.module('xenon.controllers', []).controller(
 		    angular.forEach(vm.tabs, function(tabval) {
 			if (!founderrors) {
 			    if (tabval != tab) { // make sure to check the
-						    // validity
+				// validity
 				// of other tabs.
 				$('#' + tabval).valid();
 			    }
 			    if ($rootScope.validator[tabval].numberOfInvalids() > 0) { // error
 				founderrors = true;
 				$('#' + tabval + '_tab a').click(); // Switches
-								    // to
+				// to
 				// error'd tab
 			    }
 			}
@@ -292,7 +294,7 @@ angular.module('xenon.controllers', []).controller(
 					    resetContactForms();
 					    $rootScope.updateContactsTable();
 					    $timeout(function() {
-						if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {   // Rebinds datatables.
+						if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) { // Rebinds datatables.
 						    $('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt',
 							    $scope.mailDataTableChange).on('length.dt', $scope.mailDataTableChange).on('search.dt',
 							    $scope.mailDataTableChange);// .api().columns.adjust().draw();
@@ -316,7 +318,7 @@ angular.module('xenon.controllers', []).controller(
 		// $scope.$apply(function() {
 		vm.watchEnabled = false;
 		$scope.contact = $contact; // this applies the contact to the
-					    // scope..
+		// scope..
 		// seems needed a bunch verified.
 		// $scope.otherAddresses = $contact.otherAddresses;
 		angular.forEach(vm.tabs, function(tabval) {

@@ -546,20 +546,19 @@ angular
 		}
 	    }
 	})
-	.directive('selectableisn',
-		function($rootScope){
+	.directive('selectableisn', function($rootScope) {
 	    return {
 		restrict : 'C',
-		link : function(scope, el, attr){
+		link : function(scope, el, attr) {
 		    var $this = angular.element(el);
-		    
+
 		    //$this.css('background','black');
 		    /*$this.find('tr').unbind();
 		    $this.find('tr').click(function(){
-			$this.find('tr').css('background','');
-			$(this).css('background','#1d5fd3');
+		    $this.find('tr').css('background','');
+		    $(this).css('background','#1d5fd3');
 		    })*/
-		    
+
 		}
 	    }
 	})
@@ -638,7 +637,42 @@ angular
 			    $rootScope.validator[el.attr('id')] = $this.validate(opts); // ties the validators through the rootscope.
 			}
 		    }
-		}).directive('inputmask', function() {
+		}).directive('currency', function() {
+	    return {
+		restrict : 'A',
+		require : 'ngModel',
+		link : function(scope, el, attr, ngModel) {
+		    if (!jQuery.isFunction(jQuery.fn.inputmask))
+			return false;
+		    var $this = angular.element(el), mask = 'currency', opts = {
+			numericInput : attrDefault($this, 'numeric', false),
+			radixPoint : attrDefault($this, 'radixPoint', ''),
+			rightAlign : attrDefault($this, 'numericAlign', 'left') == 'right'
+		    }, placeholder = attrDefault($this, 'placeholder', ''), is_regex = attrDefault($this, 'isRegex', '');
+
+		    if (placeholder.length) {
+			opts[placeholder] = placeholder;
+		    }
+
+		    var sign = attrDefault($this, 'sign', '$');
+
+		    mask = sign + ' ' + "999,999,999.99";
+		    
+
+		    opts.numericInput = true;
+		    opts.rightAlignNumerics = false;
+		    opts.radixPoint = '.';
+
+		    $this.inputmask(mask, opts);
+		    
+		    ngModel.$parsers.push(function(value){
+			return Number(value.replace(/[^0-9\.]+/g,""));
+			//return 
+		    });
+
+		}
+	    }
+	}).directive('inputmask', function() {
 	    return {
 		restrict : 'AC',
 		link : function(scope, el, attr) {
@@ -689,8 +723,8 @@ angular
 			$.extend(opts, {
 			    autoGroup : true,
 			    groupSize : 3,
-			    radixPoint : attrDefault($this, 'rad', '.'),
-			    groupSeparator : attrDefault($this, 'dec', ',')
+			    radixPoint : attrDefault($this, 'rad', ','),
+			    groupSeparator : attrDefault($this, 'dec', '.')
 			});
 		    }
 
