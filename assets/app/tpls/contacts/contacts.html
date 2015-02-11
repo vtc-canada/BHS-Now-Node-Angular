@@ -1,5 +1,36 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description="Some text"></page-title>
 
+<script type="text/ng-template" id="edit-dtmail-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Mailout</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+
+			<div class="col-sm-8">
+				<input type="text" class="form-control" id="modal_sol" ng-model="selectedMail.SOL" ng-model-options="" placeholder="">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="modal_list">LIST Code:</label>
+
+			<div class="col-sm-8">
+				<input type="text" class="form-control" id="modal_list" ng-model="selectedMail.LIST" ng-model-options="" placeholder="">
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+	</div>
+</script>
+
+
 <div class="row" ng-controller="ContactsSearch">
 	<div class="col-sm-12">
 		<div class="panel panel-default collapsed">
@@ -66,7 +97,7 @@
 	<div class="panel-body">
 		
 		
-		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="row-border hover table table-striped table-bordered">
+		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="focus-on row-border hover table table-striped table-bordered">
 	        <thead>
 	        	<tr>
 					<th>Name</th>
@@ -82,6 +113,7 @@
 
 
 <div class="row" ng-controller="ContactSections">
+	
 	<div ng-if="contact.id" class="col-md-12">
 		<tabset class="nav-tabs-justified">
 			<tab heading="Layman Info" id="layman_tab">
@@ -97,7 +129,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-7">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Contact Information</h3>
@@ -107,13 +139,13 @@
 										<label class="col-sm-4 control-label" for="contact_last_name">Last Name:</label>
 				
 										<div class="col-sm-7 col-sm-offset-1">
-											<input type="text" class="form-control" name="" id="contact_last_name" ng-model="contact.LNAME" data-validate="required" data-message-required="This is custom message for required field." placeholder="Required Field">
+											<input type="text" class="form-control" name="" id="contact_last_name" ng-model="contact.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-sm-4 control-label" for="contact_first_name">First Name:</label>
 										<div class="col-sm-7 col-sm-offset-1">
-											<input type="text" class="form-control" id="contact_first_name" ng-model="contact.FNAME" ng-model-options="" placeholder="">
+											<input type="text" class="form-control" name="" id="contact_first_name" ng-model="contact.FNAME" ng-model-options="" placeholder="">
 										</div>
 									</div>
 									<div class="form-group">
@@ -123,11 +155,485 @@
 											<select class="form-control" ng-options="title.label for title in titles track by title.id" ng-model="contact.TITLE"></select>
 										</div>
 									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label">Salutation:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" name="" ng-model="contact.SAL" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label">Suffix:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" name="" ng-model="contact.SUFF" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_PTITLE">Professional Title:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" name="" id="contact_PTITLE" ng-model="contact.PTITLE" >
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_SECLN">Optional Title:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="text" class="form-control" name="" id="contact_SECLN" ng-model="contact.SECLN">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_SECLN">Do Not Send Mail:</label>
+				
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="checkbox" class="form-control iswitch iswitch-danger" name="" ng-checked="contact.NOMAIL" ng-model="contact.NOMAIL">
+											
+										</div>
+									</div>		
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="contact_SECLN">Do Not Call:</label>
+										<div class="col-sm-7 col-sm-offset-1">
+											<input type="checkbox" class="form-control iswitch iswitch-danger" name="" ng-checked="contact.CALL" ng-model="contact.CALL">
+										</div>
+									</div>								
+									
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-5">
 							bcde
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-7">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Address</h3>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_address">Address:</label>
+						
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="ADD" id="contact_address" ng-model="contact.ADD" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_city">City:</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="CITY" id="contact_city" ng-model="contact.CITY" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_state">State:</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="contact.ST"></select2>
+													
+												</div>
+											</div>	
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_zip">Zip:</label>
+						
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="ZIP" id="contact_zip" ng-model="contact.ZIP" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_country">Country:</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-options="title.id as title.label for title in countries" ng-model="contact.COUNTRY"></select2>
+													
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="contact_county">County Code: {{contact.STATE}}</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-disabled="contact.ST != 'NY'" ng-options="title.id as title.label for title in county_codes" ng-model="contact.COUNTY"></select2>
+													
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-md-5">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Phone</h3>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="contact_phone">Phone 1:</label>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" inputmask data-mask="phone" name="PHONE" id="contact_phone" ng-model="contact.PHONE" >	
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="contact.PHTYPE1"></select2>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="contact_phon2">Phone 2:</label>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" inputmask data-mask="phone" name="PHON2" id="contact_phon2" ng-model="contact.PHON2" >	
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="contact.PHTYPE2"></select2>
+											
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="contact_phon3">Phone 3:</label>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" inputmask data-mask="phone" name="PHON3" id="contact_phon3" ng-model="contact.PHON3" >
+											
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="contact.PHTYPE3"></select2>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>		
+								
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="pull-left">
+										<h3 class="panel-title">Alternate Address</h3>
+									</div>
+									<div class="pull-right">
+										<div class="btn btn-primary" ng-click="addOtherAddress()">Add Address</div>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="row" ng-repeat="address in contact.otherAddresses">
+										<div class="col-md-12" ng-class="{true: 'makeopaque', false: ''}[address.is_deleted == true]">
+											<div class="form-group">
+													<label class="col-sm-5 control-label" >Address Type:</label>
+													<div class="col-sm-7">
+														<select2 class="form-control" ng-options="title.id as title.label for title in address_types" ng-model="address.ADDTYPE"></select2>
+													</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="address_address">Address:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ADD" id="address_address" ng-model="address.ADD" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="address_city">City:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="CITY" id="address_city" ng-model="address.CITY" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="address_state">State:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="address.ST"></select2>
+													
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="address_zip">Zip:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ZIP" id="address_zip" ng-model="address.ZIP" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="col-sm-12">
+													<button type="submit" class="btn pull-right" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[address.is_deleted == true]" ng-click="deleteOtherAddress(address.id,address.tempId,address.is_deleted)">{{address.is_deleted == true?'Cancel':'Delete'}}</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="pull-left">
+										<h3 class="panel-title">Mailing Information</h3>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="giving_interests">Giving Interests:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ZIP" id="giving_interests" ng-model="contact.GIVINTS" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="income_level">Income Level:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ZIP" id="income_level" ng-model="contact.INCLEV" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="gift_types">Gift Types:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ZIP" id="gift_types" ng-model="contact.GIFTTYPES" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="PG_AMT">Potential Gift Amount:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="ZIP" id="PG_AMT" ng-model="contact.PG_AMT" >
+												</div>
+											</div>
+											
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="OCCUPATION">Occupation:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="OCCUPATION" id="OCCUPATION" ng-model="contact.OCCUPATION" >
+												</div>
+											</div>		
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="BUSINESS">Occupation:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="BUSINESS" id="BUSINESS" ng-model="contact.BUSINESS" >
+												</div>
+											</div>					
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="PERM_SOLS">Permanent Mailings:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="PERM_SOLS" id="PERM_SOLS" ng-model="contact.PERM_SOLS" >
+												</div>
+											</div>		
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="VOL_TRADE">Professional Trade:</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="VOL_TRADE" id="VOL_TRADE" ng-model="contact.VOL_TRADE" >
+												</div>
+											</div>		
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>	
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="pull-left">
+										<h3 class="panel-title">Interactions / Transactions</h3>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="table-transactions">
+										<table id="{{mailDataTableId}}" cellspacing="0" class="focus-on table  table-bordered table-striped selectableisn">
+											
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >Sol</th>
+													<th >List</th>
+													<th >Drop Date</th>
+													<th >Description</th>
+													<th >Drop Count</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="transaction in contact.dtmail" ng-hide="transaction.is_deleted" ng-class="{ 'is_deleted':transaction.is_deleted == true, 'focused' : isRowFocused(transaction)}" ng-click="selectTransaction(transaction.id,transaction.tempId,transaction.is_deleted)" >
+													<td>{{transaction.id}} | {{transaction.tempId}}</td>
+													<td>{{transaction.SOL}}</td>
+													<td>{{transaction.LIST}}</td>
+													<td>{{transaction.DROP_DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{transaction.DESC}}</td>
+													<td>{{transaction.DROP_CNT | number }}</td>
+												</tr>	
+											</tbody>
+										</table>
+									</div>
+									
+									
+									
+									<div class="pull-right">
+										<div class="btn btn-primary" ng-click="addMail('edit-dtmail-modal')">Add</div>
+									</div>
+									<div class="pull-right pull-right-stack">
+										<div class="btn btn-secondary" ng-class="{disabled:selectedTransaction==null}" ng-click="editMail('edit-dtmail-modal')">Edit</div>
+									</div>
+									<div class="pull-right pull-right-stack">
+										<div class="btn btn-danger" ng-class="{disabled:selectedTransaction==null}" ng-click="deleteMail()">Delete</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="pull-left">
+										<h3 class="panel-title">Major Pledges and Donations</h3>
+									</div>
+									<div class="pull-right">
+										<div class="btn btn-primary" ng-click="addNewDtMajor()">Add Donation</div>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="row" ng-repeat="donation in contact.dtmajor" ng-class="{true: 'makeopaque', false: ''}[donation.is_deleted == true]">
+										<div class="col-md-5" >
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_campaign_type">Major Gift Campaign:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-options="title.id as title.label for title in major_donation_types" ng-model="donation.TYPE"></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_ask_amount">Ask Amount:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_ask_amount" id="donation_ask_amount" ng-model="donation.ASKAMT" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_pledge_amount">Total Pledged:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_pledge_amount" id="donation_pledge_amount" ng-model="donation.PLEDAMT" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_paid_amount">Total Paid:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" inputmask data-mask="currency" name="donation_paid_amount" id="donation_paid_amount" ng-model="donation.PAIDAMT" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_balance_amount">Balance:</label>
+												<div class="col-sm-7 form-block">
+													{{getPledgeBalance(donation) | currency}}
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation_pledge_schedule">Pledge Schedule:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-options="title.id as title.label for title in pledge_schedule" ng-model="donation.PLEDSCHED"></select2>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-4" >
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.GIFTOFF">Mjr Gift Officer:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="donation.GIFTOFF" id="donation.GIFTOFF" ng-model="donation.GIFTOFF" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.WEALTHID">Wealth Engine Id:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="donation.WEALTHID" id="donation.WEALTHID" ng-model="donation.WEALTHID" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.STATUS">Status:</label>
+												<div class="col-sm-7">
+													<input type="text" class="form-control" name="donation.STATUS" id="donation.STATUS" ng-model="donation.STATUS" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.ANNTRUST">Annuity / Trust:</label>
+						
+												<div class="col-sm-7">
+													<input type="checkbox" class="form-control iswitch iswitch-primary" name="" ng-checked="donation.ANNTRUST" ng-model="donation.ANNTRUST">
+													
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.ANNTRUST">Insurance:</label>
+						
+												<div class="col-sm-7">
+													<input type="checkbox" class="form-control iswitch iswitch-primary" name="" ng-checked="donation.INSURANC" ng-model="donation.INSURANC">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3" >
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.GIFTOFF">1st Visit:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="donation.VISDATE1">
+														<div class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.VISDATE2">2nd Visit:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="donation.VISDATE2">
+														<div class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.VISDATE3">3rd Visit:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="donation.VISDATE3">
+														<div class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="donation.VISDATE4">4th Visit:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="donation.VISDATE4">
+														<div class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+												<div class="col-sm-12">
+													<button type="submit" class="btn pull-right" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[donation.is_deleted == true]" ng-click="toggleDeleted('dtmajor', donation)">{{donation.is_deleted == true?'Cancel':'Delete'}}</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</form>	
@@ -156,7 +662,7 @@
 										<label class="col-sm-4 control-label" for="contact_PTITLE">Professional Title:</label>
 				
 										<div class="col-sm-7 col-sm-offset-1">
-											<input type="text" class="form-control" name="" id="contact_PTITLE" ng-model="contact.PTITLE" data-validate="required" data-message-required="This is custom message for required field." placeholder="Required Field">
+											<input type="text" class="form-control" name="" id="contact_PTITLE" ng-model="contact.PTITLE" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 										</div>
 									</div>
 								</div>
@@ -192,7 +698,7 @@
 										<label class="col-sm-4 control-label">PETSIGN:</label>
 				
 										<div class="col-sm-7 col-sm-offset-1">
-											<input type="text" name="" class="form-control" ng-model="contact.PETSIGN" data-validate="required" data-message-required="This is custom message for required field." placeholder="Required Field">
+											<input type="text" name="" class="form-control" ng-model="contact.PETSIGN" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 										</div>
 									</div>
 								</div>
@@ -230,7 +736,7 @@
 				
 										<div class="col-sm-7 col-sm-offset-1">
 											<div class="input-group">
-												<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="contact.LASTCONT_DATE" data-validate="required" data-message-required="This is custom message for required field." placeholder="Required Field">
+												<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="" ng-model="contact.LASTCONT_DATE" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 												
 												<div class="input-group-addon">
 													<a href=""><i class="linecons-calendar"></i></a>

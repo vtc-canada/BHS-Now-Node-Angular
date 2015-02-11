@@ -546,6 +546,23 @@ angular
 		}
 	    }
 	})
+	.directive('selectableisn',
+		function($rootScope){
+	    return {
+		restrict : 'C',
+		link : function(scope, el, attr){
+		    var $this = angular.element(el);
+		    
+		    //$this.css('background','black');
+		    /*$this.find('tr').unbind();
+		    $this.find('tr').click(function(){
+			$this.find('tr').css('background','');
+			$(this).css('background','#1d5fd3');
+		    })*/
+		    
+		}
+	    }
+	})
 	.directive(
 		'validate',
 		function($rootScope) {
@@ -617,7 +634,7 @@ angular
 			    if (typeof ($rootScope.validator) == 'undefined') {
 				$rootScope.validator = {};//
 			    }
-			    opts['ignore']='';
+			    opts['ignore'] = '';
 			    $rootScope.validator[el.attr('id')] = $this.validate(opts); // ties the validators through the rootscope.
 			}
 		    }

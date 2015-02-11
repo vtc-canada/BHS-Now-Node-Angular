@@ -122,22 +122,207 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 
     var obj = {
 	init : function() {
-	    this.is_modified = false;  // FALSE
+	    this.is_modified = false; // FALSE
 	    // var self = this;
 	    this.FNAME = '';
 	    this.LNAME = '';
 	    this.PTITLE = '';
+	    this.SECLN = '';
 	    this.PETSIGN = '';
 	    this.LASTCONT_DATE = '';
 	    this.TITLE = null;
+	    this.SAL = '';
+	    this.SUFF = '';
+	    this.NOMAIL = false;
+	    this.CALL = false;
+	    this.ADD = null;
+	    this.CITY = null;
+	    this.ST = null;
+	    this.ZIP = null;
+	    this.COUNTRY = null;
+	    this.COUNTY = null;
+	    this.PHTYPE1 = null;
+	    this.PHTYPE2 = null;
+	    this.PHTYPE3 = null;
+	    this.PHONE = null;
+	    this.PHON2 = null;
+	    this.PHON3 = null;
+	    this.otherAddresses = [];
+
+	    this.GIVINTS = null;
+	    this.INCLEV = null;
+	    this.GIFTTYPES = null;
+	    this.PG_AMT = null;
+	    this.OCCUPATION = null;
+	    this.BUSINESS = null;
+	    this.PERM_SOLS = null;
+	    this.VOL_TRADE = null;
+
+	    this.dtmail = [];
+
+	    this.dtmajor = [];
+
 	    this.id = null;
 	    return this;
 	},
-	
-	set : function(contact){
+
+	addNewDtMajor : function() {
+	    var addNewDtMajor = {
+		id : 'new',
+		tempId : Math.floor((Math.random() * 100000) + 1),
+		TYPE : 'A',
+		ASKAMT : null,
+		PLEDAMT : null,
+		PAIDAMT : null,
+		BALAMT : null,
+		PLEDSCHED : null,
+		GIFTOFF : null,
+		WEALTHID : null,
+		STATUS : null,
+		ANNTRUST : null,
+		INSURANC : null,
+		VISDATE1 : null,
+		VISDATE2 : null,
+		VISDATE3 : null,
+		VISDATE4 : null
+
+	    };
+	    this.dtmajor.push(addNewDtMajor);
+	    return this.dtmajor;
+	},
+	updateElementObject : function(elementType, newObj) {
 	    var self = this;
-	    angular.forEach(contact,function(value,key){
-		if(typeof(self[key])!='undefined'){
+	    var elementId = newObj.id;
+	    var elementTempId = newObj.tempId;
+	    newObj.is_modified = true;
+	    if (elementId == 'new') { // could be just new or edited new
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].tempId == elementTempId) {
+
+			angular.forEach(newObj, function(value, key) {
+			    if (key != 'id' && key != 'tempId') { // copy over
+				// all
+				// key/values
+				self[elementType][i][key] = value;
+			    }
+			});
+			return;
+		    }
+		}
+		this[elementType].push(newObj);
+		return;
+	    } else {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].id == elementId) {
+			angular.forEach(newObj, function(value, key) {
+			    if (key != 'id' && key != 'tempId') { // copy over
+				// all
+				// key/values
+				self[elementType][i][key] = value;
+			    }
+			});
+			return;
+		    }
+		}
+	    }
+	},
+	getElementObject : function(elementType, elementId, elementTempId) {
+	    if (elementId == 'new') {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].tempId == elementTempId) {
+			return this[elementType][i];
+		    }
+		}
+	    } else {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].id == elementId) {
+			return this[elementType][i];
+		    }
+		}
+	    }
+	},
+	toggleDeleted : function(elementType, element) {
+	    if (!element.is_deleted) {
+		if (element.id == 'new') {
+		    for (var i = 0; i < this[elementType].length; i++) {
+			if (this[elementType][i].tempId == element.tempId) {
+			    this[elementType].splice(i, 1);
+			    return;
+			}
+		    }
+		} else {
+		    for (var i = 0; i < this[elementType].length; i++) {
+			if (this[elementType][i].id == element.id) {
+			    this[elementType][i].is_deleted = true;
+			    return;
+			}
+		    }
+		}
+	    } else {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].id == element.id) {
+			delete this[elementType][i].is_deleted;
+			return;
+		    }
+		}
+	    }
+	},
+	setElementUndeleted : function(elementType, setId) {
+	    for (var i = 0; i < this[elementType].length; i++) {
+		if (this[elementType][i].id == setId) {
+		    delete this[elementType][i].is_deleted;
+		    return;
+		}
+	    }
+	},
+
+	setElementDeleted : function(elementType, setId, tempId) {
+	    if (setId == 'new') {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].tempId == tempId) {
+			this[elementType].splice(i, 1);
+			return;
+		    }
+		}
+	    } else {
+		for (var i = 0; i < this[elementType].length; i++) {
+		    if (this[elementType][i].id == setId) {
+			this[elementType][i].is_deleted = true;
+			return;
+		    }
+		}
+	    }
+	},
+	/*
+	 * elementFocused : function(elementType, setId, tempId) { if (setId ==
+	 * 'new') { for (var i = 0; i < this[elementType].length; i++) { if
+	 * (this[elementType][i].tempId == tempId) {
+	 * if(this[elementType].focused){ delete this[elementType].focused;
+	 * }else{ this[elementType].focused = true; } return; } } } else { for
+	 * (var i = 0; i < this[elementType].length; i++) { if
+	 * (this[elementType][i].id == setId) { this[elementType][i].is_deleted =
+	 * true; return; } } } },
+	 */
+	addOtherAddress : function() {
+	    var otherAddress = {
+		id : 'new',
+		tempId : Math.floor((Math.random() * 100000) + 1),
+		ADDTYPE : null,
+		PTITLE : null,
+		SECLN : null,
+		ADD : null,
+		CITY : null,
+		ST : null,
+		ZIP : null
+
+	    };
+	    this.otherAddresses.push(otherAddress);
+	    return this.otherAddresses;
+	},
+	set : function(contact) {
+	    var self = this;
+	    angular.forEach(contact, function(value, key) {
+		if (typeof (self[key]) != 'undefined') {
 		    self[key] = value;
 		}
 	    });
@@ -145,8 +330,11 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		id : self.TITLE,
 		label : self.TITLE + '.'
 	    };
-	    this.is_modified = false;  // make unmodified as soon as you set a
-					// contact.
+	    /*
+	     * self.ST = { id : self.ST, label : self.ST };
+	     */
+	    this.is_modified = false; // make unmodified as soon as you set a
+	    // contact.
 	}
 
     };
@@ -154,14 +342,6 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
     obj.init();
 
     return obj;
-    /*
-     * {
-     * 
-     * FNAME = '', LNAME = '', PTITLE = '', PETSIGN = '', LASTCONT = '', TITLE =
-     * null, modified : false, id : null,
-     * 
-     * init : function(){ return } }
-     */
 }).factory('$pageLoadingBar', function($rootScope, $window, $contact) {
 
     return {
@@ -173,22 +353,22 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    $window.hideLoadingBar = this.hideLoadingBar;
 
 	    $rootScope.$on('$stateChangeStart', function(event)// event,
-								// toState,
-								// toParams,
-								// fromState,
-								// fromParams
+	    // toState,
+	    // toParams,
+	    // fromState,
+	    // fromParams
 	    {
 		if ($contact.modified) {
 		    return event.preventDefault();
 		}/*
-		     * function(){ // check if user is set $rootScope.ti =
-		     * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
-		     * if($rootScope.hideLoadingBar){ setTimeout(function(){
-		     * $rootScope.hideLoadingBar();
-		     * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
-		     * },250); } event.preventDefault(); } else { // do smth
-		     * else } }
-		     */
+		 * function(){ // check if user is set $rootScope.ti =
+		 * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
+		 * if($rootScope.hideLoadingBar){ setTimeout(function(){
+		 * $rootScope.hideLoadingBar();
+		 * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
+		 * },250); } event.preventDefault(); } else { // do smth
+		 * else } }
+		 */
 
 		pl.showLoadingBar({
 		    pct : 95,

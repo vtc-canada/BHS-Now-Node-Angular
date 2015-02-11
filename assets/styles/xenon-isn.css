@@ -1,3 +1,7 @@
+html{
+	overflow-x:hidden;
+}
+
 .panel .panel-second-heading{
 	padding-top:18px;
 }
@@ -16,3 +20,38 @@ table.dataTable tbody tr{
 .nav.nav-tabs+.tab-content {
 	padding: 5px;
 }
+
+
+.panel{
+	padding: 8px 12px;
+}
+.sidebar-menu {
+	width: 280px;
+}
+
+.makeopaque{
+	opacity:0.6;
+}
+
+
+table.table-striped>tbody>tr.is_deleted{
+	background:#cc3f44;
+	color:white;
+}
+
+table.contacts-transactions{
+}
+
+.table-transactions.table-responsive[data-pattern=priority-columns]{
+	/*overflow-y:auto;
+	max-height: 280px;*/
+}
+
+.pull-right-stack{
+	margin-right:6px;
+}
+
+body.modal-open {
+    overflow: visible;
+}
+       

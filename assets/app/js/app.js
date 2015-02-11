@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives',
-	'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails' ]);
+	'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2' ]);
 
 app.run(function($pageLoadingBar, $rootScope, $preloaded) {
    
@@ -64,8 +64,22 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	    },
 	    datepicker : function($ocLazyLoad) {
 		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody,  ]);
 	    }
-	},
+	}
     }).state('app.dashboard-variant-1', {
 	url : '/dashboard-variant-1',
 	templateUrl : appHelper.templatePath('dashboards/variant-1'),
@@ -201,7 +215,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	templateUrl : appHelper.templatePath('tables/responsive'),
 	resolve : {
 	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ]);
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
     }).state('app.tables-datatables', {
@@ -664,7 +678,8 @@ app
 		    },
 
 		    'tables' : {
-			'rwd' : appHelper.assetPath('js/rwd-table/js/rwd-table.min.js'),
+			'scrollTableBody' : appHelper.assetPath('js/jquery-scrolltablebody/jquery.scrollTableBody-1.0.0.js'), 
+			'rwd' : appHelper.assetPath('js/rwd-table/js/rwd-table.js'),
 
 			'datatables' : [ appHelper.assetPath('js/datatables/dataTables.bootstrap.css'),
 				appHelper.assetPath('js/datatables/datatables-angular.js'), ],
