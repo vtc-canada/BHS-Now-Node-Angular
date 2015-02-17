@@ -161,7 +161,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    decision : function(callback){
+	    decision : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'DECIS'
 		}).select().exec(function(err, results) {
@@ -170,7 +170,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    mass_said : function(callback){
+	    mass_said : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'Q17'
 		}).select().exec(function(err, results) {
@@ -179,7 +179,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    willsaymass : function(callback){
+	    willsaymass : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'SAYMASS'
 		}).select().exec(function(err, results) {
@@ -188,7 +188,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    values_traditional : function(callback){
+	    values_traditional : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'Q18'
 		}).select().exec(function(err, results) {
@@ -264,13 +264,13 @@ module.exports = {
 	    var dtmajor = contact.dtmajor;
 	    var dtvols1 = contact.dtvols1;
 	    var dtbishop = contact.dtbishop;
-	    
+
 	    delete contact.otherAddresses;
 	    delete contact.dtmail;
 	    delete contact.dtmajor;
 	    delete contact.dtvols1;
 	    delete contact.dtbishop;
-	    
+
 	    Database.knex('dp').where({
 		id : contactId
 	    }).update(contact).exec(function(err, response) {
@@ -288,8 +288,12 @@ module.exports = {
 			    updateDtVols1(contactId, dtvols1, function(err, data) {
 				if (err)
 				    return res.json(err, 500);
-				req.body.id = contactId;
-				sails.controllers.contacts.getcontact(req, res);
+				updateBishop(contactId, dtbishop, function(err, data) {
+				    if (err)
+					return res.json(err, 500);
+				    req.body.id = contactId;
+				    sails.controllers.contacts.getcontact(req, res);
+				});
 			    });
 			});
 		    });
@@ -297,6 +301,40 @@ module.exports = {
 	    });
 	}
 
+	function updateBishop(contactId, dtbishop, cb) {
+	    var isEnabled = dtbishop.enabled;
+	    var bishId = dtbishop.id;
+	    delete dtbishop.enabled;
+	    delete dtbishop.id;
+
+	    console.log('bishId : ' + bishId + bishId == null ? ' :null' : '');
+
+	    if (isEnabled && bishId != null && !isNaN(bishId)) {  //UPDATE
+		Database.knex('dtbishop').where({
+		    id : bishId
+		}).update(dtbishop).exec(function(err, response) {
+		    if (err)
+			return cb(err);
+		    cb(null, response);
+		});
+	    } else if (isEnabled && (bishId == null || isNaN(bishId))) { // CREATE
+		dtbishop.DONOR = contactId;
+		Database.knex('dtbishop').insert(dtbishop).exec(function(err, response) {
+		    if (err)
+			return cb(err);
+		    cb(null, response);
+		});
+	    } else if (isEnabled == false && bishId != null && !isNaN(bishId)) { // DELETE
+		Database.knex('dtbishop').where({
+		    id : bishId
+		}).del().exec(function(err, response) {
+		    if (err)
+			return cb(err);
+		    cb(null, response);
+		});
+	    }
+	}
+	
 	function updateDtVols1(contactId, dtvols1, cb) {
 	    var isEnabled = dtvols1.enabled;
 	    var volId = dtvols1.id;
@@ -480,7 +518,7 @@ module.exports = {
 	var contactId = req.body.id;
 	Database.knex
 		.raw(
-			'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`database_origin`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,`ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,`CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
+			'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`database_origin`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
 				+ contactId)
 		.exec(
 			function(err, customer) {
@@ -532,8 +570,7 @@ module.exports = {
 
 													    Database.knex
 														    .raw(
-															    'SELECT * FROM `dtbishop` WHERE `DONOR` = '
-																    + contactId)
+															    'SELECT `id`,`DONOR`,`CONTPERS`,`FOLLOWUP`,`BISHPRES`,DATE_FORMAT(`LETTER1`,"%Y-%m-%d") AS `LETTER1`,DATE_FORMAT(`PHONEC1`,"%Y-%m-%d") AS `PHONEC1`,DATE_FORMAT(`LETTER2`,"%Y-%m-%d") AS `LETTER2`,DATE_FORMAT(`VISREF`,"%Y-%m-%d") AS `VISREF`,DATE_FORMAT(`VISITD`,"%Y-%m-%d") AS `VISITD`,`PERSONV1`,`PERSONV2`,`PERSONV3`,`PERSONV4`,DATE_FORMAT(`FOLUPLET`,"%Y-%m-%d") AS `FOLUPLET`,DATE_FORMAT(`FOLUPVIS`,"%Y-%m-%d") AS `FOLUPVIS`,`REPFILED`,`RESPONSE`,`BISNOTES`,`FILEDYN`,`database_origin` FROM `dtbishop` WHERE `DONOR` = ' + contactId)
 														    .exec(
 															    function(err, dtbishop) {
 																if (err)

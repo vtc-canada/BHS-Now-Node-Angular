@@ -786,13 +786,29 @@
 											<div class="form-group">
 												<label class="col-sm-4 control-label" for="contact.ORDINATION">Ordination:</label>
 												<div class="col-sm-7 col-sm-offset-1">
-													<input type="text" ng-disabled="contact.ecc_enabled == false" class="form-control" name="contact.ORDINATION" id="contact.ORDINATION" ng-model="contact.ORDINATION" >
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false " class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.ORDINATION" ng-model="contact.ORDINATION" >
+														<div  ng-show="contact.ecc_enabled " class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-sm-4 control-label" for="contact.CONSECRATE">Consecration:</label>
 												<div class="col-sm-7 col-sm-offset-1">
-													<input type="text" ng-disabled="contact.ecc_enabled == false" class="form-control" name="contact.CONSECRATE" id="contact.CONSECRATE" ng-model="contact.CONSECRATE" >
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false " class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.CONSECRATE" ng-model="contact.CONSECRATE" >
+														<div  ng-show="contact.ecc_enabled " class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
@@ -1073,19 +1089,172 @@
 							</div>
 						</div>
 					</div>
-					<div class="row" ng-class="{true: 'row-disabled', false: ''}[contact.ecc_enabled == false]">
+					<div class="row" ng-class="{true: 'row-disabled', false: ''}[contact.ecc_enabled == false || contact.dtbishop.enabled == false]">
 						<div class="col-xs-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<h3 class="panel-title">Bishop Lobbying</h3>
+									<div class="pull-left">
+										<h3 class="panel-title">Bishop Lobbying</h3>
+									</div>
+									<div class="pull-right inline-pull-right-button">
+										<input type="checkbox" ng-disabled="contact.ecc_enabled == false" class="form-control iswitch iswitch-primary" name="contact.dtbishop.enabled" ng-checked="contact.dtbishop.enabled" ng-model="contact.dtbishop.enabled">
+									</div>
 								</div>
 								<div class="panel-body">
 									<div class="row">
 										<div class="col-sm-6">
 											<div class="form-group">
-												<label class="col-sm-8 control-label" for="contact.dtbishop.RESPONSE">Response:</label>
+												<label class="col-sm-5 control-label" for="contact.dtbishop.RESPONSE">Response:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false " name="contact.dtbishop.RESPONSE" ng-options="title.id as title.label for title in response" ng-model="contact.dtbishop.RESPONSE"></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.CONTPERS">Contacting Person:</label>
+												<div class="col-sm-7">
+													<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control" name="contact.dtbishop.CONTPERS" id="contact.dtbishop.CONTPERS" ng-model="contact.dtbishop.CONTPERS" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 1:</label>
+												<div class="col-sm-7">
+													<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control" name="contact.dtbishop.PERSONV1" id="contact.dtbishop.PERSONV1" ng-model="contact.dtbishop.PERSONV1" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 2:</label>
+												<div class="col-sm-7">
+													<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control" name="contact.dtbishop.PERSONV2" id="contact.dtbishop.PERSONV2" ng-model="contact.dtbishop.PERSONV2" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 3:</label>
+												<div class="col-sm-7">
+													<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control" name="contact.dtbishop.PERSONV3" id="contact.dtbishop.PERSONV3" ng-model="contact.dtbishop.PERSONV3" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV4">Person Visiting 4:</label>
+												<div class="col-sm-7">
+													<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control" name="contact.dtbishop.PERSONV4" id="contact.dtbishop.PERSONV4" ng-model="contact.dtbishop.PERSONV4" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.BISHPRES">Bishop Present:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" name="contact.dtbishop.BISHPRES" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.BISHPRES"></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.FOLLOWUP">Follow Up:</label>
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" name="contact.dtbishop.FOLLOWUP" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FOLLOWUP"></select2>
+												</div>
+											</div>
+										</div>
+										<div class="col-sm-6">
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER1">1st Letter Sent:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER1" ng-model="contact.dtbishop.LETTER1" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.PHONEC1">1st Phone Call:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.PHONEC1" ng-model="contact.dtbishop.PHONEC1" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER2">2nd Letter Sent:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER2" ng-model="contact.dtbishop.LETTER2" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.VISREF">Visit Refused:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISREF" ng-model="contact.dtbishop.VISREF" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.VISITD">Visit Date:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISITD" ng-model="contact.dtbishop.VISITD" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPLET">Follow Up Letter Sent:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPLET" ng-model="contact.dtbishop.FOLUPLET" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPVIS">Follow Up Visit:</label>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<input type="text" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPVIS" ng-model="contact.dtbishop.FOLUPVIS" >
+														<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+															<a href=""><i class="linecons-calendar"></i></a>
+														</div>
+														<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+															<div href=""><i class="linecons-calendar"></i></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-8 control-label" for="contact.dtbishop.FILEDYN">Report Filed:</label>
 												<div class="col-sm-4">
-													<select2 class="form-control" ng-disabled="contact.ecc_enabled == false" name="contact.dtbishop.RESPONSE" ng-options="title.id as title.label for title in response" ng-model="contact.dtbishop.RESPONSE"></select2>
+													<select2 class="form-control" ng-disabled="contact.ecc_enabled == false || contact.dtbishop.enabled == false" name="contact.dtbishop.FILEDYN" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FILEDYN"></select2>
 												</div>
 											</div>
 										</div>
