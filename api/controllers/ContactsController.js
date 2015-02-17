@@ -263,11 +263,14 @@ module.exports = {
 	    var dtmail = contact.dtmail;
 	    var dtmajor = contact.dtmajor;
 	    var dtvols1 = contact.dtvols1;
+	    var dtbishop = contact.dtbishop;
+	    
 	    delete contact.otherAddresses;
 	    delete contact.dtmail;
 	    delete contact.dtmajor;
 	    delete contact.dtvols1;
-
+	    delete contact.dtbishop;
+	    
 	    Database.knex('dp').where({
 		id : contactId
 	    }).update(contact).exec(function(err, response) {

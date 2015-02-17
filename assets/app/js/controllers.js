@@ -373,6 +373,17 @@ angular.module('xenon.controllers', []).controller(
 		    $sails.get('/contacts/getattributes').success(function(data) {
 			var data = data.result;
 
+			$scope.response = [{
+			    id : '1',
+			    label : 'Not yet known'
+			}, {
+			    id : '2',
+			    label : 'Positive'
+			}, {
+			    id : '3',
+			    label : 'Negative'
+			}]
+			
 			$scope.staticyesno = [ {
 			    id : 'Y',
 			    label : 'Yes'

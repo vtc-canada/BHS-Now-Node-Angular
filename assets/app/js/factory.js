@@ -121,7 +121,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 }).factory('$contact', function($rootScope, $window) {
 
     
-    var initDtBishop : {
+    var initDtBishop = {
 	
 	id : null,
 	enabled : false,
