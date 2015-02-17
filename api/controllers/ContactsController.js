@@ -196,7 +196,7 @@ module.exports = {
 			return callback(err);
 		    callback(null, results);
 		});
-	    }
+	    },
 	    dtvols1 : function(callback) {
 		async.parallel({
 		    origin : function(dtvols1callback) {
