@@ -120,8 +120,72 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
     };
 }).factory('$contact', function($rootScope, $window) {
 
+    
+    var initDtBishop : {
+	
+	id : null,
+	enabled : false,
+	CONTPERS : null,
+	FOLLOWUP : null,
+	BISHPRES : null,
+	LETTER1 : null,
+	PHONEC1 : null,
+	LETTER2 : null,
+	VISREF : null,
+	VISITD : null,
+	PERSONV1 : null,
+	PERSONV2 : null,
+	PERSONV3 : null,
+	PERSONV4 : null,
+	FOLUPLET : null,
+	FOLUPVIS : null,
+	REPFILED : null,
+	RESPONSE : null,
+	BISNOTES : null,
+	FILEDYN : null
+    }
+    
+    var initDtVols1 = {
+	    id : null,
+	    enabled : false,
+	    VORIGIN : null,
+	    VSDATE : null,
+	    VCATEG : null,
+	    VGRADE01 : null,
+	    VGRADE02 : null,
+	    VGRADE03 : null,
+	    VGRADE04 : null,
+	    VGRADE05 : null,
+	    VGRADE06 : null,
+	    VGRADE07 : null,
+	    VGRADE08 : null,
+	    VGRADE09 : null,
+	    VGRADE10 : null,
+	    VGRADE11 : null,
+	    VGRADE12 : null,
+	    VGRADE13 : null,
+	    VGRADE14 : null,
+	    VGRADE15 : null,
+	    VGRADE16 : null,
+	    VGRADE17 : null,
+	    VGRADE18 : null,
+	    VGRADE19 : null,
+	    VGRADE20 : null,
+	    VGRADE21 : null,
+	    VGRADE22 : null,
+	    VGRADE23 : null,
+	    VSPECTAL : null
+	};
+    
+    
+    
+    
     var obj = {
+
 	init : function() {
+	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
+	    this.dtbishop = initDtBishop;
+
 	    this.is_modified = false; // FALSE
 	    // var self = this;
 	    this.FNAME = '';
@@ -129,7 +193,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.PTITLE = '';
 	    this.SECLN = '';
 	    this.PETSIGN = '';
-	    this.LASTCONT_DATE = '';
+	    this.LASTCONT = '';
 	    this.TITLE = null;
 	    this.SAL = '';
 	    this.SUFF = '';
@@ -149,6 +213,18 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.PHON3 = null;
 	    this.otherAddresses = [];
 
+	    // Other Information
+	    this.TYPE = null;
+	    this.FLAGS = null;
+	    this.NM_REASON = null;
+	    this.CFN = null;
+	    this.CFNID = null;
+	    this.PLEDGOR = null;
+	    this.AR = null;
+	    this.SOLS = null;
+	    this.LANGUAGE = null;
+	    this.ENGLISH = null;
+
 	    this.GIVINTS = null;
 	    this.INCLEV = null;
 	    this.GIFTTYPES = null;
@@ -161,6 +237,44 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.dtmail = [];
 
 	    this.dtmajor = [];
+	    
+	    
+	    //ECCLESIASTICAL TAB
+	    
+	    this.ecc_enabled = false;
+	    this.BIRTHDATE = null;
+	    this.ORDINATION = null;
+	    this.CONSECRATE = null;
+	    this.SAYMASS = null;
+	    this.DECIS = null;
+	    this.RELIGIOUS = null;
+	    this.Q01 = null;
+	    this.Q02 = null;
+	    this.Q03 = null;
+	    this.Q04 = null;
+	    this.Q05 = null;
+	    this.Q06 = null;
+	    this.Q07 = null;
+	    this.Q08 = null;
+	    this.Q09 = null;
+	    this.Q10 = null;
+	    this.Q11 = null;
+	    this.Q12 = null;
+	    this.Q13 = null;
+	    this.Q14 = null;
+	    this.Q15 = null;
+	    this.Q16 = null;
+	    this.Q17 = null;
+	    this.Q18 = null;
+	    this.Q19 = null;
+	    this.Q20 = null;
+	    this.Q21 = null;
+	    this.Q22 = null;
+	    this.Q23 = null;
+	    this.EP020 = null;
+	    this.PPRIEST = null; //false?
+	    
+	    
 
 	    this.id = null;
 	    return this;
@@ -319,13 +433,25 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.otherAddresses.push(otherAddress);
 	    return this.otherAddresses;
 	},
-	set : function(contact) {
+	set : function(contact) { //wierd routine.. should be abled to just directly copy.
 	    var self = this;
 	    angular.forEach(contact, function(value, key) {
+
 		if (typeof (self[key]) != 'undefined') {
 		    self[key] = value;
 		}
+
 	    });
+	    if (this.dtvols1!=null) {
+		this.dtvols1.enabled = true;
+	    }else{
+		this.dtvols1 = initDtVols1; // init new one
+	    }
+	    if (this.dtbishop!=null) {
+		this.dtbishop.enabled = true; //already should come in enabled
+	    }else{
+		this.dtbishop = initDtBishop; // init new one
+	    }
 	    self.TITLE = {
 		id : self.TITLE,
 		label : self.TITLE + '.'

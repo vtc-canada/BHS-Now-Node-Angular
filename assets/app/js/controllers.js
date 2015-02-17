@@ -6,6 +6,7 @@ angular.module('xenon.controllers', []).controller(
 	    var vm = this;
 	    vm.mail = {};
 	    $scope.contact = $contact;
+	    $scope.selectedTransaction = null;
 
 	    vm.watchEnabled = false;
 
@@ -46,6 +47,7 @@ angular.module('xenon.controllers', []).controller(
 	    $scope.mailDataTableOptions = {
 		"autoWidth" : true,
 		"bDestroy" : true,
+		'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 		"columns" : [ {
 		    "width" : "10%"
 		}, {
@@ -63,7 +65,7 @@ angular.module('xenon.controllers', []).controller(
 	    $scope.mailDataTableChange = function() {
 		$timeout(function() {
 		    $scope.selectedTransaction = null;
-		    $scope.selectedTransactionTemp = null;
+		    // $scope.selectedTransactionTemp = null;
 		}, 0);
 	    }
 
@@ -71,14 +73,14 @@ angular.module('xenon.controllers', []).controller(
 
 	    $scope.editMail = function(modal_id, modal_size, modal_backdrop) {
 
-		var selectedMail = $contact.getElementObject('dtmail', $scope.selectedTransaction, $scope.selectedTransactionTemp);
+		var selectedMail = $contact.getElementObject('dtmail', $scope.selectedTransaction.id, $scope.selectedTransaction.tempId);
 
-		$rootScope.selectedMail = {
-		    id : $scope.selectedTransaction,
-		    tempId : $scope.selectedTransactionTemp,
-		    SOL : selectedMail.SOL,
-		    LIST : selectedMail.LIST
-		}
+		$rootScope.selectedMail = selectedMail;
+		/*
+		 * { id : $scope.selectedTransaction, tempId :
+		 * $scope.selectedTransactionTemp, SOL : selectedMail.SOL, LIST :
+		 * selectedMail.LIST }
+		 */
 		$rootScope.currentModal = $modal.open({
 		    templateUrl : modal_id,
 		    size : modal_size,
@@ -97,11 +99,12 @@ angular.module('xenon.controllers', []).controller(
 
 	    $scope.addMail = function(modal_id, modal_size) {
 		// Wipe selected, create new.
-		$scope.selectedTransaction = 'new';
-		$scope.selectedTransactionTemp = Math.floor((Math.random() * 100000) + 1);
+		$scope.selectedTransaction = {};
+		$scope.selectedTransaction.id = 'new';
+		$scope.selectedTransaction.tempId = Math.floor((Math.random() * 100000) + 1);
 		$rootScope.selectedMail = {
-		    id : $scope.selectedTransaction,
-		    tempId : $scope.selectedTransactionTemp,
+		    id : $scope.selectedTransaction.id,
+		    tempId : $scope.selectedTransaction.tempId,
 		    DONOR : $contact.id,
 		    SOL : null,
 		    LIST : null,
@@ -117,49 +120,94 @@ angular.module('xenon.controllers', []).controller(
 		});
 		$rootScope.currentModal.result.then(function(selectedItem) {
 		    $scope.selectedTransaction = null;
-		    $scope.selectedTransactionTemp = null;
 		}, function(triggerElement) {
 
 		    $scope.selectedTransaction = null;
-		    $scope.selectedTransactionTemp = null;
+		    // $scope.selectedTransactionTemp = null;
 		    if (triggerElement == 'save') {
 			// if($rootScope.)
-			$('#' + $scope.mailDataTableId).css('visibility', 'hidden');
-			if ($.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-			    $('#' + $scope.mailDataTableId).dataTable().fnDestroy();
-			}
+			$scope.tryDestroyMailDataTable();
 			$contact.updateElementObject('dtmail', $rootScope.selectedMail);
 			$timeout(function() {
 			    $scope.contact = $contact;
-			    if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-				$('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt', $scope.mailDataTableChange).on(
-					'length.dt', $scope.mailDataTableChange).on('search.dt', $scope.mailDataTableChange);
-				$('#' + $scope.mailDataTableId).css('visibility', '');
-				$('#' + $scope.mailDataTableId).next().find('ul.pagination li.paginate_button a').click(function() {
-				    $timeout(function() {
-					$scope.selectedTransaction = null;
-					$scope.selectedTransactionTemp = null;
-				    }, 0);
-				});
-			    }
+			    $scope.rebindMailDataTables();
 			}, 0);
-		    } else {
+		    } else { // do nothing
 		    }
 		});
 	    }
+	    $scope.tryDestroyMailDataTable = function() {
+		$('#' + $scope.mailDataTableId).css('visibility', 'hidden');
+		if ($.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
+		    $('#' + $scope.mailDataTableId).dataTable().fnDestroy();
+		}
+	    }
+	    $scope.rebindMailDataTables = function() {
+		if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
+		    $('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt', $scope.mailDataTableChange).on('length.dt',
+			    $scope.mailDataTableChange).on('search.dt', $scope.mailDataTableChange);
+		    $('#' + $scope.mailDataTableId).css('visibility', '');
+		    $('#' + $scope.mailDataTableId).next().find('ul.pagination li.paginate_button a').click(function() {
+			$timeout(function() {
+			    $scope.selectedTransaction = null;
+			    // $scope.selectedTransactionTemp = null;
+			}, 0);
+		    });
+		}
+	    }
+
+	    $scope.getDeleteMailButtonDisabled = function() {
+		return ($scope.selectedTransaction == null);
+	    }
+
+	    $scope.isDeleteMailButtonText = function() {
+		if ($scope.selectedTransaction != null && $scope.selectedTransaction.is_deleted) {
+		    return true;
+		}
+		return false;
+	    }
+	    $scope.getDeleteMailButtonText = function() {
+		if ($scope.isDeleteMailButtonText()) {
+		    return 'Restore';
+		}
+		return 'Delete';
+
+	    }
 
 	    $scope.deleteMail = function() {
-		$contact.setElementDeleted('dtmail', $scope.selectedTransaction, $scope.selectedTransactionTemp);
-		$scope.selectedTransaction = null;
-		$scope.selectedTransactionTemp = null;
+		var deleteNew = false;
+		if ($scope.selectedTransaction.id == 'new') { // will destroy
+								// cuz it's new
+		    deleteNew = true;
+		    $scope.tryDestroyMailDataTable();
+		}
+		$contact.toggleDeleted('dtmail', $scope.selectedTransaction);
+		$timeout(function() {
+		    $scope.contact = $contact;
+		    $scope.selectedTransaction = null;
+		    if (deleteNew) { // was a new one.. being deleted clearly
+			$scope.rebindMailDataTables();
+		    }
+		}, 0);
 	    }
+	    /*
+	     * $scope.isRowDeletedAndFocused = function(row){ return (row.tempId ==
+	     * $scope.selectedTransaction.tempId && row.tempId != null) ||
+	     * (row.id == $scope.selectedTransaction.id && row.id != 'new'); }
+	     */
 	    $scope.isRowFocused = function(row) {
-		return (row.tempId == $scope.selectedTransactionTemp && row.tempId != null) || (row.id == $scope.selectedTransaction && row.id != 'new');
+		if ($scope.selectedTransaction == null) {
+		    return false;
+		}
+		return (row.tempId == $scope.selectedTransaction.tempId && row.tempId != null) || (row.id == $scope.selectedTransaction.id && row.id != 'new');
 	    }
 
-	    $scope.selectTransaction = function(transactionId, tempId, is_deleted) {
-		$scope.selectedTransaction = transactionId;
-		$scope.selectedTransactionTemp = tempId;
+	    $scope.selectTransaction = function(transaction) {// transactionId,
+								// tempId,
+								// is_deleted) {
+		$scope.selectedTransaction = transaction;
+		// $scope.selectedTransactionTemp = transaction.tempId;
+
 	    }
 
 	    // /////////////////////////////////////////////// END MAIL
@@ -184,6 +232,19 @@ angular.module('xenon.controllers', []).controller(
 		    }, 0);
 		}
 	    }
+
+	    $scope.isValEnabled = function(value) {
+		if (value == 'Y') {
+		    return true;
+		}
+		return false;
+	    }
+
+	    $scope.$watch('contact.dtvols1.VGRADE23', function(oldValue, newValue) {
+		if (oldValue != newValue && $scope.contact.dtvols1.VGRADE23 != 'Y') {
+		    $scope.contact.dtvols1.VSPECTAL = null;
+		}
+	    });
 
 	    $scope.tryModified = function(newValue, oldValue) {
 		if (newValue !== oldValue) {
@@ -219,38 +280,24 @@ angular.module('xenon.controllers', []).controller(
 		    } else {
 			$sails.post("/contacts/getcontact", {
 			    id : message.id
-			}).success(
-				function(data) {
-				    $scope.selectedTransaction = null; // wipes
-				    // out
-				    // selected
-				    // Transaction
-				    if (data.success) {
-					$timeout(function() {
-					    if ($.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-						$('#' + $scope.mailDataTableId).dataTable().fnDestroy();
-					    }
-					    $timeout(function() {
-						$contact.set(data.contact);
-						resetContactForms();
-						$timeout(function() {
-						    $(window).scrollTop($('.nav-tabs').offset().top - 8);
-						    if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-							$('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt',
-								$scope.mailDataTableChange).on('length.dt', $scope.mailDataTableChange).on('search.dt',
-								$scope.mailDataTableChange);
-							$('#' + $scope.mailDataTableId).next().find('ul.pagination li.paginate_button a').click(function() {
-							    $timeout(function() {
-								$scope.selectedTransaction = null;
-								$scope.selectedTransactionTemp = null;
-							    }, 0);
-							});
-						    }
-						}, 0);
-					    }, 0);
-					}, 0);
-				    }
-				}).error(function(data) {
+			}).success(function(data) {
+			    $scope.selectedTransaction = null; // wipes
+			    // out
+			    // selected
+			    // Transaction
+			    if (data.success) {
+				$scope.tryDestroyMailDataTable();
+				$timeout(function() {
+				    $contact.set(data.contact);
+				    resetContactForms();
+				    $timeout(function() {
+					$(window).scrollTop($('.nav-tabs').offset().top - 8);
+					$scope.rebindMailDataTables();
+
+				    }, 0);
+				}, 0);
+			    }
+			}).error(function(data) {
 			    alert('err!');
 			});
 		    }
@@ -283,32 +330,20 @@ angular.module('xenon.controllers', []).controller(
 		    if (!founderrors) {
 			// $scope.contact.otherAddresses =
 			// $scope.otherAddresses;
-			$sails.post("/contacts/save", $scope.contact).success(
-				function(data) {
-				    if (data.success) {
-					if ($.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-					    $('#' + $scope.mailDataTableId).dataTable().fnDestroy();
-					}
-					$timeout(function() {
-					    $contact.set(data.contact);
-					    resetContactForms();
-					    $rootScope.updateContactsTable();
-					    $timeout(function() {
-						if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) { // Rebinds datatables.
-						    $('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt',
-							    $scope.mailDataTableChange).on('length.dt', $scope.mailDataTableChange).on('search.dt',
-							    $scope.mailDataTableChange);// .api().columns.adjust().draw();
-						    $('#' + $scope.mailDataTableId).next().find('ul.pagination li.paginate_button a').click(function() {
-							$timeout(function() {
-							    $scope.selectedTransaction = null;
-							    $scope.selectedTransactionTemp = null;
-							}, 0);
-						    });
-						}
-					    }, 0);
-					}, 0);
-				    }
-				}).error(function(data) {
+			// delete $scope.contact.initDtVols1;
+			$sails.post("/contacts/save", $scope.contact).success(function(data) {
+			    if (data.success) {
+				$scope.tryDestroyMailDataTable();
+				$timeout(function() {
+				    $contact.set(data.contact);
+				    resetContactForms();
+				    $rootScope.updateContactsTable();
+				    $timeout(function() {
+					$scope.rebindMailDataTables();
+				    }, 0);
+				}, 0);
+			    }
+			}).error(function(data) {
 			    alert('err!');
 			});
 		    }
@@ -337,6 +372,27 @@ angular.module('xenon.controllers', []).controller(
 
 		    $sails.get('/contacts/getattributes').success(function(data) {
 			var data = data.result;
+
+			$scope.staticyesno = [ {
+			    id : 'Y',
+			    label : 'Yes'
+			}, {
+			    id : 'N',
+			    label : 'No'
+			} ];
+			
+			$scope.staticyesnounknown = [ {
+			    id : 'Y',
+			    label : 'Yes'
+			}, {
+			    id : 'U',
+			    label : 'Unknown'
+			}, {
+			    id : 'N',
+			    label : 'No'
+			} ];
+			
+			
 			/*
 			 * angular.forEach(data.result,function(atts,key){
 			 * $scope[key]=[]; for(var i=0;i<atts.length;i++){
@@ -347,6 +403,77 @@ angular.module('xenon.controllers', []).controller(
 			    $scope.titles.push({
 				id : data.titles[i].TITLE,
 				label : data.titles[i].TITLE
+			    });
+			}
+			$scope.languages = [];
+			for (var i = 0; i < data.languages.length; i++) {
+			    $scope.languages.push({
+				id : data.languages[i].CODE,
+				label : data.languages[i].CODE + " - " + data.languages[i].DESC
+			    });
+			}
+			$scope.values_traditional = [];
+			for (var i = 0; i < data.values_traditional.length; i++) {
+			    $scope.values_traditional.push({
+				id : data.values_traditional[i].CODE,
+				label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
+			    });
+			}
+			$scope.decision = [];
+			for (var i = 0; i < data.decision.length; i++) {
+			    $scope.decision.push({
+				id : data.decision[i].CODE,
+				label : data.decision[i].CODE + " - " + data.decision[i].DESC
+			    });
+			}
+			$scope.mass_said = [];
+			for (var i = 0; i < data.mass_said.length; i++) {
+			    $scope.mass_said.push({
+				id : data.mass_said[i].CODE,
+				label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
+			    });
+			}
+			
+			$scope.willsaymass = [];
+			for (var i = 0; i < data.willsaymass.length; i++) {
+			    $scope.willsaymass.push({
+				id : data.willsaymass[i].CODE,
+				label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
+			    });
+			}
+			$scope.english = [];
+			for (var i = 0; i < data.english.length; i++) {
+			    $scope.english.push({
+				id : data.english[i].CODE,
+				label : data.english[i].CODE + " - " + data.english[i].DESC
+			    });
+			}
+			$scope.accounts_received = [];
+			for (var i = 0; i < data.accounts_received.length; i++) {
+			    $scope.accounts_received.push({
+				id : data.accounts_received[i].CODE,
+				label : data.accounts_received[i].CODE + " - " + data.accounts_received[i].DESC
+			    });
+			}
+			$scope.reasons = [];
+			for (var i = 0; i < data.reasons.length; i++) {
+			    $scope.reasons.push({
+				id : data.reasons[i].CODE,
+				label : data.reasons[i].CODE
+			    });
+			}
+			$scope.cfns = [];
+			for (var i = 0; i < data.cfns.length; i++) {
+			    $scope.cfns.push({
+				id : data.cfns[i].CODE,
+				label : data.cfns[i].CODE + " - " + data.cfns[i].DESC
+			    });
+			}
+			$scope.pledgors = [];
+			for (var i = 0; i < data.pledgors.length; i++) {
+			    $scope.pledgors.push({
+				id : data.pledgors[i].CODE,
+				label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
 			    });
 			}
 			$scope.types = [];
@@ -402,6 +529,16 @@ angular.module('xenon.controllers', []).controller(
 			    });
 			}
 
+			// DTVOLS1
+			$scope.dtvols1 = {};
+			$scope.dtvols1.origin = [];
+			for (var i = 0; i < data.dtvols1.origin.length; i++) {
+			    $scope.dtvols1.origin.push({
+				id : data.dtvols1.origin[i].CODE,
+				label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
+			    });
+			}
+
 		    }).error(function(data) {
 			alert('err!');
 		    });
@@ -441,9 +578,7 @@ angular.module('xenon.controllers', []).controller(
 	    // .withDataProp('data')
 	    .withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
 		aoData.contact = $rootScope.search_contact;
-	    })
-
-	    .withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    }).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 		$('td', nRow).unbind('click');
 		$('td', nRow).bind('click', function() {
 		    // $scope.$apply(function() {
@@ -454,8 +589,13 @@ angular.module('xenon.controllers', []).controller(
 		    $(nRow).addClass('selected');
 		}
 		return nRow;
-	    }).withPaginationType('full_numbers').withDOM('lrftip');
-
+	    }).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	    // l length
+	    // r processing
+	    // f filtering
+	    // t table
+	    // i info
+	    // p pagination
 	    vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'),
 		    DTColumnBuilder.newColumn('LNAME').withTitle('Last name') ];
 
