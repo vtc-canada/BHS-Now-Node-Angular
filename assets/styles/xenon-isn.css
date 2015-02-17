@@ -10,6 +10,11 @@ html{
 	display:block;
 }
 
+
+.changes-pending{
+	margin-right:9px;
+} 
+
 table.dataTable{
 	width: 100% !important;
 }
@@ -34,10 +39,17 @@ table.dataTable tbody tr{
 }
 
 
-table.table-striped>tbody>tr.is_deleted{
-	background:#cc3f44;
+table.table-striped>tbody>tr.is_deleted:not(.focused){
+	text-decoration:line-through; 
+	background:#FFE7E7;  /*pink */
+  	/*color: #fff;*/
+}
+table.table-striped>tbody>tr.is_deleted.focused{
+	text-decoration:line-through; 
+	background-color: #f69f2f;
 	color:white;
 }
+
 
 table.contacts-transactions{
 }
@@ -55,3 +67,69 @@ body.modal-open {
     overflow: visible;
 }
        
+
+
+
+/* GENERIC FORM STYING */       
+.inline-pull-right-button{
+	position: absolute;
+	right: 0px;
+	top: -9px;
+}
+
+
+.row-disabled{
+	opacity:0.4;
+}
+/* Datatables Fixes */
+
+table.dataTable{
+	margin-bottom:0px;
+}
+
+.dataTables_paginate ul.pagination{
+	margin-top: 3px;
+}
+
+.dataTables_wrapper .dataTables_paginate{
+	padding-top:0px;
+	float:right;
+}
+
+.dataTables_wrapper .dataTables_length{
+	float:right;
+}
+
+.dataTables_length select{
+	display: inline-block;
+	width: auto;
+	vertical-align: middle;
+}
+
+.tab-enabled-element{
+	margin-left:7px;
+}
+
+.control-label.tab-enabled-element{
+	padding-top: 7px;
+}
+
+@media (min-width:768px){
+	
+	input[type=checkbox].iswitch {
+		margin-top:4px;
+	}
+}
+
+@media (max-width:767px){
+	
+	.col-sm-mid{
+		margin-bottom:5px;
+	}
+}
+
+@media (max-width:991px){
+	.col-md-mid{
+		margin-bottom:5px;
+	}
+}

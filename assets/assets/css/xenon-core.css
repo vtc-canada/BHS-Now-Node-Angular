@@ -487,13 +487,13 @@ table.focus-on tbody tr.unfocused th,table.focus-on tbody tr.unfocused td {
   color: rgba(0,0,0,.4);
 }
 
-table.focus-on tbody tr.focused th,table.focus-on tbody tr.focused td {
+table.focus-on tbody tr.focused:not(.is_deleted) th,table.focus-on tbody tr.focused:not(.is_deleted)  td {
   background-color: #68b828;
   color: #fff;
   border-color: #63b026;
 }
 
-table.focus-on tbody tr.selected th,table.focus-on tbody tr.selected td {
+table.focus-on tbody tr.selected:not(.is_deleted)  th,table.focus-on tbody tr.selected:not(.is_deleted)  td {
   background-color: #68b828;
   color: #fff;
   border-color: #63b026;
