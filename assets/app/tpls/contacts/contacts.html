@@ -735,6 +735,44 @@
 							</div>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="pull-left">
+										<h3 class="panel-title">Notes</h3>
+									</div>
+									<div class="pull-right inline-pull-right-button">
+										<div class="btn btn-primary" ng-click="addNote('layman')">Add Address</div>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="row" ng-repeat="note in contact.notes.layman">
+										<div class="col-xs-12" ng-class="{true: 'makeopaque', false: ''}[note.is_deleted == true]">
+											<div class="row">
+												<div class="col-sm-2">
+													2015-01-20 00:00:00
+												</div>
+												<div class="col-sm-2">
+													Administrator
+												</div>
+												<div class="col-sm-6">
+													<pre ng-hide="note.focused">{{ note.text || ''}}</pre>
+													<textarea ng-show="note.focused" type="text" class="form-control" name="note.text" ng-blur="blurNote(note)" ng-model="note.modify_text"></textarea>
+													<button ng-show="note.focused" class="btn btn-secondary" ng-mousedown="saveNote(note)">Save</button>
+													<button ng-show="note.focused" class="btn">Cancel</button>
+												</div>
+												<div class="col-sm-2">
+													<button class="pull-right inline-pull btn" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[note.is_deleted == true]" ng-click="deleteNote(note)">{{note.is_deleted == true?'Cancel':'Delete'}}</button>
+													<button class="pull-right inline-pull pull-right-stack btn btn-orange" ng-click="modifyNote($event,note)" ng-disabled="note.focused">Modify</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</form>	
 			</tab>
 			
@@ -744,9 +782,9 @@
 						<div class="col-xs-6">
 							<div class="col-xs-12">
 								<div class="form-group">
-									<label class="pull-left control-label tab-enabled-element" for="contact_PTITLE">Ecclesiastical:</label>
+									<label class="pull-left control-label tab-enabled-element" for="contact.ecc_enabled">Ecclesiastical:</label>
 									<div class="pull-left tab-enabled-element">
-										<input type="checkbox" class="form-control iswitch iswitch-danger" name="blank" ng-checked="contact.ecc_enabled" ng-model="contact.ecc_enabled">
+										<input type="checkbox" class="form-control iswitch iswitch-secondary" name="blank" ng-checked="contact.ecc_enabled" ng-model="contact.ecc_enabled">
 									</div>
 								</div>
 							</div>
@@ -835,7 +873,7 @@
 										</div>
 										<div class="col-sm-2">
 												<label class="col-sm-7 control-label" >Age:</label>
-												<label class="col-sm-4 col=sm-offset-1" >{{20}}</label>
+												<label class="col-sm-4 col=sm-offset-1 control-label" >{{helpers.getAgeFromDateString(contact.BIRTHDATE)}}</label>
 										</div>
 									</div>
 								</div>
@@ -1280,7 +1318,7 @@
 									<label class="pull-left control-label tab-enabled-element" for="contact_PTITLE">Volunteer:</label>
 			
 									<div class="pull-left tab-enabled-element">
-										<input type="checkbox" class="form-control iswitch iswitch-danger" name="blank" ng-checked="contact.dtvols1.enabled" ng-model="contact.dtvols1.enabled">
+										<input type="checkbox" class="form-control iswitch iswitch-secondary" name="blank" ng-checked="contact.dtvols1.enabled" ng-model="contact.dtvols1.enabled">
 									</div>
 								</div>
 							</div>

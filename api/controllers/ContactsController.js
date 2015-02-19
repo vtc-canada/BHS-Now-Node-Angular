@@ -264,12 +264,13 @@ module.exports = {
 	    var dtmajor = contact.dtmajor;
 	    var dtvols1 = contact.dtvols1;
 	    var dtbishop = contact.dtbishop;
-
+	    var notes =  contact.notes.layman.concat(contact.notes.ecclesiastical).concat(contact.notes.volunteer).concat(contact.notes.orders);
 	    delete contact.otherAddresses;
 	    delete contact.dtmail;
 	    delete contact.dtmajor;
 	    delete contact.dtvols1;
 	    delete contact.dtbishop;
+	    delete contact.notes;
 
 	    Database.knex('dp').where({
 		id : contactId
@@ -279,7 +280,7 @@ module.exports = {
 		updateOtherAddresses(contactId, otherAddresses, function(err, data) {
 		    if (err)
 			return res.json(err, 500);
-		    updateChildElements('dtmajor', contactId, dtmajor, function(err, data) {
+		    updateAllChildElements('dtmajor', contactId, dtmajor, function(err, data) {
 			if (err)
 			    return res.json(err, 500);
 			updateDtmail(contactId, dtmail, function(err, data) {
@@ -291,8 +292,12 @@ module.exports = {
 				updateBishop(contactId, dtbishop, function(err, data) {
 				    if (err)
 					return res.json(err, 500);
-				    req.body.id = contactId;
-				    sails.controllers.contacts.getcontact(req, res);
+				    updateChildElements('notes',contactId, notes, function(err, data) {
+					if (err)
+					    return res.json(err, 500);
+					req.body.id = contactId;
+					sails.controllers.contacts.getcontact(req, res);
+				    });
 				});
 			    });
 			});
@@ -300,6 +305,7 @@ module.exports = {
 		});
 	    });
 	}
+	
 
 	function updateBishop(contactId, dtbishop, cb) {
 	    var isEnabled = dtbishop.enabled;
@@ -309,7 +315,7 @@ module.exports = {
 
 	    console.log('bishId : ' + bishId + bishId == null ? ' :null' : '');
 
-	    if (isEnabled && bishId != null && !isNaN(bishId)) {  //UPDATE
+	    if (isEnabled && bishId != null && !isNaN(bishId)) { // UPDATE
 		Database.knex('dtbishop').where({
 		    id : bishId
 		}).update(dtbishop).exec(function(err, response) {
@@ -334,7 +340,7 @@ module.exports = {
 		});
 	    }
 	}
-	
+
 	function updateDtVols1(contactId, dtvols1, cb) {
 	    var isEnabled = dtvols1.enabled;
 	    var volId = dtvols1.id;
@@ -387,9 +393,51 @@ module.exports = {
 		});
 	    }
 	}
+	
+	function updateChildElements(tablename, contactId, childElements, updateChildElementsCallback) {
+	    async.each(childElements, function(childElement, cb) {
+		delete childElement.$$hashKey;
+		delete childElement.focused;  // simply dont care if it's focused
+		delete childElement.modify_text; // delete modify_text
+		
+		if (childElement.id == null) {  // create a new one
+		    childElement.DONOR = contactId;
+		    delete childElement.id;
+		    delete childElement.tempId;
+		    Database.knex(tablename).insert(childElement).exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    });
+		} else if (childElement.is_deleted) {  // delete it
+		    Database.knex(tablename).where({
+			id : childElement.id
+		    }).del().exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    })
+		} else { // an update -- even if not modified! // prolly fix this with a is_modified check.
+		    var childElementId = childElement.id;
+		    delete childElement.id;
+		    Database.knex(tablename).where({
+			id : childElementId
+		    }).update(childElement).exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    });
+		}
+
+	    }, function(err, data) {
+		if (err)
+		    updateChildElementsCallback(err);
+		updateChildElementsCallback(null, data);
+	    });
+	}
 
 	// / Updates all.. even if not modified.
-	function updateChildElements(tablename, contactId, childElements, updateChildElementsCallback) {
+	function updateAllChildElements(tablename, contactId, childElements, updateAllChildElementsCallback) {
 	    async.each(childElements, function(childElement, cb) {
 		delete childElement.$$hashKey;
 		if (childElement.id == 'new') {
@@ -423,8 +471,8 @@ module.exports = {
 
 	    }, function(err, data) {
 		if (err)
-		    updateChildElementsCallback(err);
-		updateChildElementsCallback(null, data);
+		    updateAllChildElementsCallback(err);
+		updateAllChildElementsCallback(null, data);
 	    });
 	}
 
@@ -517,82 +565,135 @@ module.exports = {
     getcontact : function(req, res) {
 	var contactId = req.body.id;
 	Database.knex
-		.raw(
-			'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`database_origin`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
-				+ contactId)
-		.exec(
-			function(err, customer) {
-			    if (err)
-				return res.json(err, 500);
-			    Database.knex
-				    .raw('SELECT * FROM dpothadd WHERE DONOR = ' + contactId)
+	    .raw(
+		'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`database_origin`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
+		    + contactId)
+	    .exec(
+		function(err, customer) {
+		    if (err)
+			return res.json(err, 500);
+		    Database.knex
+			.raw('SELECT * FROM dpothadd WHERE DONOR = ' + contactId)
+			.exec(
+			    function(err, dpothadd) {
+				if (err)
+				    return res.json(err, 500);
+				customer[0][0].otherAddresses = dpothadd[0];
+				Database.knex
+				    .raw(
+					"SELECT dtmail.*, dpcodes.DESC, maildrop.DROP_DATE, maildrop.DROP_CNT  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL AND dtmail.database_origin = dpcodes.database_origin)"
+					    + " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST) AND maildrop.database_origin = dtmail.database_origin ) WHERE DONOR = " + contactId)
 				    .exec(
-					    function(err, dpothadd) {
-						if (err)
-						    return res.json(err, 500);
-						customer[0][0].otherAddresses = dpothadd[0];
-						Database.knex
-							.raw(
-								"SELECT dtmail.*, dpcodes.DESC, maildrop.DROP_DATE, maildrop.DROP_CNT  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL AND dtmail.database_origin = dpcodes.database_origin)"
-									+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST) AND maildrop.database_origin = dtmail.database_origin ) WHERE DONOR = "
-									+ contactId)
-							.exec(
-								function(err, dtmail) {
+					function(err, dtmail) {
+					    if (err)
+						return res.json(err, 500);
+					    customer[0][0].dtmail = dtmail[0];
+
+					    Database
+						.knex('dtmajor')
+						.select('*')
+						.where({
+						    DONOR : contactId
+						})
+						.exec(
+						    function(err, dtmajor) {
+							if (err)
+							    return res.json(err, 500);
+							customer[0][0].dtmajor = dtmajor;
+							Database.knex
+							    .raw(
+								'SELECT `id`, `DONOR`, `VORIGIN`, DATE_FORMAT(`VSDATE`,"%Y-%m-%d") AS `VSDATE`, `VCATEG`, `VGRADE01`, `VGRADE02`, `VGRADE03`, `VGRADE04`, `VGRADE05`, `VGRADE06`, `VGRADE07`, `VGRADE08`, `VGRADE09`, `VGRADE10`, `VGRADE11`, `VGRADE12`, `VGRADE13`, `VGRADE14`, `VGRADE15`, `VGRADE16`, `VGRADE17`, `VGRADE18`, `VGRADE19`, `VGRADE20`, `VGRADE21`, `VGRADE22`, `VGRADE23`, `VLANOTH`, `VSPECTAL`, `VNOTES`, `database_origin`, `TSRECID`, `TSDATE`, `TSTIME`, `TSCHG`, `TSBASE`, `TSLOCAT`, `TSIDCODE` FROM `dtvols1` WHERE `DONOR` = '
+								    + contactId)
+							    .exec(
+								function(err, dtvols1) {
 								    if (err)
 									return res.json(err, 500);
-								    customer[0][0].dtmail = dtmail[0];
+								    if (dtvols1[0] && dtvols1[0][0]) {
+									customer[0][0].dtvols1 = dtvols1[0][0]; //
+									customer[0][0].dtvols1.enabled = true;
+								    } else {
+									customer[0][0].dtvols1 = null;
+								    }
 
-								    Database
-									    .knex('dtmajor')
-									    .select('*')
-									    .where({
-										DONOR : contactId
+								    Database.knex
+									.raw(
+									    'SELECT `id`,`DONOR`,`CONTPERS`,`FOLLOWUP`,`BISHPRES`,DATE_FORMAT(`LETTER1`,"%Y-%m-%d") AS `LETTER1`,DATE_FORMAT(`PHONEC1`,"%Y-%m-%d") AS `PHONEC1`,DATE_FORMAT(`LETTER2`,"%Y-%m-%d") AS `LETTER2`,DATE_FORMAT(`VISREF`,"%Y-%m-%d") AS `VISREF`,DATE_FORMAT(`VISITD`,"%Y-%m-%d") AS `VISITD`,`PERSONV1`,`PERSONV2`,`PERSONV3`,`PERSONV4`,DATE_FORMAT(`FOLUPLET`,"%Y-%m-%d") AS `FOLUPLET`,DATE_FORMAT(`FOLUPVIS`,"%Y-%m-%d") AS `FOLUPVIS`,`REPFILED`,`RESPONSE`,`BISNOTES`,`FILEDYN`,`database_origin` FROM `dtbishop` WHERE `DONOR` = '
+										+ contactId).exec(function(err, dtbishop) {
+									    if (err)
+										return res.json(err, 500);
+									    if (dtbishop[0] && dtbishop[0][0]) {
+										customer[0][0].dtbishop = dtbishop[0][0]; //
+										customer[0][0].dtbishop.enabled = true;
+									    } else {
+										customer[0][0].dtbishop = null;
+									    }
+
+									    getNotes(customer[0][0].id, function(err, notes) {
+										if (err)
+										    return res.json(err, 500);
+
+										customer[0][0].notes = notes;
+										res.json({
+										    success : 'Donor data.',
+										    contact : customer[0][0]
+										});
 									    })
-									    .exec(
-										    function(err, dtmajor) {
-											if (err)
-											    return res.json(err, 500);
-											customer[0][0].dtmajor = dtmajor;
-											Database.knex
-												.raw(
-													'SELECT `id`, `DONOR`, `VORIGIN`, DATE_FORMAT(`VSDATE`,"%Y-%m-%d") AS `VSDATE`, `VCATEG`, `VGRADE01`, `VGRADE02`, `VGRADE03`, `VGRADE04`, `VGRADE05`, `VGRADE06`, `VGRADE07`, `VGRADE08`, `VGRADE09`, `VGRADE10`, `VGRADE11`, `VGRADE12`, `VGRADE13`, `VGRADE14`, `VGRADE15`, `VGRADE16`, `VGRADE17`, `VGRADE18`, `VGRADE19`, `VGRADE20`, `VGRADE21`, `VGRADE22`, `VGRADE23`, `VLANOTH`, `VSPECTAL`, `VNOTES`, `database_origin`, `TSRECID`, `TSDATE`, `TSTIME`, `TSCHG`, `TSBASE`, `TSLOCAT`, `TSIDCODE` FROM `dtvols1` WHERE `DONOR` = '
-														+ contactId)
-												.exec(
-													function(err, dtvols1) {
-													    if (err)
-														return res.json(err, 500);
-													    if (dtvols1[0] && dtvols1[0][0]) {
-														customer[0][0].dtvols1 = dtvols1[0][0]; //
-														customer[0][0].dtvols1.enabled = true;
-													    } else {
-														customer[0][0].dtvols1 = null;
-													    }
 
-													    Database.knex
-														    .raw(
-															    'SELECT `id`,`DONOR`,`CONTPERS`,`FOLLOWUP`,`BISHPRES`,DATE_FORMAT(`LETTER1`,"%Y-%m-%d") AS `LETTER1`,DATE_FORMAT(`PHONEC1`,"%Y-%m-%d") AS `PHONEC1`,DATE_FORMAT(`LETTER2`,"%Y-%m-%d") AS `LETTER2`,DATE_FORMAT(`VISREF`,"%Y-%m-%d") AS `VISREF`,DATE_FORMAT(`VISITD`,"%Y-%m-%d") AS `VISITD`,`PERSONV1`,`PERSONV2`,`PERSONV3`,`PERSONV4`,DATE_FORMAT(`FOLUPLET`,"%Y-%m-%d") AS `FOLUPLET`,DATE_FORMAT(`FOLUPVIS`,"%Y-%m-%d") AS `FOLUPVIS`,`REPFILED`,`RESPONSE`,`BISNOTES`,`FILEDYN`,`database_origin` FROM `dtbishop` WHERE `DONOR` = ' + contactId)
-														    .exec(
-															    function(err, dtbishop) {
-																if (err)
-																    return res.json(err, 500);
-																if (dtbishop[0]
-																	&& dtbishop[0][0]) {
-																    customer[0][0].dtbishop = dtbishop[0][0]; //
-																    customer[0][0].dtbishop.enabled = true;
-																} else {
-																    customer[0][0].dtbishop = null;
-																}
-
-																res.json({
-																    success : 'Donor data.',
-																    contact : customer[0][0]
-																});
-															    });
-													});
-										    });
+									});
 								});
-					    });
-			});
+						    });
+					});
+			    });
+		});
+
+	function getNotes(contactId, cb) {
+	    async.parallel({
+		layman : function(notescallback) {
+		    Database.knex('notes').where({
+			DONOR : contactId,
+			type : 'layman'
+		    }).exec(function(err, result) {
+			if (err)
+			    return notescallback(err);
+			notescallback(null, result);
+		    });
+		},
+		ecclesiastical : function(notescallback) {
+		    Database.knex('notes').where({
+			DONOR : contactId,
+			type : 'ecclesiastical'
+		    }).exec(function(err, result) {
+			if (err)
+			    return notescallback(err);
+			notescallback(null, result);
+		    });
+		},
+		volunteer : function(notescallback) {
+		    Database.knex('notes').where({
+			DONOR : contactId,
+			type : 'volunteer'
+		    }).exec(function(err, result) {
+			if (err)
+			    return notescallback(err);
+			notescallback(null, result);
+		    });
+		},
+		orders : function(notescallback) {
+		    Database.knex('notes').where({
+			DONOR : contactId,
+			type : 'orders'
+		    }).exec(function(err, result) {
+			if (err)
+			    return notescallback(err);
+			notescallback(null, result);
+		    });
+		}
+	    }, function(err, results) {
+		if (err)
+		    return cb(err);
+		cb(null, results);
+	    })
+	}
     },
 
     ajax : function(req, res) {

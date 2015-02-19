@@ -239,7 +239,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.dtmajor = [];
 	    
 	    
-	    //ECCLESIASTICAL TAB
+	    // ECCLESIASTICAL TAB
 	    
 	    this.ecc_enabled = false;
 	    this.BIRTHDATE = null;
@@ -272,9 +272,17 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.Q22 = null;
 	    this.Q23 = null;
 	    this.EP020 = null;
-	    this.PPRIEST = null; //false?
+	    this.PPRIEST = null; // false?
 	    
+
+	    // Notes
 	    
+	    this.notes = {
+		layman :[],
+		ecclesiastical :[],
+		volunteer :[],
+		orders :[]
+	    };
 
 	    this.id = null;
 	    return this;
@@ -355,6 +363,33 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		}
 	    }
 	},
+	toggleNote : function(note){
+	    if(!note.is_deleted){  // wasn't already deleted
+		if (note.id == null) { // was new
+		    for (var i = 0; i < this.notes[note.type].length; i++) {
+			    if (this.notes[note.type][i].tempId == note.tempId) {
+				this.notes[note.type].splice(i, 1);
+				    return this.notes[note.type];
+			    }
+			}
+		} else {
+		    for (var i = 0; i < this.notes[note.type].length; i++) {
+			if (this.notes[note.type][i].id == note.id) {
+			    this.notes[note.type][i].is_deleted = true;
+			    return this.notes[note.type];
+			}
+		    }
+		}
+	    }else{  // removes isDeleted
+		for (var i = 0; i < this.notes[note.type].length; i++) {
+		    if (this.notes[note.type][i].id == element.id) {
+			delete this.notes[note.type][i].is_deleted;
+			return this.notes[note.type];
+		    }
+		}
+	    }
+	    return this.notes[note.type]; // return all notes
+	},
 	toggleDeleted : function(elementType, element) {
 	    if (!element.is_deleted) {
 		if (element.id == 'new') {
@@ -417,6 +452,11 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	 * (this[elementType][i].id == setId) { this[elementType][i].is_deleted =
 	 * true; return; } } } },
 	 */
+	addNote : function(noteType){
+	    this.notes[noteType].push({id:null, tempId : Math.floor((Math.random() * 100000) + 1), DONOR:null,type:noteType,text:null});
+	    return this.notes[noteType];
+	},
+	
 	addOtherAddress : function() {
 	    var otherAddress = {
 		id : 'new',
@@ -433,7 +473,8 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.otherAddresses.push(otherAddress);
 	    return this.otherAddresses;
 	},
-	set : function(contact) { //wierd routine.. should be abled to just directly copy.
+	set : function(contact) { // wierd routine.. should be abled to just
+				    // directly copy.
 	    var self = this;
 	    angular.forEach(contact, function(value, key) {
 
@@ -442,16 +483,24 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		}
 
 	    });
+	    
+	    
 	    if (this.dtvols1!=null) {
 		this.dtvols1.enabled = true;
 	    }else{
 		this.dtvols1 = initDtVols1; // init new one
 	    }
+	    
+	    
 	    if (this.dtbishop!=null) {
-		this.dtbishop.enabled = true; //already should come in enabled
+		this.dtbishop.enabled = true; // already should come in
+						// enabled
 	    }else{
 		this.dtbishop = initDtBishop; // init new one
 	    }
+	    
+	    
+	    
 	    self.TITLE = {
 		id : self.TITLE,
 		label : self.TITLE + '.'
@@ -487,14 +536,14 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		if ($contact.modified) {
 		    return event.preventDefault();
 		}/*
-		 * function(){ // check if user is set $rootScope.ti =
-		 * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
-		 * if($rootScope.hideLoadingBar){ setTimeout(function(){
-		 * $rootScope.hideLoadingBar();
-		 * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
-		 * },250); } event.preventDefault(); } else { // do smth
-		 * else } }
-		 */
+		     * function(){ // check if user is set $rootScope.ti =
+		     * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
+		     * if($rootScope.hideLoadingBar){ setTimeout(function(){
+		     * $rootScope.hideLoadingBar();
+		     * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
+		     * },250); } event.preventDefault(); } else { // do smth
+		     * else } }
+		     */
 
 		pl.showLoadingBar({
 		    pct : 95,

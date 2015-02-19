@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives',
-	'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2' ]);
+	'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2']);
 
 app.run(function($pageLoadingBar, $rootScope, $preloaded) {
    
@@ -515,7 +515,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	templateUrl : appHelper.templatePath('extra/members-add'),
 	resolve : {
 	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ASSETS.forms.multiSelect, ASSETS.forms.select2, ]);
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ASSETS.forms.multiSelect, ASSETS.forms.select2,]);
 	    },
 	// sssss
 	}
