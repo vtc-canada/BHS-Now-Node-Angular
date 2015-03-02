@@ -1,10 +1,25 @@
 'use strict';
 
-var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives',
-	'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2']);
+var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2' ]);
+
+app.filter('orderObjectBy', function() {
+    return function(items, field, reverse) {
+	var filtered = [];
+	angular.forEach(items, function(item,key) {
+	    item.key = key; // added the key.. later used in identifying it.
+	    filtered.push(item);
+	});
+	filtered.sort(function(a, b) {
+	    return (a[field] > b[field] ? 1 : -1);
+	});
+	if (reverse)
+	    filtered.reverse();
+	return filtered;
+    };
+});
 
 app.run(function($pageLoadingBar, $rootScope, $preloaded) {
-   
+
     $rootScope.ti = 0;
     // Page Loading Overlay
     public_vars.$pageLoadingOverlay = jQuery('.page-loading-overlay');
@@ -12,28 +27,24 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded) {
     jQuery(window).load(function() {
 	public_vars.$pageLoadingOverlay.addClass('loaded');
     });
-    
-    
-    
-    
 
     /*$rootScope.$on('$stateChangeStart',
-	    function(event, toState, toParams, fromState, fromParams){
-	        // check if user is set
+        function(event, toState, toParams, fromState, fromParams){
+            // check if user is set
         	$rootScope.ti = $rootScope.ti+1;
-	        if(false&&$rootScope.ti%2==0){
-	            if($rootScope.hideLoadingBar){
-	        	setTimeout(function(){
-		        	$rootScope.hideLoadingBar();
-		        	$('.main-content.ng-scope.is-loading').removeClass('is-loading');
-	        	},250);
-	            }
-	            event.preventDefault();
-	        } else {
-	            // do smth else
-	        }
-	    }
-	)*/
+            if(false&&$rootScope.ti%2==0){
+                if($rootScope.hideLoadingBar){
+            	setTimeout(function(){
+    	        	$rootScope.hideLoadingBar();
+    	        	$('.main-content.ng-scope.is-loading').removeClass('is-loading');
+            	},250);
+                }
+                event.preventDefault();
+            } else {
+                // do smth else
+            }
+        }
+    )*/
 });
 
 app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider, ASSETS) {
@@ -52,10 +63,33 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	    $rootScope.isLockscreenPage = false;
 	    $rootScope.isMainPage = true;
 	}
-    }).
-
-    // Dashboards
-    state('app.contacts', {
+    }).// Dashboards
+    state('app.reports', {
+	url : '/reports',
+	templateUrl : appHelper.templatePath('reports/reports'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+	    }
+	}
+    }).state('app.contacts', {
 	url : '/contacts',
 	templateUrl : appHelper.templatePath('contacts/contacts'),
 	resolve : {
@@ -77,7 +111,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
 	    },
 	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody,  ]);
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
     }).state('app.dashboard-variant-1', {
@@ -268,21 +302,18 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 		return $ocLazyLoad.load([ ASSETS.forms.colorpicker, ]);
 	    },
 	}
-    }).state(
-	    'app.forms-wizard',
-	    {
-		url : '/forms-wizard',
-		templateUrl : appHelper.templatePath('forms/form-wizard'),
-		resolve : {
-		    fwDependencies : function($ocLazyLoad) {
-			return $ocLazyLoad.load([ ASSETS.core.bootstrap, ASSETS.core.jQueryUI, ASSETS.forms.jQueryValidate, ASSETS.forms.inputmask,
-				ASSETS.forms.multiSelect, ASSETS.forms.datepicker, ASSETS.forms.selectboxit, ASSETS.forms.formWizard, ]);
-		    },
-		    formWizard : function($ocLazyLoad) {
-			return $ocLazyLoad.load([]);
-		    },
-		},
-	    }).state('app.forms-validation', {
+    }).state('app.forms-wizard', {
+	url : '/forms-wizard',
+	templateUrl : appHelper.templatePath('forms/form-wizard'),
+	resolve : {
+	    fwDependencies : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.core.bootstrap, ASSETS.core.jQueryUI, ASSETS.forms.jQueryValidate, ASSETS.forms.inputmask, ASSETS.forms.multiSelect, ASSETS.forms.datepicker, ASSETS.forms.selectboxit, ASSETS.forms.formWizard, ]);
+	    },
+	    formWizard : function($ocLazyLoad) {
+		return $ocLazyLoad.load([]);
+	    },
+	},
+    }).state('app.forms-validation', {
 	url : '/forms-validation',
 	templateUrl : appHelper.templatePath('forms/form-validation'),
 	resolve : {
@@ -515,7 +546,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	templateUrl : appHelper.templatePath('extra/members-add'),
 	resolve : {
 	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ASSETS.forms.multiSelect, ASSETS.forms.select2,]);
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ASSETS.forms.multiSelect, ASSETS.forms.select2, ]);
 	    },
 	// sssss
 	}
@@ -632,118 +663,106 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
     });
 });
 
-app
-	.constant(
-		'ASSETS',
-		{
-		    'core' : {
-			'bootstrap' : appHelper.assetPath('js/bootstrap.min.js'), // Some
-										    // plugins
-										    // which
-										    // do
-										    // not
-										    // support
-										    // angular
-										    // needs
-										    // this
+app.constant('ASSETS', {
+    'core' : {
+	'bootstrap' : appHelper.assetPath('js/bootstrap.min.js'), // Some
+	// plugins
+	// which
+	// do
+	// not
+	// support
+	// angular
+	// needs
+	// this
 
-			'jQueryUI' : [ appHelper.assetPath('js/jquery-ui/jquery-ui.min.js'), appHelper.assetPath('js/jquery-ui/jquery-ui.structure.min.css'), ],
+	'jQueryUI' : [ appHelper.assetPath('js/jquery-ui/jquery-ui.min.js'), appHelper.assetPath('js/jquery-ui/jquery-ui.structure.min.css'), ],
 
-			'moment' : appHelper.assetPath('js/moment.min.js'),
+	'moment' : appHelper.assetPath('js/moment.min.js'),
 
-			'googleMapsLoader' : appHelper.assetPath('app/js/angular-google-maps/load-google-maps.js')
-		    },
+	'googleMapsLoader' : appHelper.assetPath('app/js/angular-google-maps/load-google-maps.js')
+    },
 
-		    'charts' : {
+    'charts' : {
 
-			'dxGlobalize' : appHelper.assetPath('js/devexpress-web-14.1/js/globalize.min.js'),
-			'dxCharts' : appHelper.assetPath('js/devexpress-web-14.1/js/dx.chartjs.js'),
-			'dxVMWorld' : appHelper.assetPath('js/devexpress-web-14.1/js/vectormap-data/world.js'),
-		    },
+	'dxGlobalize' : appHelper.assetPath('js/devexpress-web-14.1/js/globalize.min.js'),
+	'dxCharts' : appHelper.assetPath('js/devexpress-web-14.1/js/dx.chartjs.js'),
+	'dxVMWorld' : appHelper.assetPath('js/devexpress-web-14.1/js/vectormap-data/world.js'),
+    },
 
-		    'xenonLib' : {
-			notes : appHelper.assetPath('js/xenon-notes.js'),
-		    },
+    'xenonLib' : {
+	notes : appHelper.assetPath('js/xenon-notes.js'),
+    },
 
-		    'maps' : {
+    'maps' : {
 
-			'vectorMaps' : [ appHelper.assetPath('js/jvectormap/jquery-jvectormap-1.2.2.min.js'),
-				appHelper.assetPath('js/jvectormap/regions/jquery-jvectormap-world-mill-en.js'),
-				appHelper.assetPath('js/jvectormap/regions/jquery-jvectormap-it-mill-en.js'), ],
-		    },
+	'vectorMaps' : [ appHelper.assetPath('js/jvectormap/jquery-jvectormap-1.2.2.min.js'), appHelper.assetPath('js/jvectormap/regions/jquery-jvectormap-world-mill-en.js'), appHelper.assetPath('js/jvectormap/regions/jquery-jvectormap-it-mill-en.js'), ],
+    },
 
-		    'icons' : {
-			'meteocons' : appHelper.assetPath('css/fonts/meteocons/css/meteocons.css'),
-			'elusive' : appHelper.assetPath('css/fonts/elusive/css/elusive.css'),
-		    },
+    'icons' : {
+	'meteocons' : appHelper.assetPath('css/fonts/meteocons/css/meteocons.css'),
+	'elusive' : appHelper.assetPath('css/fonts/elusive/css/elusive.css'),
+    },
 
-		    'tables' : {
-			'scrollTableBody' : appHelper.assetPath('js/jquery-scrolltablebody/jquery.scrollTableBody-1.0.0.js'), 
-			'rwd' : appHelper.assetPath('js/rwd-table/js/rwd-table.js'),
+    'tables' : {
+	'scrollTableBody' : appHelper.assetPath('js/jquery-scrolltablebody/jquery.scrollTableBody-1.0.0.js'),
+	'rwd' : appHelper.assetPath('js/rwd-table/js/rwd-table.js'),
 
-			'datatables' : [ appHelper.assetPath('js/datatables/dataTables.bootstrap.css'),
-				appHelper.assetPath('js/datatables/datatables-angular.js'), ],
+	'datatables' : [ appHelper.assetPath('js/datatables/dataTables.bootstrap.css'), appHelper.assetPath('js/datatables/datatables-angular.js'), ],
 
-		    },
+    },
 
-		    'forms' : {
+    'forms' : {
 
-			'select2' : [ appHelper.assetPath('js/select2/select2.css'), appHelper.assetPath('js/select2/select2-bootstrap.css'),
+	'select2' : [ appHelper.assetPath('js/select2/select2.css'), appHelper.assetPath('js/select2/select2-bootstrap.css'),
 
-			appHelper.assetPath('js/select2/select2.min.js'), ],
+	appHelper.assetPath('js/select2/select2.min.js'), ],
 
-			'daterangepicker' : [ appHelper.assetPath('js/daterangepicker/daterangepicker-bs3.css'),
-				appHelper.assetPath('js/daterangepicker/daterangepicker.js'), ],
+	'daterangepicker' : [ appHelper.assetPath('js/daterangepicker/daterangepicker-bs3.css'), appHelper.assetPath('js/daterangepicker/daterangepicker.js'), ],
 
-			'colorpicker' : appHelper.assetPath('js/colorpicker/bootstrap-colorpicker.min.js'),
+	'colorpicker' : appHelper.assetPath('js/colorpicker/bootstrap-colorpicker.min.js'),
 
-			'selectboxit' : appHelper.assetPath('js/selectboxit/jquery.selectBoxIt.js'),
+	'selectboxit' : appHelper.assetPath('js/selectboxit/jquery.selectBoxIt.js'),
 
-			'tagsinput' : appHelper.assetPath('js/tagsinput/bootstrap-tagsinput.min.js'),
+	'tagsinput' : appHelper.assetPath('js/tagsinput/bootstrap-tagsinput.min.js'),
 
-			'datepicker' : appHelper.assetPath('js/datepicker/bootstrap-datepicker.js'),
+	'datepicker' : appHelper.assetPath('js/datepicker/bootstrap-datepicker.js'),
 
-			'timepicker' : appHelper.assetPath('js/timepicker/bootstrap-timepicker.min.js'),
+	'timepicker' : appHelper.assetPath('js/timepicker/bootstrap-timepicker.min.js'),
 
-			'inputmask' : appHelper.assetPath('js/inputmask/jquery.inputmask.bundle.js'),
+	'inputmask' : appHelper.assetPath('js/inputmask/jquery.inputmask.bundle.js'),
 
-			'formWizard' : appHelper.assetPath('js/formwizard/jquery.bootstrap.wizard.min.js'),
+	'formWizard' : appHelper.assetPath('js/formwizard/jquery.bootstrap.wizard.min.js'),
 
-			'jQueryValidate' : appHelper.assetPath('js/jquery-validate/jquery.validate.min.js'),
+	'jQueryValidate' : appHelper.assetPath('js/jquery-validate/jquery.validate.min.js'),
 
-			'dropzone' : [ appHelper.assetPath('js/dropzone/css/dropzone.css'), appHelper.assetPath('js/dropzone/dropzone.min.js'), ],
+	'dropzone' : [ appHelper.assetPath('js/dropzone/css/dropzone.css'), appHelper.assetPath('js/dropzone/dropzone.min.js'), ],
 
-			'typeahead' : [ appHelper.assetPath('js/typeahead.bundle.js'), appHelper.assetPath('js/handlebars.min.js'), ],
+	'typeahead' : [ appHelper.assetPath('js/typeahead.bundle.js'), appHelper.assetPath('js/handlebars.min.js'), ],
 
-			'multiSelect' : [ appHelper.assetPath('js/multiselect/css/multi-select.css'),
-				appHelper.assetPath('js/multiselect/js/jquery.multi-select.js'), ],
+	'multiSelect' : [ appHelper.assetPath('js/multiselect/css/multi-select.css'), appHelper.assetPath('js/multiselect/js/jquery.multi-select.js'), ],
 
-			'icheck' : [ appHelper.assetPath('js/icheck/skins/all.css'), appHelper.assetPath('js/icheck/icheck.min.js'), ],
+	'icheck' : [ appHelper.assetPath('js/icheck/skins/all.css'), appHelper.assetPath('js/icheck/icheck.min.js'), ],
 
-			'bootstrapWysihtml5' : [ appHelper.assetPath('js/wysihtml5/src/bootstrap-wysihtml5.css'),
-				appHelper.assetPath('js/wysihtml5/wysihtml5-angular.js') ],
-		    },
+	'bootstrapWysihtml5' : [ appHelper.assetPath('js/wysihtml5/src/bootstrap-wysihtml5.css'), appHelper.assetPath('js/wysihtml5/wysihtml5-angular.js') ],
+    },
 
-		    'uikit' : {
-			'base' : [ appHelper.assetPath('js/uikit/uikit.css'), appHelper.assetPath('js/uikit/css/addons/uikit.almost-flat.addons.min.css'),
-				appHelper.assetPath('js/uikit/js/uikit.min.js'), ],
+    'uikit' : {
+	'base' : [ appHelper.assetPath('js/uikit/uikit.css'), appHelper.assetPath('js/uikit/css/addons/uikit.almost-flat.addons.min.css'), appHelper.assetPath('js/uikit/js/uikit.min.js'), ],
 
-			'codemirror' : [ appHelper.assetPath('js/uikit/vendor/codemirror/codemirror.js'),
-				appHelper.assetPath('js/uikit/vendor/codemirror/codemirror.css'), ],
+	'codemirror' : [ appHelper.assetPath('js/uikit/vendor/codemirror/codemirror.js'), appHelper.assetPath('js/uikit/vendor/codemirror/codemirror.css'), ],
 
-			'marked' : appHelper.assetPath('js/uikit/vendor/marked.js'),
-			'htmleditor' : appHelper.assetPath('js/uikit/js/addons/htmleditor.min.js'),
-			'nestable' : appHelper.assetPath('js/uikit/js/addons/nestable.min.js'),
-		    },
+	'marked' : appHelper.assetPath('js/uikit/vendor/marked.js'),
+	'htmleditor' : appHelper.assetPath('js/uikit/js/addons/htmleditor.min.js'),
+	'nestable' : appHelper.assetPath('js/uikit/js/addons/nestable.min.js'),
+    },
 
-		    'extra' : {
-			'tocify' : appHelper.assetPath('js/tocify/jquery.tocify.min.js'),
+    'extra' : {
+	'tocify' : appHelper.assetPath('js/tocify/jquery.tocify.min.js'),
 
-			'toastr' : appHelper.assetPath('js/toastr/toastr.min.js'),
+	'toastr' : appHelper.assetPath('js/toastr/toastr.min.js'),
 
-			'fullCalendar' : [ appHelper.assetPath('js/fullcalendar/fullcalendar.min.css'),
-				appHelper.assetPath('js/fullcalendar/fullcalendar.min.js'), ],
+	'fullCalendar' : [ appHelper.assetPath('js/fullcalendar/fullcalendar.min.css'), appHelper.assetPath('js/fullcalendar/fullcalendar.min.js'), ],
 
-			'cropper' : [ appHelper.assetPath('js/cropper/cropper.min.js'), appHelper.assetPath('js/cropper/cropper.min.css'), ]
-		    }
-		});
+	'cropper' : [ appHelper.assetPath('js/cropper/cropper.min.js'), appHelper.assetPath('js/cropper/cropper.min.css'), ]
+    }
+});

@@ -190,8 +190,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
     /*
      * $scope.isRowDeletedAndFocused = function(row){ return (row.tempId ==
-     * $scope.selectedTransaction.tempId && row.tempId != null) ||
-     * (row.id == $scope.selectedTransaction.id && row.id != 'new'); }
+     * $scope.selectedTransaction.tempId && row.tempId != null) || (row.id ==
+     * $scope.selectedTransaction.id && row.id != 'new'); }
      */
     $scope.isRowFocused = function(row) {
 	if ($scope.selectedTransaction == null) {
@@ -258,8 +258,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.deleteNote = function(note) {
-	if(note.id==null){
-	   $contact.toggleNote(note);
+	if (note.id == null) {
+	    $contact.toggleNote(note);
 	}
     }
 
@@ -273,9 +273,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.modifyNote = function($event, note) {
 	note.focused = true;
 	note.modify_text = note.text == null ? '' : note.text;
-	$timeout(function(){
+	$timeout(function() {
 	    $($event.currentTarget).parent().parent().find('textarea').focus();
-	},0);
+	}, 0);
     }
     $scope.saveNote = function(note) {
 	note.focused = false;
@@ -591,11 +591,93 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		alert('err!');
 	    });
 	    /*
-	     * $scope.titles = [{ //create a new object id: 'Mr', label:
-	     * 'Mr.' }, { id: 'Mrs', label: 'Mrs.' }];
+	     * $scope.titles = [{ //create a new object id: 'Mr', label: 'Mr.' }, {
+	     * id: 'Mrs', label: 'Mrs.' }];
 	     */
 	}
     })()
+}).controller('ReportSearch', function($scope, $rootScope, $reports, $reportselects, $sails) {
+    var vm = this;
+    vm.$scope = $scope;
+    $scope.reports = $reports;
+    $scope.report = $reports[0];
+    angular.forEach($scope.report.parameters, function(parameter) {
+	parameter.value = '2015-01-01';
+    });
+
+    $scope.report_id = $scope.report.id; // first ID
+    $rootScope.report = $scope.report; // links report through $rootScope.
+
+    $scope.$watch('report', function(event,b,c) {
+	if (vm.updateTable) {
+	    clearTimeout(vm.updateTable(event));
+	}
+	vm.updateTable = function(event) {
+	    setTimeout(function() {
+		// $rootScope.updateContactsTable();
+		//alert('searchReports');
+	    }, 300);
+	}
+    }, true);
+
+    $scope.selectArray = function(parameter) {
+	var svm = this;
+	svm.ajax_results = svm.ajax_results||[];
+	svm.parents = svm.parents||[];
+	
+	if(parameter.source){//}&&typeof(svm.source)=='undefined'){  // means its simply some source - just load it once.
+	    //svm.source = true; // flag as loaded
+	    //svm.data = 
+	    return $reportselects[parameter.source];
+	}
+	
+	
+	/// Otherwise, we assume it's an ajax source.
+	if(parameter.parents&&deepCheckParentValues()){ // if parents, and changed.. does local cache updates and checks if it indeed changed.
+	    
+	    $sails.get(parameter.url,{params : svm.parents},function(result){
+		//return svm.array;
+//alert(result);
+		svm.ajax_results = result;
+		$scope.report.parameters[parameter.key].value = null;
+		
+	    });
+	}
+	return svm.ajax_results;  // returns this variable- we will set this after in async callback.- thus updating it.
+	
+	
+	function deepCheckParentValues(){
+	    var changed = false;
+	    for(var i = 0; i< parameter.parents.length;i++){
+		if(typeof(svm.parents[i])=='undefined'||svm.parents[i] != vm.$scope.report.parameters[parameter.parents[i]].value){
+		    svm.parents[i] = vm.$scope.report.parameters[parameter.parents[i]].value;
+		    changed = true;
+		}
+	    }
+	    return changed;
+	}    
+	    
+	if (typeof (svm.array) == 'undefined') {
+	    svm.array = [ {
+		id : 0,
+		label : 'A'
+	    }, {
+		id : 1,
+		label : 'B'
+	    }, {
+		id : 2,
+		label : 'C'
+	    } ];
+	}
+	if(parameter.source){
+	    return svm.data;
+	}
+	//else{
+	    return svm.array;
+	//}
+
+    }
+
 }).controller('ContactsSearch', function($scope, $rootScope) {
     var vm = this;
 

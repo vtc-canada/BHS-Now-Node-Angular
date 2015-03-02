@@ -1,0 +1,39 @@
+<page-title ng-if="layoutOptions.pageTitles" title="Reports" description="Some text"></page-title>
+			
+<div class="row" ng-controller="ReportSearch">
+	<div class="col-sm-12">
+		<div class="panel panel-default collapsed">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="linecons-search"></i>&nbspSearch Filter</h3>
+			</div>
+			<div class="panel-body always-visible">
+
+				<form role="form" class="form-horizontal" role="form">
+					
+					<div class="form-group" >
+						<label class="col-sm-2 control-label" for="report_id">Report Type</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" ng-options="report.id as report.name.locale_label.en for report in reports" ng-model="report_id"></select2>
+						</div>
+					</div>
+					<div class="form-group" ng-repeat="parameter in report.parameters | orderObjectBy : 'order':false">
+						<div class="col-sm-2 control-label">{{parameter.locale_label.en}}</div>
+						<div ng-if="parameter.type == 'datetime'" class="col-sm-10 control-label">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="datetime" ng-model="parameter.value">
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+						<div ng-if="parameter.type == 'select'" class="col-sm-10 control-label">
+							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value"></select2>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
