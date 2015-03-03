@@ -1,25 +1,28 @@
-<page-title ng-if="layoutOptions.pageTitles" title="Reports" description="Some text"></page-title>
+<page-title ng-if="layoutOptions.pageTitles" title="Reports" description=""></page-title>
 			
 <div class="row" ng-controller="ReportSearch">
 	<div class="col-sm-12">
 		<div class="panel panel-default collapsed">
 			<div class="panel-heading">
-				<h3 class="panel-title"><i class="linecons-search"></i>&nbspSearch Filter</h3>
+				<h3 class="panel-title"><i class="fa-sliders"></i>&nbsp&nbspReport Selection</h3>
+				<div class="pull-right isn-panel-pull-right">
+					<div class="pull-right btn btn-secondary" ng-click="runReport();">Run Report<span ng-show="report.loading">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+				</div>
 			</div>
 			<div class="panel-body always-visible">
 
 				<form role="form" class="form-horizontal" role="form">
 					
 					<div class="form-group" >
-						<label class="col-sm-2 control-label" for="report_id">Report Type</label>
+						<label class="col-sm-3 control-label" for="report_id">Report Type</label>
 
-						<div class="col-sm-10">
+						<div class="col-sm-5">
 							<select2 class="form-control" ng-options="report.id as report.name.locale_label.en for report in reports" ng-model="report_id"></select2>
 						</div>
 					</div>
-					<div class="form-group" ng-repeat="parameter in report.parameters | orderObjectBy : 'order':false">
-						<div class="col-sm-2 control-label">{{parameter.locale_label.en}}</div>
-						<div ng-if="parameter.type == 'datetime'" class="col-sm-10 control-label">
+					<div class="form-group" ng-repeat="parameter in report.parameters | orderObjectBy : 'order':false" ng-hide="parameter.hidden">
+						<div class="col-sm-3 control-label">{{parameter.locale_label.en}}</div>
+						<div ng-if="parameter.type == 'datetime'" class="col-sm-5 control-label">
 							<div class="input-group">
 								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="datetime" ng-model="parameter.value">
 								<div class="input-group-addon">
@@ -27,13 +30,37 @@
 								</div>
 							</div>
 						</div>
-						<div ng-if="parameter.type == 'select'" class="col-sm-10 control-label">
+						<div ng-if="parameter.type == 'select'" class="col-sm-5 control-label">
 							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value"></select2>
 						</div>
+						<div ng-if="parameter.type == 'text'" class="col-sm-5 control-label">
+							<input type="text" class="form-control" name="contact.RELIGIOUS" ng-model="parameter.value" >
+						</div>
 					</div>
+					
 				</form>
 			</div>
 		</div>
 	</div>
+	
+	<div class="col-sm-12" ng-show="reporthtml">
+		<div class="panel panel-default collapsed">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa-file-o"></i>&nbsp&nbsp{{report.name.locale_label.en}}</h3>
+				<div class="pull-right isn-panel-pull-right">
+					<div class="btn btn-secondary" ng-click="printReport()">Print</div>
+				</div>
+				<div class="pull-right isn-panel-pull-right pull-right-stack">
+					<div class="btn btn-secondary" ng-click="saveReport()">Save</div>
+				</div>
+			</div>
+			<div class="panel-body always-visible">
+				<div class="col-sm-12" ng-bind-html="reporthtml">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </div>
 

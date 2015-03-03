@@ -178,7 +178,17 @@ module.exports = {
 			return callback(err);
 		    callback(null, results);
 		});
-	    },
+	    }
+	    /*,
+	    donor_classes : function(callback){
+		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		    FIELD : 'CLASS'
+		}).select().exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    }*/,
 	    willsaymass : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'SAYMASS'
@@ -718,10 +728,41 @@ module.exports = {
 		    selectIds.andWhere(Database.knex.raw('dp.id = ?', [ req.body.contact.id ]));
 		}
 	    }
+	    if(req.body.contact.ADD!=null&&req.body.contact.ADD!=''){
+		selectIds.andWhere(Database.knex.raw('dp.ADD = ?', [ req.body.contact.ADD ]));
+	    }
+	    if(req.body.contact.CITY!=null&&req.body.contact.CITY!=''){
+		selectIds.andWhere(Database.knex.raw('dp.CITY = ?', [ req.body.contact.CITY ]));
+	    }
+	    if(req.body.contact.ST!=null&&req.body.contact.ST!=''){
+		selectIds.andWhere(Database.knex.raw('dp.ST = ?', [ req.body.contact.ST ]));
+	    }
+	    if(req.body.contact.COUNTRY!=null&&req.body.contact.COUNTRY!=''){
+		selectIds.andWhere(Database.knex.raw('dp.COUNTRY = ?', [ req.body.contact.COUNTRY ]));
+	    }
+	    if(req.body.contact.ZIP!=null&&req.body.contact.ZIP!=''){
+		selectIds.andWhere(Database.knex.raw('dp.ZIP = ?', [ req.body.contact.ZIP ]));
+	    }
+	    if(req.body.contact.CHECKBOX!=null&&req.body.contact.CHECKBOX=='Y'){
+		selectIds.andWhere(Database.knex.raw('dp.database_origin = 3'));
+	    }
+	    if(req.body.contact.CHECKBOX!=null&&req.body.contact.CHECKBOX=='N'){
+		selectIds.andWhere(Database.knex.raw('dp.database_origin != 3'));
+	    }
+	    if(req.body.contact.CLASS!=null&&req.body.contact.CLASS.length>0){
+		var passtring = '';
+		for(var i=0;i<req.body.contact.CLASS.length;i++){
+		    if(passtring!=''){
+			passtring += ','
+		    }
+		    passtring += "'"+req.body.contact.CLASS[i]+"'";
+		}
+		selectIds.andWhere(Database.knex.raw("dp.CLASS IN ("+passtring+")"));
+	    }
 	}
 
 	// Select Data
-	Database.knex.select('dp.id', 'FNAME', 'LNAME').from(function() {
+	Database.knex.select('dp.id', 'dp.FNAME', 'dp.LNAME', 'dp.ADD', 'dp.CITY', 'dp.ST','dp.COUNTRY', 'dp.ZIP').from(function() {
 	    var selectIds = this.select('id').from('dp');
 	    // WHERE's
 	    doWheres(selectIds);

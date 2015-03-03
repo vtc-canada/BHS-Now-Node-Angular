@@ -4,7 +4,7 @@ html{
 
 
 .sidebar-menu .logo-env {
-	padding: 10px 10px;
+	padding: 10px 30px;
 	border-bottom: 1px solid #313437;
 }
 
@@ -140,4 +140,75 @@ table.dataTable{
 	.col-md-mid{
 		margin-bottom:5px;
 	}
+}
+
+.report-data-wrapper  table{
+	font-size:12px;
+}
+
+.report-data-wrapper  table tbody td{
+	vertical-align:middle;
+	white-space: nowrap;
+	word-wrap: normal;
+}
+.report-data-wrapper  table thead td, .report-data-wrapper  table thead th{
+	vertical-align:bottom;
+	word-break: normal;
+}
+
+.isn-panel-pull-right{
+	
+}
+
+.isn-panel-pull-right div.btn{
+	margin-bottom:0px;
+}
+
+
+/* Panel Stylings */
+
+.panel .panel-heading {
+	padding-bottom: 8px;
+}
+
+
+.panel .panel-heading>.panel-title {
+	line-height: 33px;
+}
+
+
+footer.main-footer {
+	padding: 15px 10px ;
+}
+
+footer .inner-footer-wrapper{
+	max-width: 334px;
+	margin: auto;
+	
+}
+
+footer.main-footer .footer-text {
+	width:100%;
+}
+
+footer.main-footer .go-up {
+	position: absolute;
+	right: 10px;
+}
+
+nav.user-info-navbar{
+	min-height:77px;
+}
+
+ul.nav-tabs li{
+	font-weight:bold;
+}
+
+
+.pull-right-select-wrapper{
+	width:180px;
+}
+
+.panel .panel-body {
+	color: #242424;
 }

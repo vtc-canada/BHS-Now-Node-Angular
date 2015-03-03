@@ -1,4 +1,4 @@
-<page-title ng-if="layoutOptions.pageTitles" title="Contacts" description="Some text"></page-title>
+<page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
 <script type="text/ng-template" id="edit-dtmail-modal">
 	<div class="modal-header">
@@ -35,17 +35,26 @@
 	<div class="col-sm-12">
 		<div class="panel panel-default collapsed">
 			<div class="panel-heading">
-				<h3 class="panel-title"><i class="linecons-search"></i>&nbspSearch Filter</h3>
+				<h3 class="panel-title"><i class="linecons-search"></i>&nbsp&nbspSearch Filter</h3>
+				<div class="pull-right isn-panel-pull-right">
+					<div class="btn btn-primary " ng-click="">Clear</div>
+				</div>
+				<div class="pull-right pull-right-stack isn-panel-pull-right">
+					<div class="btn btn-secondary" ng-click="">Save</div>
+				</div>
+				<div class="pull-right pull-right-stack isn-panel-pull-right">
+					<div class="btn btn-secondary" ng-click="">Choose</div>
+				</div>
 			</div>
 			<div class="panel-body always-visible">
 
 				<form role="form" class="form-horizontal" role="form">
 
 					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact_id">Donor #</label>
+						<label class="col-sm-2 control-label" for="contact_id">Donor</label>
 
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact_id" ng-model="contact.id" ng-model-options="" placeholder="Donor #">
+							<input type="text" class="form-control" id="contact_id" ng-model="contact.id" ng-model-options="" placeholder="Donor #, First name or Last name">
 						</div>
 					</div>
 
@@ -65,12 +74,57 @@
 				<form role="form" class="form-horizontal" role="form">
 
 					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact_id2">Donor 2#</label>
+						<label class="col-sm-2 control-label" for="contact.ADD">Address</label>
 
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact_id2" ng-model="contact.donor2" ng-model-options="" placeholder="Donor 2#">
+							<input type="text" class="form-control" id="contact.ADD" ng-model="contact.ADD" ng-model-options="" placeholder="">
 						</div>
 					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CITY">City</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.CITY" ng-model="contact.CITY" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.ST">State</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.ST" ng-model="contact.ST" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.COUNTRY">Country</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.COUNTRY" ng-model="contact.COUNTRY" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.ZIP">Zip</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.ZIP" ng-model="contact.ZIP" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CHECKBOX">Ecclesiastical:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.CHECKBOX" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.CHECKBOX"></select2>
+						</div>
+					</div>	
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CLASS">Donor Class:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
+						</div>
+					</div>	
+
+
+
 
 				</form>
 			</div>
@@ -81,16 +135,12 @@
 
 <div class="panel panel-default" ng-controller="ContactsDatatable as showCase">
 	<div class="panel-heading">
-		<h3 class="panel-title">Contacts</h3>
-		
-		<div class="panel-options">
-			<a href="" data-toggle="panel">
-				<span class="collapse-icon">&ndash;</span>
-				<span class="expand-icon">+</span>
-			</a>
-			<a href="" data-toggle="remove">
-				&times;
-			</a>
+		<h3 class="panel-title"><i class="fa-users"></i>&nbsp&nbspContacts</h3>
+		<div class="pull-right isn-panel-pull-right">
+			<div class="btn btn-secondary" ng-click="">New</div>
+		</div>
+		<div class="pull-right pull-right-stack isn-panel-pull-right">
+			<div class="btn btn-secondary" ng-class="" ng-click="">Export List</div>
 		</div>
 	</div>
 	{{message}}
@@ -98,9 +148,14 @@
 		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="focus-on row-border hover table table-striped table-bordered">
 	        <thead>
 	        	<tr>
-					<th>Name</th>
+					<th>id</th>
 					<th>firstName</th>
 					<th>lastName</th>
+					<th>address</th>
+					<th>city</th>
+					<th>state</th>
+					<th>country</th>
+					<th>zip</th>
 				</tr>
 	        </thead>
 	        <tbody></tbody>
@@ -112,10 +167,10 @@
 <div class="row" ng-controller="ContactSections">
 	
 	<div ng-if="contact.id" class="col-md-12">
-		<tabset class="nav-tabs-justified">
-			<tab heading="Layman Info" id="layman_tab">
+		<tabset class="nav-tabs">
+			<tab heading="Layman" id="layman_tab">
 				<form role="form" id="layman" class="form-horizontal validate">
-					<div class="row">
+					<!--<div class="row">
 						<div class="col-xs-12">
 							<div class="pull-right">
 								<button type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save</button>
@@ -124,82 +179,86 @@
 								Changes Pending
 							</div>
 						</div>
-					</div>
+					</div>-->
 					<div class="row">
-						<div class="col-md-7">
+						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Contact Information</h3>
+									
+									<div class="pull-right isn-panel-pull-right">
+										<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save</div>
+									</div>
+									<div ng-show="contact.is_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+										Changes Pending
+									</div>
 								</div>
 								<div class="panel-body">
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_last_name">Last Name:</label>
+										<label class="col-sm-5 control-label" for="contact_last_name">Last Name:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact_last_name" id="contact_last_name" ng-model="contact.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_first_name">First Name:</label>
-										<div class="col-sm-7 col-sm-offset-1">
+										<label class="col-sm-5 control-label" for="contact_first_name">First Name:</label>
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact_first_name" id="contact_first_name" ng-model="contact.FNAME" ng-model-options="" placeholder="">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label">Title:</label>
+										<label class="col-sm-5 control-label">Title:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<select class="form-control" ng-options="title.label for title in titles track by title.id" ng-model="contact.TITLE"></select>
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label">Salutation:</label>
+										<label class="col-sm-5 control-label">Salutation:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact.SAL" ng-model="contact.SAL" ng-model-options="" placeholder="">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label">Suffix:</label>
+										<label class="col-sm-5 control-label">Suffix:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact.SUFF" ng-model="contact.SUFF" ng-model-options="" placeholder="">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_PTITLE">Professional Title:</label>
+										<label class="col-sm-5 control-label" for="contact_PTITLE">Professional Title:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact_PTITLE" id="contact_PTITLE" ng-model="contact.PTITLE" >
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_SECLN">Optional Title:</label>
+										<label class="col-sm-5 control-label" for="contact_SECLN">Optional Title:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact_SECLN" id="contact_SECLN" ng-model="contact.SECLN">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_NOMAIL">Do Not Send Mail:</label>
+										<label class="col-sm-5 control-label" for="contact_NOMAIL">Do Not Send Mail:</label>
 				
-										<div class="col-sm-7 col-sm-offset-1">
+										<div class="col-sm-7">
 											<input type="checkbox" class="form-control iswitch iswitch-danger" name="contact_NOMAIL" ng-checked="contact.NOMAIL" ng-model="contact.NOMAIL">
 											
 										</div>
 									</div>		
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact_CALL">Do Not Call:</label>
-										<div class="col-sm-7 col-sm-offset-1">
+										<label class="col-sm-5 control-label" for="contact_CALL">Do Not Call:</label>
+										<div class="col-sm-7">
 											<input type="checkbox" class="form-control iswitch iswitch-danger" name="contact_CALL" ng-checked="contact.CALL" ng-model="contact.CALL">
 										</div>
 									</div>								
 									
 								</div>
 							</div>
-						</div>
-						<div class="col-md-5">
-							bcde
 						</div>
 					</div>
 					<div class="row">
@@ -307,10 +366,8 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Alternate Address</h3>
-									</div>
-									<div class="pull-right inline-pull-right-button">
+									<h3 class="panel-title">Alternate Address</h3>
+									<div class="pull-right  isn-panel-pull-right"> 
 										<div class="btn btn-primary" ng-click="addOtherAddress()">Add Address</div>
 									</div>
 								</div>
@@ -366,9 +423,7 @@
 						<div class="col-md-6">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Other Information</h3>
-									</div>
+									<h3 class="panel-title">Other Information</h3>
 								</div>
 								<div class="panel-body">
 									<div class="row">
@@ -437,9 +492,7 @@
 						<div class="col-md-6">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Languages</h3>
-									</div>
+									<h3 class="panel-title">Languages</h3>
 								</div>
 								<div class="panel-body">
 									<div class="row">
@@ -468,9 +521,7 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Mailing Information</h3>
-									</div>
+									<h3 class="panel-title">Mailing Information</h3>
 								</div>
 								<div class="panel-body">
 									<div class="row">
@@ -545,9 +596,16 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Interactions / Transactions</h3>
+									<h3 class="panel-title">Interactions / Transactions</h3>
+									
+									<div class="pull-right  pull-right-select-wrapper">
+										<select2 class="form-control" ng-options="title.id as title.label for title in transaction_types" ng-model="transaction_type"></select2>
 									</div>
+									<div class="pull-right  pull-right-stack pull-right" >
+										
+										<label class="control-label" for="">Transaction Types:</label>
+									</div>
+													
 								</div>
 								<div class="panel-body">
 									<div class="table-transactions">
@@ -595,11 +653,9 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Major Pledges and Donations</h3>
-									</div>
-									<div class="pull-right inline-pull-right-button">
-										<div class="btn btn-primary" ng-click="addNewDtMajor()">Add Donation</div>
+									<h3 class="panel-title">Major Pledges and Donations</h3>
+									<div class="pull-right  isn-panel-pull-right">
+										<div class="btn btn-primary" ng-click="addNewDtMajor()">Add Major Donation</div>
 									</div>
 								</div>
 								<div class="panel-body">
@@ -739,11 +795,9 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<div class="pull-left">
-										<h3 class="panel-title">Notes</h3>
-									</div>
-									<div class="pull-right inline-pull-right-button">
-										<div class="btn btn-primary" ng-click="addNote('layman')">Add Address</div>
+									<h3 class="panel-title">Notes</h3>
+									<div class="pull-right  isn-panel-pull-right">
+										<div class="btn btn-primary" ng-click="addNote('layman')">Add Note</div>
 									</div>
 								</div>
 								<div class="panel-body">
@@ -776,7 +830,7 @@
 				</form>	
 			</tab>
 			
-			<tab heading="Ecclesiastical Info" id="ecclesiastical_tab">
+			<tab heading="Ecclesiastical" id="ecclesiastical_tab">
 				<form role="form" id="ecclesiastical"class="form-horizontal validate">
 					<div class="row">
 						<div class="col-xs-6">
@@ -1134,7 +1188,7 @@
 									<div class="pull-left">
 										<h3 class="panel-title">Bishop Lobbying</h3>
 									</div>
-									<div class="pull-right inline-pull-right-button">
+									<div class="pull-right ">
 										<input type="checkbox" ng-disabled="contact.ecc_enabled == false" class="form-control iswitch iswitch-primary" name="contact.dtbishop.enabled" ng-checked="contact.dtbishop.enabled" ng-model="contact.dtbishop.enabled">
 									</div>
 								</div>
@@ -1639,7 +1693,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							bcde
+							
 						</div>
 					</div>
 				</form>
@@ -1682,7 +1736,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							bcde
+							
 						</div>
 					</div>
 				</form>

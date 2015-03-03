@@ -429,6 +429,28 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    id : 'N',
 		    label : 'No'
 		} ];
+		
+		$scope.transaction_type = 1;
+		
+		$scope.transaction_types = [ {
+		    id : 1,
+		    label : 'Mail'
+		},{
+		    id : 2,
+		    label : 'Gift'
+		}, {
+		    id : 3,
+		    label : 'Pledge'
+		}, {
+		    id : 4,
+		    label : 'Other'
+		}, {
+		    id : 5,
+		    label : 'Misc'
+		}, {
+		    id : 6,
+		    label : 'Myst'
+		} ];
 
 		$scope.staticyesnounknown = [ {
 		    id : 'Y',
@@ -440,6 +462,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    id : 'N',
 		    label : 'No'
 		} ];
+		
+	/*for (var i = 0; i < data.donor_classes.length; i++) {
+		    $scope.donor_classes.push({
+			id : data.donor_classes[i].CODE,
+			label : data.donor_classes[i].CODE + " - " + data.donor_classes[i].DESC
+		    });
+		}*/
 
 		/*
 		 * angular.forEach(data.result,function(atts,key){
@@ -596,86 +625,95 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	     */
 	}
     })()
-}).controller('ReportSearch', function($scope, $rootScope, $reports, $reportselects, $sails) {
+}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $http, $reports, $reportselects, $sails) {
     var vm = this;
     vm.$scope = $scope;
     $scope.reports = $reports;
     $scope.report = $reports[0];
-    angular.forEach($scope.report.parameters, function(parameter) {
-	parameter.value = '2015-01-01';
+    $scope.reporthtml = null;
+    angular.forEach($scope.report.parameters, function(parameter, key) {
+	if (parameter.type == 'datetime') {
+	    parameter.value = '2013-01-01';
+	}
+	if (key == 'end_time') {
+	    parameter.value = '2013-01-03';
+	}
     });
 
     $scope.report_id = $scope.report.id; // first ID
     $rootScope.report = $scope.report; // links report through $rootScope.
 
-    $scope.$watch('report', function(event,b,c) {
+    // Watch report -
+    $scope.$watch('report', function(event, b, c) {
 	if (vm.updateTable) {
 	    clearTimeout(vm.updateTable(event));
 	}
 	vm.updateTable = function(event) {
 	    setTimeout(function() {
 		// $rootScope.updateContactsTable();
-		//alert('searchReports');
-	    }, 300);
+		// alert('searchReports');
+		$scope.reporthtml = null;
+	    }, 10);
 	}
     }, true);
 
+    // Select Fuction Generic Function- Factor this out eventually.
     $scope.selectArray = function(parameter) {
 	var svm = this;
-	svm.ajax_results = svm.ajax_results||[];
-	svm.parents = svm.parents||[];
-	
-	if(parameter.source){//}&&typeof(svm.source)=='undefined'){  // means its simply some source - just load it once.
-	    //svm.source = true; // flag as loaded
-	    //svm.data = 
+	svm.ajax_results = svm.ajax_results || [];
+	svm.parents = svm.parents || [];
+
+	if (parameter.source) {// }&&typeof(svm.source)=='undefined'){ // means
+	    // its simply some source - just load it once.
+	    // svm.source = true; // flag as loaded
+	    // svm.data =
 	    return $reportselects[parameter.source];
 	}
-	
-	
-	/// Otherwise, we assume it's an ajax source.
-	if(parameter.parents&&deepCheckParentValues()){ // if parents, and changed.. does local cache updates and checks if it indeed changed.
-	    
-	    $sails.get(parameter.url,{params : svm.parents},function(result){
-		//return svm.array;
-//alert(result);
+
+	// / Otherwise, we assume it's an ajax source.
+	if (parameter.parents && deepCheckParentValues()) { // if parents, and
+	    // changed.. does local
+	    // cache updates and
+	    // checks if it indeed
+	    // changed.
+
+	    $sails.get(parameter.url, {
+		params : svm.parents
+	    }, function(result) {
 		svm.ajax_results = result;
 		$scope.report.parameters[parameter.key].value = null;
-		
+
 	    });
 	}
-	return svm.ajax_results;  // returns this variable- we will set this after in async callback.- thus updating it.
-	
-	
-	function deepCheckParentValues(){
+	return svm.ajax_results; // returns this variable- we will set this
+	// after in async callback.- thus updating
+	// it.
+
+	function deepCheckParentValues() {
 	    var changed = false;
-	    for(var i = 0; i< parameter.parents.length;i++){
-		if(typeof(svm.parents[i])=='undefined'||svm.parents[i] != vm.$scope.report.parameters[parameter.parents[i]].value){
+	    for (var i = 0; i < parameter.parents.length; i++) {
+		if (typeof (svm.parents[i]) == 'undefined' || svm.parents[i] != vm.$scope.report.parameters[parameter.parents[i]].value) {
 		    svm.parents[i] = vm.$scope.report.parameters[parameter.parents[i]].value;
 		    changed = true;
 		}
 	    }
 	    return changed;
-	}    
-	    
-	if (typeof (svm.array) == 'undefined') {
-	    svm.array = [ {
-		id : 0,
-		label : 'A'
-	    }, {
-		id : 1,
-		label : 'B'
-	    }, {
-		id : 2,
-		label : 'C'
-	    } ];
 	}
-	if(parameter.source){
-	    return svm.data;
-	}
-	//else{
-	    return svm.array;
-	//}
+    }
 
+    $scope.runReport = function() {
+	$scope.report.system_name = 'The Fatima Center'; // saves the system name
+	$scope.report.timezoneoffset = new Date().getTimezoneOffset();
+	$scope.report.loading = true;
+	$http.post('/reports/view', {
+	    report : $scope.report
+	}).success(function(html) {
+	    $timeout(function() {
+		delete $scope.report.loading;
+		$scope.reporthtml = $sce.trustAsHtml(html);//'"<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=300, initial-scale=1" name="viewport"><meta name="description" content=""><title>undefined</title><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" sizes="114x114" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" sizes="72x72" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" href="/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="icon" href="/img/favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">               <!--<script type="text/javascript" src="/js/jquery.js"></script><script type="text/javascript" src="/js/dependencies/sails.io.js"></script><script type="text/javascript" src="/js/bootstrap-combobox.js"></script><script type="text/javascript" src="/js/bootstrap.js"></script><script type="text/javascript" src="/js/jquery-ui-1.10.3.custom.min.js"></script><script type="text/javascript" src="/js/jquery.ui.chatbox.js"></script><script type="text/javascript" src="/js/jquery.ui.chatboxManager.js"></script>       --></head><body><div class="wrapper">    <!--<div class="google-header-bar  centered">        <div class="header content clearfix">            <img alt="iSystemsNow" class="logo" src="/img/iSystemsNow-Logo-RGB-Black.png">        </div>    </div>-->    <div class="main content clearfix">        <div class="banner">            <h5 style="margin-left:10px;">                No results have been found.            </h5>        </div>    </div></div></body></html>"';
+		//console.log(html);
+	    }, 0);
+	});
     }
 
 }).controller('ContactsSearch', function($scope, $rootScope) {
@@ -683,7 +721,23 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $scope.contact = {};
     $scope.contact.id = '';
-    $scope.contact.donor2 = '';
+    $scope.contact.ADD = null;
+    $scope.contact.CITY = null;
+    $scope.contact.ST = null;
+    $scope.contact.COUNTRY = null;
+    $scope.contact.ZIP = null;
+    $scope.contact.CHECKBOX = null;
+    $scope.contact.CLASS = null;
+    
+    $scope.staticyesno = [ {
+	id : 'Y',
+	label : 'Yes'
+    }, {
+	id : 'N',
+	label : 'No'
+    } ];
+	$scope.donor_classes = [{id:"AA",label:"AA - Prospect-88"},{id:"AB",label:"AB - Prospect-89"},{"id":"AC","label":"AC - Prospect-90"},{"id":"AD","label":"AD - Prospect-91"},{"id":"AE","label":"AE - Prospect-92"},{"id":"AF","label":"AF - Prospect-93"},{"id":"AG","label":"AG - Prospect-94"},{"id":"CA","label":"CA - Referrals-88"},{"id":"CB","label":"CB - Referrals-89"},{"id":"CC","label":"CC - Referrals-90"},{"id":"CD","label":"CD - Referrals-91"},{"id":"CE","label":"CE - Referrals-92"},{"id":"CF","label":"CF - Referrals-93"},{"id":"CG","label":"CG - Referrals-94"},{"id":"EA","label":"EA - Contacts-88"},{"id":"EB","label":"EB - Contacts-89"},{"id":"EC","label":"EC - Contacts-90"},{"id":"ED","label":"ED - Contacts-91"},{"id":"EE","label":"EE - Contacts-92"},{"id":"EF","label":"EF - Contacts-93"},{"id":"EG","label":"EG - Contacts-94"},{"id":"GA","label":"GA - Buyers-88"},{"id":"GB","label":"GB - Buyers-89"},{"id":"GC","label":"GC - Buyers-90"},{"id":"GD","label":"GD - Buyers-91"},{"id":"GE","label":"GE - Buyers-92"},{"id":"GF","label":"GF - Buyers-93"},{"id":"GG","label":"GG - Buyers-94"},{"id":"IA","label":"IA - Donor - 0.01+"},{"id":"IB","label":"IB - Donor - 5+"},{"id":"IC","label":"IC - Donor - 10+"},{"id":"ID","label":"ID - Donor - 25+"},{"id":"IE","label":"IE - Donor - 50+"},{"id":"IF","label":"IF - Donor - 75+"},{"id":"IG","label":"IG - Donor - 100+"},{"id":"IH","label":"IH - Donor - 250+"},{"id":"II","label":"II - Donor - 500+"},{"id":"IJ","label":"IJ - Donor - 1000+"},{"id":"IK","label":"IK - Donor - 5000+"},{"id":"AH","label":"AH - Prospect-95"},{"id":"CH","label":"CH - Referrals-95"},{"id":"GH","label":"GH - Buyers-95"},{"id":"EH","label":"EH - Contacts-95"},{"id":"AI","label":"AI - Prospect-96"},{"id":"AJ","label":"AJ - Prospect-97"},{"id":"AK","label":"AK - Prospect-98"},{"id":"AL","label":"AL - Prospect-99"},{"id":"AM","label":"AM - Prospect-00"},{"id":"AN","label":"AN - Prospect-01"},{"id":"EI","label":"EI - Contacts-96"},{"id":"EJ","label":"EJ - Contacts-97"},{"id":"EK","label":"EK - Contacts-98"},{"id":"EL","label":"EL - Contacts-99"},{"id":"EM","label":"EM - Contacts-00"},{"id":"EN","label":"EN - Contacts-01"},{"id":"CI","label":"CI - Referrals-96"},{"id":"CJ","label":"CJ - Referrals-97"},{"id":"CK","label":"CK - Referrals-98"},{"id":"CL","label":"CL - Referrals-99"},{"id":"CM","label":"CM - Referrals-00"},{"id":"CN","label":"CN - Referrals-01"},{"id":"GI","label":"GI - Buyers-96"},{"id":"GJ","label":"GJ - Buyers-97"},{"id":"GK","label":"GK - Buyers-98"},{"id":"GL","label":"GL - Buyers-99"},{"id":"GM","label":"GM - Buyers-00"},{"id":"GN","label":"GN - Buyers-01"},{"id":"AO","label":"AO - Prospect-02"},{"id":"CO","label":"CO - Referrals-02"},{"id":"EO","label":"EO - Contacts-02"},{"id":"GO","label":"GO - Buyers-02"},{"id":"AP","label":"AP - Prospect-03"},{"id":"CP","label":"CP - Referrals-03"},{"id":"EP","label":"EP - Contacts-03"},{"id":"GP","label":"GP - Buyers-03"},{"id":"UN","label":"UN - Unknown"},{"id":"EH","label":"EH - Contact-95"},{"id":"CN","label":"CN - Refferal 2001"},{"id":"AO","label":"AO - Tour"}];
+	
     $rootScope.search_contact = $scope.contact;
 
     $scope.$watchCollection('contact', function() {
@@ -695,67 +749,70 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 300);
     });
 
-}).controller('ContactsDatatable', function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder) {
-    var vm = this;
-    vm.rowClicked = rowClicked;
-    vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
-	dataSrc : 'data',
-	url : '/contacts/ajax',
-	type : 'POST'
-    })
-    // .withDataProp('data')
-    .withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
-	aoData.contact = $rootScope.search_contact;
-    }).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	$('td', nRow).unbind('click');
-	$('td', nRow).bind('click', function() {
-	    // $scope.$apply(function() {
-	    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
-	    // });
+}).controller(
+    'ContactsDatatable',
+    function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder) {
+	var vm = this;
+	vm.rowClicked = rowClicked;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/contacts/ajax',
+	    type : 'POST'
+	})
+	// .withDataProp('data')
+	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	    aoData.contact = $rootScope.search_contact;
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		// $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		// });
+	    });
+	    if (aData.id == $contact.id) {
+		$(nRow).addClass('selected');
+	    }
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'),
+	    DTColumnBuilder.newColumn('CITY').withTitle('City'), DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes
+	    // later.
 	});
-	if (aData.id == $contact.id) {
+	$rootScope.updateContactsTable = function(event, args) {
+	    if ($scope.tableId) {
+		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		}, false);
+	    }
+	}
+
+	/*
+	 * $scope.$on('refreshContactsx', function(event, args){
+	 * //console.log('deb'); vm.contact = args;
+	 * $timeout(vm.dtOptions.reloadData,500); //(); });
+	 */
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $rootScope.$broadcast("getcontact", {
+		id : aData.id
+	    });
+	    // if(aData.id == $contact.id){
+	    $('tr').removeClass('selected');
 	    $(nRow).addClass('selected');
+	    // }
+	    // console.log('here');
+	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	}
-	return nRow;
-    }).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
-    // l length
-    // r processing
-    // f filtering
-    // t table
-    // i info
-    // p pagination
-    vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name') ];
 
-    $scope.$on('event:dataTableLoaded', function(event, data) {
-	$scope.tableId = data.id; // Record table ID, for refreshes
-	// later.
-    });
-    $rootScope.updateContactsTable = function(event, args) {
-	if ($scope.tableId) {
-	    $('#' + $scope.tableId).DataTable().ajax.reload(function() {
-	    }, false);
-	}
-    }
-
-    /*
-     * $scope.$on('refreshContactsx', function(event, args){
-     * //console.log('deb'); vm.contact = args;
-     * $timeout(vm.dtOptions.reloadData,500); //(); });
-     */
-
-    function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	$rootScope.$broadcast("getcontact", {
-	    id : aData.id
-	});
-	// if(aData.id == $contact.id){
-	$('tr').removeClass('selected');
-	$(nRow).addClass('selected');
-	// }
-	// console.log('here');
-	// vm.message = info.DONOR2 + ' - ' + info.FNAME;
-    }
-
-}).controller('LoginCtrl', function($scope, $rootScope) {
+    }).controller('LoginCtrl', function($scope, $rootScope) {
     $rootScope.isLoginPage = true;
     $rootScope.isLightLoginPage = false;
     $rootScope.isLockscreenPage = false;

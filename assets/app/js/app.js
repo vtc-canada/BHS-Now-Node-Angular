@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'rt.select2' ]);
+var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'ngSanitize', 'rt.select2' ]);
 
 app.filter('orderObjectBy', function() {
     return function(items, field, reverse) {
@@ -64,6 +64,58 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	    $rootScope.isMainPage = true;
 	}
     }).// Dashboards
+    state('app.admin-users', {
+	url : '/admin-users',
+	templateUrl : appHelper.templatePath('admin/users'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+	    }
+	}
+    }).
+    state('app.dpcodes', {
+	url : '/dpcodes',
+	templateUrl : appHelper.templatePath('dpcodes/index'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+	    }
+	}
+    }).
     state('app.reports', {
 	url : '/reports',
 	templateUrl : appHelper.templatePath('reports/reports'),
