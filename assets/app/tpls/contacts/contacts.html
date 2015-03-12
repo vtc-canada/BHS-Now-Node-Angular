@@ -1,5 +1,296 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
+
+<script type="text/ng-template" id="edit-dpplg-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Pledge</h4>
+	</div>
+	<div class="modal-body form-horizontal">
+		<form role="form" class="form-horizontal">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Date Pledged:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.MADE_DT" ng-model="modalDataSet.dpplg.MADE_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_amt">Total Amount:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_amt" ng-model="modalDataSet.dpplg.TOTAL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_bill">Amount to Bill:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_bill" ng-model="modalDataSet.dpplg.BILL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Pledge Start Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.START_DT" ng-model="modalDataSet.dpplg.START_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_requests">Billing Schedule:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_requests" name="modalDataSet.dpplg.MQA" ng-options="title.id as title.label for title in billing_schedules" ng-model="modalDataSet.dpplg.MQA"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_reminder">Send Reminder:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_reminder" name="modalDataSet.dpplg.REMIND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.REMIND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_ccr">Credit Card:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_ccr" name="modalDataSet.dpplg.CREDITCARD" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.CREDITCARD"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_cchr">Date to Charge:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.CHANGE_DT" ng-model="modalDataSet.dpplg.CHANGE_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_pledge_group">Pledge Group:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_pledge_group" name="modalDataSet.dpplg.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="modalDataSet.dpplg.GL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="contact_modal_origin">Origin:</label>
+
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="contact_modal_origin" ng-options="title.id as title.label for title in origin" ng-model="modalDataSet.dpplg.ORIGIN"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+						<div class="col-sm-8">
+							<!--<select2 class="form-control" id="modal_sol" name="selectedGift.SOL" ng-options="title.id as title.label for title in sols" ng-model="selectedGift.SOL"></select2>-->
+							<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpplg.SOL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_envnop">Envelope #:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_envnop" ng-model="modalDataSet.dpplg.ENVNOP" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_DELSEND">Sending Delingquent Letters Enabled:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="modalDataSet.dpplg.DELSEND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.DELSEND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_TYSEND">Send Thank-you Package:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="modalDataSet.dpplg.TYSEND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.TYSEND"></select2>
+						</div>
+					</div>
+					
+					
+						<!--
+						<label class="col-sm-4 control-label" for="modal_date">Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.DATE" ng-model="modalDataSet.dpplg.DATE" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>-->
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+	</div>
+</script>
+
+
+<script type="text/ng-template" id="edit-dpgift-modal" ng-controller="ModalCtrl">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Gift</h4>
+	</div>
+	<div class="modal-body form-horizontal">
+		<form role="form" class="form-horizontal">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpgift.DATE" ng-model="modalDataSet.dpgift.DATE" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+						<div class="col-sm-8">
+							<!--<select2 class="form-control" id="modal_sol" name="modalDataSet.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="modalDataSet.dpgift.SOL"></select2>-->
+							<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpgift.SOL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_transact">Transact:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_transact" name="modalDataSet.dpgift.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="modalDataSet.dpgift.TRANSACT"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modalDataSet.dpgift.DESIGNATE">Designate:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modalDataSet.dpgift.DESIGNATE" name="modalDataSet.dpgift.DESIGNATE" ng-options="title.id as title.label for title in designates" ng-model="modalDataSet.dpgift.DESIGNATE"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_mode">Mode:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_mode" name="modalDataSet.dpgift.MODE" ng-options="title.id as title.label for title in modes" ng-model="modalDataSet.dpgift.MODE"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_label">Label:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_label" name="modalDataSet.dpgift.LABEL" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpgift.LABEL"></select2>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_envno">Envelope #:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_envno" ng-model="modalDataSet.dpgift.ENVNO" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_list">List:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_label" name="modalDataSet.dpgift.LIST" ng-options="title.id as title.label for title in lists" ng-model="modalDataSet.dpgift.LIST"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_ctype">Campaign Type:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_ctype" ng-model="modalDataSet.dpgift.CAMP_TYPE" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_demand">Demand:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_demand" name="modalDataSet.dpgift.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="modalDataSet.dpgift.DEMAND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_requests">Requests:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_requests" name="modalDataSet.dpgift.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="modalDataSet.dpgift.REQUESTS"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_amt">Amount:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_amt" ng-model="modalDataSet.dpgift.AMT" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_curr">Currency:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_curr" name="modalDataSet.dpgift.CURR" ng-options="title.id as title.label for title in currencies" ng-model="modalDataSet.dpgift.CURR"></select2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group-separator"></div>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_pledge_group">Pledge Group:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_pledge_group" name="modalDataSet.dpgift.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="modalDataSet.dpgift.GL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_pledge_payment">Pledge Payment:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_pledge_payment" name="modalDataSet.dpgift.PLEDGE" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpgift.PLEDGE"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_receipt">Receipt #:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_receipt" ng-model="modalDataSet.dpgift.RECEIPT" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_receipt_form">Receipt Form:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_receipt_form" ng-model="modalDataSet.dpgift.REF" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_rrequests">TBA Requests:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_rrequests" ng-model="modalDataSet.dpgift.TBAREQS" ng-model-options="" placeholder="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+	</div>
+</script>
+
+
 <script type="text/ng-template" id="edit-dtmail-modal">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
@@ -12,14 +303,14 @@
 			<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
 
 			<div class="col-sm-8">
-				<input type="text" class="form-control" id="modal_sol" ng-model="selectedMail.SOL" ng-model-options="" placeholder="">
+				<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dtmail.SOL" ng-model-options="" placeholder="">
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="modal_list">LIST Code:</label>
 
 			<div class="col-sm-8">
-				<input type="text" class="form-control" id="modal_list" ng-model="selectedMail.LIST" ng-model-options="" placeholder="">
+				<input type="text" class="form-control" id="modal_list" ng-model="modalDataSet.dtmail.LIST" ng-model-options="" placeholder="">
 			</div>
 		</div>
 	</div>
@@ -30,6 +321,422 @@
 	</div>
 </script>
 
+<script type="text/ng-template" id="edit-dplink-modal">
+		<div class="modal-header">
+			<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+			<h4 class="modal-title">Add Link</h4>
+		</div>
+		
+		<div class="modal-body form-horizontal">
+			<alert type="danger" ng-show="modalDataSet.dplink.errors.ID2" close="modalDataSet.dplink.errors.ID2 = false" >
+				<strong>Error!</strong> Please select a contact and try again.
+			</alert>
+			<alert type="danger" ng-show="modalDataSet.dplink.errors.LINK" close="modalDataSet.dplink.errors.LINK = false" >
+				<strong>Error!</strong> Please select a relationship type and try again.
+			</alert>
+			
+			
+			
+			
+			<div class="search-link-contacts" ng-controller="ContactsLinkSearch">
+				<div class="form-group">
+				
+					<label class="col-sm-2 control-label" for="link_contact.id">Donor</label>
+		
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="link_contact.id" ng-model="link_contact.id" ng-model-options="" placeholder="Donor #, First name or Last name">
+					</div>
+				</div>
+						<!--<div class="panel-heading panel-second-heading">
+							<a href="" data-toggle="panel" class="panel-title-wrapper">
+								<h3 class="panel-title">&nbsp&nbspAdvanced Criteria</h3>
+							</a>
+							<div class="panel-options">
+								<a href="" data-toggle="panel">
+									<span class="collapse-icon">&ndash;</span>
+									<span class="expand-icon">+</span>
+								</a>
+							</div>
+						</div>
+						<div class="panel-body">
+			
+							<form role="form" class="form-horizontal" role="form">
+			
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.ADD">Address</label>
+			
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="contact.ADD" ng-model="contact.ADD" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.CITY">City</label>
+			
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="contact.CITY" ng-model="contact.CITY" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.ST">State</label>
+			
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="contact.ST" ng-model="contact.ST" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.COUNTRY">Country</label>
+			
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="contact.COUNTRY" ng-model="contact.COUNTRY" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.ZIP">Zip</label>
+			
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="contact.ZIP" ng-model="contact.ZIP" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.CHECKBOX">Ecclesiastical:</label>
+			
+									<div class="col-sm-10">
+										<select2 class="form-control" name="contact.CHECKBOX" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.CHECKBOX"></select2>
+									</div>
+								</div>	
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="contact.CLASS">Donor Class:</label>
+			
+									<div class="col-sm-10">
+										<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
+									</div>
+								</div>	
+			
+			
+			
+			
+							</form>
+						</div>-->
+			</div>
+			
+			
+			
+			
+			
+			
+			<div class="form-group-separator"></div>
+			
+			<div class="form-group modal-datatables-wrapper" ng-controller="AddContactDatatable as showCase">
+				<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed full-width focus-on row-border hover table table-striped table-bordered">
+			        <thead>
+			        	<tr>
+							<th>id</th>
+							<th>firstName</th>
+							<th>lastName</th>
+							<th>address</th>
+							<th>city</th>
+							<th>state</th>
+							<th>country</th>
+							<th>zip</th>
+						</tr>
+			        </thead>
+			        <tbody></tbody>
+			    </table>
+			</div>
+		
+			<div class="form-group" ng-hide="true">
+				<label class="col-sm-4 control-label" for="modal_ID2">ID2:</label>
+	
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="modal_ID2" ng-model="modalDataSet.dplink.ID2" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="modal_link">Relationship:</label>
+	
+				<div class="col-sm-8">
+					<select2 class="form-control" id="modal_requests" name="modal_link" ng-options="title.id as title.label for title in relationships" ng-model="modalDataSet.dplink.LINK"></select2>
+					
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+			<button type="submit" class="btn btn-info" ng-click="currentModal.saveLink()">Save changes</button>
+		</div>
+</script>
+
+<script type="text/ng-template" id="edit-dpplg-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Pledge</h4>
+	</div>
+	<div class="modal-body form-horizontal">
+		<form role="form" class="form-horizontal">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Date Pledged:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.MADE_DT" ng-model="modalDataSet.dpplg.MADE_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_amt">Total Amount:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_amt" ng-model="modalDataSet.dpplg.TOTAL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_bill">Amount to Bill:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_bill" ng-model="modalDataSet.dpplg.BILL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Pledge Start Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.START_DT" ng-model="modalDataSet.dpplg.START_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_requests">Billing Schedule:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_requests" name="modalDataSet.dpplg.MQA" ng-options="title.id as title.label for title in billing_schedules" ng-model="modalDataSet.dpplg.MQA"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_reminder">Send Reminder:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_reminder" name="modalDataSet.dpplg.REMIND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.REMIND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_ccr">Credit Card:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_ccr" name="modalDataSet.dpplg.CREDITCARD" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.CREDITCARD"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_cchr">Date to Charge:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpplg.CHANGE_DT" ng-model="modalDataSet.dpplg.CHANGE_DT" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_pledge_group">Pledge Group:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_pledge_group" name="modalDataSet.dpplg.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="modalDataSet.dpplg.GL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="contact_modal_origin">Origin:</label>
+
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="contact_modal_origin" ng-options="title.id as title.label for title in origin" ng-model="modalDataSet.dpplg.ORIGIN"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+						<div class="col-sm-8">
+							<!--<select2 class="form-control" id="modal_sol" name="selectedGift.SOL" ng-options="title.id as title.label for title in sols" ng-model="selectedGift.SOL"></select2>-->
+							<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpplg.SOL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_envnop">Envelope #:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_envnop" ng-model="modalDataSet.dpplg.ENVNOP" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_DELSEND">Sending Delingquent Letters Enabled:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="modalDataSet.dpplg.DELSEND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.DELSEND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_TYSEND">Send Thank-you Package:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control"  name="modalDataSet.dpplg.TYSEND" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpplg.TYSEND"></select2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="edit-dpother-modal" ng-controller="ModalCtrl">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Other</h4>
+	</div>
+	<div class="modal-body form-horizontal">
+		<form role="form" class="form-horizontal">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpother.DATE" ng-model="modalDataSet.dpother.DATE" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+						<div class="col-sm-8">
+							<!--<select2 class="form-control" id="modal_sol" name="modalDataSet.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="modalDataSet.dpgift.SOL"></select2>-->
+							<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpother.SOL" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_transact">Transact:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_transact" name="modalDataSet.dpother.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="modalDataSet.dpother.TRANSACT"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modalDataSet.dpother.DESIGNATE">Designate:</label>
+						<div class="col-sm-8">
+							<div class="form-control">- Not In DP-Other - Discussion point</div>
+							<!--<select2 class="form-control" id="modalDataSet.dpother.DESIGNATE" name="modalDataSet.dpother.DESIGNATE" ng-options="title.id as title.label for title in designates" ng-model="modalDataSet.dpother.DESIGNATE"></select2>-->
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_mode">Mode:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_mode" name="modalDataSet.dpother.MODE" ng-options="title.id as title.label for title in modes" ng-model="modalDataSet.dpother.MODE"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_label">Label:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_label" name="modalDataSet.dpother.LABEL" ng-options="title.id as title.label for title in staticyesno" ng-model="modalDataSet.dpother.LABEL"></select2>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_envno">Envelope #:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_envno" ng-model="modalDataSet.dpother.ENVNO" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_list">List:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_label" name="modalDataSet.dpother.LIST" ng-options="title.id as title.label for title in lists" ng-model="modalDataSet.dpother.LIST"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_ctype">Campaign Type:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_ctype" ng-model="modalDataSet.dpother.CAMP_TYPE" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_demand">Demand:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_demand" name="modalDataSet.dpother.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="modalDataSet.dpother.DEMAND"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_requests">Requests:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_requests" name="modalDataSet.dpother.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="modalDataSet.dpother.REQUESTS"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_amt">Amount:</label>
+			
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_amt" ng-model="modalDataSet.dpother.AMT" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_curr">Currency:</label>
+			
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_curr" name="modalDataSet.dpother.CURR" ng-options="title.id as title.label for title in currencies" ng-model="modalDataSet.dpother.CURR"></select2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group-separator"></div>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_pledge_group">Pledge Group:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_pledge_group" name="modalDataSet.dpother.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="modalDataSet.dpother.GL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_survey">Survey:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_survey" ng-model="modalDataSet.dpother.SURVEY" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_survey_ans">Survey Answer:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="modal_survey_ans" ng-model="modalDataSet.dpother.SURV_ANS" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_rrequests">TBA Requests:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modal_rrequests" name="modalDataSet.dpother.TBAREQS" ng-options="title.id as title.label for title in tba_requests" ng-model="modalDataSet.dpother.TBAREQS"></select2>							
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+	</div>
+</script>
 
 <div class="row" ng-controller="ContactsSearch">
 	<div class="col-sm-12">
@@ -48,7 +755,7 @@
 			</div>
 			<div class="panel-body always-visible">
 
-				<form role="form" class="form-horizontal" role="form">
+				<form role="form" class="form-horizontal">
 
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="contact_id">Donor</label>
@@ -61,7 +768,9 @@
 				</form>
 			</div>
 			<div class="panel-heading panel-second-heading">
-				<h3 class="panel-title">Advanced Criteria</h3>
+				<a href="" data-toggle="panel" class="panel-title-wrapper">
+					<h3 class="panel-title">&nbsp&nbspAdvanced Criteria</h3>
+				</a>
 				<div class="panel-options">
 					<a href="" data-toggle="panel">
 						<span class="collapse-icon">&ndash;</span>
@@ -71,7 +780,7 @@
 			</div>
 			<div class="panel-body">
 
-				<form role="form" class="form-horizontal" role="form">
+				<form role="form" class="form-horizontal">
 
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="contact.ADD">Address</label>
@@ -145,7 +854,7 @@
 	</div>
 	{{message}}
 	<div class="panel-body">
-		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="focus-on row-border hover table table-striped table-bordered">
+		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 	        <thead>
 	        	<tr>
 					<th>id</th>
@@ -164,22 +873,12 @@
 </div>
 
 
-<div class="row" ng-controller="ContactSections">
+<div class="row" id="contact_form" ng-controller="ContactSections">
 	
 	<div ng-if="contact.id" class="col-md-12">
 		<tabset class="nav-tabs">
 			<tab heading="Layman" id="layman_tab">
 				<form role="form" id="layman" class="form-horizontal validate">
-					<!--<div class="row">
-						<div class="col-xs-12">
-							<div class="pull-right">
-								<button type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save</button>
-							</div>
-							<div ng-show="contact.is_modified" class="control-label changes-pending pull-right">
-								Changes Pending
-							</div>
-						</div>
-					</div>-->
 					<div class="row">
 						<div class="col-md-12">
 							<div class="panel panel-default">
@@ -187,7 +886,7 @@
 									<h3 class="panel-title">Contact Information</h3>
 									
 									<div class="pull-right isn-panel-pull-right">
-										<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save</div>
+										<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save<span ng-show="contact.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 									</div>
 									<div ng-show="contact.is_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
 										Changes Pending
@@ -211,14 +910,7 @@
 										<label class="col-sm-5 control-label">Title:</label>
 				
 										<div class="col-sm-7">
-											<select class="form-control" ng-options="title.label for title in titles track by title.id" ng-model="contact.TITLE"></select>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-5 control-label">Salutation:</label>
-				
-										<div class="col-sm-7">
-											<input type="text" class="form-control" name="contact.SAL" ng-model="contact.SAL" ng-model-options="" placeholder="">
+											<select2 class="form-control" ng-options="title.id as title.label for title in titles" ng-model="contact.TITLE"></select2>
 										</div>
 									</div>
 									<div class="form-group">
@@ -226,6 +918,13 @@
 				
 										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact.SUFF" ng-model="contact.SUFF" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-5 control-label">Salutation:</label>
+				
+										<div class="col-sm-7">
+											<input type="text" class="form-control" name="contact.SAL" ng-model="contact.SAL" ng-model-options="" placeholder="">
 										</div>
 									</div>
 									<div class="form-group">
@@ -331,7 +1030,7 @@
 									<div class="form-group">
 										<label class="col-sm-3 control-label" for="contact_phone">Phone 1:</label>
 										<div class="col-sm-5 col-sm-mid">
-											<input type="text" class="form-control" inputmask data-mask="phone" name="PHONE" id="contact_phone" ng-model="contact.PHONE" >	
+											<input type="text" class="form-control" name="PHONE" id="contact_phone" ng-model="contact.PHONE" >	
 										</div>
 										<div class="col-sm-4">
 											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="contact.PHTYPE1"></select2>
@@ -410,7 +1109,7 @@
 											</div>
 											<div class="form-group">
 												<div class="col-sm-12">
-													<button type="submit" class="btn pull-right" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[address.is_deleted == true]" ng-click="deleteOtherAddress(address.id,address.tempId,address.is_deleted)">{{address.is_deleted == true?'Cancel':'Delete'}}</button>
+													<button type="submit" class="btn pull-right" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[address.is_deleted == true]" ng-click="deleteOtherAddress(address.id,address.tempId,address.is_deleted)">{{address.is_deleted == true?'Cancel':'Remove'}}</button>
 												</div>
 											</div>
 										</div>
@@ -498,17 +1197,17 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.LANGUAGE">Language:</label>
+												<label class="col-sm-5 control-label" for="contact.LANGUAGE">Primary Language:</label>
 						
 												<div class="col-sm-7">
 													<select2 class="form-control" id="contact.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.LANGUAGE"></select2>
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.ENGLISH">English:</label>
+												<label class="col-sm-5 control-label" for="contact.dplang">Other Languages:</label>
 						
 												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.ENGLISH" ng-options="title.id as title.label for title in english" ng-model="contact.ENGLISH"></select2>
+													<select2 class="form-control" id="contact.dplang" ng-options="title.id as title.label for title in languages" ng-model="contact.dplang" multiple></select2>
 												</div>
 											</div>
 										</div>
@@ -565,7 +1264,7 @@
 												</div>
 											</div>		
 											<div class="form-group">
-												<label class="col-sm-5 control-label" for="BUSINESS">Occupation:</label>
+												<label class="col-sm-5 control-label" for="BUSINESS">Business:</label>
 						
 												<div class="col-sm-7">
 													<input type="text" class="form-control" name="BUSINESS" id="BUSINESS" ng-model="contact.BUSINESS" >
@@ -607,14 +1306,155 @@
 									</div>
 													
 								</div>
-								<div class="panel-body">
-									<div class="table-transactions">
-										<table id="{{mailDataTableId}}" cellspacing="0" class="focus-on table  table-bordered table-striped selectableisn">
-											
+								
+								<div class="panel-body" ng-show="transaction_type=='dpgift'">
+									<!-- Gifts -->
+									<div class="table-gifts">
+										<table id="{{'dpgift'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
 											<thead>
 												<tr>
 													<th >id</th>
-													<th >Sol</th>
+													<th >Sol Code</th>
+													<th >Mode</th>
+													<th >Envelope Number</th>
+													<th >Amount</th>
+													<th >Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="row in contact.dpgift" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isDatatableRowFocused('dpgift',row)}" ng-click="selectDataTableRow('dpgift',row)" >
+													<td>{{row.id}} | {{row.tempId}}</td>
+													<td>{{row.SOL}}</td>
+													<td>{{row.MODE}}</td>
+													<td>{{row.ENVNO}}</td>
+													<td>{{row.AMT | number:2 }}</td>
+													<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+												</tr>	
+											</tbody>
+										</table>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dpgift', 'edit-dpgift-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled('dpgift')}" ng-click="editDatatableRow('dpgift','edit-dpgift-modal','lg')">Edit</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dpgift'),disabled:isDatatableDeleteRestoreDisabled('dpgift')}" ng-click="doDeleteDataTable('dpgift')">{{getDatatableDeleteButtonText('dpgift')}}</div>
+										</div>
+									</div>
+								</div>
+								
+								<div class="panel-body" ng-show="transaction_type=='dpplg'">
+									<!-- Pledges -->
+									<div class="table-pledges">
+										<table id="{{'dpplg'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >Sol Code</th>
+													<th >Mode</th>
+													<th >Envelope Number</th>
+													<th >Amount</th>
+													<th >Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="pledge in contact.dpplg" ng-class="{ 'is_deleted':pledge.is_deleted == true, 'focused' : isDatatableRowFocused('dpplg',pledge)}" ng-click="selectDataTableRow('dpplg',pledge)" >
+													<td>{{pledge.id}} | {{pledge.tempId}}</td>
+													<td>{{pledge.SOL}}</td>
+													<td>{{pledge.MODE}}</td>
+													<td>{{pledge.ENVNO}}</td>
+													<td>{{pledge.AMT | number:2 }}</td>
+													<td>{{pledge.DATE | date : "MM/dd/yyyy" }}</td>
+												</tr>	
+											</tbody>
+										</table>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dpplg', 'edit-dpplg-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled('dpplg')}" ng-click="editDatatableRow('dpplg','edit-dpplg-modal','lg')">Edit</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dpplg'),disabled:isDatatableDeleteRestoreDisabled('dpplg')}" ng-click="doDeleteDataTable('dpplg')">{{getDatatableDeleteButtonText('dpplg')}}</div>
+										</div>
+									</div>
+								</div>
+									
+								<div class="panel-body" ng-show="transaction_type=='dpother'">
+									<!-- Gifts -->
+									<div class="table-gifts">
+										<table id="{{'dpother'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >Sol Code</th>
+													<th >Mode</th>
+													<th >Envelope Number</th>
+													<th >Amount</th>
+													<th >Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="row in contact.dpother" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isDatatableRowFocused('dpother',row)}" ng-click="selectDataTableRow('dpother',row)" >
+													<td>{{row.id}} | {{row.tempId}}</td>
+													<td>{{row.SOL}}</td>
+													<td>{{row.MODE}}</td>
+													<td>{{row.ENVNO}}</td>
+													<td>{{row.AMT | number:2 }}</td>
+													<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+												</tr>	
+											</tbody>
+										</table>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dpother', 'edit-dpother-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled('dpother')}" ng-click="editDatatableRow('dpother','edit-dpother-modal','lg')">Edit</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dpother'),disabled:isDatatableDeleteRestoreDisabled('dpother')}" ng-click="doDeleteDataTable('dpother')">{{getDatatableDeleteButtonText('dpother')}}</div>
+										</div>
+									</div>
+								</div>
+								<div class="panel-body" ng-show="transaction_type=='dplink'">
+									<!-- Pledges -->
+									<div class="table-links">
+										<table id="{{'dplink'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >ID2</th>
+													<th >Link</th>
+													<th >TSDATE</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="link in contact.dplink" ng-class="{ 'is_deleted':link.is_deleted == true, 'focused' : isDatatableRowFocused('dplink',link)}" ng-click="selectDataTableRow('dplink',link)" >
+													<td>{{link.id}} | {{link.tempId}}</td>
+													<td>{{link.ID2}}</td>
+													<td>{{link.LINK}}</td>
+													<td>{{link.TSDATE | date : "MM/dd/yyyy" }}</td>
+												</tr>	
+											</tbody>
+										</table>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dplink', 'edit-dplink-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dplink'),disabled:isDatatableDeleteRestoreDisabled('dplink')}" ng-click="doDeleteDataTable('dplink')">{{getDatatableDeleteButtonText('dplink')}}</div>
+										</div>
+									</div>
+								</div>
+									
+								<div class="panel-body" ng-show="transaction_type=='dtmail'">
+									<!-- Mail -->
+									<div class="table-mail">
+										<table id="{{'dtmail'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >Sol Code</th>
 													<th >List</th>
 													<th >Drop Date</th>
 													<th >Description</th>
@@ -622,28 +1462,25 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr ng-repeat="transaction in contact.dtmail" ng-class="{ 'is_deleted':transaction.is_deleted == true, 'focused' : isRowFocused(transaction)}" ng-click="selectTransaction(transaction)" >
-													<td>{{transaction.id}} | {{transaction.tempId}}</td>
-													<td>{{transaction.SOL}}</td>
-													<td>{{transaction.LIST}}</td>
-													<td>{{transaction.DROP_DATE | date : "MM/dd/yyyy" }}</td>
-													<td>{{transaction.DESC}}</td>
-													<td>{{transaction.DROP_CNT | number }}</td>
+												<tr ng-repeat="row in contact.dtmail" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isDatatableRowFocused('dtmail',row)}" ng-click="selectDataTableRow('dtmail',row)" >
+													<td>{{row.id}} | {{row.tempId}}</td>
+													<td>{{row.SOL}}</td>
+													<td>{{row.LIST}}</td>
+													<td>{{row.DROP_DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{row.DESC}}</td>
+													<td>{{row.DROP_CNT | number }}</td>
 												</tr>	
 											</tbody>
 										</table>
-									</div>
-									
-									
-									
-									<div class="pull-right">
-										<div class="btn btn-primary" ng-click="addMail('edit-dtmail-modal')">Add</div>
-									</div>
-									<div class="pull-right pull-right-stack">
-										<div class="btn btn-secondary" ng-class="{disabled:isDeleteMailButtonText()}" ng-click="editMail('edit-dtmail-modal')">Edit</div>
-									</div>
-									<div class="pull-right pull-right-stack">
-										<div class="btn btn-danger" ng-class="{'btn-orange':isDeleteMailButtonText()}" ng-class="{disabled:selectedTransaction==null}" ng-click="deleteMail()">{{getDeleteMailButtonText()}}</div>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dtmail', 'edit-dtmail-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled('dtmail')}" ng-click="editDatatableRow('dtmail','edit-dtmail-modal','lg')">Edit</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dtmail'),disabled:isDatatableDeleteRestoreDisabled('dtmail')}" ng-click="doDeleteDataTable('dtmail')">{{getDatatableDeleteButtonText('dtmail')}}</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -653,9 +1490,9 @@
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<h3 class="panel-title">Major Pledges and Donations</h3>
+									<h3 class="panel-title">Major Gifts</h3>
 									<div class="pull-right  isn-panel-pull-right">
-										<div class="btn btn-primary" ng-click="addNewDtMajor()">Add Major Donation</div>
+										<div class="btn btn-primary" ng-click="addNewDtMajor()">Add Major Gift</div>
 									</div>
 								</div>
 								<div class="panel-body">
@@ -801,7 +1638,7 @@
 									</div>
 								</div>
 								<div class="panel-body">
-									<div class="row" ng-repeat="note in contact.notes.layman">
+									<div class="row note-row" ng-repeat="note in contact.notes.layman">
 										<div class="col-xs-12" ng-class="{true: 'makeopaque', false: ''}[note.is_deleted == true]">
 											<div class="row">
 												<div class="col-sm-2">
@@ -814,10 +1651,10 @@
 													<pre ng-hide="note.focused">{{ note.text || ''}}</pre>
 													<textarea ng-show="note.focused" type="text" class="form-control" name="note.text" ng-blur="blurNote(note)" ng-model="note.modify_text"></textarea>
 													<button ng-show="note.focused" class="btn btn-secondary" ng-mousedown="saveNote(note)">Save</button>
-													<button ng-show="note.focused" class="btn">Cancel</button>
+													<button ng-show="note.focused" class="btn" ng-mousedown="cancelNote(note)">Cancel</button>
 												</div>
 												<div class="col-sm-2">
-													<button class="pull-right inline-pull btn" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[note.is_deleted == true]" ng-click="deleteNote(note)">{{note.is_deleted == true?'Cancel':'Delete'}}</button>
+													<button class="pull-right inline-pull btn" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[note.is_deleted == true]" ng-click="toggleNote(note)">{{note.is_deleted == true?'Cancel':'Delete'}}</button>
 													<button class="pull-right inline-pull pull-right-stack btn btn-orange" ng-click="modifyNote($event,note)" ng-disabled="note.focused">Modify</button>
 												</div>
 											</div>

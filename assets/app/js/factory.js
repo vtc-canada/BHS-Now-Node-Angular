@@ -120,9 +120,8 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
     };
 }).factory('$contact', function($rootScope, $window) {
 
-    
     var initDtBishop = {
-	
+
 	id : null,
 	enabled : false,
 	CONTPERS : null,
@@ -144,48 +143,46 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	BISNOTES : null,
 	FILEDYN : null
     }
-    
+
     var initDtVols1 = {
-	    id : null,
-	    enabled : false,
-	    VORIGIN : null,
-	    VSDATE : null,
-	    VCATEG : null,
-	    VGRADE01 : null,
-	    VGRADE02 : null,
-	    VGRADE03 : null,
-	    VGRADE04 : null,
-	    VGRADE05 : null,
-	    VGRADE06 : null,
-	    VGRADE07 : null,
-	    VGRADE08 : null,
-	    VGRADE09 : null,
-	    VGRADE10 : null,
-	    VGRADE11 : null,
-	    VGRADE12 : null,
-	    VGRADE13 : null,
-	    VGRADE14 : null,
-	    VGRADE15 : null,
-	    VGRADE16 : null,
-	    VGRADE17 : null,
-	    VGRADE18 : null,
-	    VGRADE19 : null,
-	    VGRADE20 : null,
-	    VGRADE21 : null,
-	    VGRADE22 : null,
-	    VGRADE23 : null,
-	    VSPECTAL : null
-	};
-    
-    
-    
-    
+	id : null,
+	enabled : false,
+	VORIGIN : null,
+	VSDATE : null,
+	VCATEG : null,
+	VGRADE01 : null,
+	VGRADE02 : null,
+	VGRADE03 : null,
+	VGRADE04 : null,
+	VGRADE05 : null,
+	VGRADE06 : null,
+	VGRADE07 : null,
+	VGRADE08 : null,
+	VGRADE09 : null,
+	VGRADE10 : null,
+	VGRADE11 : null,
+	VGRADE12 : null,
+	VGRADE13 : null,
+	VGRADE14 : null,
+	VGRADE15 : null,
+	VGRADE16 : null,
+	VGRADE17 : null,
+	VGRADE18 : null,
+	VGRADE19 : null,
+	VGRADE20 : null,
+	VGRADE21 : null,
+	VGRADE22 : null,
+	VGRADE23 : null,
+	VSPECTAL : null
+    };
+
     var obj = {
 
 	init : function() {
 	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
 	    this.dtbishop = initDtBishop;
 
+	    this.is_saving = false;
 	    this.is_modified = false; // FALSE
 	    // var self = this;
 	    this.FNAME = '';
@@ -235,12 +232,16 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.VOL_TRADE = null;
 
 	    this.dtmail = [];
+	    this.dpgift = [];
+	    this.dpplg = [];
+	    this.dplink = [];
+	    this.dpother = [];
+	    this.dplang = [];
 
 	    this.dtmajor = [];
-	    
-	    
+
 	    // ECCLESIASTICAL TAB
-	    
+
 	    this.ecc_enabled = false;
 	    this.BIRTHDATE = null;
 	    this.ORDINATION = null;
@@ -273,17 +274,17 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.Q23 = null;
 	    this.EP020 = null;
 	    this.PPRIEST = null; // false?
-	    
 
 	    // Notes
-	    
+
 	    this.notes = {
-		layman :[],
-		ecclesiastical :[],
-		volunteer :[],
-		orders :[]
+		layman : [],
+		ecclesiastical : [],
+		volunteer : [],
+		orders : []
 	    };
 
+	    this.database_origin = null;
 	    this.id = null;
 	    return this;
 	},
@@ -363,15 +364,15 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		}
 	    }
 	},
-	toggleNote : function(note){
-	    if(!note.is_deleted){  // wasn't already deleted
+	toggleNote : function(note) {
+	    if (!note.is_deleted) { // wasn't already deleted
 		if (note.id == null) { // was new
 		    for (var i = 0; i < this.notes[note.type].length; i++) {
-			    if (this.notes[note.type][i].tempId == note.tempId) {
-				this.notes[note.type].splice(i, 1);
-				    return this.notes[note.type];
-			    }
+			if (this.notes[note.type][i].tempId == note.tempId) {
+			    this.notes[note.type].splice(i, 1);
+			    return this.notes[note.type];
 			}
+		    }
 		} else {
 		    for (var i = 0; i < this.notes[note.type].length; i++) {
 			if (this.notes[note.type][i].id == note.id) {
@@ -380,9 +381,9 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 			}
 		    }
 		}
-	    }else{  // removes isDeleted
+	    } else { // removes isDeleted
 		for (var i = 0; i < this.notes[note.type].length; i++) {
-		    if (this.notes[note.type][i].id == element.id) {
+		    if (this.notes[note.type][i].id == note.id) {
 			delete this.notes[note.type][i].is_deleted;
 			return this.notes[note.type];
 		    }
@@ -392,7 +393,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	},
 	toggleDeleted : function(elementType, element) {
 	    if (!element.is_deleted) {
-		if (element.id == 'new') {
+		if (element.id == null || element.id == 'new') {
 		    for (var i = 0; i < this[elementType].length; i++) {
 			if (this[elementType][i].tempId == element.tempId) {
 			    this[elementType].splice(i, 1);
@@ -452,11 +453,19 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	 * (this[elementType][i].id == setId) { this[elementType][i].is_deleted =
 	 * true; return; } } } },
 	 */
-	addNote : function(noteType){
-	    this.notes[noteType].push({id:null, tempId : Math.floor((Math.random() * 100000) + 1), DONOR:null,type:noteType,text:null});
+	addNote : function(noteType) {
+	    this.notes[noteType].push({
+		id : null,
+		tempId : Math.floor((Math.random() * 100000) + 1),
+		DONOR : null,
+		type : noteType,
+		text : null,
+		focused : true,
+		modify_text : ''
+	    });
 	    return this.notes[noteType];
 	},
-	
+
 	addOtherAddress : function() {
 	    var otherAddress = {
 		id : 'new',
@@ -474,7 +483,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    return this.otherAddresses;
 	},
 	set : function(contact) { // wierd routine.. should be abled to just
-				    // directly copy.
+	    // directly copy.
 	    var self = this;
 	    angular.forEach(contact, function(value, key) {
 
@@ -483,31 +492,28 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		}
 
 	    });
-	    
-	    
-	    if (this.dtvols1!=null) {
+
+	    if (this.dtvols1 != null) {
 		this.dtvols1.enabled = true;
-	    }else{
+	    } else {
 		this.dtvols1 = initDtVols1; // init new one
 	    }
-	    
-	    
-	    if (this.dtbishop!=null) {
+
+	    if (this.dtbishop != null) {
 		this.dtbishop.enabled = true; // already should come in
-						// enabled
-	    }else{
+		// enabled
+	    } else {
 		this.dtbishop = initDtBishop; // init new one
 	    }
-	    
-	    
-	    
-	    self.TITLE = {
+
+	    /*self.TITLE = {
 		id : self.TITLE,
 		label : self.TITLE + '.'
-	    };
+	    };*/
 	    /*
 	     * self.ST = { id : self.ST, label : self.ST };
 	     */
+	    this.is_saving = false;
 	    this.is_modified = false; // make unmodified as soon as you set a
 	    // contact.
 	}
@@ -517,41 +523,61 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
     obj.init();
 
     return obj;
-}).factory('$pageLoadingBar', function($rootScope, $window, $contact) {
+}).factory('$pageLoadingBar', function($rootScope, $window, $timeout, $contact) {
 
     return {
 
 	init : function() {
 	    var pl = this;
+		var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+		var unloadMessage = 'You have unsaved changes pending.';
 
 	    $window.showLoadingBar = this.showLoadingBar;
 	    $window.hideLoadingBar = this.hideLoadingBar;
+	    
+	    $window.onbeforeunload = function (e) {
+		if ($contact.is_modified) {
+		    return unloadMessage;
+		}else{
+		    return undefined;
+		}
+	    };
+	    
 
-	    $rootScope.$on('$stateChangeStart', function(event)// event,
-	    // toState,
-	    // toParams,
-	    // fromState,
-	    // fromParams
-	    {
-		if ($contact.modified) {
+	    $rootScope.$on('$stateChangeStart', function(event) {
+
+
+		if ($contact.is_modified) {
+		    if (confirm(unsavedMessage)) {
+
+			//return;
+		    //} else {
+			$contact.is_modified = false;
+		    }
+		}
+
+		// Already checked and possibly changed contact.is_modified to true.
+
+		if ($contact.is_modified) {  // Block page change if necessary
 		    return event.preventDefault();
-		}/*
-		     * function(){ // check if user is set $rootScope.ti =
-		     * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
-		     * if($rootScope.hideLoadingBar){ setTimeout(function(){
-		     * $rootScope.hideLoadingBar();
-		     * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
-		     * },250); } event.preventDefault(); } else { // do smth
-		     * else } }
-		     */
-
-		pl.showLoadingBar({
+		}
+		pl.showLoadingBar({ // continue switching pages
 		    pct : 95,
 		    delay : 1.1,
 		    resetOnEnd : false
 		});
-
 		jQuery('body .page-container .main-content').addClass('is-loading');
+
+		/*
+		 * function(){ // check if user is set $rootScope.ti =
+		 * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
+		 * if($rootScope.hideLoadingBar){ setTimeout(function(){
+		 * $rootScope.hideLoadingBar();
+		 * $('.main-content.ng-scope.is-loading').removeClass('is-loading');
+		 * },250); } event.preventDefault(); } else { // do smth
+		 * else } }
+		 */
+
 	    });
 
 	    $rootScope.$on('$stateChangeSuccess', function() {

@@ -1,16 +1,35 @@
 'use strict';
 
-angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $modal, $contact, $sails, Utility) {
+angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $state, $modal, $contact, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
     vm.mail = {};
-    $scope.contact = $contact;
+    $scope.contact = $contact;// .init();
+    $scope.contact.id = $contact.id = null;
     $scope.selectedTransaction = null;
 
+    $scope.selectedDataTableRow = {
+	'dpgift' : null,
+	'dpplg' : null,
+	'dtmail' : null,
+	'dpother' : null,
+	'dplink' : null
+    }
+    $rootScope.modalDataSet = angular.copy($scope.selectedDataTableRow);
+
     vm.watchEnabled = false;
+    vm.screenLoaded = false;
 
     vm.tabs = [ 'layman', 'ecclesiastical', 'volunteer', 'orders' ];
 
+    
+    $scope.$watch('contact.dplang', function(oldValue, newValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    $scope.contact.dplang_modified = true;
+	}
+    });
+    
+    
     $scope.countyEnabled = function() {
 	return $scope.contact.ST != 'NY';
     }
@@ -41,45 +60,106 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	return (donation.PLEDSCHED == 2 || donation.PLEDSCHED == 3 || donation.PLEDSCHED == 4 || donation.PLEDSCHED == 5);
     }
 
-    // DTMAIL /////////////////////////////
-    $scope.mailDataTableId = 'dtmail_datatable';
-    $scope.mailDataTableOptions = {
-	"autoWidth" : true,
-	"bDestroy" : true,
-	'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
-	"columns" : [ {
-	    "width" : "10%"
-	}, {
-	    "width" : "15%"
-	}, {
-	    "width" : "15%"
-	}, {
-	    "width" : "15%"
-	}, {
-	    "width" : "30%"
-	}, {
-	    "width" : "15%"
-	} ]
+    // dataTable SubSets - Manages form datatable subsets- modals/ subchanges
+    // /////////////////////////////
+    $scope.dataTableOptions = {
+	'dpgift' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "10%" // id
+	    }, {
+		"width" : "15%" // ProvCode
+	    }, {
+		"width" : "15%" // Mode
+	    }, {
+		"width" : "15%" // Envelope #
+	    }, {
+		"width" : "15%" // Amount
+	    }, {
+		"width" : "30%" // Date
+	    } ]
+	},
+	'dpplg' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "10%" // id
+	    }, {
+		"width" : "15%" // ProvCode
+	    }, {
+		"width" : "15%" // Mode
+	    }, {
+		"width" : "15%" // Envelope #
+	    }, {
+		"width" : "15%" // Amount
+	    }, {
+		"width" : "30%" // Date
+	    } ]
+	},
+	'dplink' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "20%" // id
+	    }, {
+		"width" : "30%" // Name
+	    }, {
+		"width" : "25%" // Link Code
+	    }, {
+		"width" : "25%" // TSDATE
+	    } ]
+	},
+	'dtmail' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "10%"
+	    }, {
+		"width" : "15%"
+	    }, {
+		"width" : "15%"
+	    }, {
+		"width" : "15%"
+	    }, {
+		"width" : "30%"
+	    }, {
+		"width" : "15%"
+	    } ]
+	},
+	'dpother' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "10%" // id
+	    }, {
+		"width" : "15%" // ProvCode
+	    }, {
+		"width" : "15%" // Mode
+	    }, {
+		"width" : "15%" // Envelope #
+	    }, {
+		"width" : "15%" // Amount
+	    }, {
+		"width" : "30%" // Date
+	    } ]
+	}
     };
-    $scope.mailDataTableChange = function() {
+
+    $scope.resetSelectedDataTableRow = function(table_name) {
 	$timeout(function() {
-	    $scope.selectedTransaction = null;
-	    // $scope.selectedTransactionTemp = null;
+	    $scope.selectedDataTableRow[table_name] = null;
 	}, 0);
     }
-
     // selected modal
-
-    $scope.editMail = function(modal_id, modal_size, modal_backdrop) {
-
-	var selectedMail = $contact.getElementObject('dtmail', $scope.selectedTransaction.id, $scope.selectedTransaction.tempId);
-
-	$rootScope.selectedMail = selectedMail;
-	/*
-	 * { id : $scope.selectedTransaction, tempId :
-	 * $scope.selectedTransactionTemp, SOL : selectedMail.SOL, LIST :
-	 * selectedMail.LIST }
-	 */
+    $scope.editDatatableRow = function(table_name, modal_id, modal_size, modal_backdrop) {
+	var selectedRow = $contact.getElementObject(table_name, $scope.selectedDataTableRow[table_name].id, $scope.selectedDataTableRow[table_name].tempId);
+	$rootScope.modalDataSet[table_name] = angular.copy(selectedRow);
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : modal_id,
 	    size : modal_size,
@@ -88,7 +168,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$rootScope.currentModal.result.then(function(selectedItem) {
 	}, function(triggerElement) {
 	    if (triggerElement == 'save') {
-		$contact.updateElementObject('dtmail', $rootScope.selectedMail);
+		$contact.updateElementObject(table_name, $rootScope.modalDataSet[table_name]);
 		$timeout(function() {
 		    $scope.contact = $contact;
 		}, 0);
@@ -96,119 +176,213 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
     };
 
-    $scope.addMail = function(modal_id, modal_size) {
+    $scope.addDatatableRow = function(table_name, modal_id, modal_size) {
 	// Wipe selected, create new.
-	$scope.selectedTransaction = {};
-	$scope.selectedTransaction.id = 'new';
-	$scope.selectedTransaction.tempId = Math.floor((Math.random() * 100000) + 1);
-	$rootScope.selectedMail = {
-	    id : $scope.selectedTransaction.id,
-	    tempId : $scope.selectedTransaction.tempId,
-	    DONOR : $contact.id,
-	    SOL : null,
-	    LIST : null,
-	    database_origin : $contact.database_origin,
-	    DESC : null,
-	    DROP_DATE : null,
-	    DROP_CNT : null
+	$scope.selectedDataTableRow[table_name] = {};
+	$scope.selectedDataTableRow[table_name].id = 'new';
+	$scope.selectedDataTableRow[table_name].tempId = Math.floor((Math.random() * 100000) + 1);
+
+	if (table_name == 'dpgift') {
+	    $rootScope.modalDataSet[table_name] = {
+		id : $scope.selectedDataTableRow[table_name].id,
+		tempId : $scope.selectedDataTableRow[table_name].tempId,
+		DONOR : $contact.id,
+		SOL : null,
+		MODE : null,
+		database_origin : $contact.database_origin,
+		ENVNO : null,
+		AMT : null,
+		DATE : null,
+		TRANSACT : null,
+		DESIGNATE : null,
+		LABEL : null,
+		LIST : null,
+		CAMP_TYPE : null,
+		DEMAND : null,
+		REQUESTS : null,
+		CURR : null,
+		GL : null,
+		PLEDGE : null,
+		RECEIPT : null,
+		REF : null,
+		TBAREQS : null
+	    };
+
+	} else if (table_name == 'dpother') {
+	    $rootScope.modalDataSet[table_name] = {
+		id : $scope.selectedDataTableRow[table_name].id,
+		tempId : $scope.selectedDataTableRow[table_name].tempId,
+		DONOR : $contact.id,
+		SOL : null,
+		MODE : null,
+		database_origin : $contact.database_origin,
+		ENVNO : null,
+		AMT : null,
+		DATE : null,
+		TRANSACT : null,
+		LABEL : null,
+		LIST : null,
+		CAMP_TYPE : null,
+		DEMAND : null,
+		REQUESTS : null,
+		CURR : null,
+		GL : null,
+		SURVEY : null,
+		SURV_ANS : null,
+		TBAREQS : null
+	    };
+
+	} else if (table_name == 'dpplg') {
+	    $rootScope.modalDataSet[table_name] = {
+		id : $scope.selectedDataTableRow[table_name].id,
+		tempId : $scope.selectedDataTableRow[table_name].tempId,
+		DONOR : $contact.id,
+		SOL : null
+	    };
+	} else if (table_name == 'dplink') {
+	    $rootScope.modalDataSet[table_name] = {
+		id : $scope.selectedDataTableRow[table_name].id,
+		tempId : $scope.selectedDataTableRow[table_name].tempId,
+		ID1 : $contact.id,
+		ID2 : null,
+		LINK : null,
+		TSDATE : null,
+		errors : {}
+	    };
 	}
+
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : modal_id,
 	    size : modal_size,
 	    backdrop : true
 	});
+
 	$rootScope.currentModal.result.then(function(selectedItem) {
-	    $scope.selectedTransaction = null;
+	    $scope.selectedDataTableRow[table_name] = null;
 	}, function(triggerElement) {
 
-	    $scope.selectedTransaction = null;
-	    // $scope.selectedTransactionTemp = null;
+	    $scope.selectedDataTableRow[table_name] = null;
+	    // $scope.selectedGiftTemp = null;
 	    if (triggerElement == 'save') {
-		// if($rootScope.)
-		$scope.tryDestroyMailDataTable();
-		$contact.updateElementObject('dtmail', $rootScope.selectedMail);
+
+		$scope.tryDestroyDataTable(table_name);
+		$contact.updateElementObject(table_name, $rootScope.modalDataSet[table_name]);
 		$timeout(function() {
 		    $scope.contact = $contact;
-		    $scope.rebindMailDataTables();
+		    $scope.rebindDataTable(table_name);
 		}, 0);
 	    } else { // do nothing
 	    }
 	});
+
+	$rootScope.currentModal.saveLink = function() {
+	    if (table_name == 'dplink') { //$rootScope.modalDataSet[table_name].errors
+		if ($rootScope.modalDataSet[table_name].ID2 == null) {
+		    return $timeout(function() {
+			$rootScope.modalDataSet[table_name].errors.ID2 = true;
+		    }, 0);
+		}
+		if ($rootScope.modalDataSet[table_name].LINK == null) {
+		    return $timeout(function() {
+			$rootScope.modalDataSet[table_name].errors.LINK = true;
+		    }, 0);
+		}
+	    }	    
+	    $rootScope.currentModal.dismiss('save');
+	};
+
     }
-    $scope.tryDestroyMailDataTable = function() {
-	$('#' + $scope.mailDataTableId).css('visibility', 'hidden');
-	if ($.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-	    $('#' + $scope.mailDataTableId).dataTable().fnDestroy();
+
+    $scope.tryDestroyDataTable = function(table_name) {
+	$('#' + table_name + '_datatable').css('visibility', 'hidden');
+	if ($.fn.DataTable.isDataTable('#' + table_name + '_datatable')) {
+	    $('#' + table_name + '_datatable').dataTable().fnDestroy();
 	}
     }
-    $scope.rebindMailDataTables = function() {
-	if (!$.fn.DataTable.isDataTable('#' + $scope.mailDataTableId)) {
-	    $('#' + $scope.mailDataTableId).dataTable($scope.mailDataTableOptions).on('page.dt', $scope.mailDataTableChange).on('length.dt', $scope.mailDataTableChange).on('search.dt', $scope.mailDataTableChange);
-	    $('#' + $scope.mailDataTableId).css('visibility', '');
-	    $('#' + $scope.mailDataTableId).next().find('ul.pagination li.paginate_button a').click(function() {
+    $scope.rebindDataTable = function(table_name) {
+	if (!$.fn.DataTable.isDataTable('#' + table_name + '_datatable')) {
+	    $('#' + table_name + '_datatable').dataTable($scope.dataTableOptions[table_name]).on('page.dt', $scope.resetSelectedDataTableRow(table_name)).on('length.dt', $scope.resetSelectedDataTableRow(table_name)).on('search.dt', $scope.resetSelectedDataTableRow(table_name));
+	    $('#' + table_name + '_datatable').css('visibility', '');
+	    $('#' + table_name + '_datatable').next().find('ul.pagination li.paginate_button a').click(function() {
 		$timeout(function() {
-		    $scope.selectedTransaction = null;
-		    // $scope.selectedTransactionTemp = null;
+		    $scope.selectedDataTableRow[table_name] = null;
 		}, 0);
 	    });
 	}
     }
 
-    $scope.getDeleteMailButtonDisabled = function() {
-	return ($scope.selectedTransaction == null);
+    $scope.getDatatableDeleteButtonDisabled = function(table_name) {
+	return ($scope.selectedDataTableRow[table_name] == null);
     }
-
-    $scope.isDeleteMailButtonText = function() {
-	if ($scope.selectedTransaction != null && $scope.selectedTransaction.is_deleted) {
+    $scope.isDatatableEditDisabled = function(table_name) {
+	if ($scope.selectedDataTableRow[table_name] == null || $scope.selectedDataTableRow[table_name].is_deleted) {
 	    return true;
 	}
 	return false;
     }
-    $scope.getDeleteMailButtonText = function() {
-	if ($scope.isDeleteMailButtonText()) {
+
+    $scope.isDatatableDeleteRestoreDisabled = function(table_name) { // is
+	// one
+	// selected
+	// AND
+	// deleted..
+	if ($scope.selectedDataTableRow[table_name] == null) {
+	    return true;
+	}
+	return false;
+    }
+
+    $scope.isDatatableDeleteButtonText = function(table_name) { // is one
+	// selected AND
+	// deleted..
+	if ($scope.selectedDataTableRow[table_name] != null && $scope.selectedDataTableRow[table_name].is_deleted) {
+	    return true;
+	}
+	return false;
+    }
+    $scope.getDatatableDeleteButtonText = function(table_name) {
+	if ($scope.isDatatableDeleteButtonText(table_name)) {
 	    return 'Restore';
 	}
 	return 'Delete';
-
     }
-
-    $scope.deleteMail = function() {
+    $scope.doDeleteDataTable = function(table_name) {
 	var deleteNew = false;
-	if ($scope.selectedTransaction.id == 'new') { // will destroy
+	if ($scope.selectedDataTableRow[table_name].id == 'new') { // will
+	    // destroy
 	    // cuz it's new
 	    deleteNew = true;
-	    $scope.tryDestroyMailDataTable();
+	    $scope.tryDestroyDataTable(table_name);
 	}
-	$contact.toggleDeleted('dtmail', $scope.selectedTransaction);
+	$contact.toggleDeleted(table_name, $scope.selectedDataTableRow[table_name]);
 	$timeout(function() {
 	    $scope.contact = $contact;
-	    $scope.selectedTransaction = null;
+	    $scope.selectedDataTableRow[table_name] = null;
 	    if (deleteNew) { // was a new one.. being deleted clearly
-		$scope.rebindMailDataTables();
+		$scope.rebindDataTable(table_name);
 	    }
 	}, 0);
     }
     /*
      * $scope.isRowDeletedAndFocused = function(row){ return (row.tempId ==
-     * $scope.selectedTransaction.tempId && row.tempId != null) || (row.id ==
-     * $scope.selectedTransaction.id && row.id != 'new'); }
+     * $scope.selectedGift.tempId && row.tempId != null) || (row.id ==
+     * $scope.selectedGift.id && row.id != 'new'); }
      */
-    $scope.isRowFocused = function(row) {
-	if ($scope.selectedTransaction == null) {
+    $scope.isDatatableRowFocused = function(table_name, row) {
+	if ($scope.selectedDataTableRow[table_name] == null) {
 	    return false;
 	}
-	return (row.tempId == $scope.selectedTransaction.tempId && row.tempId != null) || (row.id == $scope.selectedTransaction.id && row.id != 'new');
+	return (row.tempId == $scope.selectedDataTableRow[table_name].tempId && row.tempId != null) || (row.id == $scope.selectedDataTableRow[table_name].id && row.id != 'new');
     }
 
-    $scope.selectTransaction = function(transaction) {// transactionId,
+    $scope.selectDataTableRow = function(table_name, row) {// transactionId,
 	// tempId,
 	// is_deleted) {
-	$scope.selectedTransaction = transaction;
-	// $scope.selectedTransactionTemp = transaction.tempId;
-
+	$scope.selectedDataTableRow[table_name] = row;
     }
 
-    // /////////////////////////////////////////////// END MAIL
+    // /////////////////////////////////////////////// dynamic sub-datatables/
+    // modals
 
     // OTHER ADDRESSES
     $scope.addOtherAddress = function() {
@@ -244,6 +418,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.contact.dtvols1.VSPECTAL = null;
 	}
     });
+    
+    
 
     $scope.getEcclesiasticalAge = function(a, b, c) {
 	return 21;
@@ -255,12 +431,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.addNote = function(noteType) {
 	$scope.contact.notes[noteType] = $contact.addNote(noteType);
 	$scope.is_modified = $contact.is_modified = true;
+	$timeout(function() {
+	    $('#' + noteType).find('.note-row textarea:not(.ng-hide)').focus();
+	    // $('div[ng-repeat=contact.notes.'+noteType+']').find('textarea[ng-show=note.focused]')
+	}, 0);
     }
 
-    $scope.deleteNote = function(note) {
-	if (note.id == null) {
-	    $contact.toggleNote(note);
-	}
+    $scope.toggleNote = function(note) {
+	// if (note.id == null) {
+	$contact.toggleNote(note);
+
+	// }
     }
 
     $scope.blurNote = function(note) {
@@ -281,11 +462,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	note.focused = false;
 	note.text = note.modify_text || '';
     }
+    $scope.cancelNote = function(note) {
+	if(note.modify_text == '' && note.id == null && note.text == null){
+	    $contact.toggleNote(note);
+	}
+	//if(note.modify_text == '')
+	//note.focused = false;
+	//note.text = note.modify_text || '';
+    }
 
     // End Notes
 
     $scope.tryModified = function(newValue, oldValue) {
-	if (newValue !== oldValue) {
+	if (!angular.equals(newValue, oldValue)) {// newValue !== oldValue) {
 	    if (vm.updateModified) {
 		clearTimeout(vm.updateModified);
 	    }
@@ -297,7 +486,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    return;
 		}
 		$timeout(function() {
-		    $contact.is_modified = $scope.is_modified = true;
+		    if ($state.current.name == 'app.contacts') { // blocks
+			// lagging
+			// updates
+			// when
+			// we've
+			// already
+			// left the
+			// screen.
+			$contact.is_modified = $scope.is_modified = true;
+		    }
 		}, 0);
 	    }, 10);
 
@@ -324,14 +522,22 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    // selected
 		    // Transaction
 		    if (data.success) {
-			$scope.tryDestroyMailDataTable();
+			for ( var key in $scope.selectedDataTableRow) { // iterate
+			    // destroying
+			    // datatables!
+			    $scope.tryDestroyDataTable(key);
+			}
+			;
 			$timeout(function() {
 			    $contact.set(data.contact);
 			    resetContactForms();
 			    $timeout(function() {
 				$(window).scrollTop($('.nav-tabs').offset().top - 8);
-				$scope.rebindMailDataTables();
-
+				for ( var key in $scope.selectedDataTableRow) { // iterate
+				    // destroying
+				    // datatables!
+				    $scope.rebindDataTable(key);
+				}
 			    }, 0);
 			}, 0);
 		    }
@@ -351,11 +557,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    var founderrors = false;
 	    angular.forEach(vm.tabs, function(tabval) {
 		if (!founderrors) {
-		    if (tabval != tab) { // make sure to check the
-			// validity
-			// of other tabs.
-			$('#' + tabval).valid();
-		    }
+		    // if (tabval != tab) { // make sure to check the
+		    // validity
+		    // of other tabs.
+		    $('#' + tabval).valid(); // this was blocked at some
+		    // point for some reason..
+		    // }
 		    if ($rootScope.validator[tabval].numberOfInvalids() > 0) { // error
 			founderrors = true;
 			$('#' + tabval + '_tab a').click(); // Switches
@@ -369,21 +576,35 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// $scope.contact.otherAddresses =
 		// $scope.otherAddresses;
 		// delete $scope.contact.initDtVols1;
+		delete $scope.contact.is_saving;
 		$sails.post("/contacts/save", $scope.contact).success(function(data) {
 		    if (data.success) {
-			$scope.tryDestroyMailDataTable();
+			for ( var key in $scope.selectedDataTableRow) { // iterate
+			    // destroying
+			    // datatables!
+			    $scope.tryDestroyDataTable(key);
+			}
 			$timeout(function() {
-			    $contact.set(data.contact);
+			    $contact.set(data.contact); // sets is_saving to
+			    // false.
 			    resetContactForms();
-			    $rootScope.updateContactsTable();
+			    $rootScope.updateContactsTable(); // main contacts
+			    // table at the
+			    // top!
 			    $timeout(function() {
-				$scope.rebindMailDataTables();
+				for ( var key in $scope.selectedDataTableRow) { // iterate
+				    // destroying
+				    // datatables!
+				    $scope.rebindDataTable(key);
+				}
 			    }, 0);
 			}, 0);
 		    }
 		}).error(function(data) {
 		    alert('err!');
 		});
+
+		$scope.contact.is_saving = true;
 	    }
 	}, 0);
     }
@@ -394,21 +615,24 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// scope..
 	// seems needed a bunch verified.
 	// $scope.otherAddresses = $contact.otherAddresses;
-	angular.forEach(vm.tabs, function(tabval) {
-	    if ($rootScope.validator && $rootScope.validator[tabval]) {
-		$rootScope.validator[tabval].resetForm();
-		$('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
-	    }
-	});
+	if (vm.screenLoaded) {
+	    angular.forEach(vm.tabs, function(tabval) {
+		if ($rootScope.validator && $rootScope.validator[tabval]) {
+		    $rootScope.validator[tabval].resetForm();
+		    $('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
+		}
+	    });
+
+	} else {
+	    vm.screenLoaded = true;
+	}
     }
 
     // initialization routine.
     (function() {
-	if ($scope.titles) {
-	    // get an existing object
-	} else {
-
-	    $sails.get('/contacts/getattributes').success(function(data) {
+	if (typeof (vm.gotattributes) == 'undefined') {// get an existing object
+	    vm.gotattributes = true;
+	    $sails.get('/donortracker/getattributes').success(function(data) {
 		var data = data.result;
 
 		$scope.response = [ {
@@ -422,31 +646,84 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : 'Negative'
 		} ]
 
-		$scope.staticyesno = [ {
+		$rootScope.staticyesno = [ {
 		    id : 'Y',
 		    label : 'Yes'
 		}, {
 		    id : 'N',
 		    label : 'No'
 		} ];
-		
-		$scope.transaction_type = 1;
-		
+
+		$rootScope.currencies = [ {
+		    id : 'U',
+		    label : 'USD - United States'
+		}, {
+		    id : 'C',
+		    label : 'CAD - Canadian Dollars'
+		} ];
+
+		$rootScope.pledgegroups = [];
+		for (var i = 0; i < data.pledgegroups.length; i++) {
+		    $scope.pledgegroups.push({
+			id : data.pledgegroups[i].CODE,
+			label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
+		    });
+		}
+
+		$rootScope.tba_requests = [];
+		for (var i = 0; i < data.tba_requests.length; i++) {
+		    $rootScope.tba_requests.push({
+			id : data.tba_requests[i].CODE,
+			label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
+		    });
+		}
+
+		$rootScope.lists = [];
+		for (var i = 0; i < data.lists.length; i++) {
+		    $scope.lists.push({
+			id : data.lists[i].CODE,
+			label : data.lists[i].CODE + " - " + data.lists[i].DESC
+		    });
+		}
+		$rootScope.demands = [];
+		for (var i = 0; i < data.demands.length; i++) {
+		    $scope.demands.push({
+			id : data.demands[i].CODE,
+			label : data.demands[i].CODE + " - " + data.demands[i].DESC
+		    });
+		}
+		$rootScope.relationships = [];
+		for (var i = 0; i < data.relationships.length; i++) {
+		    $scope.relationships.push({
+			id : data.relationships[i].CODE,
+			label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
+		    });
+		}
+		$rootScope.requests_plural = [];
+		for (var i = 0; i < data.requests_plural.length; i++) {
+		    $scope.requests_plural.push({
+			id : data.requests_plural[i].CODE,
+			label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
+		    });
+		}
+
+		$scope.transaction_type = 'dpplg';
+
 		$scope.transaction_types = [ {
-		    id : 1,
-		    label : 'Mail'
-		},{
-		    id : 2,
+		    id : 'dpgift',
 		    label : 'Gift'
 		}, {
-		    id : 3,
+		    id : 'dtmail',
+		    label : 'Mail'
+		}, {
+		    id : 'dpplg',
 		    label : 'Pledge'
 		}, {
-		    id : 4,
+		    id : 'dpother',
 		    label : 'Other'
 		}, {
-		    id : 5,
-		    label : 'Misc'
+		    id : 'dplink',
+		    label : 'Links'
 		}, {
 		    id : 6,
 		    label : 'Myst'
@@ -462,13 +739,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    id : 'N',
 		    label : 'No'
 		} ];
-		
-	/*for (var i = 0; i < data.donor_classes.length; i++) {
-		    $scope.donor_classes.push({
-			id : data.donor_classes[i].CODE,
-			label : data.donor_classes[i].CODE + " - " + data.donor_classes[i].DESC
-		    });
-		}*/
+
+		/*
+		 * for (var i = 0; i < data.donor_classes.length; i++) {
+		 * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
+		 * label : data.donor_classes[i].CODE + " - " +
+		 * data.donor_classes[i].DESC }); }
+		 */
 
 		/*
 		 * angular.forEach(data.result,function(atts,key){
@@ -510,7 +787,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
 		    });
 		}
-
+		
 		$scope.willsaymass = [];
 		for (var i = 0; i < data.willsaymass.length; i++) {
 		    $scope.willsaymass.push({
@@ -567,6 +844,43 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			label : data.sols[i].CODE
 		    });
 		}
+		$rootScope.sols = [];
+		for (var i = 0; i < data.sols.length; i++) {
+		    $rootScope.sols.push({
+			id : data.sols[i].CODE,
+			label : data.sols[i].CODE
+		    });
+		}
+		$rootScope.billing_schedules = [];
+		for (var i = 0; i < data.billing_schedules.length; i++) {
+		    $rootScope.billing_schedules.push({
+			id : data.billing_schedules[i].CODE,
+			label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
+		    });
+		}
+
+		$rootScope.transacts = [];
+		for (var i = 0; i < data.transacts.length; i++) {
+		    $rootScope.transacts.push({
+			id : data.transacts[i].CODE,
+			label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
+		    });
+		}
+		$rootScope.designates = [];
+		for (var i = 0; i < data.designates.length; i++) {
+		    $rootScope.designates.push({
+			id : data.designates[i].CODE,
+			label : data.designates[i].CODE + " - " + data.designates[i].DESC
+		    });
+		}
+		$rootScope.modes = [];
+		for (var i = 0; i < data.modes.length; i++) {
+		    $rootScope.modes.push({
+			id : data.modes[i].CODE,
+			label : data.modes[i].CODE + " - " + data.modes[i].DESC
+		    });
+		}
+
 		$scope.states = [];
 		for (var i = 0; i < data.states.length; i++) {
 		    $scope.states.push({
@@ -609,12 +923,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// DTVOLS1
 		$scope.dtvols1 = {};
 		$scope.dtvols1.origin = [];
+		$rootScope.origin = [];
 		for (var i = 0; i < data.dtvols1.origin.length; i++) {
 		    $scope.dtvols1.origin.push({
 			id : data.dtvols1.origin[i].CODE,
 			label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
 		    });
 		}
+
+		$rootScope.origin = angular.copy($scope.dtvols1.origin);
 
 	    }).error(function(data) {
 		alert('err!');
@@ -702,7 +1019,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.runReport = function() {
-	$scope.report.system_name = 'The Fatima Center'; // saves the system name
+	$scope.report.system_name = 'The Fatima Center'; // saves the system
+	// name
 	$scope.report.timezoneoffset = new Date().getTimezoneOffset();
 	$scope.report.loading = true;
 	$http.post('/reports/view', {
@@ -710,11 +1028,346 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}).success(function(html) {
 	    $timeout(function() {
 		delete $scope.report.loading;
-		$scope.reporthtml = $sce.trustAsHtml(html);//'"<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=300, initial-scale=1" name="viewport"><meta name="description" content=""><title>undefined</title><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" sizes="114x114" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" sizes="72x72" href="/img/favicon.ico"><link rel="apple-touch-icon-precomposed" href="/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="icon" href="/img/favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">               <!--<script type="text/javascript" src="/js/jquery.js"></script><script type="text/javascript" src="/js/dependencies/sails.io.js"></script><script type="text/javascript" src="/js/bootstrap-combobox.js"></script><script type="text/javascript" src="/js/bootstrap.js"></script><script type="text/javascript" src="/js/jquery-ui-1.10.3.custom.min.js"></script><script type="text/javascript" src="/js/jquery.ui.chatbox.js"></script><script type="text/javascript" src="/js/jquery.ui.chatboxManager.js"></script>       --></head><body><div class="wrapper">    <!--<div class="google-header-bar  centered">        <div class="header content clearfix">            <img alt="iSystemsNow" class="logo" src="/img/iSystemsNow-Logo-RGB-Black.png">        </div>    </div>-->    <div class="main content clearfix">        <div class="banner">            <h5 style="margin-left:10px;">                No results have been found.            </h5>        </div>    </div></div></body></html>"';
-		//console.log(html);
+		$scope.reporthtml = $sce.trustAsHtml(html);// '"<!DOCTYPE
+		// html><html
+		// lang="en"><head><meta
+		// charset="utf-8"><meta
+		// content="width=300,
+		// initial-scale=1"
+		// name="viewport"><meta
+		// name="description"
+		// content=""><title>undefined</title><link
+		// rel="apple-touch-icon-precomposed"
+		// sizes="144x144"
+		// href="/img/favicon.ico"><link
+		// rel="apple-touch-icon-precomposed"
+		// sizes="114x114"
+		// href="/img/favicon.ico"><link
+		// rel="apple-touch-icon-precomposed"
+		// sizes="72x72"
+		// href="/img/favicon.ico"><link
+		// rel="apple-touch-icon-precomposed"
+		// href="/img/favicon.png"><link
+		// rel="shortcut
+		// icon"
+		// href="/img/favicon.ico"><link
+		// rel="icon"
+		// href="/img/favicon.ico"
+		// type="image/x-icon"><link
+		// rel="shortcut
+		// icon"
+		// href="/img/favicon.ico"
+		// type="image/x-icon">
+		// <!--<script
+		// type="text/javascript"
+		// src="/js/jquery.js"></script><script
+		// type="text/javascript"
+		// src="/js/dependencies/sails.io.js"></script><script
+		// type="text/javascript"
+		// src="/js/bootstrap-combobox.js"></script><script
+		// type="text/javascript"
+		// src="/js/bootstrap.js"></script><script
+		// type="text/javascript"
+		// src="/js/jquery-ui-1.10.3.custom.min.js"></script><script
+		// type="text/javascript"
+		// src="/js/jquery.ui.chatbox.js"></script><script
+		// type="text/javascript"
+		// src="/js/jquery.ui.chatboxManager.js"></script>
+		// --></head><body><div
+		// class="wrapper">
+		// <!--<div
+		// class="google-header-bar
+		// centered"> <div
+		// class="header
+		// content
+		// clearfix"> <img
+		// alt="iSystemsNow"
+		// class="logo"
+		// src="/img/iSystemsNow-Logo-RGB-Black.png">
+		// </div> </div>-->
+		// <div class="main
+		// content
+		// clearfix"> <div
+		// class="banner">
+		// <h5
+		// style="margin-left:10px;">
+		// No results have
+		// been found. </h5>
+		// </div>
+		// </div></div></body></html>"';
+		// console.log(html);
 	    }, 0);
 	});
     }
+
+}).controller('ModalCtrl', function($scope, $rootScope) {
+    var vm = this;
+}).controller('ContactsLinkSearch', function($scope, $rootScope) {
+    var vm = this;
+
+    $scope.link_contact = {};
+    $scope.link_contact.id = '';
+    $scope.link_contact.ADD = null;
+    $scope.link_contact.CITY = null;
+    $scope.link_contact.ST = null;
+    $scope.link_contact.COUNTRY = null;
+    $scope.link_contact.ZIP = null;
+    $scope.link_contact.CHECKBOX = null;
+    $scope.link_contact.CLASS = null;
+
+    /*
+     * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
+     * 'No' } ];
+     */
+    $scope.donor_classes = [ {
+	id : "AA",
+	label : "AA - Prospect-88"
+    }, {
+	id : "AB",
+	label : "AB - Prospect-89"
+    }, {
+	"id" : "AC",
+	"label" : "AC - Prospect-90"
+    }, {
+	"id" : "AD",
+	"label" : "AD - Prospect-91"
+    }, {
+	"id" : "AE",
+	"label" : "AE - Prospect-92"
+    }, {
+	"id" : "AF",
+	"label" : "AF - Prospect-93"
+    }, {
+	"id" : "AG",
+	"label" : "AG - Prospect-94"
+    }, {
+	"id" : "CA",
+	"label" : "CA - Referrals-88"
+    }, {
+	"id" : "CB",
+	"label" : "CB - Referrals-89"
+    }, {
+	"id" : "CC",
+	"label" : "CC - Referrals-90"
+    }, {
+	"id" : "CD",
+	"label" : "CD - Referrals-91"
+    }, {
+	"id" : "CE",
+	"label" : "CE - Referrals-92"
+    }, {
+	"id" : "CF",
+	"label" : "CF - Referrals-93"
+    }, {
+	"id" : "CG",
+	"label" : "CG - Referrals-94"
+    }, {
+	"id" : "EA",
+	"label" : "EA - Contacts-88"
+    }, {
+	"id" : "EB",
+	"label" : "EB - Contacts-89"
+    }, {
+	"id" : "EC",
+	"label" : "EC - Contacts-90"
+    }, {
+	"id" : "ED",
+	"label" : "ED - Contacts-91"
+    }, {
+	"id" : "EE",
+	"label" : "EE - Contacts-92"
+    }, {
+	"id" : "EF",
+	"label" : "EF - Contacts-93"
+    }, {
+	"id" : "EG",
+	"label" : "EG - Contacts-94"
+    }, {
+	"id" : "GA",
+	"label" : "GA - Buyers-88"
+    }, {
+	"id" : "GB",
+	"label" : "GB - Buyers-89"
+    }, {
+	"id" : "GC",
+	"label" : "GC - Buyers-90"
+    }, {
+	"id" : "GD",
+	"label" : "GD - Buyers-91"
+    }, {
+	"id" : "GE",
+	"label" : "GE - Buyers-92"
+    }, {
+	"id" : "GF",
+	"label" : "GF - Buyers-93"
+    }, {
+	"id" : "GG",
+	"label" : "GG - Buyers-94"
+    }, {
+	"id" : "IA",
+	"label" : "IA - Donor - 0.01+"
+    }, {
+	"id" : "IB",
+	"label" : "IB - Donor - 5+"
+    }, {
+	"id" : "IC",
+	"label" : "IC - Donor - 10+"
+    }, {
+	"id" : "ID",
+	"label" : "ID - Donor - 25+"
+    }, {
+	"id" : "IE",
+	"label" : "IE - Donor - 50+"
+    }, {
+	"id" : "IF",
+	"label" : "IF - Donor - 75+"
+    }, {
+	"id" : "IG",
+	"label" : "IG - Donor - 100+"
+    }, {
+	"id" : "IH",
+	"label" : "IH - Donor - 250+"
+    }, {
+	"id" : "II",
+	"label" : "II - Donor - 500+"
+    }, {
+	"id" : "IJ",
+	"label" : "IJ - Donor - 1000+"
+    }, {
+	"id" : "IK",
+	"label" : "IK - Donor - 5000+"
+    }, {
+	"id" : "AH",
+	"label" : "AH - Prospect-95"
+    }, {
+	"id" : "CH",
+	"label" : "CH - Referrals-95"
+    }, {
+	"id" : "GH",
+	"label" : "GH - Buyers-95"
+    }, {
+	"id" : "EH",
+	"label" : "EH - Contacts-95"
+    }, {
+	"id" : "AI",
+	"label" : "AI - Prospect-96"
+    }, {
+	"id" : "AJ",
+	"label" : "AJ - Prospect-97"
+    }, {
+	"id" : "AK",
+	"label" : "AK - Prospect-98"
+    }, {
+	"id" : "AL",
+	"label" : "AL - Prospect-99"
+    }, {
+	"id" : "AM",
+	"label" : "AM - Prospect-00"
+    }, {
+	"id" : "AN",
+	"label" : "AN - Prospect-01"
+    }, {
+	"id" : "EI",
+	"label" : "EI - Contacts-96"
+    }, {
+	"id" : "EJ",
+	"label" : "EJ - Contacts-97"
+    }, {
+	"id" : "EK",
+	"label" : "EK - Contacts-98"
+    }, {
+	"id" : "EL",
+	"label" : "EL - Contacts-99"
+    }, {
+	"id" : "EM",
+	"label" : "EM - Contacts-00"
+    }, {
+	"id" : "EN",
+	"label" : "EN - Contacts-01"
+    }, {
+	"id" : "CI",
+	"label" : "CI - Referrals-96"
+    }, {
+	"id" : "CJ",
+	"label" : "CJ - Referrals-97"
+    }, {
+	"id" : "CK",
+	"label" : "CK - Referrals-98"
+    }, {
+	"id" : "CL",
+	"label" : "CL - Referrals-99"
+    }, {
+	"id" : "CM",
+	"label" : "CM - Referrals-00"
+    }, {
+	"id" : "CN",
+	"label" : "CN - Referrals-01"
+    }, {
+	"id" : "GI",
+	"label" : "GI - Buyers-96"
+    }, {
+	"id" : "GJ",
+	"label" : "GJ - Buyers-97"
+    }, {
+	"id" : "GK",
+	"label" : "GK - Buyers-98"
+    }, {
+	"id" : "GL",
+	"label" : "GL - Buyers-99"
+    }, {
+	"id" : "GM",
+	"label" : "GM - Buyers-00"
+    }, {
+	"id" : "GN",
+	"label" : "GN - Buyers-01"
+    }, {
+	"id" : "AO",
+	"label" : "AO - Prospect-02"
+    }, {
+	"id" : "CO",
+	"label" : "CO - Referrals-02"
+    }, {
+	"id" : "EO",
+	"label" : "EO - Contacts-02"
+    }, {
+	"id" : "GO",
+	"label" : "GO - Buyers-02"
+    }, {
+	"id" : "AP",
+	"label" : "AP - Prospect-03"
+    }, {
+	"id" : "CP",
+	"label" : "CP - Referrals-03"
+    }, {
+	"id" : "EP",
+	"label" : "EP - Contacts-03"
+    }, {
+	"id" : "GP",
+	"label" : "GP - Buyers-03"
+    }, {
+	"id" : "UN",
+	"label" : "UN - Unknown"
+    }, {
+	"id" : "EH",
+	"label" : "EH - Contact-95"
+    }, {
+	"id" : "CN",
+	"label" : "CN - Refferal 2001"
+    }, {
+	"id" : "AO",
+	"label" : "AO - Tour"
+    } ];
+
+    $rootScope.search_link_contact = $scope.link_contact;
+
+    $scope.$watchCollection('link_contact', function() {
+	if (vm.updateTable) {
+	    clearTimeout(vm.updateTable);
+	}
+	vm.updateTable = setTimeout(function() {
+	    $rootScope.updateLinkContactsTable();
+	}, 300);
+    });
 
 }).controller('ContactsSearch', function($scope, $rootScope) {
     var vm = this;
@@ -728,16 +1381,250 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.contact.ZIP = null;
     $scope.contact.CHECKBOX = null;
     $scope.contact.CLASS = null;
-    
-    $scope.staticyesno = [ {
-	id : 'Y',
-	label : 'Yes'
+
+    /*
+     * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
+     * 'No' } ];
+     */
+    $scope.donor_classes = [ {
+	id : "AA",
+	label : "AA - Prospect-88"
     }, {
-	id : 'N',
-	label : 'No'
+	id : "AB",
+	label : "AB - Prospect-89"
+    }, {
+	"id" : "AC",
+	"label" : "AC - Prospect-90"
+    }, {
+	"id" : "AD",
+	"label" : "AD - Prospect-91"
+    }, {
+	"id" : "AE",
+	"label" : "AE - Prospect-92"
+    }, {
+	"id" : "AF",
+	"label" : "AF - Prospect-93"
+    }, {
+	"id" : "AG",
+	"label" : "AG - Prospect-94"
+    }, {
+	"id" : "CA",
+	"label" : "CA - Referrals-88"
+    }, {
+	"id" : "CB",
+	"label" : "CB - Referrals-89"
+    }, {
+	"id" : "CC",
+	"label" : "CC - Referrals-90"
+    }, {
+	"id" : "CD",
+	"label" : "CD - Referrals-91"
+    }, {
+	"id" : "CE",
+	"label" : "CE - Referrals-92"
+    }, {
+	"id" : "CF",
+	"label" : "CF - Referrals-93"
+    }, {
+	"id" : "CG",
+	"label" : "CG - Referrals-94"
+    }, {
+	"id" : "EA",
+	"label" : "EA - Contacts-88"
+    }, {
+	"id" : "EB",
+	"label" : "EB - Contacts-89"
+    }, {
+	"id" : "EC",
+	"label" : "EC - Contacts-90"
+    }, {
+	"id" : "ED",
+	"label" : "ED - Contacts-91"
+    }, {
+	"id" : "EE",
+	"label" : "EE - Contacts-92"
+    }, {
+	"id" : "EF",
+	"label" : "EF - Contacts-93"
+    }, {
+	"id" : "EG",
+	"label" : "EG - Contacts-94"
+    }, {
+	"id" : "GA",
+	"label" : "GA - Buyers-88"
+    }, {
+	"id" : "GB",
+	"label" : "GB - Buyers-89"
+    }, {
+	"id" : "GC",
+	"label" : "GC - Buyers-90"
+    }, {
+	"id" : "GD",
+	"label" : "GD - Buyers-91"
+    }, {
+	"id" : "GE",
+	"label" : "GE - Buyers-92"
+    }, {
+	"id" : "GF",
+	"label" : "GF - Buyers-93"
+    }, {
+	"id" : "GG",
+	"label" : "GG - Buyers-94"
+    }, {
+	"id" : "IA",
+	"label" : "IA - Donor - 0.01+"
+    }, {
+	"id" : "IB",
+	"label" : "IB - Donor - 5+"
+    }, {
+	"id" : "IC",
+	"label" : "IC - Donor - 10+"
+    }, {
+	"id" : "ID",
+	"label" : "ID - Donor - 25+"
+    }, {
+	"id" : "IE",
+	"label" : "IE - Donor - 50+"
+    }, {
+	"id" : "IF",
+	"label" : "IF - Donor - 75+"
+    }, {
+	"id" : "IG",
+	"label" : "IG - Donor - 100+"
+    }, {
+	"id" : "IH",
+	"label" : "IH - Donor - 250+"
+    }, {
+	"id" : "II",
+	"label" : "II - Donor - 500+"
+    }, {
+	"id" : "IJ",
+	"label" : "IJ - Donor - 1000+"
+    }, {
+	"id" : "IK",
+	"label" : "IK - Donor - 5000+"
+    }, {
+	"id" : "AH",
+	"label" : "AH - Prospect-95"
+    }, {
+	"id" : "CH",
+	"label" : "CH - Referrals-95"
+    }, {
+	"id" : "GH",
+	"label" : "GH - Buyers-95"
+    }, {
+	"id" : "EH",
+	"label" : "EH - Contacts-95"
+    }, {
+	"id" : "AI",
+	"label" : "AI - Prospect-96"
+    }, {
+	"id" : "AJ",
+	"label" : "AJ - Prospect-97"
+    }, {
+	"id" : "AK",
+	"label" : "AK - Prospect-98"
+    }, {
+	"id" : "AL",
+	"label" : "AL - Prospect-99"
+    }, {
+	"id" : "AM",
+	"label" : "AM - Prospect-00"
+    }, {
+	"id" : "AN",
+	"label" : "AN - Prospect-01"
+    }, {
+	"id" : "EI",
+	"label" : "EI - Contacts-96"
+    }, {
+	"id" : "EJ",
+	"label" : "EJ - Contacts-97"
+    }, {
+	"id" : "EK",
+	"label" : "EK - Contacts-98"
+    }, {
+	"id" : "EL",
+	"label" : "EL - Contacts-99"
+    }, {
+	"id" : "EM",
+	"label" : "EM - Contacts-00"
+    }, {
+	"id" : "EN",
+	"label" : "EN - Contacts-01"
+    }, {
+	"id" : "CI",
+	"label" : "CI - Referrals-96"
+    }, {
+	"id" : "CJ",
+	"label" : "CJ - Referrals-97"
+    }, {
+	"id" : "CK",
+	"label" : "CK - Referrals-98"
+    }, {
+	"id" : "CL",
+	"label" : "CL - Referrals-99"
+    }, {
+	"id" : "CM",
+	"label" : "CM - Referrals-00"
+    }, {
+	"id" : "CN",
+	"label" : "CN - Referrals-01"
+    }, {
+	"id" : "GI",
+	"label" : "GI - Buyers-96"
+    }, {
+	"id" : "GJ",
+	"label" : "GJ - Buyers-97"
+    }, {
+	"id" : "GK",
+	"label" : "GK - Buyers-98"
+    }, {
+	"id" : "GL",
+	"label" : "GL - Buyers-99"
+    }, {
+	"id" : "GM",
+	"label" : "GM - Buyers-00"
+    }, {
+	"id" : "GN",
+	"label" : "GN - Buyers-01"
+    }, {
+	"id" : "AO",
+	"label" : "AO - Prospect-02"
+    }, {
+	"id" : "CO",
+	"label" : "CO - Referrals-02"
+    }, {
+	"id" : "EO",
+	"label" : "EO - Contacts-02"
+    }, {
+	"id" : "GO",
+	"label" : "GO - Buyers-02"
+    }, {
+	"id" : "AP",
+	"label" : "AP - Prospect-03"
+    }, {
+	"id" : "CP",
+	"label" : "CP - Referrals-03"
+    }, {
+	"id" : "EP",
+	"label" : "EP - Contacts-03"
+    }, {
+	"id" : "GP",
+	"label" : "GP - Buyers-03"
+    }, {
+	"id" : "UN",
+	"label" : "UN - Unknown"
+    }, {
+	"id" : "EH",
+	"label" : "EH - Contact-95"
+    }, {
+	"id" : "CN",
+	"label" : "CN - Refferal 2001"
+    }, {
+	"id" : "AO",
+	"label" : "AO - Tour"
     } ];
-	$scope.donor_classes = [{id:"AA",label:"AA - Prospect-88"},{id:"AB",label:"AB - Prospect-89"},{"id":"AC","label":"AC - Prospect-90"},{"id":"AD","label":"AD - Prospect-91"},{"id":"AE","label":"AE - Prospect-92"},{"id":"AF","label":"AF - Prospect-93"},{"id":"AG","label":"AG - Prospect-94"},{"id":"CA","label":"CA - Referrals-88"},{"id":"CB","label":"CB - Referrals-89"},{"id":"CC","label":"CC - Referrals-90"},{"id":"CD","label":"CD - Referrals-91"},{"id":"CE","label":"CE - Referrals-92"},{"id":"CF","label":"CF - Referrals-93"},{"id":"CG","label":"CG - Referrals-94"},{"id":"EA","label":"EA - Contacts-88"},{"id":"EB","label":"EB - Contacts-89"},{"id":"EC","label":"EC - Contacts-90"},{"id":"ED","label":"ED - Contacts-91"},{"id":"EE","label":"EE - Contacts-92"},{"id":"EF","label":"EF - Contacts-93"},{"id":"EG","label":"EG - Contacts-94"},{"id":"GA","label":"GA - Buyers-88"},{"id":"GB","label":"GB - Buyers-89"},{"id":"GC","label":"GC - Buyers-90"},{"id":"GD","label":"GD - Buyers-91"},{"id":"GE","label":"GE - Buyers-92"},{"id":"GF","label":"GF - Buyers-93"},{"id":"GG","label":"GG - Buyers-94"},{"id":"IA","label":"IA - Donor - 0.01+"},{"id":"IB","label":"IB - Donor - 5+"},{"id":"IC","label":"IC - Donor - 10+"},{"id":"ID","label":"ID - Donor - 25+"},{"id":"IE","label":"IE - Donor - 50+"},{"id":"IF","label":"IF - Donor - 75+"},{"id":"IG","label":"IG - Donor - 100+"},{"id":"IH","label":"IH - Donor - 250+"},{"id":"II","label":"II - Donor - 500+"},{"id":"IJ","label":"IJ - Donor - 1000+"},{"id":"IK","label":"IK - Donor - 5000+"},{"id":"AH","label":"AH - Prospect-95"},{"id":"CH","label":"CH - Referrals-95"},{"id":"GH","label":"GH - Buyers-95"},{"id":"EH","label":"EH - Contacts-95"},{"id":"AI","label":"AI - Prospect-96"},{"id":"AJ","label":"AJ - Prospect-97"},{"id":"AK","label":"AK - Prospect-98"},{"id":"AL","label":"AL - Prospect-99"},{"id":"AM","label":"AM - Prospect-00"},{"id":"AN","label":"AN - Prospect-01"},{"id":"EI","label":"EI - Contacts-96"},{"id":"EJ","label":"EJ - Contacts-97"},{"id":"EK","label":"EK - Contacts-98"},{"id":"EL","label":"EL - Contacts-99"},{"id":"EM","label":"EM - Contacts-00"},{"id":"EN","label":"EN - Contacts-01"},{"id":"CI","label":"CI - Referrals-96"},{"id":"CJ","label":"CJ - Referrals-97"},{"id":"CK","label":"CK - Referrals-98"},{"id":"CL","label":"CL - Referrals-99"},{"id":"CM","label":"CM - Referrals-00"},{"id":"CN","label":"CN - Referrals-01"},{"id":"GI","label":"GI - Buyers-96"},{"id":"GJ","label":"GJ - Buyers-97"},{"id":"GK","label":"GK - Buyers-98"},{"id":"GL","label":"GL - Buyers-99"},{"id":"GM","label":"GM - Buyers-00"},{"id":"GN","label":"GN - Buyers-01"},{"id":"AO","label":"AO - Prospect-02"},{"id":"CO","label":"CO - Referrals-02"},{"id":"EO","label":"EO - Contacts-02"},{"id":"GO","label":"GO - Buyers-02"},{"id":"AP","label":"AP - Prospect-03"},{"id":"CP","label":"CP - Referrals-03"},{"id":"EP","label":"EP - Contacts-03"},{"id":"GP","label":"GP - Buyers-03"},{"id":"UN","label":"UN - Unknown"},{"id":"EH","label":"EH - Contact-95"},{"id":"CN","label":"CN - Refferal 2001"},{"id":"AO","label":"AO - Tour"}];
-	
+
     $rootScope.search_contact = $scope.contact;
 
     $scope.$watchCollection('contact', function() {
@@ -750,6 +1637,65 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     });
 
 }).controller(
+    'AddContactDatatable',
+    function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder) {
+	var vm = this;
+	vm.rowClicked = rowClicked;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/contacts/ajax',
+	    type : 'POST'
+	}).withOption('responsive').withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	    aoData.contact = $rootScope.search_link_contact;
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		$scope.$apply(function() {
+		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		});
+	    });
+	    //if (aData.id == $contact.id) {
+	    //	$(nRow).addClass('selected');
+	    //}
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"col-xs-12"<"row"<"col-lg-4"i><"col-lg-8"p>>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'),
+	    DTColumnBuilder.newColumn('CITY').withTitle('City'), DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes
+	    // later.
+	});
+
+	$rootScope.updateLinkContactsTable = function(event, args) {
+	    if ($scope.tableId) {
+		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		}, false);
+		$rootScope.modalDataSet['dplink'].errors = {}; // empties errors
+	    }
+	}
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    //$rootScope.$broadcast("selectLinkContact", {
+	    //id : aData
+	    //});
+	    $rootScope.modalDataSet.dplink.errors = {}; //empty errors
+	    $timeout(function() {
+		$rootScope.modalDataSet.dplink.ID2 = aData.id;
+	    }, 0);
+
+	    // if(aData.id == $contact.id){
+	    $('tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	}
+
+    }).controller(
     'ContactsDatatable',
     function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder) {
 	var vm = this;
@@ -801,6 +1747,25 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	 */
 
 	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+
+	    if ($contact.is_modified) {
+		if (confirm(unsavedMessage)) {
+		    //$contact.is_modified = false;
+		} else {
+		    var obj = {
+			pos : $(window).scrollTop()
+		    };
+		    TweenLite.to(obj, .3, {
+			pos : ($('#contact_form').length < 1) ? 0 : ($('#contact_form').offset().top - 8),
+			ease : Power4.easeOut,
+			onUpdate : function() {
+			    $(window).scrollTop(obj.pos);
+			}
+		    });
+		    return;
+		}
+	    }
 	    $rootScope.$broadcast("getcontact", {
 		id : aData.id
 	    });
@@ -930,20 +1895,23 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     // Set Scroll to 0 When page is changed
     $rootScope.$on('$stateChangeStart', function() {
-	if ($contact.is_modified) {
-	    return;
+	if ($contact.is_modified) { // still modified-
+	    // if(!confirm(unsavedMessage)){
+	    var obj = {
+		pos : $(window).scrollTop()
+	    };
+	    TweenLite.to(obj, .3, {
+		pos : ($('#contact_form').length < 1) ? 0 : ($('#contact_form').offset().top - 8),
+		ease : Power4.easeOut,
+		onUpdate : function() {
+		    $(window).scrollTop(obj.pos);
+		}
+	    });
+	    // return;
+	    // }else{
+	    // $contact.is_modified = false;
+	    // }
 	}
-	var obj = {
-	    pos : jQuery(window).scrollTop()
-	};
-
-	TweenLite.to(obj, .25, {
-	    pos : 0,
-	    ease : Power4.easeOut,
-	    onUpdate : function() {
-		$(window).scrollTop(obj.pos);
-	    }
-	});
     });
 
     // Full screen feature added in v1.3

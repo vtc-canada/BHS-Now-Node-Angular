@@ -9,6 +9,16 @@ html{
 }
 
 
+.panel-title-wrapper{
+	float:left;
+}
+a.panel-title-wrapper:hover, a.panel-title-wrapper:focus{
+	text-decoration:none;	
+}
+.panel-options a:hover,.panel-options a:focus{ 
+	text-decoration:none;	
+}
+	
 
 .panel .panel-second-heading{
 	padding-top:18px;
@@ -23,6 +33,15 @@ html{
 	margin-right:9px;
 } 
 
+.modal-body .alert{
+	margin-top: -21px;
+}
+
+.modal-datatables-wrapper{
+	overflow-x:auto;
+	min-height:436px;
+}
+
 table.dataTable{
 	width: 100% !important;
 }
@@ -30,6 +49,42 @@ table.dataTable{
 table.dataTable tbody tr{
 	cursor:pointer;
 }
+
+.dataTables_processing{
+	/*position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	padding-top: 26%;
+	color: white;
+	text-align: center;
+	font-size: 1.2em;
+	background: rgba(1,1,1,0.6);
+	z-index: 1;
+	font-size: 22px;*/
+	
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 40px;
+    margin-left: -50%;
+    margin-top: -25px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: white;
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(25%, rgba(255,255,255,0.9)), color-stop(75%, rgba(255,255,255,0.9)), color-stop(100%, rgba(255,255,255,0)));
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    background: -o-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    z-index: 1;
+}
+
+
 .nav.nav-tabs+.tab-content {
 	padding: 5px;
 }
@@ -212,3 +267,8 @@ ul.nav-tabs li{
 .panel .panel-body {
 	color: #242424;
 }
+
+div.datepicker {
+	z-index: 2000 !important;
+}
+

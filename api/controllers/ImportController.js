@@ -121,7 +121,7 @@ var tables = [ {
 
 var insertTables = [];
 
-var destination = 'fatima_center_donor_tracker'; // Remember. this drops the
+var destination = 'fatima_center_donor_tracker_v2'; // Remember. this drops the
 // database.
 
 module.exports = {
@@ -194,6 +194,14 @@ module.exports = {
 		    dbknex.raw('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', '
 				    + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ').exec(  //LIMIT 50000
 			    function(err, inserted) {
+				if(err){
+				    console.log('ERROR:' + err.toString());
+				    console.log('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', '
+				    + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ');
+				    console.log(JSON.stringify(columns));
+				}
+				
+				
 				tablescallback();
 			    });
 		}, function(err) {
