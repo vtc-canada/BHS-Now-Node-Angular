@@ -1,7 +1,7 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Reports" description=""></page-title>
 			
 <div class="row" ng-controller="ReportSearch">
-	<div class="col-sm-12">
+	<div class="col-sm-12 hidden-print">
 		<div class="panel panel-default collapsed">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="fa-sliders"></i>&nbsp&nbspReport Selection</h3>
@@ -45,7 +45,7 @@
 	
 	<div class="col-sm-12" ng-show="reporthtml">
 		<div class="panel panel-default collapsed">
-			<div class="panel-heading">
+			<div class="panel-heading hidden-print">
 				<h3 class="panel-title"><i class="fa-file-o"></i>&nbsp&nbsp{{report.name.locale_label.en}}</h3>
 				<div class="pull-right isn-panel-pull-right">
 					<div class="btn btn-secondary" ng-click="printReport()">Print</div>
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 			<div class="panel-body always-visible">
-				<div class="col-sm-12" ng-bind-html="reporthtml">
+				<div class="col-sm-12" ng-bind-html="reporthtml" id="report_html">
 					
 				</div>
 			</div>

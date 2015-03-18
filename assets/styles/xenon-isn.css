@@ -206,6 +206,12 @@ table.dataTable{
 	white-space: nowrap;
 	word-wrap: normal;
 }
+
+.report-data-wrapper  table.wide tbody td{
+	vertical-align:middle;
+	white-space: normal;
+}
+
 .report-data-wrapper  table thead td, .report-data-wrapper  table thead th{
 	vertical-align:bottom;
 	word-break: normal;
