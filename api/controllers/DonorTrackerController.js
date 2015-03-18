@@ -6,6 +6,27 @@
  */
 
 module.exports = {
+    
+    getdpcodeattributes : function(req, res) {
+
+	async.parallel({
+	    dpcodefields : function(callback) {
+		Database.knex('dpcodes').distinct('FIELD').select().exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    }
+	}, function(err, result) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : result
+	    });
+	});
+    },
+    
     getattributes : function(req, res) {
 
 	async.parallel({

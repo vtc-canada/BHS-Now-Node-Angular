@@ -877,7 +877,7 @@
 	
 	<div ng-if="contact.id" class="col-md-12">
 		<tabset class="nav-tabs">
-			<tab heading="Layman" id="layman_tab">
+			<tab heading="Layman" enabled="true" id="layman_tab">
 				<form role="form" id="layman" class="form-horizontal validate">
 					<div class="row">
 						<div class="col-md-12">
@@ -1667,7 +1667,7 @@
 				</form>	
 			</tab>
 			
-			<tab heading="Ecclesiastical" id="ecclesiastical_tab">
+			<tab heading="Ecclesiastical" enabled="contact.ecc_enabled" id="ecclesiastical_tab">
 				<form role="form" id="ecclesiastical"class="form-horizontal validate">
 					<div class="row">
 						<div class="col-xs-6">
@@ -2199,7 +2199,7 @@
 			
 			
 			
-			<tab heading="Volunteer" id="volunteer_tab">
+			<tab heading="Volunteer" enabled="contact.dtvols1.enabled" id="volunteer_tab">
 				<form role="form" id="volunteer"class="form-horizontal validate">
 					
 					<div class="row">
@@ -2405,10 +2405,10 @@
 											<div class="row">
 												<div class="col-xs-12">
 													<div class="form-group">
-														<label class="col-sm-8 control-label" >Language:</label>
+														<label class="col-sm-4 control-label" >Languages:</label>
 								
-														<div class="col-sm-4">
-															
+														<div class="col-sm-8">
+															<select2 class="form-control" id="contact.dptrans" ng-options="title.id as title.label for title in languages" ng-model="contact.dptrans" multiple></select2>
 														</div>
 													</div>
 												</div>
@@ -2537,7 +2537,7 @@
 
 
 			</tab>
-			<tab heading="Orders" id="orders_tab">
+			<tab heading="Orders" enabled="true"  id="orders_tab">
 				<form role="form" id="orders"class="form-horizontal validate">
 					<div class="row">
 						<div class="col-xs-12">

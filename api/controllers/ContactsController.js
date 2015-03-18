@@ -51,6 +51,8 @@ module.exports = {
 	    var dplink = contact.dplink;
 	    var dplang = contact.dplang;
 	    var dplang_modified = contact.dplang_modified;
+	    var dptrans = contact.dptrans;
+	    var dptrans_modified = contact.dptrans_modified;
 	    var dpother = contact.dpother;
 	    var dtmajor = contact.dtmajor;
 	    var dtvols1 = contact.dtvols1;
@@ -63,6 +65,8 @@ module.exports = {
 	    delete contact.dplink;
 	    delete contact.dplang;
 	    delete contact.dplang_modified;
+	    delete contact.dptrans;
+	    delete contact.dptrans_modified;
 	    delete contact.dpother;
 	    delete contact.dtmajor;
 	    delete contact.dtvols1;
@@ -120,6 +124,16 @@ module.exports = {
 		}, function(callback) {
 		    if (dplang_modified) {
 			updateMultiSelect('dplang', 'LANGUAGE', contactId, contact.database_origin, dplang, function(err, data) {
+			    if (err)
+				return callback(err);
+			    callback(null);
+			});
+		    } else {
+			callback(null);
+		    }
+		}, function(callback) {
+		    if (dptrans_modified) {
+			updateMultiSelect('dptrans', 'LANGUAGE', contactId, contact.database_origin, dptrans, function(err, data) {
 			    if (err)
 				return callback(err);
 			    callback(null);
@@ -349,6 +363,8 @@ module.exports = {
 			return cb(err);
 		    cb(null, response);
 		});
+	    }else{
+		cb(null);
 	    }
 	}
 
@@ -603,6 +619,17 @@ module.exports = {
 				dplang.push(data[0][lang]['LANGUAGE']);
 			    }
 			    return callback(null, dplang);
+			});
+		    },
+		    dptrans : function(callback) {
+			Database.knex.raw("SELECT dptrans.LANGUAGE FROM dptrans LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dptrans.LANGUAGE AND dptrans.database_origin = dpcodes.database_origin ) WHERE DONOR = " + contactId).exec(function(err, data) {
+			    if (err)
+				return callback(err);
+			    var dptrans = [];
+			    for ( var lang in data[0]) {
+				dptrans.push(data[0][lang]['LANGUAGE']);
+			    }
+			    return callback(null, dptrans);
 			});
 		    },
 		    dtmajor : function(callback) {

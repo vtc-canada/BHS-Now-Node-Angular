@@ -237,6 +237,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.dplink = [];
 	    this.dpother = [];
 	    this.dplang = [];
+	    this.dptrans = [];
 
 	    this.dtmajor = [];
 

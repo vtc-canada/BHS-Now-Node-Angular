@@ -125,6 +125,44 @@ var destination = 'fatima_center_donor_tracker_v2'; // Remember. this drops the
 // database.
 
 module.exports = {
+    
+    languages: function(req,res){
+	Database.knex('dp').select('id','LANGUAGE','ENGLISH','database_origin').exec(function(err,results){
+	   if(err){
+	       console.log('error'+err.toString());
+	   } 
+	   results = results[0];
+	   var i =0;
+	   async.eachSeries(results,function(row,cb){
+	       i++;
+	       if(i==100){
+		   i=0;
+		   console.log(row.id);
+	       }
+	       Database.knex('dplang').insert({DONOR:row.id, LANGUAGE : row.LANGUAGE, database_origin : row.database_origin}).exec(function(err,pr){
+		   if(err)
+		       return cb(err);
+		   if(row.LANGUAGE != 'E' && row.ENGLISH == 'Y'){
+		       Database.knex('dplang').insert({DONOR:row.id, LANGUAGE : 'E', database_origin : row.database_origin}).exec(function(err,pr){
+			   if(err)
+			       return cb(err);
+			  cb(null); 
+		       });
+		   }else{
+		       cb(null);
+		   }
+	       });
+	       
+	   },function(err,results){
+	       if(err)
+		   console.log(err);
+	       
+	       console.log('completed');
+	   });
+	   console.log('gotall');
+	});
+	res.json('processing');
+    },
 
     data : function(req, res) {
 	res.json({
