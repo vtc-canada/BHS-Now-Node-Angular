@@ -22,14 +22,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     vm.tabs = [ 'layman', 'ecclesiastical', 'volunteer', 'orders' ];
 
-    
     $scope.$watch('contact.dplang', function(oldValue, newValue) {
 	if (!angular.equals(newValue, oldValue)) {
 	    $scope.contact.dplang_modified = true;
 	}
     });
-    
-    
+    $scope.$watch('contact.dptrans', function(oldValue, newValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    $scope.contact.dptrans_modified = true;
+	}
+    });
+
     $scope.countyEnabled = function() {
 	return $scope.contact.ST != 'NY';
     }
@@ -276,7 +279,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
 
 	$rootScope.currentModal.saveLink = function() {
-	    if (table_name == 'dplink') { //$rootScope.modalDataSet[table_name].errors
+	    if (table_name == 'dplink') { // $rootScope.modalDataSet[table_name].errors
 		if ($rootScope.modalDataSet[table_name].ID2 == null) {
 		    return $timeout(function() {
 			$rootScope.modalDataSet[table_name].errors.ID2 = true;
@@ -287,7 +290,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			$rootScope.modalDataSet[table_name].errors.LINK = true;
 		    }, 0);
 		}
-	    }	    
+	    }
 	    $rootScope.currentModal.dismiss('save');
 	};
 
@@ -418,8 +421,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.contact.dtvols1.VSPECTAL = null;
 	}
     });
-    
-    
 
     $scope.getEcclesiasticalAge = function(a, b, c) {
 	return 21;
@@ -463,12 +464,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	note.text = note.modify_text || '';
     }
     $scope.cancelNote = function(note) {
-	if(note.modify_text == '' && note.id == null && note.text == null){
+	if (note.modify_text == '' && note.id == null && note.text == null) {
 	    $contact.toggleNote(note);
 	}
-	//if(note.modify_text == '')
-	//note.focused = false;
-	//note.text = note.modify_text || '';
+	// if(note.modify_text == '')
+	// note.focused = false;
+	// note.text = note.modify_text || '';
     }
 
     // End Notes
@@ -630,7 +631,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     // initialization routine.
     (function() {
-	if (typeof (vm.gotattributes) == 'undefined') {// get an existing object
+	if (typeof (vm.gotattributes) == 'undefined') {// get an existing
+	    // object
 	    vm.gotattributes = true;
 	    $sails.get('/donortracker/getattributes').success(function(data) {
 		var data = data.result;
@@ -787,7 +789,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
 		    });
 		}
-		
+
 		$scope.willsaymass = [];
 		for (var i = 0; i < data.willsaymass.length; i++) {
 		    $scope.willsaymass.push({
@@ -960,17 +962,31 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.report_id = $scope.report.id; // first ID
     $rootScope.report = $scope.report; // links report through $rootScope.
 
-    // Watch report -
-    $scope.$watch('report', function(event, b, c) {
-	if (vm.updateTable) {
-	    clearTimeout(vm.updateTable(event));
+    $scope.$watch('report_id', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    for ( var key in $reports) {
+		if ($reports[key].id == $scope.report_id) {
+		    $scope.report = $reports[key];
+		    $rootScope.report = $scope.report;
+		    return;
+		}
+	    }
 	}
-	vm.updateTable = function(event) {
-	    setTimeout(function() {
-		// $rootScope.updateContactsTable();
-		// alert('searchReports');
-		$scope.reporthtml = null;
-	    }, 10);
+    });
+
+    // Watch report -
+    $scope.$watch('report', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    if (vm.updateTable) {
+		clearTimeout(vm.updateTable(newValue));
+	    }
+	    vm.updateTable = function(event) {
+		setTimeout(function() {
+		    // $rootScope.updateContactsTable();
+		    // alert('searchReports');
+		    $scope.reporthtml = null;
+		}, 10);
+	    }
 	}
     }, true);
 
@@ -1636,6 +1652,82 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 300);
     });
 
+}).controller('DpCodesSearch', function($scope, $rootScope, $sails) {
+    var vm = this;
+
+    $scope.dpsearch = {};
+    $scope.dpsearch.id = '';
+    $scope.dpsearch.field = null;
+
+    /*
+     * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
+     * 'No' } ];
+     */
+
+    // initialization routine.
+    (function() {
+	if (typeof (vm.gotattributes) == 'undefined') {// get an existing
+	    // object
+	    vm.gotattributes = true;
+	    $sails.get('/donortracker/getdpcodeattributes').success(function(data) {
+		var data = data.result;
+
+		$scope.response = [ {
+		    id : '1',
+		    label : 'Not yet known'
+		}, {
+		    id : '2',
+		    label : 'Positive'
+		}, {
+		    id : '3',
+		    label : 'Negative'
+		} ]
+
+		$rootScope.staticyesno = [ {
+		    id : 'Y',
+		    label : 'Yes'
+		}, {
+		    id : 'N',
+		    label : 'No'
+		} ];
+
+		$rootScope.currencies = [ {
+		    id : 'U',
+		    label : 'USD - United States'
+		}, {
+		    id : 'C',
+		    label : 'CAD - Canadian Dollars'
+		} ];
+
+		$scope.dpcodefields = [];
+		$scope.dpcodefields.push({
+		    id : null,
+		    label : 'All'
+		});
+		for (var i = 0; i < data.dpcodefields.length; i++) {
+		    if (data.dpcodefields[i].FIELD == null) {
+			continue;
+		    }
+		    $scope.dpcodefields.push({
+			id : data.dpcodefields[i].FIELD,
+			label : data.dpcodefields[i].FIELD
+		    });
+		}
+	    });
+	}
+    })();
+
+    $rootScope.dpsearch = $scope.dpsearch;
+
+    $scope.$watchCollection('dpsearch', function() {
+	if (vm.updateTable) {
+	    clearTimeout(vm.updateTable);
+	}
+	vm.updateTable = setTimeout(function() {
+	    $rootScope.updateDpCodesDataTable();
+	}, 300);
+    });
+
 }).controller(
     'AddContactDatatable',
     function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder) {
@@ -1654,9 +1746,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
 		});
 	    });
-	    //if (aData.id == $contact.id) {
-	    //	$(nRow).addClass('selected');
-	    //}
+	    // if (aData.id == $contact.id) {
+	    // $(nRow).addClass('selected');
+	    // }
 	    return nRow;
 	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"col-xs-12"<"row"<"col-lg-4"i><"col-lg-8"p>>>');
 	// l length
@@ -1677,15 +1769,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    if ($scope.tableId) {
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
 		}, false);
-		$rootScope.modalDataSet['dplink'].errors = {}; // empties errors
+		$rootScope.modalDataSet['dplink'].errors = {}; // empties
+		// errors
 	    }
 	}
 
 	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	    //$rootScope.$broadcast("selectLinkContact", {
-	    //id : aData
-	    //});
-	    $rootScope.modalDataSet.dplink.errors = {}; //empty errors
+	    // $rootScope.$broadcast("selectLinkContact", {
+	    // id : aData
+	    // });
+	    $rootScope.modalDataSet.dplink.errors = {}; // empty errors
 	    $timeout(function() {
 		$rootScope.modalDataSet.dplink.ID2 = aData.id;
 	    }, 0);
@@ -1751,7 +1844,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    if ($contact.is_modified) {
 		if (confirm(unsavedMessage)) {
-		    //$contact.is_modified = false;
+		    // $contact.is_modified = false;
 		} else {
 		    var obj = {
 			pos : $(window).scrollTop()
@@ -1777,6 +1870,207 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	}
 
+    }).controller('LoginCtrl', function($scope, $rootScope) {
+    $rootScope.isLoginPage = true;
+    $rootScope.isLightLoginPage = false;
+    $rootScope.isLockscreenPage = false;
+    $rootScope.isMainPage = false;
+}).controller(
+    'DpCodesDatatable',
+    function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder, $sails, $modal) {
+
+	var vm = this;
+	$scope.selectedCode = null;
+	$scope.dpcodes = [];
+
+	vm.rowClicked = rowClicked;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/dpcodes/ajax',
+	    type : 'POST'
+	})
+	// .withDataProp('data')
+	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	    aoData.dpsearch = $rootScope.dpsearch;
+	    $timeout(function() { // Whenever the table searches, it clears
+		// the selected
+		$scope.selectedCode = null;
+	    }, 0);
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		// $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		// });
+	    });
+	    if (aData.id == $contact.id) {
+		$(nRow).addClass('selected');
+	    }
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FIELD').withTitle('Field'), DTColumnBuilder.newColumn('CODE').withTitle('Code'), DTColumnBuilder.newColumn('DESC').withTitle('Description'),
+	    DTColumnBuilder.newColumn('CATEGORY').withTitle('Category') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes
+	    // later.
+	});
+	$rootScope.updateDpCodesDataTable = function(event, args) {
+	    if ($scope.tableId) {
+		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		}, false);
+	    }
+	}
+
+	/*
+	 * $scope.$on('refreshContactsx', function(event, args){
+	 * //console.log('deb'); vm.contact = args;
+	 * $timeout(vm.dtOptions.reloadData,500); //(); });
+	 */
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    // var unsavedMessage = 'You have unsaved changes pending. Are you
+	    // sure you want to discard these changes? Press Cancel to go back
+	    // and save your changes.';
+
+	    
+
+	    // $rootScope.$broadcast("getcontact", {
+	    // id : aData.id
+	    // });
+	    // if(aData.id == $contact.id){
+	    $('tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	    $timeout(function() {
+		$scope.selectedCode = aData.id;
+	    }, 0);
+
+	    // }
+	    // console.log('here');
+	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
+	}
+
+	$scope.isDatatableEditDisabled = function() {
+	    return $scope.selectedCode == null;
+	}
+
+	// $scope.resetSelectedDataTableRow = function() {
+	// $timeout(function() {
+	// $scope.selectedCode = null;
+	// }, 0);
+	// }
+	// selected modal
+	$scope.editDatatableRow = function(modal_id, modal_size, modal_backdrop) {
+	    $sails.post("/dpcodes/getdpcode", {
+		id : $scope.selectedCode
+	    }).success(function(data) {
+		if (data.success) {
+		    $rootScope.modalSelectedCode = angular.copy(data.dpcode);
+		    $rootScope.currentModal = $modal.open({
+			templateUrl : modal_id,
+			size : modal_size,
+			backdrop : typeof modal_backdrop == 'undefined' ? true : modal_backdrop
+		    });
+		    $rootScope.currentModal.result.then(function(selectedItem) {
+		    }, function(triggerElement) {
+			if (triggerElement == 'save') {
+			    // $contact.updateElementObject(table_name,
+			    // $rootScope.modalDataSet[table_name]);
+			    $timeout(function() {
+				alert('save');
+				// $scope.contact = $contact;
+			    }, 0);
+			}
+		    });
+		}
+	    }).error(function(data) {
+		alert('err!');
+	    });
+	};
+
+	$scope.addDatatableRow = function(table_name, modal_id, modal_size) {
+	    /*
+	     * // Wipe selected, create new.
+	     * $scope.selectedDataTableRow[table_name] = {};
+	     * $scope.selectedDataTableRow[table_name].id = 'new';
+	     * $scope.selectedDataTableRow[table_name].tempId =
+	     * Math.floor((Math.random() * 100000) + 1);
+	     * 
+	     * if (table_name == 'dpgift') { $rootScope.modalDataSet[table_name] = {
+	     * id : $scope.selectedDataTableRow[table_name].id, tempId :
+	     * $scope.selectedDataTableRow[table_name].tempId, DONOR :
+	     * $contact.id, SOL : null, MODE : null, database_origin :
+	     * $contact.database_origin, ENVNO : null, AMT : null, DATE : null,
+	     * TRANSACT : null, DESIGNATE : null, LABEL : null, LIST : null,
+	     * CAMP_TYPE : null, DEMAND : null, REQUESTS : null, CURR : null, GL :
+	     * null, PLEDGE : null, RECEIPT : null, REF : null, TBAREQS : null }; }
+	     * else if (table_name == 'dpother') {
+	     * $rootScope.modalDataSet[table_name] = { id :
+	     * $scope.selectedDataTableRow[table_name].id, tempId :
+	     * $scope.selectedDataTableRow[table_name].tempId, DONOR :
+	     * $contact.id, SOL : null, MODE : null, database_origin :
+	     * $contact.database_origin, ENVNO : null, AMT : null, DATE : null,
+	     * TRANSACT : null, LABEL : null, LIST : null, CAMP_TYPE : null,
+	     * DEMAND : null, REQUESTS : null, CURR : null, GL : null, SURVEY :
+	     * null, SURV_ANS : null, TBAREQS : null }; } else if (table_name ==
+	     * 'dpplg') { $rootScope.modalDataSet[table_name] = { id :
+	     * $scope.selectedDataTableRow[table_name].id, tempId :
+	     * $scope.selectedDataTableRow[table_name].tempId, DONOR :
+	     * $contact.id, SOL : null }; } else if (table_name == 'dplink') {
+	     * $rootScope.modalDataSet[table_name] = { id :
+	     * $scope.selectedDataTableRow[table_name].id, tempId :
+	     * $scope.selectedDataTableRow[table_name].tempId, ID1 :
+	     * $contact.id, ID2 : null, LINK : null, TSDATE : null, errors : {} }; }
+	     * 
+	     * $rootScope.currentModal = $modal.open({ templateUrl : modal_id,
+	     * size : modal_size, backdrop : true });
+	     * 
+	     * $rootScope.currentModal.result.then(function(selectedItem) {
+	     * $scope.selectedDataTableRow[table_name] = null; },
+	     * function(triggerElement) {
+	     * 
+	     * $scope.selectedDataTableRow[table_name] = null; //
+	     * $scope.selectedGiftTemp = null; if (triggerElement == 'save') {
+	     * 
+	     * $scope.tryDestroyDataTable(table_name);
+	     * $contact.updateElementObject(table_name,
+	     * $rootScope.modalDataSet[table_name]); $timeout(function() {
+	     * $scope.contact = $contact; $scope.rebindDataTable(table_name); },
+	     * 0); } else { // do nothing } });
+	     * 
+	     * $rootScope.currentModal.saveLink = function() { if (table_name ==
+	     * 'dplink') { //$rootScope.modalDataSet[table_name].errors if
+	     * ($rootScope.modalDataSet[table_name].ID2 == null) { return
+	     * $timeout(function() {
+	     * $rootScope.modalDataSet[table_name].errors.ID2 = true; }, 0); }
+	     * if ($rootScope.modalDataSet[table_name].LINK == null) { return
+	     * $timeout(function() {
+	     * $rootScope.modalDataSet[table_name].errors.LINK = true; }, 0); } }
+	     * $rootScope.currentModal.dismiss('save'); };
+	     */
+	}
+	/*
+	 * $scope.tryDestroyDataTable = function() {
+	 * $('#dpcodes_datatable').css('visibility', 'hidden'); if
+	 * ($.fn.DataTable.isDataTable('#dpcodes_datatable')) {
+	 * $('#dpcodes_datatable').dataTable().fnDestroy(); } }
+	 * $scope.rebindDataTable = function() { if
+	 * (!$.fn.DataTable.isDataTable('#dpcodes_datatable')) {
+	 * $('#dpcodes_datatable').dataTable(vm.dataTableOptions).on('page.dt',
+	 * $scope.resetSelectedDataTableRow()).on('length.dt',
+	 * $scope.resetSelectedDataTableRow()).on('search.dt',
+	 * $scope.resetSelectedDataTableRow());
+	 * $('#dpcodes_datatable').css('visibility', '');
+	 * $('#dpcodes_datatable').next().find('ul.pagination li.paginate_button
+	 * a').click(function() { $timeout(function() { $scope.selectedCode =
+	 * null; }, 0); }); } }
+	 */
     }).controller('LoginCtrl', function($scope, $rootScope) {
     $rootScope.isLoginPage = true;
     $rootScope.isLightLoginPage = false;
