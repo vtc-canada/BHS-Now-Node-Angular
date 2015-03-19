@@ -1,24 +1,69 @@
 /**
  * DpCodesController
- *
+ * 
  * @description :: Server-side logic for managing Dpcodes
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * @help :: See http://links.sailsjs.org/docs/controllers
  */
 
 module.exports = {
-    
-    getdpcode : function(req,res){
+
+    save : function(req, res) {
+
+	var dpCode = req.body;
+	var codeId = dpCode.id;
+	delete dpCode.id;
+
+	if (codeId != null) {
+	    Database.knex('dpcodes').where({
+		id : codeId
+	    }).update(dpCode).exec(function(err, response) {
+		if (err)
+		    return res.json(err, 500);
+		res.json({
+		    success : 'Success'
+		});
+	    });
+	} else {
+	    Database.knex('dpcodes').insert(dpCode).exec(function(err, response) {
+		if (err)
+		    return res.json(err, 500);
+		res.json({
+		    success : 'Success'
+		});
+	    });
+	}
+    },
+    destroy : function(req, res) {
+	var codeId = req.body.id;
+	Database.knex('dpcodes').where({
+	    id : codeId
+	}).del().exec(function(err, response) {
+	    if (err)
+		return res.json(err, 500);
+	    res.json({
+		success : 'Success'
+	    });
+	})
+    },
+    getdpcode : function(req, res) {
 	var dpCodeId = req.body.id;
-	Database.knex('dpcodes').select('*').where({id:dpCodeId}).exec(function(err,response){
-	   if(err||typeof(response[0])=='undefined'){
-	       console.log(err.toString()+' or bad response length');
-	       return res.json({error:err.toString()},500);
-	   } 
-	   res.json({success:'Dp Code Retrieved',dpcode:response[0]});
+	Database.knex('dpcodes').select('*').where({
+	    id : dpCodeId
+	}).exec(function(err, response) {
+	    if (err || typeof (response[0]) == 'undefined') {
+		console.log(err.toString() + ' or bad response length');
+		return res.json({
+		    error : err.toString()
+		}, 500);
+	    }
+	    res.json({
+		success : 'Dp Code Retrieved',
+		dpcode : response[0]
+	    });
 	});
     },
     ajax : function(req, res) {
-	
+
 	var donorFullText = Utilities.prepfulltext(req.body.dpsearch.id);
 
 	// WHERE's for Search Contacts page
@@ -34,34 +79,31 @@ module.exports = {
 	    if (req.body.dpsearch.field != null && req.body.dpsearch.field != '') {
 		selectIds.andWhere(Database.knex.raw('dpcodes.FIELD = ?', [ req.body.dpsearch.field ]));
 	    }/*
-	    if (req.body.dpsearch.CITY != null && req.body.dpsearch.CITY != '') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.CITY = ?', [ req.body.dpsearch.CITY ]));
-	    }
-	    if (req.body.dpsearch.ST != null && req.body.dpsearch.ST != '') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.ST = ?', [ req.body.dpsearch.ST ]));
-	    }
-	    if (req.body.dpsearch.COUNTRY != null && req.body.dpsearch.COUNTRY != '') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.COUNTRY = ?', [ req.body.dpsearch.COUNTRY ]));
-	    }
-	    if (req.body.dpsearch.ZIP != null && req.body.dpsearch.ZIP != '') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.ZIP = ?', [ req.body.dpsearch.ZIP ]));
-	    }
-	    if (req.body.dpsearch.CHECKBOX != null && req.body.dpsearch.CHECKBOX == 'Y') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.database_origin = 3'));
-	    }
-	    if (req.body.dpsearch.CHECKBOX != null && req.body.dpsearch.CHECKBOX == 'N') {
-		selectIds.andWhere(Database.knex.raw('dpcodes.database_origin != 3'));
-	    }
-	    if (req.body.dpsearch.CLASS != null && req.body.dpsearch.CLASS.length > 0) {
-		var passtring = '';
-		for (var i = 0; i < req.body.dpsearch.CLASS.length; i++) {
-		    if (passtring != '') {
-			passtring += ','
-		    }
-		    passtring += "'" + req.body.dpsearch.CLASS[i] + "'";
-		}
-		selectIds.andWhere(Database.knex.raw("dpcodes.CLASS IN (" + passtring + ")"));
-	    }*/
+		 * if (req.body.dpsearch.CITY != null && req.body.dpsearch.CITY !=
+		 * '') { selectIds.andWhere(Database.knex.raw('dpcodes.CITY =
+		 * ?', [ req.body.dpsearch.CITY ])); } if (req.body.dpsearch.ST !=
+		 * null && req.body.dpsearch.ST != '') {
+		 * selectIds.andWhere(Database.knex.raw('dpcodes.ST = ?', [
+		 * req.body.dpsearch.ST ])); } if (req.body.dpsearch.COUNTRY !=
+		 * null && req.body.dpsearch.COUNTRY != '') {
+		 * selectIds.andWhere(Database.knex.raw('dpcodes.COUNTRY = ?', [
+		 * req.body.dpsearch.COUNTRY ])); } if (req.body.dpsearch.ZIP !=
+		 * null && req.body.dpsearch.ZIP != '') {
+		 * selectIds.andWhere(Database.knex.raw('dpcodes.ZIP = ?', [
+		 * req.body.dpsearch.ZIP ])); } if (req.body.dpsearch.CHECKBOX !=
+		 * null && req.body.dpsearch.CHECKBOX == 'Y') {
+		 * selectIds.andWhere(Database.knex.raw('dpcodes.database_origin =
+		 * 3')); } if (req.body.dpsearch.CHECKBOX != null &&
+		 * req.body.dpsearch.CHECKBOX == 'N') {
+		 * selectIds.andWhere(Database.knex.raw('dpcodes.database_origin !=
+		 * 3')); } if (req.body.dpsearch.CLASS != null &&
+		 * req.body.dpsearch.CLASS.length > 0) { var passtring = ''; for
+		 * (var i = 0; i < req.body.dpsearch.CLASS.length; i++) { if
+		 * (passtring != '') { passtring += ',' } passtring += "'" +
+		 * req.body.dpsearch.CLASS[i] + "'"; }
+		 * selectIds.andWhere(Database.knex.raw("dpcodes.CLASS IN (" +
+		 * passtring + ")")); }
+		 */
 	}
 
 	// Select Data
@@ -100,4 +142,3 @@ module.exports = {
 	});
     }
 };
-
