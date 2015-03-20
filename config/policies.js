@@ -26,6 +26,21 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
+    '*': 'RoutePolicy',
+    'main':{
+        '*':'RoutePolicy',
+        'index':true
+    },
+    'donortracker':'RoutePolicy',
+    'auth':{
+        '*':true
+    },
+    'reports':{
+        '*':'RoutePolicy',
+        'view':true
+    }
+    
+    
   // '*': true,
 
   /***************************************************************************

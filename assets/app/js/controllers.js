@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $state, $modal, $contact, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
@@ -69,7 +68,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dpgift' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
-	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 	    "columns" : [ {
 		"width" : "10%" // id
 	    }, {
@@ -87,7 +86,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dpplg' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
-	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 	    "columns" : [ {
 		"width" : "10%" // id
 	    }, {
@@ -105,7 +104,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dplink' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
-	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 	    "columns" : [ {
 		"width" : "20%" // id
 	    }, {
@@ -119,7 +118,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dtmail' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
-	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 	    "columns" : [ {
 		"width" : "10%"
 	    }, {
@@ -137,7 +136,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dpother' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
-	    'dom' : '<"col-xs-12"f>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
 	    "columns" : [ {
 		"width" : "10%" // id
 	    }, {
@@ -944,6 +943,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	     */
 	}
     })()
+}).controller('UserSection', function($scope, $rootScope, $timeout, $state, $modal, $sails, Utility) {
+    $scope.helpers = public_vars.helpers;
+    var vm = this;
+
 }).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $http, $reports, $reportselects, $sails) {
     var vm = this;
     vm.$scope = $scope;
@@ -1751,7 +1754,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // $(nRow).addClass('selected');
 	    // }
 	    return nRow;
-	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"col-xs-12"<"row"<"col-lg-4"i><"col-lg-8"p>>>');
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"col-xs-12"<"row"<"col-lg-4"i><"col-lg-8"p>>>');
 	// l length
 	// r processing
 	// f filtering
@@ -1813,7 +1816,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$(nRow).addClass('selected');
 	    }
 	    return nRow;
-	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
 	// l length
 	// r processing
 	// f filtering
@@ -1871,6 +1874,219 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	}
 
+    }).controller(
+    'UsersDatatable',
+    function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
+	this.blank_user = {
+	    id : null,
+	    username : null,
+	    email : null,
+	    firstname : null,
+	    lastname : null,
+	    active : true,
+	    loginattempts : 0,
+	    locale : 'en',
+	    groups : []
+	};
+	$scope.user = angular.copy(this.blank_user);
+	$rootScope.user_modified = false;
+	$scope.selectedUser = null;
+	var vm = this;
+	var userWatcher = null;
+	vm.rowClicked = rowClicked;
+	vm.getWatcher = getWatcher;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/users/ajax',
+	    type : 'POST'
+	})
+	// .withDataProp('data')
+	.withOption('serverSide', false).withOption('processing', false).withOption('fnServerParams', function(aoData) {
+	    // aoData.contact = $rootScope.search_contact;
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		// $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		// });
+	    });
+	    if ($scope.selectedUser != null && aData.id == $scope.selectedUser.id) {
+		$(nRow).addClass('selected');
+	    }
+
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('username').withTitle('Username'), DTColumnBuilder.newColumn('email').withTitle('Email'), DTColumnBuilder.newColumn('firstname').withTitle('First Name'),
+	    DTColumnBuilder.newColumn('lastname').withTitle('Last Name'), DTColumnBuilder.newColumn('active').withTitle('Active'), DTColumnBuilder.newColumn('loginattempts').withTitle('Login Attempts'), DTColumnBuilder.newColumn('locale').withTitle('Locale') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes
+	    // later.
+	});
+	/*
+	 * $rootScope.updateUsersTable = function(event, args) { if
+	 * ($scope.tableId) { $('#' +
+	 * $scope.tableId).DataTable().ajax.reload(function() { }, false); } }
+	 */
+
+	/*
+	 * $scope.$on('refreshContactsx', function(event, args){
+	 * //console.log('deb'); vm.contact = args;
+	 * $timeout(vm.dtOptions.reloadData,500); //(); });
+	 */
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    if (vm.userWatcher != null) {
+		vm.userWatcher();
+	    }
+	    $sails.post('/users/getuserandgroups', {
+		id : aData.id
+	    }).success(function(response) {
+		$timeout(function() {
+		    $scope.user = response;
+		    $rootScope.user_modified = false;
+		    $scope.selectedUser = angular.copy(response);
+		    $rootScope.validator[(($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form'].resetForm();
+		    $('form#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form .validate-has-error').removeClass('validate-has-error');
+
+		    vm.userWatcher = vm.getWatcher();
+		}, 0);
+	    }).error(function(data) {
+		alert('err!');
+	    });
+
+	    $('tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	}
+
+	function getWatcher() {
+	    return $scope.$watch('user', function(newValue, oldValue) {
+		if (!angular.equals(newValue, oldValue)) {
+		    $timeout(function() {
+			// $scope.user.is_modified = true;
+			$rootScope.user_modified = true;
+		    }, 0)
+		}
+	    }, true);
+	}
+
+	$scope.newUser = function() {
+	    $sails.get('/security/getsecuritygroups').success(function(securitygroups) {
+		if (vm.userWatcher != null) {
+		    vm.userWatcher();
+		}
+		for ( var key in securitygroups) {
+		    securitygroups[key].member = 0;
+		}
+		$timeout(function() {
+		    $scope.selectedUser = null;
+		    $('tr').removeClass('selected');
+		    $scope.user = angular.copy(vm.blank_user);
+		    $scope.user.groups = securitygroups;
+		    $rootScope.user_modified = false;
+		    $rootScope.validator[(($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form'].resetForm();
+		    $('form#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form .validate-has-error').removeClass('validate-has-error');
+		    $scope.selectedUser = angular.copy($scope.user);
+		    vm.userWatcher = vm.getWatcher();
+		}, 0);
+
+	    });
+
+	}
+
+	$scope.isRequired = function() {
+	    return 'required';
+	}
+
+	$scope.isNew = function() {
+	    return ($scope.selectedUser == null || $scope.selectedUser.id == null);
+	}
+
+	$scope.deleteUser = function(modal_id, modal_size) {
+	    $rootScope.currentModal = $modal.open({
+		templateUrl : modal_id,
+		size : modal_size,
+		backdrop : true
+	    });
+	    $rootScope.deleteModalText = $scope.selectedUser.id + ' ' + $scope.selectedUser.username;
+	    $rootScope.currentModal.result.then(function(selectedItem) {
+	    }, function(triggerElement) {
+		if (triggerElement == 'delete') {
+		    $sails.post('/users/destroy', {
+			id : $scope.selectedUser.id
+		    }).success(function(data) {
+			if (data.success) {
+			    $timeout(function() {
+				$scope.selectedUser = null;
+				$rootScope.user_modified = false;
+				$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+				}, false);
+			    }, 0);
+			}
+		    }).error(function(data) {
+			alert('err!');
+		    });
+		}
+	    });
+	}
+
+	$scope.saveUser = function() {
+	    $('#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form').valid();
+	    if ($rootScope.validator[(($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form'].numberOfInvalids() > 0) { // error
+		return;
+	    }
+
+	    $sails.post('/users/saveuserandgroups', {
+		user : $scope.user
+	    }).success(function(data) {
+		if (data.success) {
+		    if ($scope.selectedUser.id == null) {
+			if (vm.userWatcher != null) {
+			    vm.userWatcher();
+			}
+			$sails.post('/users/getuserandgroups', {
+			    id : data.userId
+			}).success(function(response) {
+			    $timeout(function() {
+				$scope.user = response;
+				$rootScope.user_modified = false;
+				$scope.selectedUser = angular.copy(response);
+				$rootScope.validator[(($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form'].resetForm();
+				$('form#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form .validate-has-error').removeClass('validate-has-error');
+				vm.userWatcher = vm.getWatcher();
+				$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+				}, false);
+				$timeout(function() {
+				    $rootScope.user_modified = false;
+				}, 0);
+			    }, 0);
+			}).error(function(data) {
+			    alert('err!');
+			});
+
+			// $scope.selectedUser = angular.copy(vm.blank_user);
+			// $scope.selectedUser.id = data.id;
+		    } else {
+
+			$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+			}, false);
+			$timeout(function() {
+			    $rootScope.user_modified = false;
+			}, 0);
+		    }
+
+		}
+	    }).error(function(data) {
+		alert('err!');
+	    });
+	}
+
     }).controller('LoginCtrl', function($scope, $rootScope) {
     $rootScope.isLoginPage = true;
     $rootScope.isLightLoginPage = false;
@@ -1909,11 +2125,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
 		// });
 	    });
-	    if ($scope.selectedCode!=null&&aData.id == $scope.selectedCode.id) {
+	    if ($scope.selectedCode != null && aData.id == $scope.selectedCode.id) {
 		$(nRow).addClass('selected');
 	    }
 	    return nRow;
-	}).withPaginationType('full_numbers').withDOM('<"col-xs-12"l>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
 	// l length
 	// r processing
 	// f filtering
@@ -1981,8 +2197,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		alert('err!');
 	    });
 	};
-	
-	$scope.deleteDatatableRow = function(modal_id, modal_size){
+
+	$scope.deleteDatatableRow = function(modal_id, modal_size) {
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : modal_id,
 		size : modal_size,
@@ -1992,9 +2208,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
-			$sails.post('/dpcodes/destroy', $scope.selectedCode).success(function(data) {
+		    $sails.post('/dpcodes/destroy', $scope.selectedCode).success(function(data) {
 			if (data.success) {
-			    //$scope.retrieveId = $scope.selectedCode;
+			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();
 			}
 		    }).error(function(data) {
@@ -2004,10 +2220,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    });
 	}
 
-	$scope.addDatatableRow = function( modal_id, modal_size) {
-	    $('#'+$scope.tableId).find('tr.selected').removeClass('selected');
+	$scope.addDatatableRow = function(modal_id, modal_size) {
+	    $('#' + $scope.tableId).find('tr.selected').removeClass('selected');
 	    $scope.selectedCode = null;
-	    $rootScope.modalSelectedCode = {id : null, FIELD: $rootScope.dpsearch.field, CODE : null, DESC : null, CATEGORY: null};
+	    $rootScope.modalSelectedCode = {
+		id : null,
+		FIELD : $rootScope.dpsearch.field,
+		CODE : null,
+		DESC : null,
+		CATEGORY : null
+	    };
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : modal_id,
 		size : modal_size,
@@ -2018,7 +2240,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		if (triggerElement == 'save') {
 		    $sails.post('/dpcodes/save', $rootScope.modalSelectedCode).success(function(data) {
 			if (data.success) {
-			    //$scope.retrieveId = $scope.selectedCode;
+			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();
 			}
 		    }).error(function(data) {
@@ -2161,6 +2383,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // }else{
 	    // $contact.is_modified = false;
 	    // }
+	} else if ($rootScope.user_modified) {
+	    var obj = {
+		pos : $(window).scrollTop()
+	    };
+	    TweenLite.to(obj, .3, {
+		pos : ($('#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form').length < 1) ? 0 : ($('#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form').offset().top - 8),
+		ease : Power4.easeOut,
+		onUpdate : function() {
+		    $(window).scrollTop(obj.pos);
+		}
+	    });
 	}
     });
 

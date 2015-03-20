@@ -67,11 +67,11 @@ module.exports.session = {
   *                                                                          *
   ***************************************************************************/
 
-  // adapter: 'mongo',
-  // host: 'localhost',
-  // port: 27017,
-  // db: 'sails',
-  // collection: 'sessions',
+  adapter: 'mongo',
+  host: 'localhost',
+  port: 27017,
+  db: 'sails',
+  collection: 'angular_sessions',
 
   /***************************************************************************
   *                                                                          *
@@ -84,7 +84,7 @@ module.exports.session = {
 
   // username: '',
   // password: '',
-  // auto_reconnect: false,
+  auto_reconnect: true,
   // ssl: false,
   // stringify: true
 

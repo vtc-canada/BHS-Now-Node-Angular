@@ -544,22 +544,24 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		}
 	    };
 	    
+	    $rootScope.user_modified = false;
 
 	    $rootScope.$on('$stateChangeStart', function(event) {
 
 
-		if ($contact.is_modified) {
+		if ($contact.is_modified||$rootScope.user_modified) {
 		    if (confirm(unsavedMessage)) {
 
 			//return;
 		    //} else {
 			$contact.is_modified = false;
+			$rootScope.user_modified = false;
 		    }
 		}
 
 		// Already checked and possibly changed contact.is_modified to true.
 
-		if ($contact.is_modified) {  // Block page change if necessary
+		if ($contact.is_modified||$rootScope.user_modified) {  // Block page change if necessary
 		    return event.preventDefault();
 		}
 		pl.showLoadingBar({ // continue switching pages

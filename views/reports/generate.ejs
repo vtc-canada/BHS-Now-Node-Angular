@@ -96,17 +96,18 @@ function toClientDateTimeString(date){
     <% } %>
       <!-- GroupHeader   -->
     <% if(typeof(data[i].groupheading)!= 'undefined'){ %>
-
-       <div class="report-groupheading-wrapper <%= data[i].groupheading.spantype %>" style="border-top:2px solid #000000; border-bottom:2px solid #000000;">
-          <!-- Iterate the rows -->
-          <% for (var j=0;j<data[i].groupheading.grid.length;j++){ %>
-          <div class="row report-groupheading-row">
-              <% var widthp = 100/data[i].groupheading.grid[0].length;  %>
-              <% for (var k=0;k<data[i].groupheading.grid[j].length;k++){ %>
-              <div class="report-groupheading-item" style="height:27px; float:left; width:<%= widthp %>%;<% if(data[i].groupheading.grid[j][k].bold){ %>font-weight:bold;<% } %>"><%= data[i].groupheading.grid[j][k].val %></div>
-              <% } %>
-          </div>
-          <% } %>
+		<div class="row">
+	       <div class="report-groupheading-wrapper <%= data[i].groupheading.spantype %>" style="border-top:2px solid #000000; border-bottom:2px solid #000000;">
+	          <!-- Iterate the rows -->
+	          <% for (var j=0;j<data[i].groupheading.grid.length;j++){ %>
+	          <div class="row report-groupheading-row">
+	              <% var widthp = 100/data[i].groupheading.grid[0].length;  %>
+	              <% for (var k=0;k<data[i].groupheading.grid[j].length;k++){ %>
+	              <div class="report-groupheading-item" style="height:27px; float:left; width:<%= widthp %>%;<% if(data[i].groupheading.grid[j][k].bold){ %>font-weight:bold;<% } %>"><%= data[i].groupheading.grid[j][k].val %></div>
+	              <% } %>
+	          </div>
+	          <% } %>
+	       </div>
        </div>
     <% } %>
 

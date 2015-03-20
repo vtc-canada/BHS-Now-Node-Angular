@@ -1,1 +1,178 @@
 <page-title ng-if="layoutOptions.pageTitles" title="User Accounts" description=""></page-title>
+
+
+<script type="text/ng-template" id="delete-user-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Delete Code</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		Are you sure you want to delete this user: <b>{{deleteModalText}}</b>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Cancel</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('delete');">Delete</button>
+	</div>
+</script>
+
+<div ng-controller="UsersDatatable as showCase">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title"><i class="fa-users"></i>&nbsp&nbspUsers</h3>
+			<div class="pull-right isn-panel-pull-right">
+				<div class="btn btn-secondary" ng-click="newUser()">New</div>
+			</div>
+			<!--<div class="pull-right pull-right-stack isn-panel-pull-right">
+				<div class="btn btn-secondary" ng-class="" ng-click="">Export List</div>
+			</div>-->
+		</div>
+		<div class="panel-body">
+			<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
+		        <thead>
+		        	<tr>
+						<th>id</th>
+						<th>username</th>
+						<th>email</th>
+						<th>firstname</th>
+						<th>lastname</th>
+						<th>active</th>
+						<th>loginattempts</th>
+						<th>locale</th>
+					</tr>
+		        </thead>
+		        <tbody></tbody>
+		    </table>
+		</div>
+	</div>
+	<div ng-controller="UserSection"  ng-show="selectedUser">
+		<form role="form" id="new_users_form" class="form-horizontal validate" ng-show="selectedUser.id==null">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">New User Information</h3>
+					
+					<div class="pull-right isn-panel-pull-right">
+						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[user_modified == false]" ng-click="saveUser()">Save<span ng-show="user.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+					</div>
+					<div ng-show="user_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+						Changes Pending
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_username">Username:</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_username" ng-model="user.username" data-validate="required" placeholder="Username. Required for login.">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_first_name">First Name:</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_first_name" ng-model="user.firstname" >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_last_name">Last Name:</label>
+
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_last_name" ng-model="user.lastname" >
+						</div>
+					</div>
+					<div class="form-group" >
+						<label class="col-sm-5 control-label" for="user_password">Password:</label>
+						<div class="col-sm-7">
+							<input type="password" class="form-control" name="user_password" ng-model="user.password" data-validate="required" placeholder="Password field is required.">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_email">Email:</label>
+
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_email" ng-model="user.email"  data-validate="email" placeholder="Email Field">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_active">active:</label>
+						<div class="col-sm-7">
+							<input type="checkbox" class="form-control iswitch iswitch-secondary" name="user_active" ng-checked="user.active" ng-model="user.active">
+						</div>
+					</div>
+				</div>
+				<div class="panel-heading">
+					<h3 class="panel-title">Security Groups</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group" ng-repeat="group in user.groups">
+						<label class="col-sm-5 control-label" for="group_{{group.id}}">{{group.name}}</label>
+						<div class="col-sm-7">
+							<input type="checkbox" id="group_{{group.id}}" class="form-control iswitch iswitch-secondary" name="group.member" ng-checked="group.member" ng-model="group.member">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<form role="form" id="users_form" class="form-horizontal validate" ng-show="selectedUser.id!=null">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Edit <b>{{user.username}}</b></h3>
+					<div class="pull-right isn-panel-pull-right">
+						<div type="submit" class="btn btn-danger" ng-click="deleteUser('delete-user-modal','md')">Delete</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[user_modified == false]" ng-click="saveUser()">Save<span ng-show="user.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+					</div>
+					<div ng-show="user_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+						Changes Pending
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_first_name">First Name:</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_first_name" ng-model="user.firstname" >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_last_name">Last Name:</label>
+
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_last_name" ng-model="user.lastname" >
+						</div>
+					</div>
+					<div class="form-group" >
+						<label class="col-sm-5 control-label" for="user_password">Password:</label>
+						<div class="col-sm-7">
+							<input type="password" class="form-control" name="user_password" ng-model="user.password" placeholder="Modify Password.">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_email">Email:</label>
+
+						<div class="col-sm-7">
+							<input type="text" class="form-control" name="user_email" ng-model="user.email"  data-validate="email" placeholder="Email Field">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label" for="user_active">active:</label>
+						<div class="col-sm-7">
+							<input type="checkbox" class="form-control iswitch iswitch-secondary" name="user_active" ng-checked="user.active" ng-model="user.active">
+						</div>
+					</div>
+				</div>
+				<div class="panel-heading">
+					<h3 class="panel-title">Security Groups</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group" ng-repeat="group in user.groups">
+						<label class="col-sm-5 control-label" for="group_{{group.id}}">{{group.name}}</label>
+						<div class="col-sm-7">
+							<input type="checkbox" id="group_{{group.id}}" class="form-control iswitch iswitch-secondary" name="group.member" ng-checked="group.member" ng-model="group.member">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+				

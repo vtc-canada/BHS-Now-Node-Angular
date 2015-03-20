@@ -12,16 +12,30 @@
 
 module.exports = {
 
-  /***************************************************************************
-   * Set the default database connection for models in the development       *
-   * environment (see config/connections.js and config/models.js )           *
-   ***************************************************************************/
+    /***************************************************************************
+     * Set the default database connection for models in the development       *
+     * environment (see config/connections.js and config/models.js )           *
+     ***************************************************************************/
 
-  // models: {
-  //   connection: 'someMongodbServer'
-  // }
-	 connections:{
-	       'base_default' : 'nowManagementBaseMysql',
-	       'data_default' : 'nowManagementDataMysql'
-	   }
+    /***************************************************
+     *  ORM database mapping.  Used for generating user base tables
+     ***************************************************/
+    models : {
+	connection : 'nowManagementBaseMysql',
+	migrate : 'alter' //safe //alter
+    },
+
+    /***************************************************
+     *  Database Controller connections mapping
+     ***************************************************/
+    connections : {
+	'base_default' : 'nowManagementBaseMysql',
+	'data_default' : 'nowManagementDataMysql'
+    },
+    
+
+    /***************************************************************************
+     * Set the port in the production environment to 80                        *
+     ***************************************************************************/
+    port:1337
 };

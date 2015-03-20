@@ -6,7 +6,10 @@
  */
 
 module.exports = {
-    
+
+    index : function(req, res) {
+	res.view({preloaded:{first:'value'}});
+    },
     getdpcodeattributes : function(req, res) {
 
 	async.parallel({

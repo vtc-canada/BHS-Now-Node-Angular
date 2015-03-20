@@ -7,6 +7,17 @@
 
 module.exports = {
     index : function(req, res) {
-	res.view({preloaded:{first:'value'}});
+	if (req.session&&req.session.user) {
+            res.writeHead(302,{
+        	'Location':'/donortracker'
+            });
+            res.end();
+        } else {
+            res.writeHead(302,{
+        	'Location':'/auth'
+            });
+            res.end();
+        }
+	//res.view({preloaded:{first:'value'}});
     }
 };
