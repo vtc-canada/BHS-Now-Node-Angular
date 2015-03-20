@@ -90,6 +90,32 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	    }
 	}
     }).
+    state('app.admin-securitygroups', {
+	url : '/admin-securitygroups',
+	templateUrl : appHelper.templatePath('admin/securitygroups'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+	    }
+	}
+    }).
     state('app.dpcodes', {
 	url : '/dpcodes',
 	templateUrl : appHelper.templatePath('dpcodes/index'),

@@ -6,6 +6,20 @@
  */
 
 module.exports = {
+    ajax: function(req,res){
+	Database.localSproc('NMS_BASE_GetSecurityGroups', [], function(err, securitygroups) {
+	    if (err) {
+		console.log('getSecurityGroups Error: ' + err);
+		return res.json(err);
+
+	    }
+	    if (securitygroups[0]) {
+		return res.json({
+		    "data" : securitygroups[0]
+		});
+	    }
+	});
+    },
     findAll : function(req, res) {
 	Database.localSproc('NMS_BASE_GetSecurityGroups', [], function(err, securitygroups) {
 	    if (err) {

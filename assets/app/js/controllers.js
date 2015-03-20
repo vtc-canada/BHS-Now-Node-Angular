@@ -1874,8 +1874,171 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	}
 
-    }).controller(
-    'UsersDatatable',
+    }).controller('SecurityGroups',function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
+	this.blank_group = {
+	    id : null,
+	    name : null,
+	    resources : []
+	};
+	$scope.group = angular.copy(this.blank_group);
+	$rootScope.group_modified = false;
+	$scope.selectedGroup = null;
+	var vm = this;
+	var groupWatcher = null;
+	vm.rowClicked = rowClicked;
+	vm.getWatcher = getWatcher;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/securitygroups/ajax',
+	    type : 'POST'
+	})
+	.withOption('serverSide', false).withOption('processing', false).withOption('fnServerParams', function(aoData) {
+	    // aoData.contact = $rootScope.search_contact;
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		// $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		// });
+	    });
+	    if ($scope.selectedGroup != null && aData.id == $scope.selectedGroup.id) {
+		$(nRow).addClass('selected');
+	    }
+
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('name').withTitle('Name') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes later.
+	});
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    if (vm.groupWatcher != null) {
+		vm.groupWatcher();
+	    }
+	    $sails.post('/securitygroups/getsecuritygroupandresources', {
+		id : aData.id
+	    }).success(function(response) {
+		$timeout(function() {
+		    $scope.group = response;
+		    $rootScope.group_modified = false;
+		    $scope.selectedGroup = angular.copy(response);
+		    $rootScope.validator['securitygroup_form'].resetForm();
+		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
+
+		    vm.groupWatcher = vm.getWatcher();
+		}, 0);
+	    }).error(function(data) {
+		alert('err!');
+	    });
+
+	    $('tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	}
+
+	function getWatcher() {
+	    return $scope.$watch('group', function(newValue, oldValue) {
+		if (!angular.equals(newValue, oldValue)) {
+		    $timeout(function() {
+			$rootScope.group_modified = true;
+		    }, 0)
+		}
+	    }, true);
+	}
+
+	$scope.newGroup = function() {
+	    $sails.get('/security/getresourcegroups').success(function(resources) {
+		if (vm.groupWatcher != null) {
+		    vm.groupWatcher();
+		}
+		for ( var key in resources) {
+		    resources[key].create = 0;
+		    resources[key].read = 0;
+		    resources[key].update = 0;
+		    resources[key].delete = 0;
+		}
+		$timeout(function() {
+		    $scope.selectedGroup = null;
+		    $('tr').removeClass('selected');
+		    $scope.group = angular.copy(vm.blank_group);
+		    $scope.group.resources = resources;
+		    $rootScope.group_modified = false;
+		    $rootScope.validator['securitygroup_form'].resetForm();
+		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
+		    $scope.selectedGroup = angular.copy($scope.group);
+		    vm.groupWatcher = vm.getWatcher();
+		}, 0);
+
+	    });
+
+	}
+
+	$scope.isRequired = function() {
+	    return 'required';
+	}
+
+	$scope.isNew = function() {
+	    return ($scope.selectedGroup == null || $scope.selectedGroup.id == null);
+	}
+
+	$scope.deleteGroup = function(modal_id, modal_size) {
+	    $rootScope.currentModal = $modal.open({
+		templateUrl : modal_id,
+		size : modal_size,
+		backdrop : true
+	    });
+	    $rootScope.deleteModalText = $scope.selectedGroup.id + ' ' + $scope.selectedGroup.name;
+	    $rootScope.currentModal.result.then(function(selectedItem) {
+	    }, function(triggerElement) {
+		if (triggerElement == 'delete') {
+		    $sails.post('/securitygroups/destroy', {
+			id : $scope.selectedGroup.id
+		    }).success(function(data) {
+			if (data.success) {
+			    $timeout(function() {
+				$scope.selectedGroup = null;
+				$rootScope.group_modified = false;
+				$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+				}, false);
+			    }, 0);
+			}
+		    }).error(function(data) {
+			alert('err!');
+		    });
+		}
+	    });
+	}
+
+	$scope.saveGroup = function() {
+	    $('#securitygroup_form').valid();
+	    if ($rootScope.validator['securitygroup_form'].numberOfInvalids() > 0) { // error
+		return;
+	    }
+
+	    $sails.post('/securitygroups/savesecuritygroupandresources', {
+		securitygroup : $scope.securitygroup
+	    }).success(function(data) {
+		if (data.success) {
+		    
+			$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+			}, false);
+			$timeout(function() {
+			    $rootScope.group_modified = false;
+			}, 0);
+
+		}
+	    }).error(function(data) {
+		alert('err!');
+	    });
+	}
+    }).controller('UsersDatatable',
     function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
 	this.blank_user = {
 	    id : null,
@@ -1929,17 +2092,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.tableId = data.id; // Record table ID, for refreshes
 	    // later.
 	});
-	/*
-	 * $rootScope.updateUsersTable = function(event, args) { if
-	 * ($scope.tableId) { $('#' +
-	 * $scope.tableId).DataTable().ajax.reload(function() { }, false); } }
-	 */
-
-	/*
-	 * $scope.$on('refreshContactsx', function(event, args){
-	 * //console.log('deb'); vm.contact = args;
-	 * $timeout(vm.dtOptions.reloadData,500); //(); });
-	 */
 
 	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    if (vm.userWatcher != null) {
