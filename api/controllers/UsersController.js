@@ -1,3 +1,5 @@
+var deepequal = require('deep-equal');
+
 /**
  * UsersController
  * 
@@ -96,6 +98,7 @@ module.exports = {
 	});
     },
     saveuserandgroups : function(req, res) {
+
 	var user = req.body.user;
 
 	async.series([ function(callback) { // NEW user
@@ -166,10 +169,75 @@ module.exports = {
 			    error : 'Error Saving Mappings:' + err
 			}, 500);
 		    }
+
+		    // var currentSesssions = [];
+		    async.each(Object.keys(sails.io.sockets.sockets), function(key, cb) {
+			var socket = sails.io.sockets.sockets[key];
+			sails.hooks.session.fromSocket(socket, function(err, data) {// goes
+			    // through
+			    // ALL
+			    // the
+			    // current
+			    // sessions.
+			    if (err) {
+				console.log(err.toString());
+				return cb(err);
+			    }
+			    if (typeof (data) == 'undefined') {
+				console.log('coundnt find session from socket..');
+				return cb(null);
+			    }
+			    console.log('getting User and policies:' + data.user.id);
+			    Database.localSproc('NMS_BASE_GetUser', [ data.user.id ], function(err, users) {
+				if (err) {
+				    console.log("Database Error." + err);
+				    cb(err);
+				}
+				if(typeof(users[0])=='undefined'||typeof(users[0][0])=='undefined'){
+				    console.log('Attempting to check socket changes on inexistant user in database - skipping iteration');
+				    return cb(null);
+				}
+				var user = users[0][0];
+				Database.localSproc("NMS_BASE_GetUserPolicies", [ data.user.id ], function(err, policiesarray) {
+				    if (err) {
+					console.log('error' + err.toString());
+				    }
+				    policiesarray = policiesarray[0];
+				    
+				    var policy = {};
+				    for (var i = 0; i < policiesarray.length; i++) {
+					policy[policiesarray[i].name] = policiesarray[i];
+				    }
+				    user.policy = policy;
+				    delete user.createdAt;  // Removes and ignores created/updated dates.
+				    delete user.updatedAt;
+				    delete data.user.createdAt;
+				    delete data.user.updatedAt;
+				    
+
+				    if (!deepequal(data.user, user)) { // Check
+					// to
+					// see
+					// if
+					// there's
+					// a
+					// change!
+					console.log('Pushing Security Update to User:' + data.user.id);
+					SecurityService.triggerUserPolicyRebuild(data.user.id);
+				    }
+				    cb(null);
+				});
+			    });
+			});
+		    }, function(err, sessions) {
+			if (err)
+			    return console.log(err.toString());
+		    });
+
 		    UsersService.pushNewUser();
 		    res.json({
 			success : true,
-			userId: user.id
+			userId : user.id
 		    });
 		});
 	    });

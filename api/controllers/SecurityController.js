@@ -6,6 +6,10 @@
  */
 
 module.exports = {
+    
+    join : function(req, res){
+	req.socket.join('user_' + req.session.user.id);
+    },
     getsecuritygroups:function(req,res){
 	Database.localSproc('NMS_BASE_GetSecurityGroups',[],function(err,result){
 	    if(err){

@@ -7,45 +7,45 @@
 
 module.exports = {
     index : function(req, res) {
-	if (req.session&&req.session.user) {
-            res.writeHead(302,{
-        	'Location':'/donortracker'
-            });
-            res.end();
-            return;
-        }
+	if (req.session && req.session.user && req.session.user.active) {
+	    res.writeHead(302, {
+		'Location' : '/donortracker'
+	    });
+	    res.end();
+	    return;
+	}
 	res.view('auth/loginpage', {
 	    layout : false
 	});
     },
-    logout:function(req,res){
+    logout : function(req, res) {
 	delete req.session.user;
 	res.redirect('/auth');
     },
-    joinrooms:function(req,res){
+    joinrooms : function(req, res) {
 	req.socket.join('onlinestatus');
 	req.socket.join(req.session.user.id);
     },
-    togglelocale:function(req,res){
+    togglelocale : function(req, res) {
 	var found = false;
-	var next=false;   
-	for(var i=0;i<sails.config.i18n.locales.length;i++){
-	    if(next){
+	var next = false;
+	for (var i = 0; i < sails.config.i18n.locales.length; i++) {
+	    if (next) {
 		req.session.user.locale = sails.config.i18n.locales[i];
 		found = true;
 		break;
 	    }
-	    if(sails.config.i18n.locales[i]==req.session.user.locale){
-		next=true;
+	    if (sails.config.i18n.locales[i] == req.session.user.locale) {
+		next = true;
 	    }
 	}
-	if(!found){ // get the first one
-	    for(var i=0;i<sails.config.i18n.locales.length;i++){
+	if (!found) { // get the first one
+	    for (var i = 0; i < sails.config.i18n.locales.length; i++) {
 		req.session.user.locale = sails.config.i18n.locales[i];
 		break;
 	    }
 	}
-	Database.localSproc('NMS_BASE_UpdateUser',[req.session.user.id, null, req.session.user.email, req.session.user.firstname, req.session.user.lastname, req.session.user.active, req.session.user.loginattempts, req.session.user.locale],function(err,response){
+	Database.localSproc('NMS_BASE_UpdateUser', [ req.session.user.id, null, req.session.user.email, req.session.user.firstname, req.session.user.lastname, req.session.user.active, req.session.user.loginattempts, req.session.user.locale ], function(err, response) {
 	    res.send(req.session.user);
 	});
     },
@@ -75,30 +75,42 @@ module.exports = {
 			error : req.__("Locked")
 		    });
 		    return 
+
 		}
 		var hasher = require("password-hash");
 		if (hasher.verify(password, foundUser.password)) { // here
 		    //Database.localSproc("AuthorizeResourcePolicy", [ foundUser.id, "default" ], function(err, policy) {
-			//if (err) {
-			//    console.log('Database Error' + err);
-			//    res.json(500, {
-			//	error : 'Database Error' + err
-			//    });
-			//} else if (policy[0] && policy[0][0]) { // }.length==1&&typeof(policy[0][0].create)!='undefined'&&policy[0][0].create!=null){
-			//    if(typeof(policy[0][0].create)!='undefined'&&policy[0][0].create!=null){
+		    //if (err) {
+		    //    console.log('Database Error' + err);
+		    //    res.json(500, {
+		    //	error : 'Database Error' + err
+		    //    });
+		    //} else if (policy[0] && policy[0][0]) { // }.length==1&&typeof(policy[0][0].create)!='undefined'&&policy[0][0].create!=null){
+		    //    if(typeof(policy[0][0].create)!='undefined'&&policy[0][0].create!=null){
 
-				req.session.user = foundUser;
-				req.session.user.policy = {};
-				//req.session.user.policy['default'] = policy[0][0];
-				Database.localSproc('NMS_BASE_UpdateUserActiveLoginAttempts', [ foundUser.id, 1, 0 ], function(err, result) {
-				    if (err)
-					console.log('Unable to update User Login Attempts');
-				});
-				res.send(foundUser);
-			    //}else{
-			//	res.json({error:'This account does not have access privileges'});
-			    //}
-			//}
+		    req.session.user = foundUser;
+
+		    Database.localSproc("NMS_BASE_GetUserPolicies", [ foundUser.id ], function(err, policies) {
+			if (err) {
+			    console.log('error' + err.toString());
+			}
+			policies = policies[0];
+
+			req.session.user.policy = {};
+			for (var i = 0; i < policies.length; i++) {
+			    req.session.user.policy[policies[i].name] = policies[i];
+			}
+			//req.session.user.policy['default'] = policy[0][0];
+			Database.localSproc('NMS_BASE_UpdateUserActiveLoginAttempts', [ foundUser.id, 1, 0 ], function(err, result) {
+			    if (err)
+				console.log('Unable to update User Login Attempts');
+			});
+			res.send(foundUser);
+		    });
+		    //}else{
+		    //	res.json({error:'This account does not have access privileges'});
+		    //}
+		    //}
 		    //});
 		} else {// increment login count
 
@@ -116,6 +128,8 @@ module.exports = {
 			}
 			return
 
+			
+
 		    });
 		    res.send(400, {
 			error : req.__("Wrong Password")
@@ -128,15 +142,15 @@ module.exports = {
 	    }
 	});
     },
-    checkandchangemypassword : function(req,res) {
+    checkandchangemypassword : function(req, res) {
 	var username = req.session.user.username;
 	var currentpassword = req.param('currentpassword');
 	var newpassword = req.param('newpassword');
-	
-	if (typeof (username) == 'undefined' || typeof (currentpassword) == 'undefined' ||typeof (newpassword) == 'undefined') {
+
+	if (typeof (username) == 'undefined' || typeof (currentpassword) == 'undefined' || typeof (newpassword) == 'undefined') {
 	    res.json({
 		error : 'Missing Parameters!'
-	    },500);
+	    }, 500);
 	    return false;
 	}
 
@@ -154,21 +168,26 @@ module.exports = {
 			error : "Locked"
 		    });
 		    return 
+
 		}
 		var hasher = require("password-hash");
 		if (hasher.verify(currentpassword, foundUser.password)) { // here
-		    Database.localSproc('NMS_BASE_UpdateUser',[foundUser.id,hasher.generate(newpassword),foundUser.email,foundUser.firstname,foundUser.firstname,foundUser.active,foundUser.loginattempts,foundUser.locale],function(err,user){
+		    Database.localSproc('NMS_BASE_UpdateUser', [ foundUser.id, hasher.generate(newpassword), foundUser.email, foundUser.firstname, foundUser.firstname, foundUser.active, foundUser.loginattempts, foundUser.locale ], function(err, user) {
 			if (err) {
 			    console.log('Error updateUser :' + err.toString());
 			    return res.send(500, {
 				error : "updateUser Error:" + err.toString()
 			    });
 			}
-			res.json({success:true});
+			res.json({
+			    success : true
+			});
 		    });
-		}else {
-                    res.json({failure : "Wrong Password"});
-                }
+		} else {
+		    res.json({
+			failure : "Wrong Password"
+		    });
+		}
 	    }
 	});
     }

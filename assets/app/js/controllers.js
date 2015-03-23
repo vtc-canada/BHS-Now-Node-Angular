@@ -517,6 +517,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$sails.post("/contacts/getcontact", {
 		    id : message.id
 		}).success(function(data) {
+
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+	                    location.reload(); // Will boot back to login
+						// screen
+	                }
 		    $scope.selectedTransaction = null; // wipes
 		    // out
 		    // selected
@@ -578,6 +584,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// delete $scope.contact.initDtVols1;
 		delete $scope.contact.is_saving;
 		$sails.post("/contacts/save", $scope.contact).success(function(data) {
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+	                    location.reload(); // Will boot back to login
+						// screen
+	                }
 		    if (data.success) {
 			for ( var key in $scope.selectedDataTableRow) { // iterate
 			    // destroying
@@ -630,10 +641,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     // initialization routine.
     (function() {
+	
 	if (typeof (vm.gotattributes) == 'undefined') {// get an existing
 	    // object
 	    vm.gotattributes = true;
 	    $sails.get('/donortracker/getattributes').success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+                    location.reload(); // Will boot back to login screen
+                }
 		var data = data.result;
 
 		$scope.response = [ {
@@ -1045,6 +1060,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$http.post('/reports/view', {
 	    report : $scope.report
 	}).success(function(html) {
+		if(html.error != undefined){  // USER NO
+		    // LONGER
+		    // LOGGED
+                // IN!!!!!
+                location.reload(); // Will boot back to
+                	// login
+                		// screen
+                }
 	    $timeout(function() {
 		delete $scope.report.loading;
 		$scope.reporthtml = $sce.trustAsHtml(html);// '"<!DOCTYPE
@@ -1673,6 +1696,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // object
 	    vm.gotattributes = true;
 	    $sails.get('/donortracker/getdpcodeattributes').success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+                    location.reload(); // Will boot back to login screen
+                }
 		var data = data.result;
 
 		$scope.response = [ {
@@ -1926,6 +1952,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post('/securitygroups/getsecuritygroupandresources', {
 		id : aData.id
 	    }).success(function(response) {
+		if(response.error != undefined){  // USER NO
+		    // LONGER
+		    // LOGGED
+                    // IN!!!!!
+                    location.reload(); // Will boot back to
+                    	// login
+                    		// screen
+                    }
 		$timeout(function() {
 		    $scope.group = response;
 		    $rootScope.group_modified = false;
@@ -1955,6 +1989,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	$scope.newGroup = function() {
 	    $sails.get('/security/getresourcegroups').success(function(resources) {
+		if(response.error != undefined){  // USER NO
+		    // LONGER
+		    // LOGGED
+                    // IN!!!!!
+                    location.reload(); // Will boot back to
+                    	// login
+                    		// screen
+                }
 		if (vm.groupWatcher != null) {
 		    vm.groupWatcher();
 		}
@@ -2001,6 +2043,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $sails.post('/securitygroups/destroy', {
 			id : $scope.selectedGroup.id
 		    }).success(function(data) {
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+	                    location.reload(); // Will boot back to login
+						// screen
+	                }
 			if (data.success) {
 			    $timeout(function() {
 				$scope.selectedGroup = null;
@@ -2023,10 +2070,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 
 	    $sails.post('/securitygroups/savesecuritygroupandresources', {
-		securitygroup : $scope.securitygroup
+		securitygroup : $scope.group
 	    }).success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+                    location.reload(); // Will boot back to login screen
+                }
 		if (data.success) {
-		    
+		    // $scope.group = angular.copy(vm.blank_group);
+		    // $scope.group.resources = resources;
+		    $scope.group.id = data.id;
+		    $scope.selectedGroup = angular.copy($scope.group);
+		    $rootScope.group_modified = false;
+		    $rootScope.validator['securitygroup_form'].resetForm();
+		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
 			$('#' + $scope.tableId).DataTable().ajax.reload(function() {
 			}, false);
 			$timeout(function() {
@@ -2100,6 +2156,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post('/users/getuserandgroups', {
 		id : aData.id
 	    }).success(function(response) {
+		if(response.error != undefined){  // USER NO
+		    // LONGER
+		    // LOGGED
+                    // IN!!!!!
+                    location.reload(); // Will boot back to
+                    	// login
+                    		// screen
+                }
 		$timeout(function() {
 		    $scope.user = response;
 		    $rootScope.user_modified = false;
@@ -2130,6 +2194,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	$scope.newUser = function() {
 	    $sails.get('/security/getsecuritygroups').success(function(securitygroups) {
+		if(securitygroups.error != undefined){  // USER NO
+		    // LONGER
+		    // LOGGED
+                    // IN!!!!!
+                    location.reload(); // Will boot back to
+                    	// login
+                    		// screen
+                }
 		if (vm.userWatcher != null) {
 		    vm.userWatcher();
 		}
@@ -2173,6 +2245,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $sails.post('/users/destroy', {
 			id : $scope.selectedUser.id
 		    }).success(function(data) {
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+                            location.reload(); // Will boot back to login
+						// screen
+                        }
 			if (data.success) {
 			    $timeout(function() {
 				$scope.selectedUser = null;
@@ -2197,6 +2274,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post('/users/saveuserandgroups', {
 		user : $scope.user
 	    }).success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+                    location.reload(); // Will boot back to login screen
+                }
 		if (data.success) {
 		    if ($scope.selectedUser.id == null) {
 			if (vm.userWatcher != null) {
@@ -2205,6 +2285,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			$sails.post('/users/getuserandgroups', {
 			    id : data.userId
 			}).success(function(response) {
+				if(response.error != undefined){  // USER NO
+								    // LONGER
+								    // LOGGED
+					// IN!!!!!
+                                    location.reload(); // Will boot back to
+							// login
+                            				// screen
+                                }
 			    $timeout(function() {
 				$scope.user = response;
 				$rootScope.user_modified = false;
@@ -2324,6 +2412,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post("/dpcodes/getdpcode", {
 		id : $scope.selectedCode.id
 	    }).success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+                    location.reload(); // Will boot back to login screen
+                }
 		if (data.success) {
 		    $rootScope.modalSelectedCode = angular.copy(data.dpcode);
 		    $rootScope.currentModal = $modal.open({
@@ -2335,6 +2426,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    }, function(triggerElement) {
 			if (triggerElement == 'save') {
 			    $sails.post('/dpcodes/save', $rootScope.modalSelectedCode).success(function(data) {
+				if(data.error != undefined){  // USER NO
+								// LONGER LOGGED
+								// IN!!!!!
+		                    location.reload(); // Will boot back to
+							// login screen
+		                }
 				if (data.success) {
 				    $scope.retrieveId = $scope.selectedCode;
 				    $rootScope.updateDpCodesDataTable();
@@ -2361,6 +2458,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
 		    $sails.post('/dpcodes/destroy', $scope.selectedCode).success(function(data) {
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+	                    location.reload(); // Will boot back to login
+						// screen
+	                }
 			if (data.success) {
 			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();
@@ -2391,6 +2493,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, function(triggerElement) {
 		if (triggerElement == 'save') {
 		    $sails.post('/dpcodes/save', $rootScope.modalSelectedCode).success(function(data) {
+			if(data.error != undefined){  // USER NO LONGER LOGGED
+							// IN!!!!!
+	                    location.reload(); // Will boot back to login
+						// screen
+	                }
 			if (data.success) {
 			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();

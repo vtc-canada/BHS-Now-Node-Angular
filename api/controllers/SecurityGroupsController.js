@@ -64,7 +64,7 @@ module.exports = {
 
 	async.series([
 	    function(callback){ // NEW user
-		if(securitygroup.id!='new'){
+		if(securitygroup.id!=null){
 		    return callback(null);// skip out otherwise
 		}
 		var paramCreateId = '@out' + Math.floor((Math.random() * 1000000) + 1);
@@ -77,7 +77,7 @@ module.exports = {
         	});
 	    },
 	    function(callback){ // Existing user
-		if(securitygroup.id=='new'){ 
+		if(securitygroup.id==null){ 
 		    securitygroup.id = securitygroup.newid;
 		    delete securitygroup.newid;
 		    return callback(null);// skip out otherwise
@@ -137,7 +137,7 @@ module.exports = {
 				console.log('Error Saving Mappings:'+err);
 				return res.json({error:'Error Saving Mappings:'+err},500);
 			    }
-			    res.json({success:true});
+			    res.json({success:true, id:securitygroup.id});
 			});
 		    });
 	    });

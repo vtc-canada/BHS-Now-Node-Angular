@@ -47,9 +47,9 @@
 					<h3 class="panel-title">Security Group Information</h3>
 					
 					<div class="pull-right isn-panel-pull-right">
-						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[securitygroup_modified == false]" ng-click="saveGroup()">Save<span ng-show="group.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[group_modified == false]" ng-click="saveGroup()">Save<span ng-show="group.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 					</div>
-					<div ng-show="securitygroup_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+					<div ng-show="group_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
 						Changes Pending
 					</div>
 				</div>

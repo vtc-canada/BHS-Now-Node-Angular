@@ -5,7 +5,7 @@ var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap'
 app.filter('orderObjectBy', function() {
     return function(items, field, reverse) {
 	var filtered = [];
-	angular.forEach(items, function(item,key) {
+	angular.forEach(items, function(item, key) {
 	    item.key = key; // added the key.. later used in identifying it.
 	    filtered.push(item);
 	});
@@ -18,7 +18,7 @@ app.filter('orderObjectBy', function() {
     };
 });
 
-app.run(function($pageLoadingBar, $rootScope, $preloaded) {
+app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 
     $rootScope.ti = 0;
     // Page Loading Overlay
@@ -28,26 +28,31 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded) {
 	public_vars.$pageLoadingOverlay.addClass('loaded');
     });
 
-    /*$rootScope.$on('$stateChangeStart',
-        function(event, toState, toParams, fromState, fromParams){
-            // check if user is set
-        	$rootScope.ti = $rootScope.ti+1;
-            if(false&&$rootScope.ti%2==0){
-                if($rootScope.hideLoadingBar){
-            	setTimeout(function(){
-    	        	$rootScope.hideLoadingBar();
-    	        	$('.main-content.ng-scope.is-loading').removeClass('is-loading');
-            	},250);
-                }
-                event.preventDefault();
-            } else {
-                // do smth else
-            }
-        }
-    )*/
+    $sails.get('/security/join').success(function(response) {
+	if (response.error != undefined) {
+	    location.reload();
+	}
+    }).error(function(data) {
+	alert('err!');
+    });
+    $sails.on('user_' + $user.id, function(message) {
+	if (message.verb === "reload") {
+	    location.reload();
+	}
+    });
+
+    /*
+     * $rootScope.$on('$stateChangeStart', function(event, toState, toParams,
+     * fromState, fromParams){ // check if user is set $rootScope.ti =
+     * $rootScope.ti+1; if(false&&$rootScope.ti%2==0){
+     * if($rootScope.hideLoadingBar){ setTimeout(function(){
+     * $rootScope.hideLoadingBar();
+     * $('.main-content.ng-scope.is-loading').removeClass('is-loading'); },250); }
+     * event.preventDefault(); } else { // do smth else } } )
+     */
 });
 
-app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider, ASSETS) {
+app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider, ASSETS) {
 
     $urlRouterProvider.otherwise('/app/contacts');
 
@@ -62,6 +67,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 	    $rootScope.isLightLoginPage = false;
 	    $rootScope.isLockscreenPage = false;
 	    $rootScope.isMainPage = true;
+	    $rootScope.username = $user.firstname;
 	}
     }).// Dashboards
     state('app.admin-users', {
@@ -89,8 +95,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
-    }).
-    state('app.admin-securitygroups', {
+    }).state('app.admin-securitygroups', {
 	url : '/admin-securitygroups',
 	templateUrl : appHelper.templatePath('admin/securitygroups'),
 	resolve : {
@@ -115,8 +120,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
-    }).
-    state('app.dpcodes', {
+    }).state('app.dpcodes', {
 	url : '/dpcodes',
 	templateUrl : appHelper.templatePath('dpcodes/index'),
 	resolve : {
@@ -141,8 +145,7 @@ app.config(function($preloaded, $stateProvider, $urlRouterProvider, $ocLazyLoadP
 		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
-    }).
-    state('app.reports', {
+    }).state('app.reports', {
 	url : '/reports',
 	templateUrl : appHelper.templatePath('reports/reports'),
 	resolve : {
