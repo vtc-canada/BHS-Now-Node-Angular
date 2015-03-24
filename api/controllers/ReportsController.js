@@ -288,9 +288,9 @@ function buildReportData(report, phantom_bool, cb) {
 	});
     }, function(err, results) {
 	cb(data);
-	if (phantom_bool) {
-	    DataCache.destroy(report.cacheId);
-	}
+	//if (phantom_bool) {
+	//    DataCache.destroy(report.cacheId);
+	//}
     });
 
     /*
