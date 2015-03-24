@@ -6,35 +6,124 @@
  */
 
 module.exports = {
-    testselect : function(req, res) {
-	var params = req.body.params;
-	res.json([ {
-	    id : 1,
-	    label : 'label something'
-	}, {
-	    id : 2,
-	    label : 'label something' + params[0]
-	}, {
-	    id : 3,
-	    label : 'label something' + params[0]
-	} ])
+
+    promptsave : function(req, res) {
+
+	var report = req.body.report;
+	var phantom = require('node-phantom');
+	var fs = require("fs");
+	var footnotes = report.footnotes || [];
+	var orientation = report.orientation || 'portrait';
+	report.locale = req.session.user.locale || 'en';
+
+	phantom.create(function(err, ph) {
+	    ph.createPage(function(err, page) {
+		page.set('viewportSize', {
+		    width : 1024,
+		    height : 480
+		});
+		var path = sails.config.appPath + '\\assets\\reports\\footer\\' + report.footer.logo;
+		fs.readFile(path, function(err, original_data) {
+		    var base64Image = original_data.toString('base64');
+
+		    footerheight = (orientation == 'landscape' ? 15 : 30) + (4 * footnotes.length) + (footnotes.length > 0 ? 5 : 0);
+		    page.set('paperSize', {
+			format : 'A4',
+			orientation : orientation,
+			header : {
+
+			    height : "1cm",
+			    contents : ''
+			},
+			footer : {
+			    height : footerheight + "mm", // 30mm
+			    footnotes : footnotes,
+			    logo : 'data:image/png;base64,' + base64Image,
+			    bot_left : toClientDateTimeString(new Date(), report.timezoneoffset),
+			    orientation : orientation
+			}
+		    }, function() {
+			var start = new Date().getTime();
+			console.log(sails.getBaseurl() + '/reports/view?report_parameters=' + encodeURIComponent(JSON.stringify(report)));
+			page.open(sails.getBaseurl() + '/reports/view?report_parameters=' + encodeURIComponent(JSON.stringify(report)), function() {
+			    var reportName = report.name.locale_label[report.locale] + ' ' + new Date().getTime();
+			    var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
+			    var filenamecsv = '.tmp\\public\\data\\' + reportName + '.csv';
+			    var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
+			    var urlcsv = '/data/' + reportName + '.csv'; // sails.config.siteurl+
+
+			    page.render(filename, function() {
+				var end = new Date().getTime();
+				console.log('Page Rendered in ' + (end - start).toString() + 'ms.');
+				ph.exit();
+
+				// res.json({
+				// pdfurl : url,
+				// csvurl : urlcsv
+				// });
+				// return;
+				buildReportData(report, true, function(data) {
+				    if (typeof (data) == 'undefined' || data == null) {
+					res.json({
+					    failure : 'Unable to Generate Report'
+					});
+				    }
+				    // BUILDING CSV STRING
+				    var outputstring = '';
+
+				    // BUILDING HEADER PARAMETERS
+				    var i = 0;
+				    if (typeof (data.header) != 'undefined') {
+					for (var i = 0; i < data.header.line.length; i++) {
+					    outputstring += "param," + data.header.line[i] + "\r\n";
+					}
+				    }
+				    for (i; i < 10; i++) {
+					outputstring += "\r\n";
+				    }
+
+				    for (var i = 0; i < data.length; i++) {
+					for (var j = 0; j < data[i].data.length; j++) { /// Add header, footer, totals, based on report Config settings TODO
+					    for (var k = 0; k < data[i].data[j].length; k++) {
+						if (k > 0) {
+						    outputstring += ",";
+						}
+						outputstring += data[i].data[j][k].val;
+					    }
+					    outputstring += "\r\n";
+					}
+					outputstring += "\r\n";
+				    }
+
+				    var fs = require('fs');
+				    fs.writeFile(filenamecsv, outputstring, function(err) {
+					if (err) {
+					    console.log(err);
+					} else {
+					    // console.log("The file was
+					    // saved!");
+					    res.json({
+						pdfurl : url,
+						csvurl : urlcsv
+					    });
+					}
+				    });
+				});
+			    });
+
+			});
+		    });
+		});
+	    })
+	});
     },
 
     view : function(req, res) {
 	var report;
 	var pass_locale;
 	var phantom_bool;
-	if (typeof (req.query) != 'undefined' && typeof (req.query.report_parameters) != 'undefined') { // see
-	    // if
-	    // we're
-	    // passing
-	    // in
-	    // the
-	    // report
-	    // stuff
-	    // as
-	    // GET
-	    // parameters
+	if (typeof (req.query) != 'undefined' && typeof (req.query.report_parameters) != 'undefined') {
+	    // see if we're passing in the report stuff as GET parameters
 	    report = JSON.parse(req.query.report_parameters);
 	    // pass_locale = report.locale;
 	    phantom_bool = true;
@@ -123,9 +212,10 @@ function buildReportData(report, phantom_bool, cb) {
 
     data.header = header;
     data.css = "isystemsnowreports.css";
-    data.landscape = false;
+    data.landscape = report.orientation == 'landscape';
 
-    async.each(report.tables, function(table, tablescallback) {
+    async.each(Object.keys(report.tables), function(key, tablescallback) {
+	var table = report.tables[key];
 	var parameters = [];
 	var result = null;
 
@@ -138,24 +228,13 @@ function buildReportData(report, phantom_bool, cb) {
 	    } else {
 		parameters.push(report.parameters[table.parameters[i]].value);
 	    }
-	    // console.log(report[table.parameters[i]]);
 	}
-	// function getSproc(getSprocCb){
-	// Database.dataSproc(table.sproc, parameters, function(err, dresult) {
-	// if (err || dresult.length < 1 ) {
-	// console.log(err);
-	// return tablescallback(null);
-	// }
-	// getSprocCb(dresult[0]);
-	// });
-	// }
 
-	// if(table.join&&table.join=='left'){ // continuing a data set with a
-	// second sproc. Only for Pivot tables as of 3/13/2015
+	getCacheOrSproc(table.sproc, parameters, report.cacheId, key, function(err, result) {
 
-	// }
-
-	Database.dataSproc(table.sproc, parameters, function(err, result) {
+	    // })
+	    // Database.dataSproc(table.sproc, parameters, function(err, result)
+	    // {
 	    if (err || result.length < 1) {
 		console.log(err);
 		return tablescallback(null);
@@ -182,19 +261,6 @@ function buildReportData(report, phantom_bool, cb) {
 		data[table.order] = table.section;
 
 		data[table.order].data = new Array();
-
-		/*
-		 * data[table.order].data.topborder =
-		 * table.section.table.topborder;
-		 * data[table.order].data.bottomborder =
-		 * table.section.table.bottomborder;
-		 * data[table.order].data.spantype =
-		 * table.section.table.spantype;
-		 * data[table.order].data.toprowtableheader =
-		 * table.section.table.toprowtableheader;
-		 * data[table.order].data.searchenabled =
-		 * table.section.table.searchenabled;
-		 */
 		data[table.order].header = new Array();
 
 		// Makes Headings
@@ -212,20 +278,19 @@ function buildReportData(report, phantom_bool, cb) {
 	    }
 
 	    // Fills Data
-	    // function(section) {
-	    // if (section != null) {
-	    // data[data.length] =
 	    if (table.pivot) {
 		addPivotData(data[table.order], result, report.timezoneoffset, table);
 	    } else {
 		addSectionData(data[table.order], result, report.timezoneoffset, table);
 	    }
-
 	    tablescallback(null);
 
 	});
     }, function(err, results) {
 	cb(data);
+	if (phantom_bool) {
+	    DataCache.destroy(report.cacheId);
+	}
     });
 
     /*
@@ -248,6 +313,18 @@ function buildReportData(report, phantom_bool, cb) {
     // } // END OF REPORT 1
 }
 
+function getCacheOrSproc(sproc, parameters, cacheId, key, cb) {
+    var cachedata = DataCache.get(cacheId, key);
+    if (typeof (cachedata) == 'undefined') {
+	Database.dataSproc(sproc, parameters, function(err, result) {
+	    cb(err, result);
+	    DataCache.save(cacheId, key, result);
+	});
+    } else {
+	cb(null, cachedata);
+    }
+}
+
 function addPivotData(section, adddata, timezoneoffset, table) {
 
     var pivotindex = {};
@@ -261,10 +338,20 @@ function addPivotData(section, adddata, timezoneoffset, table) {
 	    // }
 	    pivotindex[adddata[i][table.pivot.id]] = section.data.length;
 	    section.data[pivotindex[adddata[i][table.pivot.id]]] = new Array();
-	    section.data[pivotindex[adddata[i][table.pivot.id]]][table.columns.length - 1] = undefined; // initializes empty array
+	    section.data[pivotindex[adddata[i][table.pivot.id]]][table.columns.length - 1] = undefined; // initializes
+	    // empty
+	    // array
 
-	    for (var initcol = 0; initcol < table.columns.length; initcol++) { // Applies any 'value' fields- initialization - can overwrite these.
-		if (typeof(table.columns[initcol].value)!='undefined'&&initcol!=table.pivot.columns['id']&&initcol!=table.pivot.columns[adddata[i][table.pivot.name]]) { 
+	    for (var initcol = 0; initcol < table.columns.length; initcol++) { // Applies
+		// any
+		// 'value'
+		// fields-
+		// initialization
+		// -
+		// can
+		// overwrite
+		// these.
+		if (typeof (table.columns[initcol].value) != 'undefined' && initcol != table.pivot.columns['id'] && initcol != table.pivot.columns[adddata[i][table.pivot.name]]) {
 		    section.data[pivotindex[adddata[i][table.pivot.id]]][initcol] = new Object();
 		    section.data[pivotindex[adddata[i][table.pivot.id]]][initcol].val = table.columns[initcol].value;
 		    section.data[pivotindex[adddata[i][table.pivot.id]]][initcol].bold = false;
@@ -289,10 +376,12 @@ function addPivotData(section, adddata, timezoneoffset, table) {
 	    // adddata[i][table.pivot.id];
 	}
 	section.data[pivotindex[adddata[i][table.pivot.id]]][table.pivot.columns[adddata[i][table.pivot.name]]] = new Object();
-	//console.log(adddata[i][table.pivot.id] + ' ' + adddata[i][table.pivot.name] + ' ' + adddata[i][table.pivot.value]);
-	//if ('EZ ACTIVE_LAPSED 253' == adddata[i][table.pivot.id] + ' ' + adddata[i][table.pivot.name] + ' ' + adddata[i][table.pivot.value]) {
-	//    console.log('here');
-	//}
+	// console.log(adddata[i][table.pivot.id] + ' ' +
+	// adddata[i][table.pivot.name] + ' ' + adddata[i][table.pivot.value]);
+	// if ('EZ ACTIVE_LAPSED 253' == adddata[i][table.pivot.id] + ' ' +
+	// adddata[i][table.pivot.name] + ' ' + adddata[i][table.pivot.value]) {
+	// console.log('here');
+	// }
 
 	if (typeof (table.columns[table.pivot.columns[adddata[i][table.pivot.name]]].modifier) != 'undefined') {
 	    if (table.columns[table.pivot.columns[adddata[i][table.pivot.name]]].modifier == "localdatetime") {

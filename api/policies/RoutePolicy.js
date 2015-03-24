@@ -67,7 +67,7 @@ module.exports = function(req,res,next) {
         	failResponse();// res.json(500,{error:'Policy
 				// Missing!@'+req.session.user.id+':'+path});
 	    }else{
-		console.log(JSON.stringify(req.session.user));
+		//console.log(JSON.stringify(req.session.user));
             	if(req.session.user.active!=1 || (req.session.user.policy[path].create==0&&req.session.user.policy[path].read==0&&req.session.user.policy[path].update==0&&req.session.user.policy[path].delete==0)){
             	    //req.flash('errormessage',req.__('Invalid Access')); //TODO- this may need to be enabled. 
                     req.flash('errordebug','UserId:'+req.session.user.id+' @Path:'+req.route.path);

@@ -639,24 +639,20 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}
     }
 /*
-    // initialization routine.
-    (function() {
-	
-	if (typeof (vm.gotattributes) == 'undefined') {// get an existing
-	    // object
-	    vm.gotattributes = true;
-	    
-	    
-	     * $scope.titles = [{ //create a new object id: 'Mr', label: 'Mr.' }, {
-	     * id: 'Mrs', label: 'Mrs.' }];
-	     
-	}
-    })()*/
+ * // initialization routine. (function() {
+ * 
+ * if (typeof (vm.gotattributes) == 'undefined') {// get an existing // object
+ * vm.gotattributes = true;
+ * 
+ * 
+ * $scope.titles = [{ //create a new object id: 'Mr', label: 'Mr.' }, { id:
+ * 'Mrs', label: 'Mrs.' }]; } })()
+ */
 }).controller('UserSection', function($scope, $rootScope, $timeout, $state, $modal, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
 
-}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $http, $reports, $reportselects, $sails) {
+}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $http, $reports, $reportselects, $sails, $modal) {
     var vm = this;
     vm.$scope = $scope;
     $scope.reports = $reports;
@@ -745,12 +741,39 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    return changed;
 	}
     }
+    
+    $scope.saveReport = function(){
+	// $scope.saving = true;
+	
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'save-report-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.saving_report = true;
+	
+	$http.post('/reports/promptsave', {
+	    report : $scope.report
+	}).success(function(response) {
+	    if(response.error != undefined){  // USER NO LONGER
+						    // LOGGEDIN!!!!!
+                location.reload(); // Will boot back to login screen
+            }
+	    $timeout(function() {
+		// delete $scope.saving;
+		$rootScope.pdfurl = response.pdfurl;
+		$rootScope.csvurl = response.csvurl;
+		delete $rootScope.saving_report;
+	    }, 0);
+	});
+    }
 
     $scope.runReport = function() {
 	$scope.report.system_name = 'The Fatima Center'; // saves the system
 	// name
 	$scope.report.timezoneoffset = new Date().getTimezoneOffset();
-	$scope.report.loading = true;
+	$scope.report.cacheId = Math.floor((Math.random() * 1000000000) + 1);
+	$scope.loading = true;
 	$http.post('/reports/view', {
 	    report : $scope.report
 	}).success(function(html) {
@@ -763,75 +786,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
                 		// screen
                 }
 	    $timeout(function() {
-		delete $scope.report.loading;
-		$scope.reporthtml = $sce.trustAsHtml(html);// '"<!DOCTYPE
-		// html><html
-		// lang="en"><head><meta
-		// charset="utf-8"><meta
-		// content="width=300,
-		// initial-scale=1"
-		// name="viewport"><meta
-		// name="description"
-		// content=""><title>undefined</title><link
-		// rel="apple-touch-icon-precomposed"
-		// sizes="144x144"
-		// href="/img/favicon.ico"><link
-		// rel="apple-touch-icon-precomposed"
-		// sizes="114x114"
-		// href="/img/favicon.ico"><link
-		// rel="apple-touch-icon-precomposed"
-		// sizes="72x72"
-		// href="/img/favicon.ico"><link
-		// rel="apple-touch-icon-precomposed"
-		// href="/img/favicon.png"><link
-		// rel="shortcut
-		// icon"
-		// href="/img/favicon.ico"><link
-		// rel="icon"
-		// href="/img/favicon.ico"
-		// type="image/x-icon"><link
-		// rel="shortcut
-		// icon"
-		// href="/img/favicon.ico"
-		// type="image/x-icon">
-		// <!--<script
-		// type="text/javascript"
-		// src="/js/jquery.js"></script><script
-		// type="text/javascript"
-		// src="/js/dependencies/sails.io.js"></script><script
-		// type="text/javascript"
-		// src="/js/bootstrap-combobox.js"></script><script
-		// type="text/javascript"
-		// src="/js/bootstrap.js"></script><script
-		// type="text/javascript"
-		// src="/js/jquery-ui-1.10.3.custom.min.js"></script><script
-		// type="text/javascript"
-		// src="/js/jquery.ui.chatbox.js"></script><script
-		// type="text/javascript"
-		// src="/js/jquery.ui.chatboxManager.js"></script>
-		// --></head><body><div
-		// class="wrapper">
-		// <!--<div
-		// class="google-header-bar
-		// centered"> <div
-		// class="header
-		// content
-		// clearfix"> <img
-		// alt="iSystemsNow"
-		// class="logo"
-		// src="/img/iSystemsNow-Logo-RGB-Black.png">
-		// </div> </div>-->
-		// <div class="main
-		// content
-		// clearfix"> <div
-		// class="banner">
-		// <h5
-		// style="margin-left:10px;">
-		// No results have
-		// been found. </h5>
-		// </div>
-		// </div></div></body></html>"';
-		// console.log(html);
+		delete $scope.loading;
+		$scope.reporthtml = $sce.trustAsHtml(html);
 	    }, 0);
 	});
     }
@@ -1385,15 +1341,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      */
 
     // initialization routine.
-    /*(function() {
-	if (typeof (vm.gotattributes) == 'undefined') {// get an existing
-	    // object
-	    vm.gotattributes = true;
-	    
-	    });
-	}
-    })();
-*/
+    /*
+     * (function() { if (typeof (vm.gotattributes) == 'undefined') {// get an
+     * existing // object vm.gotattributes = true;
+     * 
+     * }); } })();
+     */
     $rootScope.dpsearch = $scope.dpsearch;
 
     $scope.$watchCollection('dpsearch', function() {

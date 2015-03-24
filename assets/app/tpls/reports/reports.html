@@ -1,12 +1,36 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Reports" description=""></page-title>
 			
+
+<script type="text/ng-template" id="save-report-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Save Report</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		<div ng-show="saving_report">
+		Generating Report
+		<span >&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span>
+		</div>
+		<div ng-hide="saving_report">
+			<a class="btn btn-success" href="{{pdfurl}}" target="_blank">Download PDF</a>
+			<a class="btn btn-success" href="{{csvurl}}" target="_blank">Download CSV</a>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+	</div>
+</script>
+
+
 <div class="row" ng-controller="ReportSearch">
 	<div class="col-sm-12 hidden-print">
 		<div class="panel panel-default collapsed">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="fa-sliders"></i>&nbsp&nbspReport Selection</h3>
 				<div class="pull-right isn-panel-pull-right">
-					<div class="pull-right btn btn-secondary" ng-click="runReport();">Run Report<span ng-show="report.loading">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+					<div class="pull-right btn btn-secondary" ng-click="runReport();">Run Report<span ng-show="loading">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 				</div>
 			</div>
 			<div class="panel-body always-visible">
@@ -51,7 +75,7 @@
 					<div class="btn btn-secondary" ng-click="printReport()">Print</div>
 				</div>
 				<div class="pull-right isn-panel-pull-right pull-right-stack">
-					<div class="btn btn-secondary" ng-click="saveReport()">Save</div>
+					<div class="btn btn-secondary" ng-click="saveReport()">Save<span ng-show="saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 				</div>
 			</div>
 			<div class="panel-body always-visible">

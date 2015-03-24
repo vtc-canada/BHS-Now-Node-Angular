@@ -28,17 +28,34 @@ function toClientDateTimeString(date){
 
     <!-- <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="/js/dataTables.FixedHeader.js"></script>
+    <script type="text/javascript" src="/js/dataTables.FixedHeader.js"></script>-->
     
 
-    <link class="stripcss" href="/css/bootstrap.css" rel="stylesheet">
-    <link class="stripcss" href="/css/bootstrap-responsive.css" rel="stylesheet">-->
+    <% if(phantom){ %>
+    <link class="stripcss" href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link class="stripcss" href="/styles/xenon-isn.css" rel="stylesheet">
+    <% } %>
     <link href="/css/<%= data.css %>" rel="stylesheet">
     <style type="text/css">
         <% if(phantom){ %>
         body {
             font-family: Arial;
         }
+        
+	    .unbreakable thead {display: table-row-group;}
+	    .unbreakable tfoot {display: table-row-group;}
+	    
+	    .unbreakable
+		{
+		    display:inline-block;
+		}
+		.unbreakable:after
+		 {
+		    display:block;
+		    height:0px;
+		    visibility: hidden;
+		}
+	    
         <% } %>
         @media print {
             <% if(data.landscape){ %>
@@ -46,7 +63,7 @@ function toClientDateTimeString(date){
                 size: landscape;/* notice this does not reset in firefox */
                 size:320mm 230mm;
             }
-            #iframediv{
+            #report_html{
                 width:1225px;
             }
             <% }else{ %>
@@ -55,7 +72,7 @@ function toClientDateTimeString(date){
                 /* size:A4;    */
                 margin: 0mm 0mm 0mm 5mm;
             }
-            #iframediv{
+            #report_html{
                 width:1024px;
             }
             .main-content{
@@ -76,23 +93,23 @@ function toClientDateTimeString(date){
 <!-- HEADER SECTION -->
 <% if(typeof(data.header)!= 'undefined'){ %>
    <div class="row report-header-wrapper">
-       <div class="col-sm-6 report-header-url-wrapper">
+       <div class="col-xs-6 report-header-url-wrapper">
            <img class="report_header-url" src="<%= data.header.url %>" style="width:312px;"  width="312" >
        </div>
-       <div class="col-sm-4 col-md-offset-2 report-header-right-wrapper">
+       <div class="col-xs-4 col-xs-offset-2 report-header-right-wrapper">
            <% for(var i=0;i<data.header.line.length; i++){ %>
                <div class="report-header-lineitem"><%= data.header.line[i] %></div>
            <% } %>
        </div>
+       
    </div>
 <% } %>
 
   <div class="row report-main-content">
 <!-- Iterates through all the sections -->
 <% for (var i=0;i<data.length;i++){ %>
-
     <% if((typeof(data[i].startrow)!='undefined') &&  data[i].startrow ){ %>
-         <div class="row report-new-row">
+         <div class="row report-new-row <% if(data[i].unbreakable){ %>unbreakable<% } %>">
     <% } %>
       <!-- GroupHeader   -->
     <% if(typeof(data[i].groupheading)!= 'undefined'){ %>
@@ -117,7 +134,7 @@ function toClientDateTimeString(date){
         <!-- Iterate the rows -->
 
 
-        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].data.sorting)!='undefined'&&data[i].data.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].data.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
+        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'&&(data[i]['tableclass']!='wide'||typeof(phantom)=='undefined')){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].data.sorting)!='undefined'&&data[i].data.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].data.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
 
         <% var j = 0 ; %>
 

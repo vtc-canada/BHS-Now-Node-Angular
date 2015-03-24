@@ -30,6 +30,7 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
+		orientation:'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_CategoryReport',
@@ -659,6 +660,7 @@ module.exports.views = {
 		    section : {
 			startrow : true,
 			endrow : true,
+			unbreakable : true,
 			groupheading : {
 			    spantype : 'col-xs-12',
 			    grid : [ [ {
@@ -786,6 +788,7 @@ module.exports.views = {
 		    section : {
 			startrow : true,
 			endrow : true,
+			unbreakable : true,
 			groupheading : {
 			    spantype : 'col-xs-12',
 			    grid : [ [ {
@@ -913,6 +916,7 @@ module.exports.views = {
 		    section : {
 			startrow : true,
 			endrow : true,
+			unbreakable : true,
 			groupheading : {
 			    spantype : 'col-xs-12',
 			    grid : [ [ {
@@ -1040,6 +1044,7 @@ module.exports.views = {
 		    section : {
 			startrow : true,
 			endrow : true,
+			unbreakable : true,
 			groupheading : {
 			    spantype : 'col-xs-12',
 			    grid : [ [ {
@@ -1167,6 +1172,7 @@ module.exports.views = {
 		    section : {
 			startrow : true,
 			endrow : true,
+			unbreakable : true,
 			groupheading : {
 			    spantype : 'col-xs-12',
 			    grid : [ [ {
@@ -1306,6 +1312,8 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
+		footnotes : ['Footer 1', 'Footer 2'],
+		orientation:'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_DailyMailComputerReport',
@@ -1559,6 +1567,8 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
+		footnotes : ['Footer 1', 'Footer 2', 'Footer 3', 'Footer 4', 'Footer 5', 'Footer 6', 'Footer 7', 'Footer 8', 'Footer 9'],
+		orientation:'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_LapsedDonorReport',

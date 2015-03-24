@@ -439,6 +439,23 @@ table tbody tr td{
     vertical-align: top;
 }
 
+
+
+
+
+
+.bottom-footer-wrapper .footer-img{
+	left: 0px !important;
+}
+
+
+
+
+
+
+
+
+
 div.barcode-state[active=Active]{
     color:green;
 }
