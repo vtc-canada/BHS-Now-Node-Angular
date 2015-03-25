@@ -6,7 +6,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.contact = $contact;// .init();
     $scope.contact.id = $contact.id = null;
     $scope.selectedTransaction = null;
-
+    $scope.selectedOrderSummary = null;
+    $scope.selectedOrderDetails = null;
+    
     $scope.selectedDataTableRow = {
 	'dpgift' : null,
 	'dpplg' : null,
@@ -14,6 +16,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dpother' : null,
 	'dplink' : null
     }
+    
+    $scope.longSelectOptions = {minimumInputLength:2};
+    
     $rootScope.modalDataSet = angular.copy($scope.selectedDataTableRow);
 
     vm.watchEnabled = false;
@@ -65,6 +70,20 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     // dataTable SubSets - Manages form datatable subsets- modals/ subchanges
     // /////////////////////////////
     $scope.dataTableOptions = {
+	'dpordersummary' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "25%" // id
+	    }, {
+		"width" : "25%" // Sol
+	    }, {
+		"width" : "25%" // Date
+	    }, {
+		"width" : "25%" // Total #
+	    }]
+	},
 	'dpgift' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
@@ -152,6 +171,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    } ]
 	}
     };
+    
+    $scope.resetOrderSummaryRow = function(table_name) {
+	$timeout(function() {
+	    $scope.selectedOrderSummary = null;
+	}, 0);
+    }
 
     $scope.resetSelectedDataTableRow = function(table_name) {
 	$timeout(function() {
@@ -312,6 +337,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    });
 	}
     }
+    $scope.rebindOrderSummaryDataTable = function() {
+	if (!$.fn.DataTable.isDataTable('#dpordersummary_datatable')) {
+	    $('#dpordersummary_datatable').dataTable($scope.dataTableOptions['dpordersummary']).on('page.dt', $scope.resetOrderSummaryRow()).on('length.dt', $scope.resetOrderSummaryRow()).on('search.dt', $scope.resetOrderSummaryRow());
+	    $('#dpordersummary_datatable').css('visibility', '');
+	    $('#dpordersummary_datatable').next().find('ul.pagination li.paginate_button a').click(function() {
+		$timeout(function() {
+		    $scope.selectedOrderSummary = null;
+		}, 0);
+	    });
+	}
+    }
 
     $scope.getDatatableDeleteButtonDisabled = function(table_name) {
 	return ($scope.selectedDataTableRow[table_name] == null);
@@ -381,6 +417,38 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// tempId,
 	// is_deleted) {
 	$scope.selectedDataTableRow[table_name] = row;
+    }
+    
+    $scope.selectOrderSummaryDataTableRow = function( row) {// transactionId,
+	// tempId,
+	// is_deleted) {
+	$scope.selectedOrderSummary = row;
+    }
+    
+    
+    $scope.isOrderSummaryDatatableRowFocused = function( row) {
+	if(typeof(row)=='undefined'||row==null){
+    		return $scope.selectedOrderSummary!=null;
+	}
+	if ($scope.selectedOrderSummary == null) {
+	    return false;
+	}
+	return (row.tempId == $scope.selectedOrderSummary.tempId && row.tempId != null) || (row.id == $scope.selectedOrderSummary.id && row.id != 'new');
+    }
+    
+    $scope.selectOrderDetailsDataTableRow = function( row) {// transactionId,
+	// tempId,
+	// is_deleted) {
+	$scope.selectedOrderDetails = row;
+    }
+    $scope.isOrderDetailsDatatableRowFocused = function( row) {
+	if(typeof(row)=='undefined'||row==null){
+    		return $scope.selectedOrderDetails!=null;
+	}
+	if ($scope.selectedOrderDetails == null) {
+	    return false;
+	}
+	return (row.tempId == $scope.selectedOrderDetails.tempId && row.tempId != null) || (row.id == $scope.selectedOrderDetails.id && row.id != 'new');
     }
 
     // /////////////////////////////////////////////// dynamic sub-datatables/
@@ -533,7 +601,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    // datatables!
 			    $scope.tryDestroyDataTable(key);
 			}
-			;
+			$scope.tryDestroyDataTable('dpordersummary');
 			$timeout(function() {
 			    $contact.set(data.contact);
 			    resetContactForms();
@@ -544,6 +612,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				    // datatables!
 				    $scope.rebindDataTable(key);
 				}
+				$scope.rebindOrderSummaryDataTable();
 			    }, 0);
 			}, 0);
 		    }
@@ -595,6 +664,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    // datatables!
 			    $scope.tryDestroyDataTable(key);
 			}
+			$scope.tryDestroyDataTable('dpordersummary');
+			
 			$timeout(function() {
 			    $contact.set(data.contact); // sets is_saving to
 			    // false.
@@ -608,6 +679,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				    // datatables!
 				    $scope.rebindDataTable(key);
 				}
+				$scope.rebindOrderSummaryDataTable();
 			    }, 0);
 			}, 0);
 		    }
@@ -638,16 +710,329 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    vm.screenLoaded = true;
 	}
     }
-/*
- * // initialization routine. (function() {
- * 
- * if (typeof (vm.gotattributes) == 'undefined') {// get an existing // object
- * vm.gotattributes = true;
- * 
- * 
- * $scope.titles = [{ //create a new object id: 'Mr', label: 'Mr.' }, { id:
- * 'Mrs', label: 'Mrs.' }]; } })()
- */
+    
+    
+
+ // initialization routine.
+    (function() {
+	$sails.get('/donortracker/getattributes').success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+	            location.reload(); // Will boot back to login screen
+	        }
+		var data = data.result;
+
+		$rootScope.response = [ {
+		    id : '1',
+		    label : 'Not yet known'
+		}, {
+		    id : '2',
+		    label : 'Positive'
+		}, {
+		    id : '3',
+		    label : 'Negative'
+		} ]
+
+		$rootScope.staticyesno = [ {
+		    id : 'Y',
+		    label : 'Yes'
+		}, {
+		    id : 'N',
+		    label : 'No'
+		} ];
+
+		$rootScope.currencies = [ {
+		    id : 'U',
+		    label : 'USD - United States'
+		}, {
+		    id : 'C',
+		    label : 'CAD - Canadian Dollars'
+		} ];
+
+		$scope.litems = [];
+		for (var i = 0; i < data.litems.length; i++) {
+		    $scope.litems.push({
+			id : data.litems[i].CODE,
+			label : data.litems[i].CODE + " - " + data.litems[i].DESC
+		    });
+		}
+		
+		
+		$rootScope.pledgegroups = [];
+		for (var i = 0; i < data.pledgegroups.length; i++) {
+		    $rootScope.pledgegroups.push({
+			id : data.pledgegroups[i].CODE,
+			label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
+		    });
+		}
+
+		$rootScope.tba_requests = [];
+		for (var i = 0; i < data.tba_requests.length; i++) {
+		    $rootScope.tba_requests.push({
+			id : data.tba_requests[i].CODE,
+			label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
+		    });
+		}
+
+		$rootScope.lists = [];
+		for (var i = 0; i < data.lists.length; i++) {
+		    $rootScope.lists.push({
+			id : data.lists[i].CODE,
+			label : data.lists[i].CODE + " - " + data.lists[i].DESC
+		    });
+		}
+		$rootScope.demands = [];
+		for (var i = 0; i < data.demands.length; i++) {
+		    $rootScope.demands.push({
+			id : data.demands[i].CODE,
+			label : data.demands[i].CODE + " - " + data.demands[i].DESC
+		    });
+		}
+		$rootScope.relationships = [];
+		for (var i = 0; i < data.relationships.length; i++) {
+		    $rootScope.relationships.push({
+			id : data.relationships[i].CODE,
+			label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
+		    });
+		}
+		$rootScope.requests_plural = [];
+		for (var i = 0; i < data.requests_plural.length; i++) {
+		    $rootScope.requests_plural.push({
+			id : data.requests_plural[i].CODE,
+			label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
+		    });
+		}
+
+		$rootScope.transaction_type = 'dpplg';
+
+		$rootScope.transaction_types = [ {
+		    id : 'dpgift',
+		    label : 'Gift'
+		}, {
+		    id : 'dtmail',
+		    label : 'Mail'
+		}, {
+		    id : 'dpplg',
+		    label : 'Pledge'
+		}, {
+		    id : 'dpother',
+		    label : 'Other'
+		}, {
+		    id : 'dplink',
+		    label : 'Links'
+		}, {
+		    id : 6,
+		    label : 'Myst'
+		} ];
+
+		$rootScope.staticyesnounknown = [ {
+		    id : 'Y',
+		    label : 'Yes'
+		}, {
+		    id : 'U',
+		    label : 'Unknown'
+		}, {
+		    id : 'N',
+		    label : 'No'
+		} ];
+
+		/*
+		 * for (var i = 0; i < data.donor_classes.length; i++) {
+		 * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
+		 * label : data.donor_classes[i].CODE + " - " +
+		 * data.donor_classes[i].DESC }); }
+		 */
+
+		/*
+		 * angular.forEach(data.result,function(atts,key){
+		 * $scope[key]=[]; for(var i=0;i<atts.length;i++){
+		 * $scope[key].push({ id : atts[i]. }); } ) })
+		 */
+		$rootScope.titles = [];
+		for (var i = 0; i < data.titles.length; i++) {
+		    $rootScope.titles.push({
+			id : data.titles[i].TITLE,
+			label : data.titles[i].TITLE
+		    });
+		}
+		$rootScope.languages = [];
+		for (var i = 0; i < data.languages.length; i++) {
+		    $rootScope.languages.push({
+			id : data.languages[i].CODE,
+			label : data.languages[i].CODE + " - " + data.languages[i].DESC
+		    });
+		}
+		$rootScope.values_traditional = [];
+		for (var i = 0; i < data.values_traditional.length; i++) {
+		    $rootScope.values_traditional.push({
+			id : data.values_traditional[i].CODE,
+			label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
+		    });
+		}
+		$rootScope.decision = [];
+		for (var i = 0; i < data.decision.length; i++) {
+		    $rootScope.decision.push({
+			id : data.decision[i].CODE,
+			label : data.decision[i].CODE + " - " + data.decision[i].DESC
+		    });
+		}
+		$rootScope.mass_said = [];
+		for (var i = 0; i < data.mass_said.length; i++) {
+		    $rootScope.mass_said.push({
+			id : data.mass_said[i].CODE,
+			label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
+		    });
+		}
+
+		$rootScope.willsaymass = [];
+		for (var i = 0; i < data.willsaymass.length; i++) {
+		    $rootScope.willsaymass.push({
+			id : data.willsaymass[i].CODE,
+			label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
+		    });
+		}
+		$rootScope.english = [];
+		for (var i = 0; i < data.english.length; i++) {
+		    $rootScope.english.push({
+			id : data.english[i].CODE,
+			label : data.english[i].CODE + " - " + data.english[i].DESC
+		    });
+		}
+		$rootScope.accounts_received = [];
+		for (var i = 0; i < data.accounts_received.length; i++) {
+		    $rootScope.accounts_received.push({
+			id : data.accounts_received[i].CODE,
+			label : data.accounts_received[i].CODE + " - " + data.accounts_received[i].DESC
+		    });
+		}
+		$rootScope.reasons = [];
+		for (var i = 0; i < data.reasons.length; i++) {
+		    $rootScope.reasons.push({
+			id : data.reasons[i].CODE,
+			label : data.reasons[i].CODE
+		    });
+		}
+		$rootScope.cfns = [];
+		for (var i = 0; i < data.cfns.length; i++) {
+		    $rootScope.cfns.push({
+			id : data.cfns[i].CODE,
+			label : data.cfns[i].CODE + " - " + data.cfns[i].DESC
+		    });
+		}
+		$rootScope.pledgors = [];
+		for (var i = 0; i < data.pledgors.length; i++) {
+		    $rootScope.pledgors.push({
+			id : data.pledgors[i].CODE,
+			label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
+		    });
+		}
+		$rootScope.types = [];
+		for (var i = 0; i < data.types.length; i++) {
+		    $rootScope.types.push({
+			id : data.types[i].CODE,
+			label : data.types[i].CODE
+		    });
+		}
+		$rootScope.sols = [];
+		for (var i = 0; i < data.sols.length; i++) {
+		    $rootScope.sols.push({
+			id : data.sols[i].CODE,
+			label : data.sols[i].CODE
+		    });
+		}
+		$rootScope.sols = [];
+		for (var i = 0; i < data.sols.length; i++) {
+		    $rootScope.sols.push({
+			id : data.sols[i].CODE,
+			label : data.sols[i].CODE
+		    });
+		}
+		$rootScope.billing_schedules = [];
+		for (var i = 0; i < data.billing_schedules.length; i++) {
+		    $rootScope.billing_schedules.push({
+			id : data.billing_schedules[i].CODE,
+			label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
+		    });
+		}
+
+		$rootScope.transacts = [];
+		for (var i = 0; i < data.transacts.length; i++) {
+		    $rootScope.transacts.push({
+			id : data.transacts[i].CODE,
+			label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
+		    });
+		}
+		$rootScope.designates = [];
+		for (var i = 0; i < data.designates.length; i++) {
+		    $rootScope.designates.push({
+			id : data.designates[i].CODE,
+			label : data.designates[i].CODE + " - " + data.designates[i].DESC
+		    });
+		}
+		$rootScope.modes = [];
+		for (var i = 0; i < data.modes.length; i++) {
+		    $rootScope.modes.push({
+			id : data.modes[i].CODE,
+			label : data.modes[i].CODE + " - " + data.modes[i].DESC
+		    });
+		}
+
+		$rootScope.states = [];
+		for (var i = 0; i < data.states.length; i++) {
+		    $rootScope.states.push({
+			id : data.states[i].CODE,
+			label : data.states[i].CODE
+		    });
+		}
+		$rootScope.pledge_schedule = data.pledge_schedule;
+		$rootScope.major_donation_types = data.major_donation_types;
+
+		$rootScope.countries = [];
+		for (var i = 0; i < data.countries.length; i++) {
+		    $rootScope.countries.push({
+			id : data.countries[i].CODE,
+			label : data.countries[i].CODE
+		    });
+		}
+		$rootScope.county_codes = [];
+		for (var i = 0; i < data.county_codes.length; i++) {
+		    $rootScope.county_codes.push({
+			id : data.county_codes[i].CODE,
+			label : data.county_codes[i].CODE
+		    });
+		}
+		$rootScope.phone_types = [];
+		for (var i = 0; i < data.phone_types.length; i++) {
+		    $rootScope.phone_types.push({
+			id : data.phone_types[i].CODE,
+			label : data.phone_types[i].CODE
+		    });
+		}
+		$rootScope.address_types = [];
+		for (var i = 0; i < data.address_types.length; i++) {
+		    $rootScope.address_types.push({
+			id : data.address_types[i].CODE,
+			label : data.address_types[i].CODE
+		    });
+		}
+
+		// DTVOLS1
+		$rootScope.dtvols1 = {};
+		$rootScope.dtvols1.origin = [];
+		$rootScope.origin = [];
+		for (var i = 0; i < data.dtvols1.origin.length; i++) {
+		    $rootScope.dtvols1.origin.push({
+			id : data.dtvols1.origin[i].CODE,
+			label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
+		    });
+		}
+
+
+	    }).error(function(data) {
+		alert('err!');
+	    });
+	
+  })();
+ 
 }).controller('UserSection', function($scope, $rootScope, $timeout, $state, $modal, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
@@ -1341,12 +1726,58 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      */
 
     // initialization routine.
-    /*
-     * (function() { if (typeof (vm.gotattributes) == 'undefined') {// get an
-     * existing // object vm.gotattributes = true;
-     * 
-     * }); } })();
-     */
+    (function() {
+	$sails.get('/donortracker/getdpcodeattributes').success(function(data) {
+		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
+	            location.reload(); // Will boot back to login screen
+	        }
+		var data = data.result;
+
+		$rootScope.response = [ {
+		    id : '1',
+		    label : 'Not yet known'
+		}, {
+		    id : '2',
+		    label : 'Positive'
+		}, {
+		    id : '3',
+		    label : 'Negative'
+		} ]
+
+		$rootScope.staticyesno = [ {
+		    id : 'Y',
+		    label : 'Yes'
+		}, {
+		    id : 'N',
+		    label : 'No'
+		} ];
+
+		$rootScope.currencies = [ {
+		    id : 'U',
+		    label : 'USD - United States'
+		}, {
+		    id : 'C',
+		    label : 'CAD - Canadian Dollars'
+		} ];
+
+		$rootScope.dpcodefields = [];
+		$rootScope.dpcodefields.push({
+		    id : null,
+		    label : 'All'
+		});
+		for (var i = 0; i < data.dpcodefields.length; i++) {
+		    if (data.dpcodefields[i].FIELD == null) {
+			continue;
+		    }
+		    $rootScope.dpcodefields.push({
+			id : data.dpcodefields[i].FIELD,
+			label : data.dpcodefields[i].FIELD
+		    });
+		}
+	    });
+    
+    })();
+
     $rootScope.dpsearch = $scope.dpsearch;
 
     $scope.$watchCollection('dpsearch', function() {

@@ -849,7 +849,7 @@
 			<div class="btn btn-secondary" ng-click="">New</div>
 		</div>
 		<div class="pull-right pull-right-stack isn-panel-pull-right">
-			<div class="btn btn-secondary" ng-class="" ng-click="">Export List</div>
+			<div class="btn btn-secondary" ng-class="" ng-click="exportList">Export List</div>
 		</div>
 	</div>
 	{{message}}
@@ -2549,20 +2549,72 @@
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Orders section</h3>
-								</div>
-								<div class="panel-body">
+					<div class="panel panel-default">
+						<div class="panel-body" >
+							<table id="{{'dpordersummary'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+								<thead>
+									<tr>
+										<th >id</th>
+										<th >SOL</th>
+										<th >Date</th>
+										<th >Total</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="row in contact.dpordersummary" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isOrderSummaryDatatableRowFocused(row)}" ng-click="selectOrderSummaryDataTableRow(row)" >
+										<td>{{row.id}} | {{row.tempId}}</td>
+										<td>{{row.SOL}}</td>
+										<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+										<td>{{row.GTOTAL}}</td>
+									</tr>	
+								</tbody>
+							</table>
+							<div class="pull-right">
+								<div class="btn btn-primary" ng-click="addDatatableRow('dpordersummary', 'edit-dplink-modal','lg')">Add</div>
+							</div>
+							<div class="pull-right pull-right-stack">
+								<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dplink'),disabled:isDatatableDeleteRestoreDisabled('dplink')}" ng-click="doDeleteDataTable('dplink')">{{getDatatableDeleteButtonText('dplink')}}</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
+						<div class="panel-heading">
+							<h3 class="panel-title">Details</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-sm-4 control-label">LASTCONT:</label>
-				
-										<div class="col-sm-7 col-sm-offset-1">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.DATE">Date:</label>
+										<div class="col-sm-8">
 											<div class="input-group">
-												<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="LASTCONT" ng-model="contact.LASTCONT" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
-												
+												<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="selectedOrderSummary.DATE" ng-model="selectedOrderSummary.DATE" >
+												<div class="input-group-addon">
+													<a href=""><i class="linecons-calendar"></i></a>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="modal_sum_sol">SOL Code:</label>
+										<div class="col-sm-8">
+											<!--<select2 class="form-control" id="modal_sol" name="selectedGift.SOL" ng-options="title.id as title.label for title in sols" ng-model="selectedGift.SOL"></select2>-->
+											<input type="text" class="form-control" id="modal_sum_sol" ng-model="selectedOrderSummary.SOL" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.ORIGENV">Envelope #:</label>
+										<div class="col-sm-8">
+											<!--<select2 class="form-control" id="modal_sol" name="selectedGift.SOL" ng-options="title.id as title.label for title in sols" ng-model="selectedGift.SOL"></select2>-->
+											<input type="text" class="form-control" id="selectedOrderSummary.ORIGENV" ng-model="selectedOrderSummary.ORIGENV" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.ORIGDATE">Original Date:</label>
+										<div class="col-sm-8">
+											<div class="input-group">
+												<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="selectedOrderSummary.ORIGDATE" ng-model="selectedOrderSummary.ORIGDATE" >
 												<div class="input-group-addon">
 													<a href=""><i class="linecons-calendar"></i></a>
 												</div>
@@ -2572,10 +2624,71 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
-							
+					</div>
+					
+					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
+						<div class="panel-heading">
+							<h3 class="panel-title">Pricing Details</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.HST">HST:</label>
+										<div class="col-sm-8">
+											<input type="checkbox" class="form-control iswitch iswitch-primary" name="selectedOrderSummary.HST" ng-checked="selectedOrderSummary.HST" ng-model="selectedOrderSummary.HST">
+										</div>
+									</div>		
+									
+								</div>
+							</div>
 						</div>
 					</div>
+					
+					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
+						<div class="panel-heading">
+							<h3 class="panel-title">Line Items</h3>
+						</div>
+						<div class="panel-body" >
+							
+							
+							
+							<!--<div class="form-group-separator"></div>-->
+							<table id="{{'dporderdetails'}}_datatable" cellspacing="0" class="table-condensed table table-bordered table-striped selectableisn">
+								<thead>
+									<tr>
+										<th >id</th>
+										<th >Qty</th>
+										<th >Item</th>
+										<!--<th >Description</th>-->
+										<th >Unit Price</th>
+										<!--<th >Currency</th>-->
+										<th >Disc %</th>
+										<th >Extended Price</th>
+										<th >In Stock</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="row in selectedOrderSummary.dporderdetails" ng-class="{ 'is_deleted':row.is_deleted == true}" ng-click="" >
+										<td>{{row.id}} | {{row.tempId}}</td>
+										<td><input type="text" class="form-control" id="modal_sum_sol" ng-model="row.LQTY" ng-model-options="" placeholder=""></td>
+										<td><select2 options="longSelectOptions" class="form-control" id="row.LITEMP" name="row.LITEMP" ng-options="title.id as title.label for title in litems" ng-model="row.LITEMP"></select2></td>
+										<!--<td>{{row.LITEMD}}</td>-->
+										<td><input type="number" class="form-control" ng-model="row.LPRICE" ng-model-options="" placeholder=""></td>
+										<!--<td><input type="number" class="form-control" id="row.LPRICE" ng-model="row.LPRICE" ng-model-options="" placeholder="">{{row.LCURR}}</td>-->
+										<td><input type="number" class="form-control" ng-model="row.LDISC" ng-model-options="" placeholder=""></td>
+										<td><input type="number" class="form-control" ng-model="row.LEXT" ng-model-options="" placeholder=""></td>
+										<td><select2 class="form-control" name="row.LSTOC" ng-options="title.id as title.label for title in staticyesno" ng-model="row.LSTOC"></select2></td>
+									</tr>	
+								</tbody>
+							</table>
+							<div class="pull-right">
+								<div class="btn btn-primary" ng-click="addDatatableRow('dpordersummary', 'edit-dplink-modal','lg')">Add</div>
+							</div>
+						</div>
+					</div>
+					
+					
 				</form>
 
 			</tab>

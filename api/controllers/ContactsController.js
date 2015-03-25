@@ -47,6 +47,7 @@ module.exports = {
 	    var otherAddresses = contact.otherAddresses;
 	    var dtmail = contact.dtmail;
 	    var dpgift = contact.dpgift;
+	    var dpordersummary = contact.dpordersummary;
 	    var dpplg = contact.dpplg;
 	    var dplink = contact.dplink;
 	    var dplang = contact.dplang;
@@ -61,6 +62,7 @@ module.exports = {
 	    delete contact.otherAddresses;
 	    delete contact.dtmail;
 	    delete contact.dpgift;
+	    delete contact.dpordersummary;
 	    delete contact.dpplg;
 	    delete contact.dplink;
 	    delete contact.dplang;
@@ -98,6 +100,12 @@ module.exports = {
 			callback(null);
 		    });
 		}, function(callback) {
+		    updateDpOrders(contactId, dpordersummary, function(err, data) {
+			if (err)
+			    return callback(err);
+			callback(null);
+		    });
+		},function(callback) {
 		    updateDpTable('dpgift', contactId, dpgift, function(err, data) {
 			if (err)
 			    return callback(err);
@@ -250,20 +258,18 @@ module.exports = {
 			row.ID2 = contactId;
 			if (row.LINK == 'PT') {
 			    row.LINK = 'CH';
-			}else if (row.LINK == 'CH') {
+			} else if (row.LINK == 'CH') {
 			    row.LINK = 'PT';
-			}else if (row.LINK == 'EB') {
+			} else if (row.LINK == 'EB') {
 			    row.LINK = 'EM';
-			}else if (row.LINK == 'EM') {
+			} else if (row.LINK == 'EM') {
 			    row.LINK = 'EB';
-			}else if (row.LINK == 'GC') {
+			} else if (row.LINK == 'GC') {
 			    row.LINK = 'GP';
-			}else if (row.LINK == 'GP') {
+			} else if (row.LINK == 'GP') {
 			    row.LINK = 'GC';
 			}
-			
-			
-			
+
 			Database.knex('dplink').insert(row).exec(function(err, response) {
 			    if (err)
 				return cb(err);
@@ -279,18 +285,18 @@ module.exports = {
 			var LINKwhere = row.LINK; // copies
 			if (LINKwhere == 'PT') {
 			    LINKwhere = 'CH';
-			}else if (LINKwhere == 'CH') {
+			} else if (LINKwhere == 'CH') {
 			    LINKwhere = 'PT';
-			}else if (LINKwhere == 'EB') {
+			} else if (LINKwhere == 'EB') {
 			    LINKwhere = 'EM';
-			}else if (LINKwhere == 'EM') {
+			} else if (LINKwhere == 'EM') {
 			    LINKwhere = 'EB';
-			}else if (LINKwhere == 'GC') {
+			} else if (LINKwhere == 'GC') {
 			    LINKwhere = 'GP';
-			}else if (LINKwhere == 'GP') {
+			} else if (LINKwhere == 'GP') {
 			    LINKwhere = 'GC';
 			}
-			
+
 			Database.knex('dplink').where({
 			    ID1 : row.ID2,
 			    ID2 : row.ID1,
@@ -363,7 +369,7 @@ module.exports = {
 			return cb(err);
 		    cb(null, response);
 		});
-	    }else{
+	    } else {
 		cb(null);
 	    }
 	}
@@ -490,6 +496,11 @@ module.exports = {
 		updateOtherAddressesCallback(null, data);
 	    });
 	}
+	
+	
+	function updateDpOrders(contactId, rows, updateDpOrdersCallback){
+	    updateDpOrdersCallback(null);
+	}
 
 	/*
 	 * Updates generic DP/DT tables.. deletes the union of all extra
@@ -555,6 +566,32 @@ module.exports = {
 	async
 	    .parallel(
 		{
+		    dpordersummary : function(callback) {
+			Database.knex
+			    .raw(
+				'SELECT `id`, `DONOR`,`SOL`,DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,`ORDNUM`,`SHIPFROM`,`OPER`,DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,DATE_FORMAT(`ORIGDATE`,"%Y-%m-%d") AS `ORIGDATE`,`ORIGENV`,`IPAID`,`SANDH`,`SANDHAMT`,`CREDITCD`,`CASHONLY`,`CASH`,`CREDIT`,`ETOTAL`,`ECONV`,`ESHIP`,`PSTCALC`,`GSTCALC`,`HSTCALC`,`NYTCALC`,`GTOTAL`,`VNOTE`,`BATCHED`,`PST`,`GST`,`HST`,`NYTAX`,`COUNTY`,`COUNTYNM`,`ENT_DT`,`FUNDS`,`GFUNDS`,`CURCONV`,`TITLE`,`FNAME`,`LNAME`,`SUFF`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`PHONE`,`PHON2`,`PHON3`,`LASTPAGE`,`PRINFLAG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`database_origin`,`SURFCOST`,`MBAGCOST`,`OTHCOST`,`MAILFLAG`,`PRINREM`,`RETURNED` FROM dpordersummary WHERE DONOR = '
+				    + contactId).exec(function(err, data) {
+				if (err)
+				    return callback(err)
+
+				async.each(Object.keys(data[0]), function(key, cbdetails) {
+				    Database.knex('dporderdetails').select('*').where({
+					ORDNUMD : data[0][key].id
+				    }).exec(function(err, detailsdata) {
+					if (err)
+					    return cbdetails(err);
+
+					data[0][key].dporderdetails = detailsdata;
+					cbdetails(null);
+				    });
+				}, function(err, results) {
+				    if (err)
+					return callback(err);
+				    callback(null, data[0]);
+				});
+
+			    });
+		    },
 		    contact : function(callback) {
 			Database.knex
 			    .raw(

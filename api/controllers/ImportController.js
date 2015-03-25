@@ -8,11 +8,11 @@ var databases = [ {
     name : 'fatima_american',
     database_origin : 1,
     database_offset : 1000000
-},{
+}, {
     name : 'fatima_canadian',
     database_origin : 2,
     database_offset : 3000000
-},{
+}, {
     name : 'fatima_ecclesiastical',
     database_origin : 3,
     database_offset : 4000000
@@ -58,45 +58,45 @@ var databases = [ {
 ];
 
 var tables = [ {
-    name : 'dp',
-    columns : {}
+   name : 'dp',
+   columns : {}
 }, {
-    name : 'dpcodes',
-    columns : {}
+   name : 'dpcodes',
+   columns : {}
 }, {
-    name : 'dpgift',
-    columns : {}
+   name : 'dpgift',
+   columns : {}
 }, {
-    name : 'dplink',
-    columns : {}
+   name : 'dplink',
+   columns : {}
 }, {
-    name : 'dpmisc',
-    columns : {}
+   name : 'dpmisc',
+   columns : {}
 }, {
-    name : 'dpothadd',
-    columns : {}
+   name : 'dpothadd',
+   columns : {}
 }, {
-    name : 'dpother',
-    columns : {}
+   name : 'dpother',
+   columns : {}
 }, {
-    name : 'dpplg',
-    columns : {}
+   name : 'dpplg',
+   columns : {}
 }, {
-    name : 'dpplg2',
-    columns : {}
+   name : 'dpplg2',
+   columns : {}
 }, {
-    name : 'dtbishop',
-    columns : {}
+   name : 'dtbishop',
+   columns : {}
 }, {
-    name : 'dtdondet',
-    columns : {}
+   name : 'dtdondet',
+   columns : {}
 }, {
-    name : 'dtdonmas',
-    columns : {}
-}, {
+   name : 'dtdonmas',
+   columns : {}
+},{
     name : 'dtdonsum',
     columns : {}
-}, {
+} , {
     name : 'dtmail',
     columns : {}
 }, {
@@ -123,43 +123,52 @@ var insertTables = [];
 
 var destination = 'fatima_center_donor_tracker_v2'; // Remember. this drops the
 // database.
+var destroy_database_BEWARE = false;
 
 module.exports = {
-    
-    languages: function(req,res){
-	Database.knex('dp').select('id','LANGUAGE','ENGLISH','database_origin').exec(function(err,results){
-	   if(err){
-	       console.log('error'+err.toString());
-	   } 
-	   results = results[0];
-	   var i =0;
-	   async.eachSeries(results,function(row,cb){
-	       i++;
-	       if(i==100){
-		   i=0;
-		   console.log(row.id);
-	       }
-	       Database.knex('dplang').insert({DONOR:row.id, LANGUAGE : row.LANGUAGE, database_origin : row.database_origin}).exec(function(err,pr){
-		   if(err)
-		       return cb(err);
-		   if(row.LANGUAGE != 'E' && row.ENGLISH == 'Y'){
-		       Database.knex('dplang').insert({DONOR:row.id, LANGUAGE : 'E', database_origin : row.database_origin}).exec(function(err,pr){
-			   if(err)
-			       return cb(err);
-			  cb(null); 
-		       });
-		   }else{
-		       cb(null);
-		   }
-	       });
-	       
-	   },function(err,results){
-	       if(err)
-		   console.log(err);
-	       
-	       console.log('completed');
-	   });
-	   console.log('gotall');
+
+    languages : function(req, res) {
+	Database.knex('dp').select('id', 'LANGUAGE', 'ENGLISH', 'database_origin').exec(function(err, results) {
+	    if (err) {
+		console.log('error' + err.toString());
+	    }
+	    results = results[0];
+	    var i = 0;
+	    async.eachSeries(results, function(row, cb) {
+		i++;
+		if (i == 100) {
+		    i = 0;
+		    console.log(row.id);
+		}
+		Database.knex('dplang').insert({
+		    DONOR : row.id,
+		    LANGUAGE : row.LANGUAGE,
+		    database_origin : row.database_origin
+		}).exec(function(err, pr) {
+		    if (err)
+			return cb(err);
+		    if (row.LANGUAGE != 'E' && row.ENGLISH == 'Y') {
+			Database.knex('dplang').insert({
+			    DONOR : row.id,
+			    LANGUAGE : 'E',
+			    database_origin : row.database_origin
+			}).exec(function(err, pr) {
+			    if (err)
+				return cb(err);
+			    cb(null);
+			});
+		    } else {
+			cb(null);
+		    }
+		});
+
+	    }, function(err, results) {
+		if (err)
+		    console.log(err);
+
+		console.log('completed');
+	    });
+	    console.log('gotall');
 	});
 	res.json('processing');
     },
@@ -193,7 +202,7 @@ module.exports = {
 		    var columnvalues = '';
 
 		    if (table.name == 'dp') {// for DP table.. we want to add
-						// the id to the insert values.
+			// the id to the insert values.
 			columns = '`id`';
 			columnvalues = 'CAST(`DONOR2` AS UNSIGNED) + ' + dbknex.database_offset;
 		    }
@@ -211,13 +220,11 @@ module.exports = {
 				columns += '`' + column.Field + '`';
 				if (column.Type == 'date') {
 				    columnvalues += 'IF(`' + column.Field + '` = "1899-12-30", NULL, `' + column.Field + '` )';
-				} else if ((column.Field == 'DONOR2' && table.name != 'dp') || column.Field == 'DONOR' || column.Field == 'ID1'
-					|| column.Field == 'ID2' || column.Field == 'G_ID2' || column.Field == 'ORDNUMD' || column.Field == 'DONORD') {
-				    columnvalues += 'IF(`' + column.Field + '` = "", NULL, CAST(`' + column.Field + '` AS UNSIGNED) + '
-					    + dbknex.database_offset + ' )';
-				}  else if(column.Type.indexOf('char') == 0 || column.Type.indexOf('longtext') == 0){
-				    columnvalues += 'IF(TRIM(`' + column.Field + '`) = "",NULL,`' + column.Field + '`)' ;
-				}else {
+				} else if ((column.Field == 'DONOR2' && table.name != 'dp') || column.Field == 'DONOR' || column.Field == 'ID1' || column.Field == 'ID2' || column.Field == 'G_ID2' || column.Field == 'ORDNUMD' || column.Field == 'DONORD') {
+				    columnvalues += 'IF(`' + column.Field + '` = "", NULL, CAST(`' + column.Field + '` AS UNSIGNED) + ' + dbknex.database_offset + ' )';
+				} else if (column.Type.indexOf('char') == 0 || column.Type.indexOf('longtext') == 0) {
+				    columnvalues += 'IF(TRIM(`' + column.Field + '`) = "",NULL,`' + column.Field + '`)';
+				} else {
 				    columnvalues += '`' + column.Field + '`';
 				}
 			    }
@@ -229,19 +236,16 @@ module.exports = {
 		    // console.log('origin:'+dbknex.database_origin);//should be
 		    // integer
 
-		    dbknex.raw('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', '
-				    + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ').exec(  //LIMIT 50000
-			    function(err, inserted) {
-				if(err){
-				    console.log('ERROR:' + err.toString());
-				    console.log('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', '
-				    + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ');
-				    console.log(JSON.stringify(columns));
-				}
-				
-				
-				tablescallback();
-			    });
+		    dbknex.raw('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', ' + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ').exec( //LIMIT 50000
+		    function(err, inserted) {
+			if (err) {
+			    console.log('ERROR:' + err.toString());
+			    console.log('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', ' + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ');
+			    console.log(JSON.stringify(columns));
+			}
+
+			tablescallback();
+		    });
 		}, function(err) {
 		    databasecallback();
 		});
@@ -284,7 +288,7 @@ module.exports = {
 			    } else if (column.Type.indexOf('longtext') == 0) {
 				knextable.text(column.Field, 'longtext');
 			    } else {
-				console.log('missing type:'+column.Type);
+				console.log('missing type:' + column.Type);
 			    }
 
 			}
@@ -302,16 +306,21 @@ module.exports = {
 	    var dbknex = getDb(databases[0].name); // Just get any database.
 	    // Now creating the scheme.
 	    // fatima_center_donor_tracker
-	    dbknex.raw('DROP DATABASE ' + destination).exec(function(err, dropped) { // Drops
-		// it..
-		// be
-		// careful
-		dbknex.raw('CREATE SCHEMA ' + destination).exec(function(err, created) {
-		    if (err)
-			return res.json(err, 500);
-		    doCreates();
+	    if (destroy_database_BEWARE) {
+		dbknex.raw('DROP DATABASE ' + destination).exec(function(err, dropped) { // Drops
+		    // it..
+		    // be
+		    // careful
+		    dbknex.raw('CREATE SCHEMA ' + destination).exec(function(err, created) {
+			if (err)
+			    return res.json(err, 500);
+			doCreates();
+		    });
 		});
-	    });
+	    } else {
+		doCreates();
+	    }
+
 	}
 
 	async.eachSeries(databases, function(database, databasecallback) { // Iterating
@@ -362,51 +371,49 @@ function buildTables(dbknex, buildtablescallback) {
     async.eachSeries(tables, function(table, tablecallback) { // Table
 	// iterations
 
-	dbknex.raw('DESCRIBE ' + table.name).exec(
-		function(err, describe) { // WHAT
-		    // IF
-		    // THE
-		    // TABLE
-		    // DOESNT
-		    // EXIST?
-		    if (err) { // No such table probably.
-			return tablecallback();
-		    }
-		    describe = describe[0];
+	dbknex.raw('DESCRIBE ' + table.name).exec(function(err, describe) { // WHAT
+	    // IF
+	    // THE
+	    // TABLE
+	    // DOESNT
+	    // EXIST?
+	    if (err) { // No such table probably.
+		return tablecallback();
+	    }
+	    describe = describe[0];
 
-		    for (var i = 0; i < describe.length; i++) {
-			if (typeof (table.columns[describe[i].Field]) == 'undefined') {
-			    var dtemp = describe[i];
-			    // if(dtemp.FIELD)
-			    // if(dtemp.Type)
-			    if (dtemp.Field == 'DONOR2' || dtemp.Field == 'DONOR' || dtemp.Field == 'ID1' || dtemp.Field == 'ID2' || dtemp.Field == 'G_ID2'
-				    || dtemp.Field == 'ORDNUMD' || dtemp.Field == 'DONORD') {
-				dtemp.Type = 'int(11)'
-			    }
-			    // if(dtemp.Type.indexOf('char')==0){ // if it's
-			    // Char
-			    // // type
-			    // dtemp.Type = 'varchar(255)';
-			    // }
-			    table.columns[dtemp.Field] = dtemp;
-			    if (typeof (table.cols) == 'undefined') {
-				table.cols = 0;
-			    }
-			    table.cols++; // incrememnt number of columns
-			}
+	    for (var i = 0; i < describe.length; i++) {
+		if (typeof (table.columns[describe[i].Field]) == 'undefined') {
+		    var dtemp = describe[i];
+		    // if(dtemp.FIELD)
+		    // if(dtemp.Type)
+		    if (dtemp.Field == 'DONOR2' || dtemp.Field == 'DONOR' || dtemp.Field == 'ID1' || dtemp.Field == 'ID2' || dtemp.Field == 'G_ID2' || dtemp.Field == 'ORDNUMD' || dtemp.Field == 'DONORD') {
+			dtemp.Type = 'int(11)'
 		    }
-
-		    if (typeof (table.cols) != 'undefined' && typeof (table.columns['database_origin']) == 'undefined') {
-			table.columns['database_origin'] = {
-			    Field : 'database_origin',
-			    Type : 'tinyint(4)'
-			};
-			table.cols++;
+		    // if(dtemp.Type.indexOf('char')==0){ // if it's
+		    // Char
+		    // // type
+		    // dtemp.Type = 'varchar(255)';
+		    // }
+		    table.columns[dtemp.Field] = dtemp;
+		    if (typeof (table.cols) == 'undefined') {
+			table.cols = 0;
 		    }
+		    table.cols++; // incrememnt number of columns
+		}
+	    }
 
-		    tablecallback(); // We've finished iterating through this
-		    // table.
-		});
+	    if (typeof (table.cols) != 'undefined' && typeof (table.columns['database_origin']) == 'undefined') {
+		table.columns['database_origin'] = {
+		    Field : 'database_origin',
+		    Type : 'tinyint(4)'
+		};
+		table.cols++;
+	    }
+
+	    tablecallback(); // We've finished iterating through this
+	    // table.
+	});
 
     }, function(err, data) { // we've finished iterating through all the
 	// tables

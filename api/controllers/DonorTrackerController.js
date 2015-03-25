@@ -33,6 +33,15 @@ module.exports = {
     getattributes : function(req, res) {
 
 	async.parallel({
+	    litems : function(callback){
+		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		    FIELD : 'LITEMP'
+		}).select().exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
 	    titles : function(callback) {
 		Database.knex('dp').distinct('TITLE').select().exec(function(err, titles) {
 		    if (err)
