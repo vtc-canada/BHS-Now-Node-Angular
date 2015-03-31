@@ -1682,7 +1682,7 @@
 						</div>
 						<div class="col-xs-6">
 							<div class="pull-right">
-								<button type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('ecclesiastical')">Save</button>
+								<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('ecclesiastical')">Save<span ng-show="contact.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 							</div>
 							<div ng-show="contact.is_modified" class="control-label changes-pending pull-right">
 								Changes Pending
@@ -2216,7 +2216,8 @@
 						</div>
 						<div class="col-xs-6">
 							<div class="pull-right">
-								<button type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('volunteer')">Save</button>
+								<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('volunteer')">Save<span ng-show="contact.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+
 							</div>
 							<div ng-show="contact.is_modified" class="control-label changes-pending pull-right">
 								Changes Pending
@@ -2542,7 +2543,7 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="pull-right">
-								<button type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('orders')">Save</button>
+								<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('orders')">Save<span ng-show="contact.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 							</div>
 							<div ng-show="contact.is_modified" class="control-label changes-pending pull-right">
 								Changes Pending
@@ -2570,17 +2571,157 @@
 								</tbody>
 							</table>
 							<div class="pull-right">
-								<div class="btn btn-primary" ng-click="addDatatableRow('dpordersummary', 'edit-dplink-modal','lg')">Add</div>
+								<div class="btn btn-primary" ng-click="addDpOrderSummary()">Add</div>
 							</div>
 							<div class="pull-right pull-right-stack">
-								<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dplink'),disabled:isDatatableDeleteRestoreDisabled('dplink')}" ng-click="doDeleteDataTable('dplink')">{{getDatatableDeleteButtonText('dplink')}}</div>
+								<div class="btn btn-danger" ng-class="{'btn-orange':isDpOrderSummaryDeleted(),disabled:isDpOrderSummarySelected()}" ng-click="doDeleteDpOrderSummary()">{{getDpOrderSummaryButtonText()}}</div>
 							</div>
 						</div>
 					</div>
 					
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Contact Information</h3>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<label class="col-sm-5 control-label" for="selectedOrderSummary.LNAME">Last Name:</label>
+				
+										<div class="col-sm-7">
+											<input type="text" class="form-control" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-5 control-label" for="selectedOrderSummary.FNAME">First Name:</label>
+										<div class="col-sm-7">
+											<input type="text" class="form-control" name="selectedOrderSummary.FNAME" id="selectedOrderSummary.FNAME" ng-model="selectedOrderSummary.FNAME" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-5 control-label">Title:</label>
+				
+										<div class="col-sm-7">
+											<select2 class="form-control" ng-options="title.id as title.label for title in titles" ng-model="selectedOrderSummary.TITLE"></select2>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-5 control-label">Suffix:</label>
+				
+										<div class="col-sm-7">
+											<input type="text" class="form-control" name="selectedOrderSummary.SUFF" ng-model="selectedOrderSummary.SUFF" ng-model-options="" placeholder="">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-7">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Address</h3>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.ADD">Address:</label>
+						
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="ADD" id="selectedOrderSummary.ADD" ng-model="selectedOrderSummary.ADD" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.CITY">City:</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="selectedOrderSummary.CITY" id="selectedOrderSummary.CITY" ng-model="selectedOrderSummary.CITY" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.ST">State:</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="selectedOrderSummary.ST"></select2>
+													
+												</div>
+											</div>	
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.ZIP">Zip:</label>
+						
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="selectedOrderSummary.ZIP" id="selectedOrderSummary.ZIP" ng-model="selectedOrderSummary.ZIP" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.COUNTRY">Country:</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-options="title.id as title.label for title in countries" ng-model="selectedOrderSummary.COUNTRY"></select2>
+													
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label" for="selectedOrderSummary.COUNTY">County Code:</label>
+												<div class="col-sm-8">
+													<select2 class="form-control" ng-disabled="selectedOrderSummary.ST != 'NY'" ng-options="title.id as title.label for title in county_codes" ng-model="selectedOrderSummary.COUNTY"></select2>
+													
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-5">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Phone</h3>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="selectedOrderSummary.PHONE">Phone 1:</label>
+										<div class="col-sm-5 col-sm-mid">
+											<input type="text" class="form-control" name="selectedOrderSummary.PHONE" id="selectedOrderSummary.PHONE" ng-model="selectedOrderSummary.PHONE" >	
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="selectedOrderSummary.PHTYPE1"></select2>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="selectedOrderSummary.PHON2">Phone 2:</label>
+										<div class="col-sm-5 col-sm-mid">
+											<input type="text" class="form-control" inputmask data-mask="phone" name="selectedOrderSummary.PHON2" id="selectedOrderSummary.PHON2" ng-model="selectedOrderSummary.PHON2" >	
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="selectedOrderSummary.PHTYPE2"></select2>
+											
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="contact_phon3">Phone 3:</label>
+										<div class="col-sm-5 col-sm-mid">
+											<input type="text" class="form-control" inputmask data-mask="phone" name="selectedOrderSummary.PHON3" id="selectedOrderSummary.PHON3" ng-model="selectedOrderSummary.PHON3" >
+											
+										</div>
+										<div class="col-sm-4">
+											<select2 class="form-control" ng-options="title.id as title.label for title in phone_types" ng-model="selectedOrderSummary.PHTYPE3"></select2>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>	
+					</div>
+					
+					
 					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
 						<div class="panel-heading">
-							<h3 class="panel-title">Details</h3>
+							<h3 class="panel-title">Order Details</h3>
 						</div>
 						<div class="panel-body">
 							<div class="row">
@@ -2639,6 +2780,18 @@
 											<input type="checkbox" class="form-control iswitch iswitch-primary" name="selectedOrderSummary.HST" ng-checked="selectedOrderSummary.HST" ng-model="selectedOrderSummary.HST">
 										</div>
 									</div>		
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.PST">PST:</label>
+										<div class="col-sm-8">
+											<input type="checkbox" class="form-control iswitch iswitch-primary" name="selectedOrderSummary.PST" ng-checked="selectedOrderSummary.PST" ng-model="selectedOrderSummary.PST">
+										</div>
+									</div>		
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.GST">GST:</label>
+										<div class="col-sm-8">
+											<input type="checkbox" class="form-control iswitch iswitch-primary" name="selectedOrderSummary.GST" ng-checked="selectedOrderSummary.GST" ng-model="selectedOrderSummary.GST">
+										</div>
+									</div>
 									
 								</div>
 							</div>
@@ -2648,6 +2801,9 @@
 					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
 						<div class="panel-heading">
 							<h3 class="panel-title">Line Items</h3>
+							<div class="pull-right  isn-panel-pull-right">
+								<div class="btn btn-primary" ng-click="addDpDetail()">Add Item</div>
+							</div>
 						</div>
 						<div class="panel-body" >
 							
@@ -2666,10 +2822,11 @@
 										<th >Disc %</th>
 										<th >Extended Price</th>
 										<th >In Stock</th>
+										<th></th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr ng-repeat="row in selectedOrderSummary.dporderdetails" ng-class="{ 'is_deleted':row.is_deleted == true}" ng-click="" >
+									<tr ng-repeat="row in selectedOrderSummary.dporderdetails" ng-hide="row.is_deleted" ng-class="{ 'is_deleted':row.is_deleted == true}" ng-click=""  >
 										<td>{{row.id}} | {{row.tempId}}</td>
 										<td><input type="text" class="form-control" id="modal_sum_sol" ng-model="row.LQTY" ng-model-options="" placeholder=""></td>
 										<td><select2 options="longSelectOptions" class="form-control" id="row.LITEMP" name="row.LITEMP" ng-options="title.id as title.label for title in litems" ng-model="row.LITEMP"></select2></td>
@@ -2679,11 +2836,21 @@
 										<td><input type="number" class="form-control" ng-model="row.LDISC" ng-model-options="" placeholder=""></td>
 										<td><input type="number" class="form-control" ng-model="row.LEXT" ng-model-options="" placeholder=""></td>
 										<td><select2 class="form-control" name="row.LSTOC" ng-options="title.id as title.label for title in staticyesno" ng-model="row.LSTOC"></select2></td>
+										<td><button class="btn btn-danger" ng-click="deleteDpDetail(row)">Delete</button></td>
 									</tr>	
 								</tbody>
 							</table>
-							<div class="pull-right">
-								<div class="btn btn-primary" ng-click="addDatatableRow('dpordersummary', 'edit-dplink-modal','lg')">Add</div>
+							<div class="row">
+								<div class="col-xs-6 pull-right">
+									<div class="form-group">
+											<label class="col-sm-5 control-label" for="selectedOrderSummary.LNAME">Subtotal:</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control ng-pristine ng-valid" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>

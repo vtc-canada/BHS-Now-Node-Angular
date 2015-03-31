@@ -34,7 +34,7 @@ module.exports = {
 
 	async.parallel({
 	    litems : function(callback){
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').select('DESC','OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
 		}).select().exec(function(err, results) {
 		    if (err)

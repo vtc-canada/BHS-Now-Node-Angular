@@ -1,5 +1,5 @@
 'use strict';
-angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $state, $modal, $contact, $sails, Utility) {
+angular.module('xenon.controllers', []).controller('ContactSections', function($scope, $rootScope, $timeout, $filter, $state, $modal, $contact, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
     vm.mail = {};
@@ -23,6 +23,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     vm.watchEnabled = false;
     vm.screenLoaded = false;
+    vm.blockOrderSelectedModified = false;
+    
 
     vm.tabs = [ 'layman', 'ecclesiastical', 'volunteer', 'orders' ];
 
@@ -348,6 +350,156 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    });
 	}
     }
+    
+    
+    
+    // Order Details
+    
+    $scope.isDpOrderSummaryDeleted = function(){
+	if($scope.selectedOrderSummary&&$scope.selectedOrderSummary.is_deleted){
+	    return true;
+	}
+	return false;
+    }
+    
+    $scope.isDpOrderSummarySelected = function(){
+	return ($scope.selectedOrderSummary==null);
+    }
+    
+    $scope.doDeleteDpOrderSummary = function(){
+	$scope.selectedOrderSummary.is_deleted = true;
+    }
+    
+    $scope.getDpOrderSummaryButtonText = function(){
+	
+	if($scope.selectedOrderSummary == null || !$scope.isDpOrderSummaryDeleted()){
+	    return 'Delete';
+	}
+	return 'Restore';
+    }
+    
+    $scope.addDpOrderSummary = function(){
+	// $scope.selectedOrderSummary
+	
+	var newOrder = {
+	    id:null,
+	    tempId : Math.floor((Math.random() * 10000000) + 1),
+	    SOL:null,
+	    DATE:$filter('date')(new Date(), 'yyyy-MM-dd'),
+	    ORDNUM:null,
+	    SHIPFROM:null,  // Add select2 for this TODO
+	    OPER:null,
+	    SHIPDATE:null,
+	    ORIGDATE:null,
+	    ORIGENV:null,
+	    IPAID:null,
+	    SANDH:null, // S+H
+	    SANDHAMT:0, // S+h amount
+	    CREDITCD:null, // 
+	    CASHONLY:null,  // / ??
+	    CASH:0,
+	    CREDIT:0,
+	    ETOTAL:0,  // ETOTAL is in american
+	    ECONV :0,   // ECONV in local currency
+	    ESHIP : 0,  // TODO: Calculate shipping price from LITEMS
+			// litemdetails.price
+	    GTOTAL:0,
+	    
+	    
+	    PST:'N',GST:'N',HST:'N',
+	    PSTCALC:0,GSTCALC:0,HSTCALC:0,NYTCALC:0,
+	    NYTAX:0,
+	    COUNTY:null,
+	    COUNTYNM:null,
+	    // "ENT_DT":"1993-12-22T00:00:00.000Z", // TODO- currency conversion
+	    // "FUNDS":"U","GFUNDS":"U.S. Dollars","CURCONV":1.5,
+	    TITLE:$scope.contact.TITLE,
+	    FNAME:$scope.contact.FNAME ,
+	    LNAME:$scope.contact.LNAME ,
+	    SUFF:$scope.contact.SUFF ,
+	    SECLN:$scope.contact.SECLN ,
+	    ADD:$scope.contact.ADD ,
+	    CITY:$scope.contact.CITY ,
+	    ST:$scope.contact.ST ,
+	    ZIP:$scope.contact.ZIP ,
+	    COUNTRY:$scope.contact.COUNTRY ,
+	    PHTYPE1:$scope.contact.PHTYPE1 ,
+	    PHTYPE2:$scope.contact.PHTYPE2 ,
+	    PHTYPE3:$scope.contact.PHTYPE3 ,
+	    PHONE:$scope.contact.PHONE ,
+	    PHON2:$scope.contact.PHON2 ,
+	    PHON3:$scope.contact.PHON3 ,
+	    database_origin:$scope.contact.database_origin ,
+	    dporderdetails : [],
+	    SURFCOST:0,
+	    MBAGCOST:0,
+	    OTHCOST:0,
+	    RETURNED:null,
+	    MAILFLAG:null,
+	    PRINREM:null
+	};
+	$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
+
+	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length-1];
+	
+	// "LASTPAGE":null,"PRINFLAG":1,"TSRECID":"C00012220","TSDATE":"20120626","TSTIME":"132058","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"KJ",
+	
+	
+ // "DONOR":1000004 set donor in controller..
+	
+	// $scope.dpordersummary.
+	// alert('a');
+    }
+    
+    $scope.addDpDetail = function(){
+	// $scope.contact.
+	// TODO- currency?? LCURR
+	$scope.selectedOrderSummary.dporderdetails.push({id:null,LQTY:1,LITEMP:null,LITEMD:null,LPRICE:0,LDISC:0,LCURR:null,LEXT:0,LSTOC:null});
+	    
+	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC","database_origin":1})
+	// non-use columns
+	// ORDNUMD:null,"PAGED":"01","LINED":"01","DONORD":1000004,"SQTY":1,"BQTY":0,
+	
+	// id : 'new',
+	// tempId : Math.floor((Math.random() * 100000) + 1),
+    }
+
+    $scope.deleteDpDetail = function(item){
+	if(item.id==null){
+	    var index = $scope.selectedOrderSummary.dporderdetails.indexOf(item);
+	    $scope.selectedOrderSummary.dporderdetails.splice(index, 1);  
+	}else{
+	    item.is_deleted = true;
+	}
+    }
+    
+    $scope.$watch('selectedOrderSummary.dporderdetails',function(newValue,oldValue){
+	if(!angular.equals(newValue, oldValue)){
+	    angular.forEach(newValue, function(row) {
+		if(typeof($scope.litemdetails[row.LITEMP])!='undefined'&&angular.lowercase(row.LITEMD)!=angular.lowercase($scope.litemdetails[row.LITEMP].description)){
+		    row.LITEMD = $scope.litemdetails[row.LITEMP].description;
+		    // $scope.selectedOrderSummary.is_modified = true;
+		}
+		// if(row.LITEMP)
+		
+	    });
+	}
+    },true);
+    
+    $scope.$watch('selectedOrderSummary',function(newValue,oldValue){
+	if(!angular.equals(newValue, oldValue)){
+	    if(vm.blockOrderSelectedModified){
+		vm.blockOrderSelectedModified = false;
+	    }else{
+		if($scope.selectedOrderSummary){
+		    $scope.selectedOrderSummary.is_modified = true;
+		}
+	    }
+	}
+    },true);
+
+    
+    
 
     $scope.getDatatableDeleteButtonDisabled = function(table_name) {
 	return ($scope.selectedDataTableRow[table_name] == null);
@@ -422,18 +574,21 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.selectOrderSummaryDataTableRow = function( row) {// transactionId,
 	// tempId,
 	// is_deleted) {
+	vm.blockOrderSelectedModified = true;  // blocks change event on
+						// selectedOrderSummary watcher
+						// once.
 	$scope.selectedOrderSummary = row;
     }
     
     
-    $scope.isOrderSummaryDatatableRowFocused = function( row) {
+    $scope.isOrderSummaryDatatableRowFocused = function(row) {
 	if(typeof(row)=='undefined'||row==null){
     		return $scope.selectedOrderSummary!=null;
 	}
 	if ($scope.selectedOrderSummary == null) {
 	    return false;
 	}
-	return (row.tempId == $scope.selectedOrderSummary.tempId && row.tempId != null) || (row.id == $scope.selectedOrderSummary.id && row.id != 'new');
+	return (row.tempId == $scope.selectedOrderSummary.tempId && row.tempId != null) || (row.id == $scope.selectedOrderSummary.id && row.id != null);
     }
     
     $scope.selectOrderDetailsDataTableRow = function( row) {// transactionId,
@@ -749,11 +904,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		} ];
 
 		$scope.litems = [];
+		$scope.litemdetails = {};
 		for (var i = 0; i < data.litems.length; i++) {
 		    $scope.litems.push({
 			id : data.litems[i].CODE,
 			label : data.litems[i].CODE + " - " + data.litems[i].DESC
 		    });
+		    $scope.litemdetails[data.litems[i].CODE] = { description : data.litems[i].DESC, price : data.litems[i].OTHER };
 		}
 		
 		
@@ -2017,10 +2174,20 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}
 	    }, true);
 	}
+	
+	$scope.cancelGroup = function(){
+	    $timeout(function(){
+		if(vm.groupWatcher != null) {
+		    vm.groupWatcher();
+		}
+		$scope.selectedGroup = null;
+		$('tr').removeClass('selected');
+	    },0);
+	}
 
 	$scope.newGroup = function() {
 	    $sails.get('/security/getresourcegroups').success(function(resources) {
-		if(response.error != undefined){  // USER NO
+		if(resources.error != undefined){  // USER NO
 		    // LONGER
 		    // LOGGED
                     // IN!!!!!
@@ -2032,10 +2199,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    vm.groupWatcher();
 		}
 		for ( var key in resources) {
-		    resources[key].create = 0;
-		    resources[key].read = 0;
-		    resources[key].update = 0;
-		    resources[key].delete = 0;
+		    resources[key].create = 1;
+		    resources[key].read = 1;
+		    resources[key].update = 1;
+		    resources[key].delete = 1;
 		}
 		$timeout(function() {
 		    $scope.selectedGroup = null;
@@ -2107,6 +2274,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
                     location.reload(); // Will boot back to login screen
                 }
 		if (data.success) {
+		    
+		    if (vm.groupWatcher != null) {  // clears watcher.
+			vm.groupWatcher();
+		    }
+		    
 		    // $scope.group = angular.copy(vm.blank_group);
 		    // $scope.group.resources = resources;
 		    $scope.group.id = data.id;
@@ -2114,11 +2286,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $rootScope.group_modified = false;
 		    $rootScope.validator['securitygroup_form'].resetForm();
 		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
-			$('#' + $scope.tableId).DataTable().ajax.reload(function() {
-			}, false);
-			$timeout(function() {
-			    $rootScope.group_modified = false;
-			}, 0);
+		    $('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		    }, false);
+		    $timeout(function() {
+			$rootScope.group_modified = false;
+			vm.groupWatcher = vm.getWatcher();
+		    }, 0);
 
 		}
 	    }).error(function(data) {
@@ -2294,6 +2467,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    });
 		}
 	    });
+	}
+	
+	$scope.cancelUser = function(){
+	    if (vm.userWatcher != null) {
+		vm.userWatcher();
+	    }
+	    $('#users_table tr').removeClass('selected');
+	    $timeout(function() {
+		$rootScope.user_modified = false;
+		$scope.selectedUser = null;
+	    }, 0);
 	}
 
 	$scope.saveUser = function() {

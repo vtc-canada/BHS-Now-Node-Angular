@@ -29,7 +29,7 @@
 			</div>-->
 		</div>
 		<div class="panel-body">
-			<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
+			<table datatable="" id="users_table" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 		        <thead>
 		        	<tr>
 						<th>id</th>
@@ -53,6 +53,9 @@
 					<h3 class="panel-title">New User Information</h3>
 					
 					<div class="pull-right isn-panel-pull-right">
+						<div class="btn btn-white" ng-click="cancelUser()">Cancel</div>
+					</div>
+					<div class="pull-right isn-panel-pull-right pull-right-stack">
 						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[user_modified == false]" ng-click="saveUser()">Save<span ng-show="user.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 					</div>
 					<div ng-show="user_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
@@ -116,7 +119,11 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Edit <b>{{user.username}}</b></h3>
+					
 					<div class="pull-right isn-panel-pull-right">
+						<div class="btn btn-white" ng-click="cancelUser()">Cancel</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
 						<div type="submit" class="btn btn-danger" ng-click="deleteUser('delete-user-modal','md')">Delete</div>
 					</div>
 					<div class="pull-right pull-right-stack isn-panel-pull-right">

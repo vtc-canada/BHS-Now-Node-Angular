@@ -105,7 +105,7 @@ module.exports = {
 			    return callback(err);
 			callback(null);
 		    });
-		},function(callback) {
+		}, function(callback) {
 		    updateDpTable('dpgift', contactId, dpgift, function(err, data) {
 			if (err)
 			    return callback(err);
@@ -496,10 +496,114 @@ module.exports = {
 		updateOtherAddressesCallback(null, data);
 	    });
 	}
-	
-	
-	function updateDpOrders(contactId, rows, updateDpOrdersCallback){
-	    updateDpOrdersCallback(null);
+
+	function updateDpOrders(contactId, orders, updateDpOrdersCallback) {
+	    async.each(orders, function(order, cb) {
+		delete order.$$hashKey;
+
+		var dporderdetails = order.dporderdetails;
+		delete order.dporderdetails;
+
+		if (order.id == null) { // create a new one
+		    order.DONOR = contactId;
+		    delete order.id;
+		    delete order.is_modified;
+		    delete order.tempId;
+		    Database.knex('dpordersummary').insert(order, 'id').exec(function(err, response) {
+			if (err) {
+			    return cb(err);
+			}
+			updateDpDetails(contactId, response[0], dporderdetails, function(err) {
+			    if (err) {
+				return cb(err);
+			    }
+			    cb(null, response);
+			});
+		    });
+
+		} else if (order.is_deleted) { // delete it
+
+		    Database.knex('dporderdetails').where({
+			ORDNUMD : order.id
+		    }).del().exec(function(err, response) {
+			if (err)
+			    cb(err);
+			Database.knex('dpordersummary').where({
+			    id : order.id
+			}).del().exec(function(err, response) {
+			    if (err)
+				cb(err);
+			    cb(null, response);
+			})
+		    })
+
+		} else if (order.is_modified) {
+		    delete order.is_modified;
+		    var orderId = order.id;
+		    delete order.id;
+
+		    Database.knex('dpordersummary').where({
+			id : orderId
+		    }).update(order).exec(function(err, response) {
+			if (err)
+			    return cb(err);
+			updateDpDetails(contactId, orderId, dporderdetails, function(err) {
+			    if (err) {
+				return cb(err);
+			    }
+			    cb(null, response);
+			});
+		    });
+		}else{ // no event.
+		    cb(null);
+		}
+	    }, function(err, data) {
+		if (err)
+		    updateDpOrdersCallback(err);
+		updateDpOrdersCallback(null, data);
+	    });
+	}
+
+	function updateDpDetails(contactId, orderId, dporderdetails, cbdetails) {
+	    // / Updates all.. even if not modified. // Fine for only orders
+	    // that
+	    // are modified.
+	    async.each(dporderdetails, function(dporderdetail, cb) {
+		delete dporderdetail.$$hashKey;
+		if (dporderdetail.id == null) {
+		    dporderdetail.DONORD = contactId;
+		    dporderdetail.ORDNUMD = orderId;
+		    delete dporderdetail.id;
+		    Database.knex('dporderdetails').insert(dporderdetail).exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    });
+		} else if (dporderdetail.is_deleted) {
+		    Database.knex('dporderdetails').where({
+			id : dporderdetail.id
+		    }).del().exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    })
+		} else { // an update -- even if not modified!
+		    var dporderdetailId = dporderdetail.id;
+		    delete dporderdetail.id;
+		    Database.knex('dporderdetails').where({
+			id : dporderdetailId
+		    }).update(dporderdetail).exec(function(err, response) {
+			if (err)
+			    cb(err);
+			cb(null, response);
+		    });
+		}
+
+	    }, function(err, data) {
+		if (err)
+		    cbdetails(err);
+		cbdetails(null, data);
+	    });
 	}
 
 	/*

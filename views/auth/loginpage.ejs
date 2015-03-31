@@ -7,7 +7,9 @@
 <title><%= __('DefaultTitle') %></title>
 <link href="/assets/css/bootstrap.css" rel="stylesheet">
 <link href="/css/main.css" rel="stylesheet">
-<link href="/css/font-awesome.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/fonts/linecons/css/linecons.css">
+<link rel="stylesheet" href="/assets/css/fonts/fontawesome/css/font-awesome.min.css">
+	
 <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/img/favicon.ico">
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/img/favicon.ico">
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/img/favicon.ico">
@@ -730,7 +732,7 @@ input[type=url].form-error {
         </div>
         <div class="card signin-card clearfix">
             <div id="cc_iframe_parent"></div>
-            <div style="width:94px;margin:auto;"><i class="icon-user icon-5x" style="color: #B6B6B6;font-size: 120px;text-align: center;"></i> </div>
+            <div style="width:94px;margin:auto;"><i class="fa fa-user fa-5" style="color: #B6B6B6;font-size: 120px;text-align: center;"></i> </div>
             <p class="profile-name"></p>
 
                 <label class="hidden-label" for="loginName">Email</label>
@@ -749,7 +751,7 @@ input[type=url].form-error {
                 <span style="display:none;" role="alert" class="error-msg" id="errorMessage">
                 </span>
             <% } %>
-                <button id="loginButton" class=" btn btn-primary" style="position:relative; width:100%;line-height: 25px;font-size: 18px;"><%= __('Sign in') %><span class="loading-gif pull-right" style="visibility:hidden; position: absolute; right: 8px;"><i class="icon icon-cog icon-spin"></i></span></button>
+                <button id="loginButton" class=" btn btn-primary" style="position:relative; width:100%;line-height: 25px;font-size: 18px;"><%= __('Sign in') %><span class="loading-gif pull-right" style="visibility:hidden; position: absolute; right: 8px;"><i class="fa fa-cog fa-spin"></i></span></button>
 
         </div>
     </div>
