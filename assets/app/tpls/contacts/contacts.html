@@ -1,6 +1,8 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
 
+
+
 <script type="text/ng-template" id="edit-dpplg-modal">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
@@ -290,6 +292,31 @@
 	</div>
 </script>
 
+
+
+
+<script type="text/ng-template" id="save-template-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Save Contact Search Template</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="modal_template">Template Name:</label>
+
+			<div class="col-sm-8">
+				<input type="text" class="form-control" id="modal_template" ng-model="newTemplateModal.name" ng-model-options="" placeholder="">
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Cancel</button>
+		<button type="button" class="btn btn-secondary" ng-click="saveTemplate();">Save</button>
+	</div>
+</script>
 
 <script type="text/ng-template" id="edit-dtmail-modal">
 	<div class="modal-header">
@@ -740,17 +767,21 @@
 
 <div class="row" ng-controller="ContactsSearch">
 	<div class="col-sm-12">
-		<div class="panel panel-default collapsed">
+		<div class="panel panel-default collapsed panel-stack">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="linecons-search"></i>&nbsp&nbspSearch Filter</h3>
 				<div class="pull-right isn-panel-pull-right">
-					<div class="btn btn-primary " ng-click="">Clear</div>
+					<div class="btn btn-primary " ng-click="clearTemplates();">Clear</div>
 				</div>
 				<div class="pull-right pull-right-stack isn-panel-pull-right">
-					<div class="btn btn-secondary" ng-click="">Save</div>
+					<div class="btn btn-secondary" ng-click="saveTemplateModal()" >Save Template</div>
 				</div>
 				<div class="pull-right pull-right-stack isn-panel-pull-right">
-					<div class="btn btn-secondary" ng-click="">Choose</div>
+					<div class="btn btn-danger" ng-click="deleteTemplate()" ng-show="template!=null">Delete Template</div>
+				</div>
+				<div class="pull-right pull-right-stack isn-panel-pull-right">
+					<!--<div class="btn btn-secondary" ng-click="">Choose</div>-->
+					<select2 class="form-control" id="select2_template" name="template" ng-options="title.id as title.label for title in search_templates" ng-model="template" placeholder="Search Templates..."></select2> 
 				</div>
 			</div>
 			<div class="panel-body always-visible">
@@ -838,7 +869,66 @@
 				</form>
 			</div>
 		</div>
-
+		<div class="panel panel-default  panel-stack">
+			<div class="panel-heading panel-second-heading">
+				<div href="" class="panel-title-wrapper">
+					<h3 class="panel-title">&nbsp&nbspDeep Search Mode : <b>{{contact.mode?'Constrain':'Expand'}}</b></h3>
+				</div>
+				<div class="panel-options">
+					<input type="checkbox" class="form-control iswitch iswitch-info" name="contact.mode" ng-checked="contact.mode" ng-model="contact.mode">
+					
+				</div>
+			</div>
+			
+		</div>
+		<div class="panel panel-default collapsed panel-stack">
+			<div class="panel-heading panel-second-heading">
+				<a href="" data-toggle="panel" class="panel-title-wrapper">
+					<h3 class="panel-title">&nbsp&nbspOther Criteria</h3>
+				</a>
+				<div class="panel-options">
+					<a href="" data-toggle="panel">
+						<span class="collapse-icon">&ndash;</span>
+						<span class="expand-icon">+</span>
+					</a>
+				</div>
+			</div>
+			<div class="panel-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.dpother.DEMAND">Demand</label>
+						<div class="col-sm-10">
+							
+							<input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.DEMAND" ng-model-options="" placeholder="">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="panel panel-default collapsed ">
+			<div class="panel-heading panel-second-heading">
+				<a href="" data-toggle="panel" class="panel-title-wrapper">
+					<h3 class="panel-title">&nbsp&nbspGift Criteria</h3>
+				</a>
+				<div class="panel-options">
+					<a href="" data-toggle="panel">
+						<span class="collapse-icon">&ndash;</span>
+						<span class="expand-icon">+</span>
+					</a>
+				</div>
+			</div>
+			<div class="panel-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.dpgift.DEMAND">Demand</label>
+						<div class="col-sm-10">
+							
+							<input type="text" class="form-control" id="contact.dpgift.DEMAND" ng-model="contact.dpgift.DEMAND" ng-model-options="" placeholder="">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
 

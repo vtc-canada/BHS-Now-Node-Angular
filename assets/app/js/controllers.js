@@ -8,23 +8,24 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.selectedTransaction = null;
     $scope.selectedOrderSummary = null;
     $scope.selectedOrderDetails = null;
-    
+
     $scope.selectedDataTableRow = {
 	'dpgift' : null,
 	'dpplg' : null,
 	'dtmail' : null,
 	'dpother' : null,
 	'dplink' : null
-    }
-    
-    $scope.longSelectOptions = {minimumInputLength:2};
-    
+    };
+
+    $scope.longSelectOptions = {
+	minimumInputLength : 2
+    };
+
     $rootScope.modalDataSet = angular.copy($scope.selectedDataTableRow);
 
     vm.watchEnabled = false;
     vm.screenLoaded = false;
     vm.blockOrderSelectedModified = false;
-    
 
     vm.tabs = [ 'layman', 'ecclesiastical', 'volunteer', 'orders' ];
 
@@ -84,7 +85,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		"width" : "25%" // Date
 	    }, {
 		"width" : "25%" // Total #
-	    }]
+	    } ]
 	},
 	'dpgift' : {
 	    "autoWidth" : true,
@@ -173,7 +174,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    } ]
 	}
     };
-    
+
     $scope.resetOrderSummaryRow = function(table_name) {
 	$timeout(function() {
 	    $scope.selectedOrderSummary = null;
@@ -300,7 +301,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.contact = $contact;
 		    $scope.rebindDataTable(table_name);
 		}, 0);
-	    } else { // do nothing
 	    }
 	});
 
@@ -318,6 +318,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}
 	    }
 	    $rootScope.currentModal.dismiss('save');
+	    return null;
 	};
 
     }
@@ -350,156 +351,164 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    });
 	}
     }
-    
-    
-    
+
     // Order Details
-    
-    $scope.isDpOrderSummaryDeleted = function(){
-	if($scope.selectedOrderSummary&&$scope.selectedOrderSummary.is_deleted){
+
+    $scope.isDpOrderSummaryDeleted = function() {
+	if ($scope.selectedOrderSummary && $scope.selectedOrderSummary.is_deleted) {
 	    return true;
 	}
 	return false;
     }
-    
-    $scope.isDpOrderSummarySelected = function(){
-	return ($scope.selectedOrderSummary==null);
+
+    $scope.isDpOrderSummarySelected = function() {
+	return ($scope.selectedOrderSummary == null);
     }
-    
-    $scope.doDeleteDpOrderSummary = function(){
+
+    $scope.doDeleteDpOrderSummary = function() {
 	$scope.selectedOrderSummary.is_deleted = true;
     }
-    
-    $scope.getDpOrderSummaryButtonText = function(){
-	
-	if($scope.selectedOrderSummary == null || !$scope.isDpOrderSummaryDeleted()){
+
+    $scope.getDpOrderSummaryButtonText = function() {
+
+	if ($scope.selectedOrderSummary == null || !$scope.isDpOrderSummaryDeleted()) {
 	    return 'Delete';
 	}
 	return 'Restore';
     }
-    
-    $scope.addDpOrderSummary = function(){
+
+    $scope.addDpOrderSummary = function() {
 	// $scope.selectedOrderSummary
-	
+
 	var newOrder = {
-	    id:null,
+	    id : null,
 	    tempId : Math.floor((Math.random() * 10000000) + 1),
-	    SOL:null,
-	    DATE:$filter('date')(new Date(), 'yyyy-MM-dd'),
-	    ORDNUM:null,
-	    SHIPFROM:null,  // Add select2 for this TODO
-	    OPER:null,
-	    SHIPDATE:null,
-	    ORIGDATE:null,
-	    ORIGENV:null,
-	    IPAID:null,
-	    SANDH:null, // S+H
-	    SANDHAMT:0, // S+h amount
-	    CREDITCD:null, // 
-	    CASHONLY:null,  // / ??
-	    CASH:0,
-	    CREDIT:0,
-	    ETOTAL:0,  // ETOTAL is in american
-	    ECONV :0,   // ECONV in local currency
-	    ESHIP : 0,  // TODO: Calculate shipping price from LITEMS
-			// litemdetails.price
-	    GTOTAL:0,
-	    
-	    
-	    PST:'N',GST:'N',HST:'N',
-	    PSTCALC:0,GSTCALC:0,HSTCALC:0,NYTCALC:0,
-	    NYTAX:0,
-	    COUNTY:null,
-	    COUNTYNM:null,
+	    SOL : null,
+	    DATE : $filter('date')(new Date(), 'yyyy-MM-dd'),
+	    ORDNUM : null,
+	    SHIPFROM : null, // Add select2 for this TODO
+	    OPER : null,
+	    SHIPDATE : null,
+	    ORIGDATE : null,
+	    ORIGENV : null,
+	    IPAID : null,
+	    SANDH : null, // S+H
+	    SANDHAMT : 0, // S+h amount
+	    CREDITCD : null, // 
+	    CASHONLY : null, // / ??
+	    CASH : 0,
+	    CREDIT : 0,
+	    ETOTAL : 0, // ETOTAL is in american
+	    ECONV : 0, // ECONV in local currency
+	    ESHIP : 0, // TODO: Calculate shipping price from LITEMS
+	    // litemdetails.price
+	    GTOTAL : 0,
+
+	    PST : 'N',
+	    GST : 'N',
+	    HST : 'N',
+	    PSTCALC : 0,
+	    GSTCALC : 0,
+	    HSTCALC : 0,
+	    NYTCALC : 0,
+	    NYTAX : 0,
+	    COUNTY : null,
+	    COUNTYNM : null,
 	    // "ENT_DT":"1993-12-22T00:00:00.000Z", // TODO- currency conversion
 	    // "FUNDS":"U","GFUNDS":"U.S. Dollars","CURCONV":1.5,
-	    TITLE:$scope.contact.TITLE,
-	    FNAME:$scope.contact.FNAME ,
-	    LNAME:$scope.contact.LNAME ,
-	    SUFF:$scope.contact.SUFF ,
-	    SECLN:$scope.contact.SECLN ,
-	    ADD:$scope.contact.ADD ,
-	    CITY:$scope.contact.CITY ,
-	    ST:$scope.contact.ST ,
-	    ZIP:$scope.contact.ZIP ,
-	    COUNTRY:$scope.contact.COUNTRY ,
-	    PHTYPE1:$scope.contact.PHTYPE1 ,
-	    PHTYPE2:$scope.contact.PHTYPE2 ,
-	    PHTYPE3:$scope.contact.PHTYPE3 ,
-	    PHONE:$scope.contact.PHONE ,
-	    PHON2:$scope.contact.PHON2 ,
-	    PHON3:$scope.contact.PHON3 ,
-	    database_origin:$scope.contact.database_origin ,
+	    TITLE : $scope.contact.TITLE,
+	    FNAME : $scope.contact.FNAME,
+	    LNAME : $scope.contact.LNAME,
+	    SUFF : $scope.contact.SUFF,
+	    SECLN : $scope.contact.SECLN,
+	    ADD : $scope.contact.ADD,
+	    CITY : $scope.contact.CITY,
+	    ST : $scope.contact.ST,
+	    ZIP : $scope.contact.ZIP,
+	    COUNTRY : $scope.contact.COUNTRY,
+	    PHTYPE1 : $scope.contact.PHTYPE1,
+	    PHTYPE2 : $scope.contact.PHTYPE2,
+	    PHTYPE3 : $scope.contact.PHTYPE3,
+	    PHONE : $scope.contact.PHONE,
+	    PHON2 : $scope.contact.PHON2,
+	    PHON3 : $scope.contact.PHON3,
+	    database_origin : $scope.contact.database_origin,
 	    dporderdetails : [],
-	    SURFCOST:0,
-	    MBAGCOST:0,
-	    OTHCOST:0,
-	    RETURNED:null,
-	    MAILFLAG:null,
-	    PRINREM:null
+	    SURFCOST : 0,
+	    MBAGCOST : 0,
+	    OTHCOST : 0,
+	    RETURNED : null,
+	    MAILFLAG : null,
+	    PRINREM : null
 	};
 	$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
 
-	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length-1];
-	
+	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length - 1];
+
 	// "LASTPAGE":null,"PRINFLAG":1,"TSRECID":"C00012220","TSDATE":"20120626","TSTIME":"132058","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"KJ",
-	
-	
- // "DONOR":1000004 set donor in controller..
-	
+
+	// "DONOR":1000004 set donor in controller..
+
 	// $scope.dpordersummary.
 	// alert('a');
     }
-    
-    $scope.addDpDetail = function(){
+
+    $scope.addDpDetail = function() {
 	// $scope.contact.
 	// TODO- currency?? LCURR
-	$scope.selectedOrderSummary.dporderdetails.push({id:null,LQTY:1,LITEMP:null,LITEMD:null,LPRICE:0,LDISC:0,LCURR:null,LEXT:0,LSTOC:null});
-	    
+	$scope.selectedOrderSummary.dporderdetails.push({
+	    id : null,
+	    LQTY : 1,
+	    LITEMP : null,
+	    LITEMD : null,
+	    LPRICE : 0,
+	    LDISC : 0,
+	    LCURR : null,
+	    LEXT : 0,
+	    LSTOC : null
+	});
+
 	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC","database_origin":1})
 	// non-use columns
 	// ORDNUMD:null,"PAGED":"01","LINED":"01","DONORD":1000004,"SQTY":1,"BQTY":0,
-	
+
 	// id : 'new',
 	// tempId : Math.floor((Math.random() * 100000) + 1),
     }
 
-    $scope.deleteDpDetail = function(item){
-	if(item.id==null){
+    $scope.deleteDpDetail = function(item) {
+	if (item.id == null) {
 	    var index = $scope.selectedOrderSummary.dporderdetails.indexOf(item);
-	    $scope.selectedOrderSummary.dporderdetails.splice(index, 1);  
-	}else{
+	    $scope.selectedOrderSummary.dporderdetails.splice(index, 1);
+	} else {
 	    item.is_deleted = true;
 	}
     }
-    
-    $scope.$watch('selectedOrderSummary.dporderdetails',function(newValue,oldValue){
-	if(!angular.equals(newValue, oldValue)){
+
+    $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
 	    angular.forEach(newValue, function(row) {
-		if(typeof($scope.litemdetails[row.LITEMP])!='undefined'&&angular.lowercase(row.LITEMD)!=angular.lowercase($scope.litemdetails[row.LITEMP].description)){
+		if (typeof ($scope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($scope.litemdetails[row.LITEMP].description)) {
 		    row.LITEMD = $scope.litemdetails[row.LITEMP].description;
 		    // $scope.selectedOrderSummary.is_modified = true;
 		}
 		// if(row.LITEMP)
-		
+
 	    });
 	}
-    },true);
-    
-    $scope.$watch('selectedOrderSummary',function(newValue,oldValue){
-	if(!angular.equals(newValue, oldValue)){
-	    if(vm.blockOrderSelectedModified){
+    }, true);
+
+    $scope.$watch('selectedOrderSummary', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    if (vm.blockOrderSelectedModified) {
 		vm.blockOrderSelectedModified = false;
-	    }else{
-		if($scope.selectedOrderSummary){
+	    } else {
+		if ($scope.selectedOrderSummary) {
 		    $scope.selectedOrderSummary.is_modified = true;
 		}
 	    }
 	}
-    },true);
-
-    
-    
+    }, true);
 
     $scope.getDatatableDeleteButtonDisabled = function(table_name) {
 	return ($scope.selectedDataTableRow[table_name] == null);
@@ -570,35 +579,34 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// is_deleted) {
 	$scope.selectedDataTableRow[table_name] = row;
     }
-    
-    $scope.selectOrderSummaryDataTableRow = function( row) {// transactionId,
+
+    $scope.selectOrderSummaryDataTableRow = function(row) {// transactionId,
 	// tempId,
 	// is_deleted) {
-	vm.blockOrderSelectedModified = true;  // blocks change event on
-						// selectedOrderSummary watcher
-						// once.
+	vm.blockOrderSelectedModified = true; // blocks change event on
+	// selectedOrderSummary watcher
+	// once.
 	$scope.selectedOrderSummary = row;
     }
-    
-    
+
     $scope.isOrderSummaryDatatableRowFocused = function(row) {
-	if(typeof(row)=='undefined'||row==null){
-    		return $scope.selectedOrderSummary!=null;
+	if (typeof (row) == 'undefined' || row == null) {
+	    return $scope.selectedOrderSummary != null;
 	}
 	if ($scope.selectedOrderSummary == null) {
 	    return false;
 	}
 	return (row.tempId == $scope.selectedOrderSummary.tempId && row.tempId != null) || (row.id == $scope.selectedOrderSummary.id && row.id != null);
     }
-    
-    $scope.selectOrderDetailsDataTableRow = function( row) {// transactionId,
+
+    $scope.selectOrderDetailsDataTableRow = function(row) {// transactionId,
 	// tempId,
 	// is_deleted) {
 	$scope.selectedOrderDetails = row;
     }
-    $scope.isOrderDetailsDatatableRowFocused = function( row) {
-	if(typeof(row)=='undefined'||row==null){
-    		return $scope.selectedOrderDetails!=null;
+    $scope.isOrderDetailsDatatableRowFocused = function(row) {
+	if (typeof (row) == 'undefined' || row == null) {
+	    return $scope.selectedOrderDetails != null;
 	}
 	if ($scope.selectedOrderDetails == null) {
 	    return false;
@@ -741,11 +749,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    id : message.id
 		}).success(function(data) {
 
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-	                    location.reload(); // Will boot back to login
-						// screen
-	                }
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
 		    $scope.selectedTransaction = null; // wipes
 		    // out
 		    // selected
@@ -808,11 +816,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// delete $scope.contact.initDtVols1;
 		delete $scope.contact.is_saving;
 		$sails.post("/contacts/save", $scope.contact).success(function(data) {
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-	                    location.reload(); // Will boot back to login
-						// screen
-	                }
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
 		    if (data.success) {
 			for ( var key in $scope.selectedDataTableRow) { // iterate
 			    // destroying
@@ -820,7 +828,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    $scope.tryDestroyDataTable(key);
 			}
 			$scope.tryDestroyDataTable('dpordersummary');
-			
+
 			$timeout(function() {
 			    $contact.set(data.contact); // sets is_saving to
 			    // false.
@@ -865,331 +873,331 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    vm.screenLoaded = true;
 	}
     }
-    
-    
 
- // initialization routine.
+    // initialization routine.
     (function() {
+
 	$sails.get('/donortracker/getattributes').success(function(data) {
-		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
-	            location.reload(); // Will boot back to login screen
-	        }
-		var data = data.result;
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    var data = data.result;
 
-		$rootScope.response = [ {
-		    id : '1',
-		    label : 'Not yet known'
-		}, {
-		    id : '2',
-		    label : 'Positive'
-		}, {
-		    id : '3',
-		    label : 'Negative'
-		} ]
+	    $rootScope.response = [ {
+		id : '1',
+		label : 'Not yet known'
+	    }, {
+		id : '2',
+		label : 'Positive'
+	    }, {
+		id : '3',
+		label : 'Negative'
+	    } ]
 
-		$rootScope.staticyesno = [ {
-		    id : 'Y',
-		    label : 'Yes'
-		}, {
-		    id : 'N',
-		    label : 'No'
-		} ];
+	    $rootScope.staticyesno = [ {
+		id : 'Y',
+		label : 'Yes'
+	    }, {
+		id : 'N',
+		label : 'No'
+	    } ];
 
-		$rootScope.currencies = [ {
-		    id : 'U',
-		    label : 'USD - United States'
-		}, {
-		    id : 'C',
-		    label : 'CAD - Canadian Dollars'
-		} ];
+	    $rootScope.currencies = [ {
+		id : 'U',
+		label : 'USD - United States'
+	    }, {
+		id : 'C',
+		label : 'CAD - Canadian Dollars'
+	    } ];
 
-		$scope.litems = [];
-		$scope.litemdetails = {};
-		for (var i = 0; i < data.litems.length; i++) {
-		    $scope.litems.push({
-			id : data.litems[i].CODE,
-			label : data.litems[i].CODE + " - " + data.litems[i].DESC
-		    });
-		    $scope.litemdetails[data.litems[i].CODE] = { description : data.litems[i].DESC, price : data.litems[i].OTHER };
-		}
-		
-		
-		$rootScope.pledgegroups = [];
-		for (var i = 0; i < data.pledgegroups.length; i++) {
-		    $rootScope.pledgegroups.push({
-			id : data.pledgegroups[i].CODE,
-			label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
-		    });
-		}
+	    $scope.litems = [];
+	    $scope.litemdetails = {};
+	    for (var i = 0; i < data.litems.length; i++) {
+		$scope.litems.push({
+		    id : data.litems[i].CODE,
+		    label : data.litems[i].CODE + " - " + data.litems[i].DESC
+		});
+		$scope.litemdetails[data.litems[i].CODE] = {
+		    description : data.litems[i].DESC,
+		    price : data.litems[i].OTHER
+		};
+	    }
 
-		$rootScope.tba_requests = [];
-		for (var i = 0; i < data.tba_requests.length; i++) {
-		    $rootScope.tba_requests.push({
-			id : data.tba_requests[i].CODE,
-			label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
-		    });
-		}
+	    $rootScope.pledgegroups = [];
+	    for (var i = 0; i < data.pledgegroups.length; i++) {
+		$rootScope.pledgegroups.push({
+		    id : data.pledgegroups[i].CODE,
+		    label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
+		});
+	    }
 
-		$rootScope.lists = [];
-		for (var i = 0; i < data.lists.length; i++) {
-		    $rootScope.lists.push({
-			id : data.lists[i].CODE,
-			label : data.lists[i].CODE + " - " + data.lists[i].DESC
-		    });
-		}
-		$rootScope.demands = [];
-		for (var i = 0; i < data.demands.length; i++) {
-		    $rootScope.demands.push({
-			id : data.demands[i].CODE,
-			label : data.demands[i].CODE + " - " + data.demands[i].DESC
-		    });
-		}
-		$rootScope.relationships = [];
-		for (var i = 0; i < data.relationships.length; i++) {
-		    $rootScope.relationships.push({
-			id : data.relationships[i].CODE,
-			label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
-		    });
-		}
-		$rootScope.requests_plural = [];
-		for (var i = 0; i < data.requests_plural.length; i++) {
-		    $rootScope.requests_plural.push({
-			id : data.requests_plural[i].CODE,
-			label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
-		    });
-		}
+	    $rootScope.tba_requests = [];
+	    for (var i = 0; i < data.tba_requests.length; i++) {
+		$rootScope.tba_requests.push({
+		    id : data.tba_requests[i].CODE,
+		    label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
+		});
+	    }
 
-		$rootScope.transaction_type = 'dpplg';
+	    $rootScope.lists = [];
+	    for (var i = 0; i < data.lists.length; i++) {
+		$rootScope.lists.push({
+		    id : data.lists[i].CODE,
+		    label : data.lists[i].CODE + " - " + data.lists[i].DESC
+		});
+	    }
+	    $rootScope.demands = [];
+	    for (var i = 0; i < data.demands.length; i++) {
+		$rootScope.demands.push({
+		    id : data.demands[i].CODE,
+		    label : data.demands[i].CODE + " - " + data.demands[i].DESC
+		});
+	    }
+	    $rootScope.relationships = [];
+	    for (var i = 0; i < data.relationships.length; i++) {
+		$rootScope.relationships.push({
+		    id : data.relationships[i].CODE,
+		    label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
+		});
+	    }
+	    $rootScope.requests_plural = [];
+	    for (var i = 0; i < data.requests_plural.length; i++) {
+		$rootScope.requests_plural.push({
+		    id : data.requests_plural[i].CODE,
+		    label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
+		});
+	    }
 
-		$rootScope.transaction_types = [ {
-		    id : 'dpgift',
-		    label : 'Gift'
-		}, {
-		    id : 'dtmail',
-		    label : 'Mail'
-		}, {
-		    id : 'dpplg',
-		    label : 'Pledge'
-		}, {
-		    id : 'dpother',
-		    label : 'Other'
-		}, {
-		    id : 'dplink',
-		    label : 'Links'
-		}, {
-		    id : 6,
-		    label : 'Myst'
-		} ];
+	    $rootScope.transaction_type = 'dpplg';
 
-		$rootScope.staticyesnounknown = [ {
-		    id : 'Y',
-		    label : 'Yes'
-		}, {
-		    id : 'U',
-		    label : 'Unknown'
-		}, {
-		    id : 'N',
-		    label : 'No'
-		} ];
+	    $rootScope.transaction_types = [ {
+		id : 'dpgift',
+		label : 'Gift'
+	    }, {
+		id : 'dtmail',
+		label : 'Mail'
+	    }, {
+		id : 'dpplg',
+		label : 'Pledge'
+	    }, {
+		id : 'dpother',
+		label : 'Other'
+	    }, {
+		id : 'dplink',
+		label : 'Links'
+	    }, {
+		id : 6,
+		label : 'Myst'
+	    } ];
 
-		/*
-		 * for (var i = 0; i < data.donor_classes.length; i++) {
-		 * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
-		 * label : data.donor_classes[i].CODE + " - " +
-		 * data.donor_classes[i].DESC }); }
-		 */
+	    $rootScope.staticyesnounknown = [ {
+		id : 'Y',
+		label : 'Yes'
+	    }, {
+		id : 'U',
+		label : 'Unknown'
+	    }, {
+		id : 'N',
+		label : 'No'
+	    } ];
 
-		/*
-		 * angular.forEach(data.result,function(atts,key){
-		 * $scope[key]=[]; for(var i=0;i<atts.length;i++){
-		 * $scope[key].push({ id : atts[i]. }); } ) })
-		 */
-		$rootScope.titles = [];
-		for (var i = 0; i < data.titles.length; i++) {
-		    $rootScope.titles.push({
-			id : data.titles[i].TITLE,
-			label : data.titles[i].TITLE
-		    });
-		}
-		$rootScope.languages = [];
-		for (var i = 0; i < data.languages.length; i++) {
-		    $rootScope.languages.push({
-			id : data.languages[i].CODE,
-			label : data.languages[i].CODE + " - " + data.languages[i].DESC
-		    });
-		}
-		$rootScope.values_traditional = [];
-		for (var i = 0; i < data.values_traditional.length; i++) {
-		    $rootScope.values_traditional.push({
-			id : data.values_traditional[i].CODE,
-			label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
-		    });
-		}
-		$rootScope.decision = [];
-		for (var i = 0; i < data.decision.length; i++) {
-		    $rootScope.decision.push({
-			id : data.decision[i].CODE,
-			label : data.decision[i].CODE + " - " + data.decision[i].DESC
-		    });
-		}
-		$rootScope.mass_said = [];
-		for (var i = 0; i < data.mass_said.length; i++) {
-		    $rootScope.mass_said.push({
-			id : data.mass_said[i].CODE,
-			label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
-		    });
-		}
+	    /*
+	     * for (var i = 0; i < data.donor_classes.length; i++) {
+	     * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
+	     * label : data.donor_classes[i].CODE + " - " +
+	     * data.donor_classes[i].DESC }); }
+	     */
 
-		$rootScope.willsaymass = [];
-		for (var i = 0; i < data.willsaymass.length; i++) {
-		    $rootScope.willsaymass.push({
-			id : data.willsaymass[i].CODE,
-			label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
-		    });
-		}
-		$rootScope.english = [];
-		for (var i = 0; i < data.english.length; i++) {
-		    $rootScope.english.push({
-			id : data.english[i].CODE,
-			label : data.english[i].CODE + " - " + data.english[i].DESC
-		    });
-		}
-		$rootScope.accounts_received = [];
-		for (var i = 0; i < data.accounts_received.length; i++) {
-		    $rootScope.accounts_received.push({
-			id : data.accounts_received[i].CODE,
-			label : data.accounts_received[i].CODE + " - " + data.accounts_received[i].DESC
-		    });
-		}
-		$rootScope.reasons = [];
-		for (var i = 0; i < data.reasons.length; i++) {
-		    $rootScope.reasons.push({
-			id : data.reasons[i].CODE,
-			label : data.reasons[i].CODE
-		    });
-		}
-		$rootScope.cfns = [];
-		for (var i = 0; i < data.cfns.length; i++) {
-		    $rootScope.cfns.push({
-			id : data.cfns[i].CODE,
-			label : data.cfns[i].CODE + " - " + data.cfns[i].DESC
-		    });
-		}
-		$rootScope.pledgors = [];
-		for (var i = 0; i < data.pledgors.length; i++) {
-		    $rootScope.pledgors.push({
-			id : data.pledgors[i].CODE,
-			label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
-		    });
-		}
-		$rootScope.types = [];
-		for (var i = 0; i < data.types.length; i++) {
-		    $rootScope.types.push({
-			id : data.types[i].CODE,
-			label : data.types[i].CODE
-		    });
-		}
-		$rootScope.sols = [];
-		for (var i = 0; i < data.sols.length; i++) {
-		    $rootScope.sols.push({
-			id : data.sols[i].CODE,
-			label : data.sols[i].CODE
-		    });
-		}
-		$rootScope.sols = [];
-		for (var i = 0; i < data.sols.length; i++) {
-		    $rootScope.sols.push({
-			id : data.sols[i].CODE,
-			label : data.sols[i].CODE
-		    });
-		}
-		$rootScope.billing_schedules = [];
-		for (var i = 0; i < data.billing_schedules.length; i++) {
-		    $rootScope.billing_schedules.push({
-			id : data.billing_schedules[i].CODE,
-			label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
-		    });
-		}
+	    /*
+	     * angular.forEach(data.result,function(atts,key){ $scope[key]=[];
+	     * for(var i=0;i<atts.length;i++){ $scope[key].push({ id : atts[i].
+	     * }); } ) })
+	     */
+	    $rootScope.titles = [];
+	    for (var i = 0; i < data.titles.length; i++) {
+		$rootScope.titles.push({
+		    id : data.titles[i].TITLE,
+		    label : data.titles[i].TITLE
+		});
+	    }
+	    $rootScope.languages = [];
+	    for (var i = 0; i < data.languages.length; i++) {
+		$rootScope.languages.push({
+		    id : data.languages[i].CODE,
+		    label : data.languages[i].CODE + " - " + data.languages[i].DESC
+		});
+	    }
+	    $rootScope.values_traditional = [];
+	    for (var i = 0; i < data.values_traditional.length; i++) {
+		$rootScope.values_traditional.push({
+		    id : data.values_traditional[i].CODE,
+		    label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
+		});
+	    }
+	    $rootScope.decision = [];
+	    for (var i = 0; i < data.decision.length; i++) {
+		$rootScope.decision.push({
+		    id : data.decision[i].CODE,
+		    label : data.decision[i].CODE + " - " + data.decision[i].DESC
+		});
+	    }
+	    $rootScope.mass_said = [];
+	    for (var i = 0; i < data.mass_said.length; i++) {
+		$rootScope.mass_said.push({
+		    id : data.mass_said[i].CODE,
+		    label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
+		});
+	    }
 
-		$rootScope.transacts = [];
-		for (var i = 0; i < data.transacts.length; i++) {
-		    $rootScope.transacts.push({
-			id : data.transacts[i].CODE,
-			label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
-		    });
-		}
-		$rootScope.designates = [];
-		for (var i = 0; i < data.designates.length; i++) {
-		    $rootScope.designates.push({
-			id : data.designates[i].CODE,
-			label : data.designates[i].CODE + " - " + data.designates[i].DESC
-		    });
-		}
-		$rootScope.modes = [];
-		for (var i = 0; i < data.modes.length; i++) {
-		    $rootScope.modes.push({
-			id : data.modes[i].CODE,
-			label : data.modes[i].CODE + " - " + data.modes[i].DESC
-		    });
-		}
+	    $rootScope.willsaymass = [];
+	    for (var i = 0; i < data.willsaymass.length; i++) {
+		$rootScope.willsaymass.push({
+		    id : data.willsaymass[i].CODE,
+		    label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
+		});
+	    }
+	    $rootScope.english = [];
+	    for (var i = 0; i < data.english.length; i++) {
+		$rootScope.english.push({
+		    id : data.english[i].CODE,
+		    label : data.english[i].CODE + " - " + data.english[i].DESC
+		});
+	    }
+	    $rootScope.accounts_received = [];
+	    for (var i = 0; i < data.accounts_received.length; i++) {
+		$rootScope.accounts_received.push({
+		    id : data.accounts_received[i].CODE,
+		    label : data.accounts_received[i].CODE + " - " + data.accounts_received[i].DESC
+		});
+	    }
+	    $rootScope.reasons = [];
+	    for (var i = 0; i < data.reasons.length; i++) {
+		$rootScope.reasons.push({
+		    id : data.reasons[i].CODE,
+		    label : data.reasons[i].CODE
+		});
+	    }
+	    $rootScope.cfns = [];
+	    for (var i = 0; i < data.cfns.length; i++) {
+		$rootScope.cfns.push({
+		    id : data.cfns[i].CODE,
+		    label : data.cfns[i].CODE + " - " + data.cfns[i].DESC
+		});
+	    }
+	    $rootScope.pledgors = [];
+	    for (var i = 0; i < data.pledgors.length; i++) {
+		$rootScope.pledgors.push({
+		    id : data.pledgors[i].CODE,
+		    label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
+		});
+	    }
+	    $rootScope.types = [];
+	    for (var i = 0; i < data.types.length; i++) {
+		$rootScope.types.push({
+		    id : data.types[i].CODE,
+		    label : data.types[i].CODE
+		});
+	    }
+	    $rootScope.sols = [];
+	    for (var i = 0; i < data.sols.length; i++) {
+		$rootScope.sols.push({
+		    id : data.sols[i].CODE,
+		    label : data.sols[i].CODE
+		});
+	    }
+	    $rootScope.sols = [];
+	    for (var i = 0; i < data.sols.length; i++) {
+		$rootScope.sols.push({
+		    id : data.sols[i].CODE,
+		    label : data.sols[i].CODE
+		});
+	    }
+	    $rootScope.billing_schedules = [];
+	    for (var i = 0; i < data.billing_schedules.length; i++) {
+		$rootScope.billing_schedules.push({
+		    id : data.billing_schedules[i].CODE,
+		    label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
+		});
+	    }
 
-		$rootScope.states = [];
-		for (var i = 0; i < data.states.length; i++) {
-		    $rootScope.states.push({
-			id : data.states[i].CODE,
-			label : data.states[i].CODE
-		    });
-		}
-		$rootScope.pledge_schedule = data.pledge_schedule;
-		$rootScope.major_donation_types = data.major_donation_types;
+	    $rootScope.transacts = [];
+	    for (var i = 0; i < data.transacts.length; i++) {
+		$rootScope.transacts.push({
+		    id : data.transacts[i].CODE,
+		    label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
+		});
+	    }
+	    $rootScope.designates = [];
+	    for (var i = 0; i < data.designates.length; i++) {
+		$rootScope.designates.push({
+		    id : data.designates[i].CODE,
+		    label : data.designates[i].CODE + " - " + data.designates[i].DESC
+		});
+	    }
+	    $rootScope.modes = [];
+	    for (var i = 0; i < data.modes.length; i++) {
+		$rootScope.modes.push({
+		    id : data.modes[i].CODE,
+		    label : data.modes[i].CODE + " - " + data.modes[i].DESC
+		});
+	    }
 
-		$rootScope.countries = [];
-		for (var i = 0; i < data.countries.length; i++) {
-		    $rootScope.countries.push({
-			id : data.countries[i].CODE,
-			label : data.countries[i].CODE
-		    });
-		}
-		$rootScope.county_codes = [];
-		for (var i = 0; i < data.county_codes.length; i++) {
-		    $rootScope.county_codes.push({
-			id : data.county_codes[i].CODE,
-			label : data.county_codes[i].CODE
-		    });
-		}
-		$rootScope.phone_types = [];
-		for (var i = 0; i < data.phone_types.length; i++) {
-		    $rootScope.phone_types.push({
-			id : data.phone_types[i].CODE,
-			label : data.phone_types[i].CODE
-		    });
-		}
-		$rootScope.address_types = [];
-		for (var i = 0; i < data.address_types.length; i++) {
-		    $rootScope.address_types.push({
-			id : data.address_types[i].CODE,
-			label : data.address_types[i].CODE
-		    });
-		}
+	    $rootScope.states = [];
+	    for (var i = 0; i < data.states.length; i++) {
+		$rootScope.states.push({
+		    id : data.states[i].CODE,
+		    label : data.states[i].CODE
+		});
+	    }
+	    $rootScope.pledge_schedule = data.pledge_schedule;
+	    $rootScope.major_donation_types = data.major_donation_types;
 
-		// DTVOLS1
-		$rootScope.dtvols1 = {};
-		$rootScope.dtvols1.origin = [];
-		$rootScope.origin = [];
-		for (var i = 0; i < data.dtvols1.origin.length; i++) {
-		    $rootScope.dtvols1.origin.push({
-			id : data.dtvols1.origin[i].CODE,
-			label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
-		    });
-		}
+	    $rootScope.countries = [];
+	    for (var i = 0; i < data.countries.length; i++) {
+		$rootScope.countries.push({
+		    id : data.countries[i].CODE,
+		    label : data.countries[i].CODE
+		});
+	    }
+	    $rootScope.county_codes = [];
+	    for (var i = 0; i < data.county_codes.length; i++) {
+		$rootScope.county_codes.push({
+		    id : data.county_codes[i].CODE,
+		    label : data.county_codes[i].CODE
+		});
+	    }
+	    $rootScope.phone_types = [];
+	    for (var i = 0; i < data.phone_types.length; i++) {
+		$rootScope.phone_types.push({
+		    id : data.phone_types[i].CODE,
+		    label : data.phone_types[i].CODE
+		});
+	    }
+	    $rootScope.address_types = [];
+	    for (var i = 0; i < data.address_types.length; i++) {
+		$rootScope.address_types.push({
+		    id : data.address_types[i].CODE,
+		    label : data.address_types[i].CODE
+		});
+	    }
 
+	    // DTVOLS1
+	    $rootScope.dtvols1 = {};
+	    $rootScope.dtvols1.origin = [];
+	    $rootScope.origin = [];
+	    for (var i = 0; i < data.dtvols1.origin.length; i++) {
+		$rootScope.dtvols1.origin.push({
+		    id : data.dtvols1.origin[i].CODE,
+		    label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
+		});
+	    }
 
-	    }).error(function(data) {
-		alert('err!');
-	    });
-	
-  })();
- 
+	}).error(function(data) {
+	    alert('err!');
+	});
+
+    })();
+
 }).controller('UserSection', function($scope, $rootScope, $timeout, $state, $modal, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
     var vm = this;
@@ -1268,9 +1276,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    });
 	}
-	return svm.ajax_results; // returns this variable- we will set this
-	// after in async callback.- thus updating
-	// it.
 
 	function deepCheckParentValues() {
 	    var changed = false;
@@ -1282,25 +1287,30 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 	    return changed;
 	}
+
+	return svm.ajax_results; // returns this variable- we will set this
+	// after in async callback.- thus updating
+	// it.
+
     }
-    
-    $scope.saveReport = function(){
+
+    $scope.saveReport = function() {
 	// $scope.saving = true;
-	
+
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : 'save-report-modal',
 	    size : 'md',
 	    backdrop : true
 	});
 	$rootScope.saving_report = true;
-	
+
 	$http.post('/reports/promptsave', {
 	    report : $scope.report
 	}).success(function(response) {
-	    if(response.error != undefined){  // USER NO LONGER
-						    // LOGGEDIN!!!!!
-                location.reload(); // Will boot back to login screen
-            }
+	    if (response.error != undefined) { // USER NO LONGER
+		// LOGGEDIN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
 	    $timeout(function() {
 		// delete $scope.saving;
 		$rootScope.pdfurl = response.pdfurl;
@@ -1319,14 +1329,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$http.post('/reports/view', {
 	    report : $scope.report
 	}).success(function(html) {
-		if(html.error != undefined){  // USER NO
-		    // LONGER
-		    // LOGGED
-                // IN!!!!!
-                location.reload(); // Will boot back to
-                	// login
-                		// screen
-                }
+	    if (html.error != undefined) { // USER NO
+		// LONGER
+		// LOGGED
+		// IN!!!!!
+		location.reload(); // Will boot back to
+		// login
+		// screen
+	    }
 	    $timeout(function() {
 		delete $scope.loading;
 		$scope.reporthtml = $sce.trustAsHtml(html);
@@ -1603,19 +1613,50 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 300);
     });
 
-}).controller('ContactsSearch', function($scope, $rootScope) {
+}).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout) {
     var vm = this;
 
-    $scope.contact = {};
-    $scope.contact.id = '';
-    $scope.contact.ADD = null;
-    $scope.contact.CITY = null;
-    $scope.contact.ST = null;
-    $scope.contact.COUNTRY = null;
-    $scope.contact.ZIP = null;
-    $scope.contact.CHECKBOX = null;
-    $scope.contact.CLASS = null;
+    var blankSearch = {
+	id : '',
+	mode : false,
+	ADD : null,
+	CITY : null,
+	ST : null,
+	COUNTRY : null,
+	ZIP : null,
+	CHECKBOX : null,
+	CLASS : null,
+	// DPOTHER
+	dpother:{
+	    DEMAND : null
+	},
+	dpgift:{
+	    DEMAND : null
+	}
+    };
 
+    $scope.contact = angular.copy(blankSearch);
+
+    $scope.template = null;
+    $rootScope.newTemplateModal = {
+	name : null
+    };
+
+    (function() {
+	$sails.get('/template/contacts').success(function(data) {
+	    $scope.search_templates = [];
+	    for (var i = 0; i < data.length; i++) {
+		$scope.search_templates.push({
+		    id : data[i].id,
+		    label : data[i].name,
+		    data : data[i].data
+		});
+	    }
+
+	}).error(function(data) {
+	    alert('err!' + data.toString());
+	});
+    })();
     /*
      * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
      * 'No' } ];
@@ -1861,14 +1902,213 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $rootScope.search_contact = $scope.contact;
 
-    $scope.$watchCollection('contact', function() {
-	if (vm.updateTable) {
-	    clearTimeout(vm.updateTable);
+    $scope.$watch('contact', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    if (vm.updateTable) {
+		clearTimeout(vm.updateTable);
+	    }
+	    vm.updateTable = setTimeout(function() {
+		$rootScope.updateContactsTable();
+		// $rootScope.newTemplateModal.name = null;
+		/*
+		 * if ($scope.template == null) { $scope.template = 'new'; }
+		 * else { $scope.template = null; }
+		 */
+	    }, 300);
 	}
-	vm.updateTable = setTimeout(function() {
-	    $rootScope.updateContactsTable();
-	}, 300);
+    },true);//  //Collection
+
+    $rootScope.saveTemplate = function() {
+	$rootScope.newTemplateModal.id = null;
+	for (var i = 0; i < $scope.search_templates.length; i++) {
+	    if ($scope.search_templates[i].label == $rootScope.newTemplateModal.name) { // matching
+		// up
+		// against
+		// existing
+		// template
+		// name
+		$rootScope.newTemplateModal.id = $scope.search_templates[i].id;
+	    }
+	}
+	if ($rootScope.newTemplateModal.id == null) {
+	    $rootScope.currentModal.dismiss('save');
+	} else {
+	    $rootScope.modalPopup({
+		title : 'Confirm Overwrite',
+		size : 'sm',
+		message : 'Are you sure you want to save over the existing template: <b>' + $rootScope.newTemplateModal.name + '</b>',
+		buttons : [ {
+		    name : 'Cancel',
+		    class : 'btn-white',
+		    dismiss : 'cancel'
+		}, {
+		    name : 'Save',
+		    class : 'btn-danger',
+		    dismiss : 'save'
+		} ]
+	    }, function(dismiss) {
+		if (dismiss == 'save') {
+		    $rootScope.currentModal.dismiss('save');
+		} else {
+		    // $rootScope.currentModal.dismiss();
+		}
+	    });
+	}
+    };
+
+    $scope.$watch('template', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    for (var i = 0; i < $scope.search_templates.length; i++) {
+		if ($scope.search_templates[i].id == $scope.template) { // matching
+		    // one
+		    
+		    angular.forEach($scope.contact,function(value,key){
+			
+			if(key == 'dpother' || key =='dpgift'){
+			    angular.forEach(value,function(innerValue, innerKey){
+				if($scope.search_templates[i].data[key][innerKey]){
+				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
+				    
+				}else{
+				    $scope.contact[key][innerKey] = null;
+				}
+			    });
+			}else if($scope.search_templates[i].data[key]){
+			    $scope.contact[key] = $scope.search_templates[i].data[key];
+			}else{
+			    $scope.contact[key] = null;
+			}
+		    });
+		    
+		    $rootScope.search_contact = $scope.contact;// = $scope.search_templates[i].data;
+		    // $rootScope.search_contact hopefully will stay tied..
+		    // $rootScope.newTemplateModal.id =
+		    // $scope.search_templates[i].id;
+		    $rootScope.newTemplateModal.name = $scope.search_templates[i].label;
+		    $rootScope.newTemplateModal.id = $scope.search_templates[i].id;
+		}
+	    }
+	}
     });
+
+    $scope.clearTemplates = function() {
+	$rootScope.newTemplateModal.name = null;
+	$rootScope.newTemplateModal.id = null;
+	$scope.template = null;
+	$rootScope.search_contact = $scope.contact = angular.copy(blankSearch); // clears
+	// the
+	// contact
+	// search
+	// parameters
+    }
+    
+    $scope.deleteTemplate = function(){
+	$rootScope.modalPopup({
+		title : 'Confirm Delete',
+		size : 'sm',
+		message : 'Are you sure you want to delete the template: <b>' + $rootScope.newTemplateModal.name + '</b>',
+		buttons : [ {
+		    name : 'Cancel',
+		    class : 'btn-white',
+		    dismiss : 'cancel'
+		}, {
+		    name : 'Delete',
+		    class : 'btn-danger',
+		    dismiss : 'delete'
+		} ]
+	    }, function(dismiss) {
+		if (dismiss == 'delete') {
+		    $sails.post('/template/destroy', {
+			    id : $rootScope.newTemplateModal.id,
+			    location : 'contacts'
+			}).success(function(data) {
+			    if (data.error != undefined) { // USER NO LONGER LOGGED
+				// IN!!!!!
+				location.reload(); // Will boot back to login
+				// screen
+			    }
+			    if (data.success) {
+				$scope.template = null;
+				$rootScope.newTemplateModal.id = null;
+				$rootScope.newTemplateModal.name = null;
+				$rootScope.search_contact = $scope.contact = angular.copy(blankSearch);
+				$timeout(function() {
+				    $sails.get('/template/contacts').success(function(data) {
+					if (data.error != undefined) { // USER NO
+					    // LONGER LOGGED
+					    // IN!!!!!
+					    location.reload(); // Will boot back to
+					    // login
+					    // screen
+					}
+					$scope.search_templates = [];
+					for (var i = 0; i < data.length; i++) {
+					    $scope.search_templates.push({
+						id : data[i].id,
+						label : data[i].name,
+						data : data[i].data
+					    });
+					}
+				    });
+				}, 0);
+			    }
+			}).error(function(data) {
+			    alert('err!');
+			});
+		} else {
+		}
+	    });
+    }
+
+    $scope.saveTemplateModal = function() {
+	// $rootScope.newTemplateModal.name = null;
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'save-template-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'save') {
+		$sails.post('/template/save', {
+		    id : $rootScope.newTemplateModal.id,
+		    location : 'contacts',
+		    name : $rootScope.newTemplateModal.name,
+		    data : $scope.contact
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.template = data.template.id;
+			$timeout(function() {
+			    $sails.get('/template/contacts').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.search_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.search_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
+				    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
 
 }).controller('DpCodesSearch', function($scope, $rootScope, $sails) {
     var vm = this;
@@ -1885,54 +2125,54 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     // initialization routine.
     (function() {
 	$sails.get('/donortracker/getdpcodeattributes').success(function(data) {
-		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
-	            location.reload(); // Will boot back to login screen
-	        }
-		var data = data.result;
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    var data = data.result;
 
-		$rootScope.response = [ {
-		    id : '1',
-		    label : 'Not yet known'
-		}, {
-		    id : '2',
-		    label : 'Positive'
-		}, {
-		    id : '3',
-		    label : 'Negative'
-		} ]
+	    $rootScope.response = [ {
+		id : '1',
+		label : 'Not yet known'
+	    }, {
+		id : '2',
+		label : 'Positive'
+	    }, {
+		id : '3',
+		label : 'Negative'
+	    } ]
 
-		$rootScope.staticyesno = [ {
-		    id : 'Y',
-		    label : 'Yes'
-		}, {
-		    id : 'N',
-		    label : 'No'
-		} ];
+	    $rootScope.staticyesno = [ {
+		id : 'Y',
+		label : 'Yes'
+	    }, {
+		id : 'N',
+		label : 'No'
+	    } ];
 
-		$rootScope.currencies = [ {
-		    id : 'U',
-		    label : 'USD - United States'
-		}, {
-		    id : 'C',
-		    label : 'CAD - Canadian Dollars'
-		} ];
+	    $rootScope.currencies = [ {
+		id : 'U',
+		label : 'USD - United States'
+	    }, {
+		id : 'C',
+		label : 'CAD - Canadian Dollars'
+	    } ];
 
-		$rootScope.dpcodefields = [];
-		$rootScope.dpcodefields.push({
-		    id : null,
-		    label : 'All'
-		});
-		for (var i = 0; i < data.dpcodefields.length; i++) {
-		    if (data.dpcodefields[i].FIELD == null) {
-			continue;
-		    }
-		    $rootScope.dpcodefields.push({
-			id : data.dpcodefields[i].FIELD,
-			label : data.dpcodefields[i].FIELD
-		    });
-		}
+	    $rootScope.dpcodefields = [];
+	    $rootScope.dpcodefields.push({
+		id : null,
+		label : 'All'
 	    });
-    
+	    for (var i = 0; i < data.dpcodefields.length; i++) {
+		if (data.dpcodefields[i].FIELD == null) {
+		    continue;
+		}
+		$rootScope.dpcodefields.push({
+		    id : data.dpcodefields[i].FIELD,
+		    label : data.dpcodefields[i].FIELD
+		});
+	    }
+	});
+
     })();
 
     $rootScope.dpsearch = $scope.dpsearch;
@@ -1964,9 +2204,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
 		});
 	    });
-	    // if (aData.id == $contact.id) {
-	    // $(nRow).addClass('selected');
-	    // }
 	    return nRow;
 	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"col-xs-12"<"row"<"col-lg-4"i><"col-lg-8"p>>>');
 	// l length
@@ -2013,7 +2250,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	    dataSrc : 'data',
-	    url : '/contacts/ajax',
+	    url : '/contacts/ajax2',
 	    type : 'POST'
 	})
 	// .withDataProp('data')
@@ -2061,13 +2298,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
 
 	    if ($contact.is_modified) {
-		if (confirm(unsavedMessage)) {
+		if (!confirm(unsavedMessage)) {
 		    // $contact.is_modified = false;
-		} else {
+		    // } else {
 		    var obj = {
 			pos : $(window).scrollTop()
 		    };
-		    TweenLite.to(obj, .3, {
+		    TweenLite.to(obj, 0.3, {
 			pos : ($('#contact_form').length < 1) ? 0 : ($('#contact_form').offset().top - 8),
 			ease : Power4.easeOut,
 			onUpdate : function() {
@@ -2088,217 +2325,217 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
 	}
 
-    }).controller('SecurityGroups',function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
-	this.blank_group = {
-	    id : null,
-	    name : null,
-	    resources : []
-	};
-	$scope.group = angular.copy(this.blank_group);
-	$rootScope.group_modified = false;
-	$scope.selectedGroup = null;
-	var vm = this;
-	var groupWatcher = null;
-	vm.rowClicked = rowClicked;
-	vm.getWatcher = getWatcher;
-	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
-	    dataSrc : 'data',
-	    url : '/securitygroups/ajax',
-	    type : 'POST'
-	})
-	.withOption('serverSide', false).withOption('processing', false).withOption('fnServerParams', function(aoData) {
-	    // aoData.contact = $rootScope.search_contact;
-	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	    $('td', nRow).unbind('click');
-	    $('td', nRow).bind('click', function() {
-		// $scope.$apply(function() {
-		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
-		// });
-	    });
-	    if ($scope.selectedGroup != null && aData.id == $scope.selectedGroup.id) {
-		$(nRow).addClass('selected');
-	    }
-
-	    return nRow;
-	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
-	// l length
-	// r processing
-	// f filtering
-	// t table
-	// i info
-	// p pagination
-	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('name').withTitle('Name') ];
-
-	$scope.$on('event:dataTableLoaded', function(event, data) {
-	    $scope.tableId = data.id; // Record table ID, for refreshes later.
+    }).controller('SecurityGroups', function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
+    this.blank_group = {
+	id : null,
+	name : null,
+	resources : []
+    };
+    $scope.group = angular.copy(this.blank_group);
+    $rootScope.group_modified = false;
+    $scope.selectedGroup = null;
+    var vm = this;
+    var groupWatcher = null;
+    vm.rowClicked = rowClicked;
+    vm.getWatcher = getWatcher;
+    vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	dataSrc : 'data',
+	url : '/securitygroups/ajax',
+	type : 'POST'
+    }).withOption('serverSide', false).withOption('processing', false).withOption('fnServerParams', function(aoData) {
+	// aoData.contact = $rootScope.search_contact;
+    }).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	$('td', nRow).unbind('click');
+	$('td', nRow).bind('click', function() {
+	    // $scope.$apply(function() {
+	    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+	    // });
 	});
-
-	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	    if (vm.groupWatcher != null) {
-		vm.groupWatcher();
-	    }
-	    $sails.post('/securitygroups/getsecuritygroupandresources', {
-		id : aData.id
-	    }).success(function(response) {
-		if(response.error != undefined){  // USER NO
-		    // LONGER
-		    // LOGGED
-                    // IN!!!!!
-                    location.reload(); // Will boot back to
-                    	// login
-                    		// screen
-                    }
-		$timeout(function() {
-		    $scope.group = response;
-		    $rootScope.group_modified = false;
-		    $scope.selectedGroup = angular.copy(response);
-		    $rootScope.validator['securitygroup_form'].resetForm();
-		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
-
-		    vm.groupWatcher = vm.getWatcher();
-		}, 0);
-	    }).error(function(data) {
-		alert('err!');
-	    });
-
-	    $('tr').removeClass('selected');
+	if ($scope.selectedGroup != null && aData.id == $scope.selectedGroup.id) {
 	    $(nRow).addClass('selected');
 	}
 
-	function getWatcher() {
-	    return $scope.$watch('group', function(newValue, oldValue) {
-		if (!angular.equals(newValue, oldValue)) {
-		    $timeout(function() {
-			$rootScope.group_modified = true;
-		    }, 0)
-		}
-	    }, true);
+	return nRow;
+    }).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+    // l length
+    // r processing
+    // f filtering
+    // t table
+    // i info
+    // p pagination
+    vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('name').withTitle('Name') ];
+
+    $scope.$on('event:dataTableLoaded', function(event, data) {
+	$scope.tableId = data.id; // Record table ID, for refreshes later.
+    });
+
+    function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	if (vm.groupWatcher != null) {
+	    vm.groupWatcher();
 	}
-	
-	$scope.cancelGroup = function(){
-	    $timeout(function(){
-		if(vm.groupWatcher != null) {
-		    vm.groupWatcher();
-		}
+	$sails.post('/securitygroups/getsecuritygroupandresources', {
+	    id : aData.id
+	}).success(function(response) {
+	    if (response.error != undefined) { // USER NO
+		// LONGER
+		// LOGGED
+		// IN!!!!!
+		location.reload(); // Will boot back to
+		// login
+		// screen
+	    }
+	    $timeout(function() {
+		$scope.group = response;
+		$rootScope.group_modified = false;
+		$scope.selectedGroup = angular.copy(response);
+		$rootScope.validator['securitygroup_form'].resetForm();
+		$('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
+
+		vm.groupWatcher = vm.getWatcher();
+	    }, 0);
+	}).error(function(data) {
+	    alert('err!');
+	});
+
+	$('tr').removeClass('selected');
+	$(nRow).addClass('selected');
+    }
+
+    function getWatcher() {
+	return $scope.$watch('group', function(newValue, oldValue) {
+	    if (!angular.equals(newValue, oldValue)) {
+		$timeout(function() {
+		    $rootScope.group_modified = true;
+		}, 0)
+	    }
+	}, true);
+    }
+
+    $scope.cancelGroup = function() {
+	$timeout(function() {
+	    if (vm.groupWatcher != null) {
+		vm.groupWatcher();
+	    }
+	    $scope.selectedGroup = null;
+	    $('tr').removeClass('selected');
+	}, 0);
+    }
+
+    $scope.newGroup = function() {
+	$sails.get('/security/getresourcegroups').success(function(resources) {
+	    if (resources.error != undefined) { // USER NO
+		// LONGER
+		// LOGGED
+		// IN!!!!!
+		location.reload(); // Will boot back to
+		// login
+		// screen
+	    }
+	    if (vm.groupWatcher != null) {
+		vm.groupWatcher();
+	    }
+	    for ( var key in resources) {
+		resources[key].create = 1;
+		resources[key].read = 1;
+		resources[key].update = 1;
+		resources[key]['delete'] = 1;
+	    }
+	    $timeout(function() {
 		$scope.selectedGroup = null;
 		$('tr').removeClass('selected');
-	    },0);
+		$scope.group = angular.copy(vm.blank_group);
+		$scope.group.resources = resources;
+		$rootScope.group_modified = false;
+		$rootScope.validator['securitygroup_form'].resetForm();
+		$('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
+		$scope.selectedGroup = angular.copy($scope.group);
+		vm.groupWatcher = vm.getWatcher();
+	    }, 0);
+
+	});
+
+    }
+
+    $scope.isRequired = function() {
+	return 'required';
+    }
+
+    $scope.isNew = function() {
+	return ($scope.selectedGroup == null || $scope.selectedGroup.id == null);
+    }
+
+    $scope.deleteGroup = function(modal_id, modal_size) {
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : modal_id,
+	    size : modal_size,
+	    backdrop : true
+	});
+	$rootScope.deleteModalText = $scope.selectedGroup.id + ' ' + $scope.selectedGroup.name;
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'delete') {
+		$sails.post('/securitygroups/destroy', {
+		    id : $scope.selectedGroup.id
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$timeout(function() {
+			    $scope.selectedGroup = null;
+			    $rootScope.group_modified = false;
+			    $('#' + $scope.tableId).DataTable().ajax.reload(function() {
+			    }, false);
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
+
+    $scope.saveGroup = function() {
+	$('#securitygroup_form').valid();
+	if ($rootScope.validator['securitygroup_form'].numberOfInvalids() > 0) { // error
+	    return;
 	}
 
-	$scope.newGroup = function() {
-	    $sails.get('/security/getresourcegroups').success(function(resources) {
-		if(resources.error != undefined){  // USER NO
-		    // LONGER
-		    // LOGGED
-                    // IN!!!!!
-                    location.reload(); // Will boot back to
-                    	// login
-                    		// screen
-                }
-		if (vm.groupWatcher != null) {
+	$sails.post('/securitygroups/savesecuritygroupandresources', {
+	    securitygroup : $scope.group
+	}).success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    if (data.success) {
+
+		if (vm.groupWatcher != null) { // clears watcher.
 		    vm.groupWatcher();
 		}
-		for ( var key in resources) {
-		    resources[key].create = 1;
-		    resources[key].read = 1;
-		    resources[key].update = 1;
-		    resources[key].delete = 1;
-		}
+
+		// $scope.group = angular.copy(vm.blank_group);
+		// $scope.group.resources = resources;
+		$scope.group.id = data.id;
+		$scope.selectedGroup = angular.copy($scope.group);
+		$rootScope.group_modified = false;
+		$rootScope.validator['securitygroup_form'].resetForm();
+		$('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
+		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		}, false);
 		$timeout(function() {
-		    $scope.selectedGroup = null;
-		    $('tr').removeClass('selected');
-		    $scope.group = angular.copy(vm.blank_group);
-		    $scope.group.resources = resources;
 		    $rootScope.group_modified = false;
-		    $rootScope.validator['securitygroup_form'].resetForm();
-		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
-		    $scope.selectedGroup = angular.copy($scope.group);
 		    vm.groupWatcher = vm.getWatcher();
 		}, 0);
 
-	    });
-
-	}
-
-	$scope.isRequired = function() {
-	    return 'required';
-	}
-
-	$scope.isNew = function() {
-	    return ($scope.selectedGroup == null || $scope.selectedGroup.id == null);
-	}
-
-	$scope.deleteGroup = function(modal_id, modal_size) {
-	    $rootScope.currentModal = $modal.open({
-		templateUrl : modal_id,
-		size : modal_size,
-		backdrop : true
-	    });
-	    $rootScope.deleteModalText = $scope.selectedGroup.id + ' ' + $scope.selectedGroup.name;
-	    $rootScope.currentModal.result.then(function(selectedItem) {
-	    }, function(triggerElement) {
-		if (triggerElement == 'delete') {
-		    $sails.post('/securitygroups/destroy', {
-			id : $scope.selectedGroup.id
-		    }).success(function(data) {
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-	                    location.reload(); // Will boot back to login
-						// screen
-	                }
-			if (data.success) {
-			    $timeout(function() {
-				$scope.selectedGroup = null;
-				$rootScope.group_modified = false;
-				$('#' + $scope.tableId).DataTable().ajax.reload(function() {
-				}, false);
-			    }, 0);
-			}
-		    }).error(function(data) {
-			alert('err!');
-		    });
-		}
-	    });
-	}
-
-	$scope.saveGroup = function() {
-	    $('#securitygroup_form').valid();
-	    if ($rootScope.validator['securitygroup_form'].numberOfInvalids() > 0) { // error
-		return;
 	    }
-
-	    $sails.post('/securitygroups/savesecuritygroupandresources', {
-		securitygroup : $scope.group
-	    }).success(function(data) {
-		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
-                    location.reload(); // Will boot back to login screen
-                }
-		if (data.success) {
-		    
-		    if (vm.groupWatcher != null) {  // clears watcher.
-			vm.groupWatcher();
-		    }
-		    
-		    // $scope.group = angular.copy(vm.blank_group);
-		    // $scope.group.resources = resources;
-		    $scope.group.id = data.id;
-		    $scope.selectedGroup = angular.copy($scope.group);
-		    $rootScope.group_modified = false;
-		    $rootScope.validator['securitygroup_form'].resetForm();
-		    $('form#securitygroup_form .validate-has-error').removeClass('validate-has-error');
-		    $('#' + $scope.tableId).DataTable().ajax.reload(function() {
-		    }, false);
-		    $timeout(function() {
-			$rootScope.group_modified = false;
-			vm.groupWatcher = vm.getWatcher();
-		    }, 0);
-
-		}
-	    }).error(function(data) {
-		alert('err!');
-	    });
-	}
-    }).controller('UsersDatatable',
+	}).error(function(data) {
+	    alert('err!');
+	});
+    }
+}).controller(
+    'UsersDatatable',
     function($scope, $rootScope, $timeout, $sails, $modal, DTOptionsBuilder, DTColumnBuilder) {
 	this.blank_user = {
 	    id : null,
@@ -2360,14 +2597,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post('/users/getuserandgroups', {
 		id : aData.id
 	    }).success(function(response) {
-		if(response.error != undefined){  // USER NO
+		if (response.error != undefined) { // USER NO
 		    // LONGER
 		    // LOGGED
-                    // IN!!!!!
-                    location.reload(); // Will boot back to
-                    	// login
-                    		// screen
-                }
+		    // IN!!!!!
+		    location.reload(); // Will boot back to
+		    // login
+		    // screen
+		}
 		$timeout(function() {
 		    $scope.user = response;
 		    $rootScope.user_modified = false;
@@ -2398,14 +2635,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	$scope.newUser = function() {
 	    $sails.get('/security/getsecuritygroups').success(function(securitygroups) {
-		if(securitygroups.error != undefined){  // USER NO
+		if (securitygroups.error != undefined) { // USER NO
 		    // LONGER
 		    // LOGGED
-                    // IN!!!!!
-                    location.reload(); // Will boot back to
-                    	// login
-                    		// screen
-                }
+		    // IN!!!!!
+		    location.reload(); // Will boot back to
+		    // login
+		    // screen
+		}
 		if (vm.userWatcher != null) {
 		    vm.userWatcher();
 		}
@@ -2449,11 +2686,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $sails.post('/users/destroy', {
 			id : $scope.selectedUser.id
 		    }).success(function(data) {
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-                            location.reload(); // Will boot back to login
-						// screen
-                        }
+			if (data.error != undefined) { // USER NO LONGER LOGGED
+			    // IN!!!!!
+			    location.reload(); // Will boot back to login
+			    // screen
+			}
 			if (data.success) {
 			    $timeout(function() {
 				$scope.selectedUser = null;
@@ -2468,8 +2705,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}
 	    });
 	}
-	
-	$scope.cancelUser = function(){
+
+	$scope.cancelUser = function() {
 	    if (vm.userWatcher != null) {
 		vm.userWatcher();
 	    }
@@ -2489,9 +2726,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post('/users/saveuserandgroups', {
 		user : $scope.user
 	    }).success(function(data) {
-		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
-                    location.reload(); // Will boot back to login screen
-                }
+		if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		    location.reload(); // Will boot back to login screen
+		}
 		if (data.success) {
 		    if ($scope.selectedUser.id == null) {
 			if (vm.userWatcher != null) {
@@ -2500,14 +2737,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			$sails.post('/users/getuserandgroups', {
 			    id : data.userId
 			}).success(function(response) {
-				if(response.error != undefined){  // USER NO
-								    // LONGER
-								    // LOGGED
-					// IN!!!!!
-                                    location.reload(); // Will boot back to
-							// login
-                            				// screen
-                                }
+			    if (response.error != undefined) { // USER NO
+				// LONGER
+				// LOGGED
+				// IN!!!!!
+				location.reload(); // Will boot back to
+				// login
+				// screen
+			    }
 			    $timeout(function() {
 				$scope.user = response;
 				$rootScope.user_modified = false;
@@ -2627,9 +2864,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $sails.post("/dpcodes/getdpcode", {
 		id : $scope.selectedCode.id
 	    }).success(function(data) {
-		if(data.error != undefined){  // USER NO LONGER LOGGED IN!!!!!
-                    location.reload(); // Will boot back to login screen
-                }
+		if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		    location.reload(); // Will boot back to login screen
+		}
 		if (data.success) {
 		    $rootScope.modalSelectedCode = angular.copy(data.dpcode);
 		    $rootScope.currentModal = $modal.open({
@@ -2641,12 +2878,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    }, function(triggerElement) {
 			if (triggerElement == 'save') {
 			    $sails.post('/dpcodes/save', $rootScope.modalSelectedCode).success(function(data) {
-				if(data.error != undefined){  // USER NO
-								// LONGER LOGGED
-								// IN!!!!!
-		                    location.reload(); // Will boot back to
-							// login screen
-		                }
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login screen
+				}
 				if (data.success) {
 				    $scope.retrieveId = $scope.selectedCode;
 				    $rootScope.updateDpCodesDataTable();
@@ -2673,11 +2910,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
 		    $sails.post('/dpcodes/destroy', $scope.selectedCode).success(function(data) {
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-	                    location.reload(); // Will boot back to login
-						// screen
-	                }
+			if (data.error != undefined) { // USER NO LONGER LOGGED
+			    // IN!!!!!
+			    location.reload(); // Will boot back to login
+			    // screen
+			}
 			if (data.success) {
 			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();
@@ -2708,11 +2945,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, function(triggerElement) {
 		if (triggerElement == 'save') {
 		    $sails.post('/dpcodes/save', $rootScope.modalSelectedCode).success(function(data) {
-			if(data.error != undefined){  // USER NO LONGER LOGGED
-							// IN!!!!!
-	                    location.reload(); // Will boot back to login
-						// screen
-	                }
+			if (data.error != undefined) { // USER NO LONGER LOGGED
+			    // IN!!!!!
+			    location.reload(); // Will boot back to login
+			    // screen
+			}
 			if (data.success) {
 			    // $scope.retrieveId = $scope.selectedCode;
 			    $rootScope.updateDpCodesDataTable();
@@ -2884,6 +3121,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.isFullscreen = Fullscreen.isEnabled() ? true : false;
     }
 
+}).controller('popupController', function($scope, $rootScope, $modal) {
+    $rootScope.modalPopup = function(popup, cb) {
+	$rootScope.popup = popup;
+	$rootScope.popupModal = $modal.open({
+	    templateUrl : 'popup-modal',
+	    size : popup.size,
+	    backdrop : true
+	});
+	$rootScope.popupModal.result.then(function(selectedItem) {
+	}, cb);
+    }
 }).controller('SidebarMenuCtrl', function($scope, $rootScope, $menuItems, $timeout, $location, $state, $layout) {
 
     // Menu Items

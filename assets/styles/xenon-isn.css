@@ -24,6 +24,10 @@ a.panel-title-wrapper:hover, a.panel-title-wrapper:focus{
 	padding-top:18px;
 }
 
+.panel.panel-stack{
+	margin-bottom:0px;
+}
+
 .panel.collapsed .panel-body.always-visible{
 	display:block;
 }

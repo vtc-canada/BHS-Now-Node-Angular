@@ -554,7 +554,7 @@ module.exports = {
 			    cb(null, response);
 			});
 		    });
-		}else{ // no event.
+		} else { // no event.
 		    cb(null);
 		}
 	    }, function(err, data) {
@@ -887,48 +887,114 @@ module.exports = {
 	}
     },
 
-    ajax : function(req, res) {
+    ajax2 : function(req, res) {
 
-	var donorFullText = Utilities.prepfulltext(req.body.contact.id);
-	// req.body.contact.id = Utilities.prepfulltext(req.body.contact.id);//
-	// ((req.body.contact.id
-	// ==
-	// '')?null:req.body.contact.id);//((req.body.contact.id
-	// ==
-	// ''||req.body.contact.id
-	// ==
-	// null)?'NULL':req.body.contact.id);
+	var mode = req.body.contact.mode=='true'?'and':'or';
 
-	// WHERE's for Search Contacts page
-	function doWheres(selectIds) {
-	    selectIds.whereRaw('true');
+	var dpgift = false; // Flag for dpgift join
+	var dpother = false; // Flag for dpother join
+	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
+	var dpWheres = '';
+	addDpWheres();
+	var dpGiftWheres = '';
+	var dpOtherWheres = '';
+
+	determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
+	// dpGiftWheres, dpother flag, dpOtherWheres
+
+	var innerSelect = ''; // Inner select builds on this variable
+
+	var selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP` '; // Outer
+	// Select
+	var innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
+
+	if (joinCount == 0) {
+	    innerSelect = 'SELECT `dp`.`id` from `dp`' +(mode=='and'?'WHERE ':' ')+ dpWheres;
+	} else {
+	    if (mode == 'or') {
+		if (dpgift) {
+		    innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT '+(joinCount==1?'DISTINCT':'')+' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
+		}
+		if (dpother) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT '+(joinCount==1?'DISTINCT':'')+' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
+		}
+	    }else if(mode == 'and'){
+		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
+		
+		if (dpgift) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres==''?'':' AND ') + dpGiftWheres;
+		}
+		if (dpother) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres==''?'':' AND ') + dpOtherWheres;
+		}
+	    }
+	}
+
+	console.log('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`');
+
+	async.parallel({
+	    data : function(cb) {
+		Database.knex.raw('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`').exec(function(err, response) {
+		    if (err)
+			return cb(err);
+		    cb(null, response[0]);
+		});
+	    },
+	    recordsFiltered : function(cb) {
+		Database.knex.raw('SELECT COUNT(*) AS count FROM (' + innerSelect + ') AS `dpIds`').exec(function(err, countresponse) {
+		    if (err)
+			return cb(err);
+		    cb(null, countresponse[0][0].count);
+		});
+	    },
+	    recordsTotal : function(cb) {
+		Database.knex.count('id as count').from('dp').exec(function(err, totalcountresponse) {
+		    if (err)
+			return cb(err);
+		    cb(null, totalcountresponse[0].count);
+		});
+	    },
+	}, function(err, results) {
+	    if (err)
+		return console.log(err.toString());
+	    return res.json({
+		"draw" : req.param('draw'),
+		"recordsTotal" : results.recordsTotal,
+		"recordsFiltered" : results.recordsFiltered,
+		"data" : results.data
+	    });
+	});
+
+	function addDpWheres() {
+	    var donorFullText = Utilities.prepfulltext(req.body.contact.id);
+	    dpWheres = '';
 	    if (donorFullText != null) {
 		if (isNaN(req.body.contact.id)) {
-		    selectIds.andWhere(Database.knex.raw('MATCH (dp.FNAME, dp.LNAME) AGAINST ("?" IN BOOLEAN MODE)', [ donorFullText ]));
+		    dpWheres = (dpWheres == '' ? '' : ' AND ') + 'MATCH (dp.FNAME, dp.LNAME) AGAINST ("' + donorFullText + '" IN BOOLEAN MODE)';
 		} else {
-		    selectIds.andWhere(Database.knex.raw('dp.id = ?', [ req.body.contact.id ]));
+		    dpWheres = (dpWheres == '' ? '' : ' AND ') + 'dp.id = ' + req.body.contact.id;
 		}
 	    }
 	    if (req.body.contact.ADD != null && req.body.contact.ADD != '') {
-		selectIds.andWhere(Database.knex.raw('dp.ADD = ?', [ req.body.contact.ADD ]));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ADD = ' + "'" + req.body.contact.ADD + "'";
 	    }
 	    if (req.body.contact.CITY != null && req.body.contact.CITY != '') {
-		selectIds.andWhere(Database.knex.raw('dp.CITY = ?', [ req.body.contact.CITY ]));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CITY = ' + "'" + req.body.contact.CITY + "'";
 	    }
 	    if (req.body.contact.ST != null && req.body.contact.ST != '') {
-		selectIds.andWhere(Database.knex.raw('dp.ST = ?', [ req.body.contact.ST ]));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ST = ' + "'" + req.body.contact.ST + "'";
 	    }
 	    if (req.body.contact.COUNTRY != null && req.body.contact.COUNTRY != '') {
-		selectIds.andWhere(Database.knex.raw('dp.COUNTRY = ?', [ req.body.contact.COUNTRY ]));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.COUNTRY = ' + "'" + req.body.contact.COUNTRY + "'";
 	    }
 	    if (req.body.contact.ZIP != null && req.body.contact.ZIP != '') {
-		selectIds.andWhere(Database.knex.raw('dp.ZIP = ?', [ req.body.contact.ZIP ]));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP = ' + "'" + req.body.contact.ZIP + "'";
 	    }
 	    if (req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'Y') {
-		selectIds.andWhere(Database.knex.raw('dp.database_origin = 3'));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin = 3';
 	    }
 	    if (req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'N') {
-		selectIds.andWhere(Database.knex.raw('dp.database_origin != 3'));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin != 3';
 	    }
 	    if (req.body.contact.CLASS != null && req.body.contact.CLASS.length > 0) {
 		var passtring = '';
@@ -938,43 +1004,47 @@ module.exports = {
 		    }
 		    passtring += "'" + req.body.contact.CLASS[i] + "'";
 		}
-		selectIds.andWhere(Database.knex.raw("dp.CLASS IN (" + passtring + ")"));
+		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
+	    }
+	    console.log('mode:' + mode);
+	    if (dpWheres != '' && mode == 'or' ) { // add initial WHERE command
+		dpWheres = 'WHERE ' + dpWheres;
 	    }
 	}
 
-	// Select Data
-	Database.knex.select('dp.id', 'dp.FNAME', 'dp.LNAME', 'dp.ADD', 'dp.CITY', 'dp.ST', 'dp.COUNTRY', 'dp.ZIP').from(function() {
-	    var selectIds = this.select('id').from('dp');
-	    // WHERE's
-	    doWheres(selectIds);
-
-	    // ORDER BY
-	    selectIds.orderBy(req.body.columns[req.body.order[0].column].data, req.body.order[0].dir);
-	    selectIds.limit(parseInt(req.body.length)).offset(parseInt(req.body.start));
-	    selectIds.as('dpIds');
-	}).leftJoin('dp', 'dpIds.id', 'dp.id').exec(function(err, response) {
-	    if (err)
-		return console.log(err.toString());
-
-	    // Select Filtered Count
-	    var filteredCountQuery = Database.knex.count('id as count').from('dp');
-	    doWheres(filteredCountQuery);
-	    filteredCountQuery.exec(function(err, countresponse) {
-		if (err)
-		    return console.log(err.toString());
-		// Select Total Count
-		Database.knex.count('id as count').from('dp').exec(function(err, totalcountresponse) {
-		    if (err)
-			return console.log(err.toString());
-
-		    return res.json({
-			"draw" : req.param('draw'),
-			"recordsTotal" : totalcountresponse[0]['count'],
-			"recordsFiltered" : countresponse[0]['count'],
-			"data" : response
-		    });
-		});
+	function determineJoinsAndWheres() {
+	    Object.keys(req.body.contact.dpother).forEach(function(key) {
+		var val = req.body.contact.dpother[key];
+		if (val != null && val != '') {
+		    if (!dpother) {
+			joinCount++;
+		    }
+		    dpother = true;
+		    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + ' = ' + "'" + val + "'";
+		}
 	    });
-	});
+	    if (dpWheres != '') {
+		dpOtherWheres = dpWheres + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
+	    } else if (dpOtherWheres != '') {
+		dpOtherWheres = (mode == 'or'?'WHERE ':'') + dpOtherWheres;
+	    }
+	    Object.keys(req.body.contact.dpgift).forEach(function(key) {
+		var val = req.body.contact.dpgift[key];
+		if (val != null && val != '') {
+		    if (!dpgift) {
+			joinCount++;
+		    }
+		    dpgift = true;
+		    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + ' = ' + "'" + val + "'";
+		}
+	    });
+	    if (dpWheres != '') {
+		dpGiftWheres = dpWheres + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
+	    } else if (dpGiftWheres != '') {
+		dpGiftWheres = (mode == 'or'?'WHERE ':'') + dpGiftWheres;
+	    }
+
+	}
+
     }
 };
