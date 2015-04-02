@@ -886,10 +886,110 @@ module.exports = {
 	    })
 	}
     },
+    export : function(req, res) {
 
-    ajax2 : function(req, res) {
+	sails.controllers.contacts.querycontacts(req, res, function(err, response) {
+	    if (err) {
+		return console.log('exportContacts:' + err.toString());
+	    }
+	    var results = response.data;
 
-	var mode = req.body.contact.mode=='true'?'and':'or';
+	    var bodystring = 'id,FNAME,LNAME,ADD,CITY,ST,COUNTRY,ZIP,TITLE,SECLN,SAL\r\n';
+	    var dbfstructure = [];
+	    for (var i = 0; i < results.length; i++) {
+		if (i % 10000 == 0) {
+		    console.log(i);
+		}
+		bodystring += '"' + (results[i].id == null ? '' : results[i].id) + '"';
+		bodystring += ',"' + (results[i].FNAME == null ? '' : results[i].FNAME) + '"';
+		bodystring += ',"' + (results[i].LNAME == null ? '' : results[i].LNAME) + '"';
+		bodystring += ',"' + (results[i].ADD == null ? '' : results[i].ADD) + '"';
+		bodystring += ',"' + (results[i].CITY == null ? '' : results[i].CITY) + '"';
+		bodystring += ',"' + (results[i].ST == null ? '' : results[i].ST) + '"';
+		bodystring += ',"' + (results[i].COUNTRY == null ? '' : results[i].COUNTRY) + '"';
+		bodystring += ',"' + (results[i].ZIP == null ? '' : results[i].ZIP) + '"';
+		bodystring += ',"' + (results[i].TITLE == null ? '' : results[i].TITLE) + '"';
+		bodystring += ',"' + (results[i].SECLN == null ? '' : results[i].SECLN) + '"';
+		bodystring += ',"' + (results[i].SAL == null ? '' : results[i].SAL) + '"';
+		
+		bodystring += '\r\n';
+		
+		dbfstructure.push({
+		    id:results[i].id
+		    , FNAME: results[i].FNAME||''
+		    , LNAME: results[i].LNAME||''
+		    , ADD: results[i].ADD||''
+		    , CITY: results[i].CITY||''
+		    , ST: results[i].ST||''
+		    , COUNTRY: results[i].COUNTRY||''
+		    , ZIP: results[i].ZIP||''
+		    , TITLE: results[i].TITLE||''
+		    , SECLN: results[i].SECLN||''
+		    , SAL: results[i].SAL||''
+		    });
+	    }
+	    //console.log(bodystring);
+
+	    var exportName = 'contacts_' + new Date().getTime();
+	    var filenamecsv = '.tmp\\public\\data\\' + exportName + '.csv';
+	    var filenamedbf = '.tmp\\public\\data\\' + exportName + '.dbf';
+	    var urlcsv = '/data/' + exportName + '.csv';
+	    var urldbf = '/data/' + exportName + '.dbf';
+
+	    var fs = require('fs');
+	    var dbf = require('dbf');
+	    async.parallel({
+		urlcsv:function(cb){
+		    fs.writeFile(filenamecsv, bodystring, function(err) {
+			if (err) {
+			    return console.log(err);
+			}
+			cb(null,urlcsv);
+		    });
+		},
+		urldbf : function(cb){
+		    var buf = dbf.structure(dbfstructure);
+		    fs.writeFile(filenamedbf, toBuffer(buf.buffer), function(err) {
+			if (err) {
+			    return console.log(err);
+			}
+			cb(null,urldbf);
+		    });
+		}
+	    }, function(err,result){
+		res.json({
+			csvurl : result.urlcsv,
+			dbfurl : result.urldbf
+		    });
+	    });
+
+	});
+	function toBuffer(ab) {
+	    var buffer = new Buffer(ab.byteLength);
+	    var view = new Uint8Array(ab);
+	    for (var i = 0; i < buffer.length; ++i) {
+	        buffer[i] = view[i];
+	    }
+	    return buffer;
+	}
+    },
+    search : function(req, res) {
+	sails.controllers.contacts.querycontacts(req, res, function(err, response) {
+	    if (err) {
+		return console.log('searchContacts:' + err.toString());
+	    }
+	    res.json({
+		draw : req.query.draw,
+		recordsTotal : response.recordsTotal,
+		recordsFiltered : response.recordsFiltered,
+		data : response.data
+	    });
+	});
+    },
+    querycontacts : function(req, res, contactsCallback) {
+	var searchmode = (req.body.columns && req.body.order);
+	
+	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
 
 	var dpgift = false; // Flag for dpgift join
 	var dpother = false; // Flag for dpother join
@@ -906,26 +1006,35 @@ module.exports = {
 
 	var selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP` '; // Outer
 	// Select
-	var innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
+	if(!searchmode){
+	    selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP`, `TITLE`, `SECLN`, `SAL`';
+	}
+	
+	
+
+	var innerOrderOffsetLimit = '';
+	if (searchmode){//req.body.columns && req.body.order) {
+	    innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
+	}
 
 	if (joinCount == 0) {
-	    innerSelect = 'SELECT `dp`.`id` from `dp`' +(mode=='and'?'WHERE ':' ')+ dpWheres;
+	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' ? 'WHERE ' : ' ') + dpWheres;
 	} else {
 	    if (mode == 'or') {
 		if (dpgift) {
-		    innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT '+(joinCount==1?'DISTINCT':'')+' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
+		    innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
 		}
 		if (dpother) {
-		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT '+(joinCount==1?'DISTINCT':'')+' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
 		}
-	    }else if(mode == 'and'){
+	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
-		
+
 		if (dpgift) {
-		    innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres==''?'':' AND ') + dpGiftWheres;
+		    innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
 		}
 		if (dpother) {
-		    innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres==''?'':' AND ') + dpOtherWheres;
+		    innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
 		}
 	    }
 	}
@@ -956,13 +1065,9 @@ module.exports = {
 	    },
 	}, function(err, results) {
 	    if (err)
-		return console.log(err.toString());
-	    return res.json({
-		"draw" : req.param('draw'),
-		"recordsTotal" : results.recordsTotal,
-		"recordsFiltered" : results.recordsFiltered,
-		"data" : results.data
-	    });
+		return contactsCallback(err);
+	    contactsCallback(null, results);
+
 	});
 
 	function addDpWheres() {
@@ -1007,41 +1112,46 @@ module.exports = {
 		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
 	    }
 	    console.log('mode:' + mode);
-	    if (dpWheres != '' && mode == 'or' ) { // add initial WHERE command
+	    if (dpWheres != '' && mode == 'or') { // add initial WHERE command
 		dpWheres = 'WHERE ' + dpWheres;
 	    }
 	}
 
 	function determineJoinsAndWheres() {
-	    Object.keys(req.body.contact.dpother).forEach(function(key) {
-		var val = req.body.contact.dpother[key];
-		if (val != null && val != '') {
-		    if (!dpother) {
-			joinCount++;
+	    if (req.body.contact.dpother) {
+		Object.keys(req.body.contact.dpother).forEach(function(key) {
+		    var val = req.body.contact.dpother[key];
+		    if (val != null && val != '') {
+			if (!dpother) {
+			    joinCount++;
+			}
+			dpother = true;
+			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + ' = ' + "'" + val + "'";
 		    }
-		    dpother = true;
-		    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + ' = ' + "'" + val + "'";
+		});
+		if (dpWheres != '') {
+		    dpOtherWheres = dpWheres + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
+		} else if (dpOtherWheres != '') {
+		    dpOtherWheres = (mode == 'or' ? 'WHERE ' : '') + dpOtherWheres;
 		}
-	    });
-	    if (dpWheres != '') {
-		dpOtherWheres = dpWheres + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
-	    } else if (dpOtherWheres != '') {
-		dpOtherWheres = (mode == 'or'?'WHERE ':'') + dpOtherWheres;
 	    }
-	    Object.keys(req.body.contact.dpgift).forEach(function(key) {
-		var val = req.body.contact.dpgift[key];
-		if (val != null && val != '') {
-		    if (!dpgift) {
-			joinCount++;
+
+	    if (req.body.contact.dpgift) {
+		Object.keys(req.body.contact.dpgift).forEach(function(key) {
+		    var val = req.body.contact.dpgift[key];
+		    if (val != null && val != '') {
+			if (!dpgift) {
+			    joinCount++;
+			}
+			dpgift = true;
+			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + ' = ' + "'" + val + "'";
 		    }
-		    dpgift = true;
-		    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + ' = ' + "'" + val + "'";
+		});
+		if (dpWheres != '') {
+		    dpGiftWheres = dpWheres + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
+		} else if (dpGiftWheres != '') {
+		    dpGiftWheres = (mode == 'or' ? 'WHERE ' : '') + dpGiftWheres;
 		}
-	    });
-	    if (dpWheres != '') {
-		dpGiftWheres = dpWheres + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
-	    } else if (dpGiftWheres != '') {
-		dpGiftWheres = (mode == 'or'?'WHERE ':'') + dpGiftWheres;
 	    }
 
 	}

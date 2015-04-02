@@ -1202,7 +1202,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.helpers = public_vars.helpers;
     var vm = this;
 
-}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $http, $reports, $reportselects, $sails, $modal) {
+}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $reports, $reportselects, $sails, $http, $modal) {
     var vm = this;
     vm.$scope = $scope;
     $scope.reports = $reports;
@@ -1627,10 +1627,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	CHECKBOX : null,
 	CLASS : null,
 	// DPOTHER
-	dpother:{
+	dpother : {
 	    DEMAND : null
 	},
-	dpgift:{
+	dpgift : {
 	    DEMAND : null
 	}
     };
@@ -1916,7 +1916,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		 */
 	    }, 300);
 	}
-    },true);//  //Collection
+    }, true);//  //Collection
 
     $rootScope.saveTemplate = function() {
 	$rootScope.newTemplateModal.id = null;
@@ -1961,25 +1961,25 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    for (var i = 0; i < $scope.search_templates.length; i++) {
 		if ($scope.search_templates[i].id == $scope.template) { // matching
 		    // one
-		    
-		    angular.forEach($scope.contact,function(value,key){
-			
-			if(key == 'dpother' || key =='dpgift'){
-			    angular.forEach(value,function(innerValue, innerKey){
-				if($scope.search_templates[i].data[key][innerKey]){
+
+		    angular.forEach($scope.contact, function(value, key) {
+
+			if (key == 'dpother' || key == 'dpgift') {
+			    angular.forEach(value, function(innerValue, innerKey) {
+				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
-				    
-				}else{
+
+				} else {
 				    $scope.contact[key][innerKey] = null;
 				}
 			    });
-			}else if($scope.search_templates[i].data[key]){
+			} else if ($scope.search_templates[i].data[key]) {
 			    $scope.contact[key] = $scope.search_templates[i].data[key];
-			}else{
+			} else {
 			    $scope.contact[key] = null;
 			}
 		    });
-		    
+
 		    $rootScope.search_contact = $scope.contact;// = $scope.search_templates[i].data;
 		    // $rootScope.search_contact hopefully will stay tied..
 		    // $rootScope.newTemplateModal.id =
@@ -2001,63 +2001,63 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// search
 	// parameters
     }
-    
-    $scope.deleteTemplate = function(){
+
+    $scope.deleteTemplate = function() {
 	$rootScope.modalPopup({
-		title : 'Confirm Delete',
-		size : 'sm',
-		message : 'Are you sure you want to delete the template: <b>' + $rootScope.newTemplateModal.name + '</b>',
-		buttons : [ {
-		    name : 'Cancel',
-		    class : 'btn-white',
-		    dismiss : 'cancel'
-		}, {
-		    name : 'Delete',
-		    class : 'btn-danger',
-		    dismiss : 'delete'
-		} ]
-	    }, function(dismiss) {
-		if (dismiss == 'delete') {
-		    $sails.post('/template/destroy', {
-			    id : $rootScope.newTemplateModal.id,
-			    location : 'contacts'
-			}).success(function(data) {
-			    if (data.error != undefined) { // USER NO LONGER LOGGED
-				// IN!!!!!
-				location.reload(); // Will boot back to login
-				// screen
-			    }
-			    if (data.success) {
-				$scope.template = null;
-				$rootScope.newTemplateModal.id = null;
-				$rootScope.newTemplateModal.name = null;
-				$rootScope.search_contact = $scope.contact = angular.copy(blankSearch);
-				$timeout(function() {
-				    $sails.get('/template/contacts').success(function(data) {
-					if (data.error != undefined) { // USER NO
-					    // LONGER LOGGED
-					    // IN!!!!!
-					    location.reload(); // Will boot back to
-					    // login
-					    // screen
-					}
-					$scope.search_templates = [];
-					for (var i = 0; i < data.length; i++) {
-					    $scope.search_templates.push({
-						id : data[i].id,
-						label : data[i].name,
-						data : data[i].data
-					    });
-					}
+	    title : 'Confirm Delete',
+	    size : 'sm',
+	    message : 'Are you sure you want to delete the template: <b>' + $rootScope.newTemplateModal.name + '</b>',
+	    buttons : [ {
+		name : 'Cancel',
+		class : 'btn-white',
+		dismiss : 'cancel'
+	    }, {
+		name : 'Delete',
+		class : 'btn-danger',
+		dismiss : 'delete'
+	    } ]
+	}, function(dismiss) {
+	    if (dismiss == 'delete') {
+		$sails.post('/template/destroy', {
+		    id : $rootScope.newTemplateModal.id,
+		    location : 'contacts'
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.template = null;
+			$rootScope.newTemplateModal.id = null;
+			$rootScope.newTemplateModal.name = null;
+			$rootScope.search_contact = $scope.contact = angular.copy(blankSearch);
+			$timeout(function() {
+			    $sails.get('/template/contacts').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.search_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.search_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
 				    });
-				}, 0);
-			    }
-			}).error(function(data) {
-			    alert('err!');
-			});
-		} else {
-		}
-	    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    } else {
+	    }
+	});
     }
 
     $scope.saveTemplateModal = function() {
@@ -2193,7 +2193,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	    dataSrc : 'data',
-	    url : '/contacts/ajax',
+	    url : '/contacts/search',
 	    type : 'POST'
 	}).withOption('responsive').withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
 	    aoData.contact = $rootScope.search_link_contact;
@@ -2245,12 +2245,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     }).controller(
     'ContactsDatatable',
-    function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder) {
+    function($scope, $rootScope, $timeout, $sails, $modal, $contact, DTOptionsBuilder, DTColumnBuilder) {
 	var vm = this;
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	    dataSrc : 'data',
-	    url : '/contacts/ajax2',
+	    url : '/contacts/search',
 	    type : 'POST'
 	})
 	// .withDataProp('data')
@@ -2286,6 +2286,30 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
 		}, false);
 	    }
+	}
+
+	$scope.exportList = function() {
+	    $rootScope.currentModal = $modal.open({
+		templateUrl : 'export-contacts-modal',
+		size : 'md',
+		backdrop : true
+	    });
+	    $rootScope.exporting_contacts = true;
+
+	    $sails.post('/contacts/export', {
+		contact : $rootScope.search_contact
+	    }).success(function(response) {
+		if (response.error != undefined) { // USER NO LONGER
+		    // LOGGEDIN!!!!!
+		    location.reload(); // Will boot back to login screen
+		}
+		$timeout(function() {
+		    //$rootScope.pdfurl = response.pdfurl;
+		    $rootScope.contact_export_csvurl = response.csvurl;
+		    $rootScope.contact_export_dbfurl = response.dbfurl;
+		    delete $rootScope.exporting_contacts;
+		}, 0);
+	    });
 	}
 
 	/*

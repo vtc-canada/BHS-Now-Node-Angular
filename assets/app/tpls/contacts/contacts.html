@@ -1,6 +1,27 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
 
+<script type="text/ng-template" id="export-contacts-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Contacts Export</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		<div ng-show="exporting_contacts">
+		Generating Export
+		<span >&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span>
+		</div>
+		<div ng-hide="exporting_contacts">
+			<a class="btn btn-success" href="{{contact_export_csvurl}}" >Download CSV</a>
+			<a class="btn btn-success" href="{{contact_export_dbfurl}}" >Download DBF</a>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+	</div>
+</script>
 
 
 <script type="text/ng-template" id="edit-dpplg-modal">
@@ -939,7 +960,7 @@
 			<div class="btn btn-secondary" ng-click="">New</div>
 		</div>
 		<div class="pull-right pull-right-stack isn-panel-pull-right">
-			<div class="btn btn-secondary" ng-class="" ng-click="exportList">Export List</div>
+			<div class="btn btn-secondary" ng-class="" ng-click="exportList();">Export List</div>
 		</div>
 	</div>
 	{{message}}
@@ -2669,7 +2690,7 @@
 						</div>
 					</div>
 					
-					<div class="row">
+					<div class="row" ng-show="isOrderSummaryDatatableRowFocused(null)">
 						<div class="col-md-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
@@ -2680,7 +2701,7 @@
 										<label class="col-sm-5 control-label" for="selectedOrderSummary.LNAME">Last Name:</label>
 				
 										<div class="col-sm-7">
-											<input type="text" class="form-control" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+											<input type="text" class="form-control" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME"  data-message-required="This is a required field." placeholder="Required Field">
 										</div>
 									</div>
 									<div class="form-group">
@@ -2707,7 +2728,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row" ng-show="isOrderSummaryDatatableRowFocused(null)">
 						<div class="col-lg-7">
 							<div class="panel panel-default">
 								<div class="panel-heading">
@@ -2720,14 +2741,14 @@
 												<label class="col-sm-4 control-label" for="selectedOrderSummary.ADD">Address:</label>
 						
 												<div class="col-sm-8">
-													<input type="text" class="form-control" name="ADD" id="selectedOrderSummary.ADD" ng-model="selectedOrderSummary.ADD" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+													<input type="text" class="form-control" name="ADD" id="selectedOrderSummary.ADD" ng-model="selectedOrderSummary.ADD"  data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											
 											<div class="form-group">
 												<label class="col-sm-4 control-label" for="selectedOrderSummary.CITY">City:</label>
 												<div class="col-sm-8">
-													<input type="text" class="form-control" name="selectedOrderSummary.CITY" id="selectedOrderSummary.CITY" ng-model="selectedOrderSummary.CITY" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+													<input type="text" class="form-control" name="selectedOrderSummary.CITY" id="selectedOrderSummary.CITY" ng-model="selectedOrderSummary.CITY"  data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											<div class="form-group">
@@ -2743,7 +2764,7 @@
 												<label class="col-sm-4 control-label" for="selectedOrderSummary.ZIP">Zip:</label>
 						
 												<div class="col-sm-8">
-													<input type="text" class="form-control" name="selectedOrderSummary.ZIP" id="selectedOrderSummary.ZIP" ng-model="selectedOrderSummary.ZIP" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+													<input type="text" class="form-control" name="selectedOrderSummary.ZIP" id="selectedOrderSummary.ZIP" ng-model="selectedOrderSummary.ZIP"  data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											
@@ -2936,7 +2957,7 @@
 											<label class="col-sm-5 control-label" for="selectedOrderSummary.LNAME">Subtotal:</label>
 					
 											<div class="col-sm-7">
-												<input type="text" class="form-control ng-pristine ng-valid" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
+												<input type="text" class="form-control ng-pristine ng-valid" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME"  data-message-required="This is a required field." placeholder="Required Field">
 											</div>
 										</div>
 									</div>
