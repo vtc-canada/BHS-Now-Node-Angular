@@ -209,6 +209,11 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.PHON2 = null;
 	    this.PHON3 = null;
 	    this.otherAddresses = [];
+	    
+	    // Quick Info
+	    
+	    this.MAX_AMT = null;
+	    this.MAX_DT = null;
 
 	    // Other Information
 	    this.TYPE = null;

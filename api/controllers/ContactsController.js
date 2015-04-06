@@ -1018,7 +1018,7 @@ module.exports = {
 	}
 
 	if (joinCount == 0) {
-	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' ? 'WHERE ' : ' ') + dpWheres;
+	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres!='' ? 'WHERE ' : ' ') + dpWheres;
 	} else {
 	    if (mode == 'or') {
 		if (dpgift) {

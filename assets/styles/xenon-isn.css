@@ -105,6 +105,38 @@ table.dataTable tbody tr{
 	opacity:0.6;
 }
 
+.isn-small-icon-button{
+	width:45px;
+}
+
+.isn-under-note-button{
+	margin-top:8px;
+}
+
+.note-row{
+	margin-bottom:8px;
+}
+
+.isn-scroll-notes-panel{
+	max-height: 140px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+
+.isn-note-pre{
+	height:77px;
+}
+
+.isn-alt-address-section{
+	max-height: 406px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	
+}
+.isn-note-textarea{
+	
+	height:77px;
+}
 
 table.table-striped>tbody>tr.is_deleted:not(.focused){
 	text-decoration:line-through; 
@@ -239,6 +271,16 @@ table.dataTable{
 
 .panel .panel-heading>.panel-title {
 	line-height: 33px;
+	font-weight:bold;
+}
+
+.quick-info-panel{
+	  margin-bottom: 0px;
+}
+
+.form-horizontal .control-label-value{
+	text-align:left;
+	font-weight:bold;
 }
 
 

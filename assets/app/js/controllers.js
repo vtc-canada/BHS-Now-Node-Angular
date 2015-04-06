@@ -682,12 +682,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.changeNote = function(note) {
 	$scope.contact.notes[note.type].text = $scope.contact.notes[note.type].text;
     }
-    $scope.modifyNote = function($event, note) {
+    $scope.modifyNote = function($event, note,noteType) {
 	note.focused = true;
 	note.modify_text = note.text == null ? '' : note.text;
 	$timeout(function() {
-	    $($event.currentTarget).parent().parent().find('textarea').focus();
-	}, 0);
+	    $('#' + noteType).find('.note-row textarea:not(.ng-hide)').focus();
+	    
+	    //$($event.currentTarget).parent().parent().find('textarea').focus();
+	}, 5);
     }
     $scope.saveNote = function(note) {
 	note.focused = false;

@@ -991,7 +991,7 @@
 			<tab heading="Layman" enabled="true" id="layman_tab">
 				<form role="form" id="layman" class="form-horizontal validate">
 					<div class="row">
-						<div class="col-md-12">
+						<div class="col-xs-12">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Contact Information</h3>
@@ -1003,7 +1003,16 @@
 										Changes Pending
 									</div>
 								</div>
-								<div class="panel-body">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="panel panel-default">
+								<!--<div class="panel-heading">
+									<h3 class="panel-title">Contact Information</h3>
+								</div>-->
+								<div class=""> <!-- panel-body -->
 									<div class="form-group">
 										<label class="col-sm-5 control-label" for="contact_last_name">Last Name:</label>
 				
@@ -1070,9 +1079,89 @@
 								</div>
 							</div>
 						</div>
+						
+						<div class="col-md-8">
+							
+									<div class="panel panel-default quick-info-panel">
+										<div class="panel-heading">
+											<h3 class="panel-title">Quick Info</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Donor ID:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.id}}</label>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Donor Class:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.TYPE}}</label>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Max Donation:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.MAX_AMT | currency}}</label>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Donation Date:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.MAX_DT |  date:'medium'}}</label>
+													</div>
+													
+												</div>
+												<div class="col-md-6">
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">More Info:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.MAX_DT |  date:'medium'}}</label>
+													</div>		
+												</div>
+											</div>
+										</div>
+									</div>
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Notes</h3>
+									<div class="pull-right  isn-panel-pull-right">
+										<div class="btn btn-primary" ng-click="addNote('layman')">Add Note</div>
+									</div>
+								</div>
+								<div class="panel-body isn-scroll-notes-panel">
+									<div class="row note-row" ng-repeat="note in contact.notes.layman">
+										<div class="col-xs-12" ng-class="{true: 'makeopaque', false: ''}[note.is_deleted == true]">
+											<div class="row">
+												<div class="col-sm-2">
+													2015-01-20 00:00:00
+												</div>
+												<div class="col-sm-2">
+													Administrator
+												</div>
+												<div class="col-sm-6">
+													<pre class="isn-note-pre" ng-hide="note.focused">{{ note.text || ''}}</pre>
+													<textarea ng-show="note.focused" type="text" class="form-control isn-note-textarea" name="note.text" ng-blur="blurNote(note)" ng-model="note.modify_text"></textarea>
+													<button ng-show="note.focused" class="btn btn-secondary isn-under-note-button" ng-mousedown="saveNote(note)">Save</i></button>
+													<button ng-show="note.focused" class="btn isn-under-note-button" ng-mousedown="cancelNote(note)">Cancel</button>
+												</div>
+												<div class="col-sm-1">
+													<div class="row">
+														<div class="col-xs-12">
+															<button class="pull-right inline-pull isn-small-icon-button btn" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[note.is_deleted == true]" ng-click="toggleNote(note)"><i class="fa fa-{{note.is_deleted == true?'undo':'trash'}}"></i></button>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<button class="pull-right inline-pull isn-small-icon-button btn btn-orange" ng-click="modifyNote($event,note,'layman')" ng-disabled="note.focused"><i class="fa fa-edit"></i></button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						
 					</div>
 					<div class="row">
-						<div class="col-lg-7">
+						<div class="col-lg-6">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Address</h3>
@@ -1131,8 +1220,6 @@
 									
 								</div>
 							</div>
-						</div>
-						<div class="col-lg-5">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Phone</h3>
@@ -1169,11 +1256,8 @@
 									</div>
 								</div>
 							</div>
-						</div>		
-								
-					</div>
-					<div class="row">
-						<div class="col-md-12">
+						</div>
+						<div class="col-lg-6">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Alternate Address</h3>
@@ -1181,32 +1265,32 @@
 										<div class="btn btn-primary" ng-click="addOtherAddress()">Add Address</div>
 									</div>
 								</div>
-								<div class="panel-body">
+								<div class="panel-body isn-alt-address-section">
 									<div class="row" ng-repeat="address in contact.otherAddresses">
 										<div class="col-md-12" ng-class="{true: 'makeopaque', false: ''}[address.is_deleted == true]">
 											<div class="form-group">
 													<label class="col-sm-5 control-label" >Address Type:</label>
-													<div class="col-sm-7">
+													<div class="col-sm-6">
 														<select2 class="form-control" ng-options="title.id as title.label for title in address_types" ng-model="address.ADDTYPE"></select2>
 													</div>
 											</div>
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="address_address">Address:</label>
 						
-												<div class="col-sm-7">
+												<div class="col-sm-6">
 													<input type="text" class="form-control" name="ADD" id="address_address" ng-model="address.ADD" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="address_city">City:</label>
-												<div class="col-sm-7">
+												<div class="col-sm-6">
 													<input type="text" class="form-control" name="CITY" id="address_city" ng-model="address.CITY" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="address_state">State:</label>
-												<div class="col-sm-7">
+												<div class="col-sm-6">
 													<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="address.ST"></select2>
 													
 												</div>
@@ -1214,12 +1298,12 @@
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="address_zip">Zip:</label>
 						
-												<div class="col-sm-7">
+												<div class="col-sm-6">
 													<input type="text" class="form-control" name="ZIP" id="address_zip" ng-model="address.ZIP" data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											<div class="form-group">
-												<div class="col-sm-12">
+												<div class="col-sm-11">
 													<button type="submit" class="btn pull-right" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[address.is_deleted == true]" ng-click="deleteOtherAddress(address.id,address.tempId,address.is_deleted)">{{address.is_deleted == true?'Cancel':'Remove'}}</button>
 												</div>
 											</div>
@@ -1227,108 +1311,116 @@
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Other Information</h3>
-								</div>
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.TYPE">Type Of Donor:</label>
-						
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE"></select2>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.FLAGS">Flags:</label>
-						
-												<div class="col-sm-7">
-													<input type="text" class="form-control" name="contact.FLAGS" id="contact.FLAGS" ng-model="contact.FLAGS" >
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.NM_REASON">Reason:</label>
-						
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.NM_REASON" ng-options="title.id as title.label for title in reasons" ng-model="contact.NM_REASON"></select2>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="PG_AMT">CFN:</label>
-						
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.CFN" ng-options="title.id as title.label for title in cfns" ng-model="contact.CFN"></select2>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.CFNID">CFN ID:</label>
-												<div class="col-sm-7">
-													<input type="text" inputmask data-mask="numeric" class="form-control" name="contact.CFNID" id="contact.CFNID" ng-model="contact.CFNID" >
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.CFNID">Pledgor:</label>
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.PLEDGOR" ng-options="title.id as title.label for title in pledgors" ng-model="contact.PLEDGOR"></select2>
-
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.AR">Accounts Rec:</label>
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.AR" ng-options="title.id as title.label for title in accounts_received" ng-model="contact.AR"></select2>
-
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.SOLS">Mailings:</label>
-												<div class="col-sm-7">
-													<input type="text" class="form-control" name="contact.SOLS" id="contact.SOLS" ng-model="contact.SOLS" >
-												</div>
-											</div>
-											
-										</div>
-									</div>
-
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Languages</h3>
-								</div>
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.LANGUAGE">Primary Language:</label>
-						
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.LANGUAGE"></select2>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-5 control-label" for="contact.dplang">Other Languages:</label>
-						
-												<div class="col-sm-7">
-													<select2 class="form-control" id="contact.dplang" ng-options="title.id as title.label for title in languages" ng-model="contact.dplang" multiple></select2>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>	
+						</div>		
+								
 					</div>
 					<div class="row">
 						<div class="col-md-12">
+							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Other Information</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.TYPE">Type Of Donor:</label>
+								
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE"></select2>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.FLAGS">Flags:</label>
+								
+														<div class="col-sm-7">
+															<input type="text" class="form-control" name="contact.FLAGS" id="contact.FLAGS" ng-model="contact.FLAGS" >
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.NM_REASON">Reason:</label>
+								
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.NM_REASON" ng-options="title.id as title.label for title in reasons" ng-model="contact.NM_REASON"></select2>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="PG_AMT">CFN:</label>
+								
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.CFN" ng-options="title.id as title.label for title in cfns" ng-model="contact.CFN"></select2>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.CFNID">CFN ID:</label>
+														<div class="col-sm-7">
+															<input type="text" inputmask data-mask="numeric" class="form-control" name="contact.CFNID" id="contact.CFNID" ng-model="contact.CFNID" >
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.CFNID">Pledgor:</label>
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.PLEDGOR" ng-options="title.id as title.label for title in pledgors" ng-model="contact.PLEDGOR"></select2>
+		
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.AR">Accounts Rec:</label>
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.AR" ng-options="title.id as title.label for title in accounts_received" ng-model="contact.AR"></select2>
+		
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.SOLS">Mailings:</label>
+														<div class="col-sm-7">
+															<input type="text" class="form-control" name="contact.SOLS" id="contact.SOLS" ng-model="contact.SOLS" >
+														</div>
+													</div>
+													
+												</div>
+											</div>
+		
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Languages</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.LANGUAGE">Primary Language:</label>
+								
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.LANGUAGE"></select2>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.dplang">Other Languages:</label>
+								
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.dplang" ng-options="title.id as title.label for title in languages" ng-model="contact.dplang" multiple></select2>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>	
+						<div class="col-lg-6">
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h3 class="panel-title">Mailing Information</h3>
@@ -1400,6 +1492,11 @@
 
 								</div>
 							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							
 						</div>	
 					</div>
 					<div class="row">
@@ -1740,40 +1837,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-12">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Notes</h3>
-									<div class="pull-right  isn-panel-pull-right">
-										<div class="btn btn-primary" ng-click="addNote('layman')">Add Note</div>
-									</div>
-								</div>
-								<div class="panel-body">
-									<div class="row note-row" ng-repeat="note in contact.notes.layman">
-										<div class="col-xs-12" ng-class="{true: 'makeopaque', false: ''}[note.is_deleted == true]">
-											<div class="row">
-												<div class="col-sm-2">
-													2015-01-20 00:00:00
-												</div>
-												<div class="col-sm-2">
-													Administrator
-												</div>
-												<div class="col-sm-6">
-													<pre ng-hide="note.focused">{{ note.text || ''}}</pre>
-													<textarea ng-show="note.focused" type="text" class="form-control" name="note.text" ng-blur="blurNote(note)" ng-model="note.modify_text"></textarea>
-													<button ng-show="note.focused" class="btn btn-secondary" ng-mousedown="saveNote(note)">Save</button>
-													<button ng-show="note.focused" class="btn" ng-mousedown="cancelNote(note)">Cancel</button>
-												</div>
-												<div class="col-sm-2">
-													<button class="pull-right inline-pull btn" ng-class="{true: 'btn-secondary', false: 'btn-danger'}[note.is_deleted == true]" ng-click="toggleNote(note)">{{note.is_deleted == true?'Cancel':'Delete'}}</button>
-													<button class="pull-right inline-pull pull-right-stack btn btn-orange" ng-click="modifyNote($event,note)" ng-disabled="note.focused">Modify</button>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+						
 					</div>
 				</form>	
 			</tab>
@@ -2366,7 +2430,7 @@
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-4 control-label" for="contact.dtvols1.VCATEG">Origin:</label>
+										<label class="col-sm-4 control-label" for="contact.dtvols1.VCATEG">Category:</label>
 				
 										<div class="col-sm-7 col-sm-offset-1">
 											<select2 class="form-control" ng-disabled="contact.dtvols1.enabled == false" name="contact.dtvols1.VCATEG" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VCATEG"></select2>
