@@ -559,7 +559,7 @@ module.exports = {
 		}
 	    }, function(err, data) {
 		if (err)
-		    updateDpOrdersCallback(err);
+		    return updateDpOrdersCallback(err);
 		updateDpOrdersCallback(null, data);
 	    });
 	}
@@ -673,7 +673,7 @@ module.exports = {
 		    dpordersummary : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`, `DONOR`,`SOL`,DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,`ORDNUM`,`SHIPFROM`,`OPER`,DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,DATE_FORMAT(`ORIGDATE`,"%Y-%m-%d") AS `ORIGDATE`,`ORIGENV`,`IPAID`,`SANDH`,`SANDHAMT`,`CREDITCD`,`CASHONLY`,`CASH`,`CREDIT`,`ETOTAL`,`ECONV`,`ESHIP`,`PSTCALC`,`GSTCALC`,`HSTCALC`,`NYTCALC`,`GTOTAL`,`VNOTE`,`BATCHED`,`PST`,`GST`,`HST`,`NYTAX`,`COUNTY`,`COUNTYNM`,`ENT_DT`,`FUNDS`,`GFUNDS`,`CURCONV`,`TITLE`,`FNAME`,`LNAME`,`SUFF`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`PHONE`,`PHON2`,`PHON3`,`LASTPAGE`,`PRINFLAG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`database_origin`,`SURFCOST`,`MBAGCOST`,`OTHCOST`,`MAILFLAG`,`PRINREM`,`RETURNED` FROM dpordersummary WHERE DONOR = '
+				'SELECT `id`, `DONOR`,`SOL`,DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,`ORDNUM`,`SHIPFROM`,`OPER`,DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,DATE_FORMAT(`ORIGDATE`,"%Y-%m-%d") AS `ORIGDATE`,`ORIGENV`,`IPAID`,`SANDH`,`SANDHAMT`,`CREDITCD`,`CASHONLY`,`CASH`,`CREDIT`,`ETOTAL`,`ECONV`,`ESHIP`,`PSTCALC`,`GSTCALC`,`HSTCALC`,`NYTCALC`,`GTOTAL`,`VNOTE`,`BATCHED`,`PST`,`GST`,`HST`,`NYTAX`,`COUNTY`,`COUNTYNM`,`ENT_DT`,`FUNDS`,`GFUNDS`,`CURCONV`,`TITLE`,`FNAME`,`LNAME`,`SUFF`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`PHONE`,`PHON2`,`PHON3`,`LASTPAGE`,`PRINFLAG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`database_origin`,`SURFCOST`,`MBAGCOST`,`OTHCOST`,`MAILFLAG`,`PRINREM`,`RETURNED`, `order_type` FROM dpordersummary WHERE DONOR = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
@@ -911,22 +911,22 @@ module.exports = {
 		bodystring += ',"' + (results[i].TITLE == null ? '' : results[i].TITLE) + '"';
 		bodystring += ',"' + (results[i].SECLN == null ? '' : results[i].SECLN) + '"';
 		bodystring += ',"' + (results[i].SAL == null ? '' : results[i].SAL) + '"';
-		
+
 		bodystring += '\r\n';
-		
+
 		dbfstructure.push({
-		    id:results[i].id
-		    , FNAME: results[i].FNAME||''
-		    , LNAME: results[i].LNAME||''
-		    , ADD: results[i].ADD||''
-		    , CITY: results[i].CITY||''
-		    , ST: results[i].ST||''
-		    , COUNTRY: results[i].COUNTRY||''
-		    , ZIP: results[i].ZIP||''
-		    , TITLE: results[i].TITLE||''
-		    , SECLN: results[i].SECLN||''
-		    , SAL: results[i].SAL||''
-		    });
+		    id : results[i].id,
+		    FNAME : results[i].FNAME || '',
+		    LNAME : results[i].LNAME || '',
+		    ADD : results[i].ADD || '',
+		    CITY : results[i].CITY || '',
+		    ST : results[i].ST || '',
+		    COUNTRY : results[i].COUNTRY || '',
+		    ZIP : results[i].ZIP || '',
+		    TITLE : results[i].TITLE || '',
+		    SECLN : results[i].SECLN || '',
+		    SAL : results[i].SAL || ''
+		});
 	    }
 	    //console.log(bodystring);
 
@@ -939,28 +939,28 @@ module.exports = {
 	    var fs = require('fs');
 	    var dbf = require('dbf');
 	    async.parallel({
-		urlcsv:function(cb){
+		urlcsv : function(cb) {
 		    fs.writeFile(filenamecsv, bodystring, function(err) {
 			if (err) {
 			    return console.log(err);
 			}
-			cb(null,urlcsv);
+			cb(null, urlcsv);
 		    });
 		},
-		urldbf : function(cb){
+		urldbf : function(cb) {
 		    var buf = dbf.structure(dbfstructure);
 		    fs.writeFile(filenamedbf, toBuffer(buf.buffer), function(err) {
 			if (err) {
 			    return console.log(err);
 			}
-			cb(null,urldbf);
+			cb(null, urldbf);
 		    });
 		}
-	    }, function(err,result){
+	    }, function(err, result) {
 		res.json({
-			csvurl : result.urlcsv,
-			dbfurl : result.urldbf
-		    });
+		    csvurl : result.urlcsv,
+		    dbfurl : result.urldbf
+		});
 	    });
 
 	});
@@ -968,7 +968,7 @@ module.exports = {
 	    var buffer = new Buffer(ab.byteLength);
 	    var view = new Uint8Array(ab);
 	    for (var i = 0; i < buffer.length; ++i) {
-	        buffer[i] = view[i];
+		buffer[i] = view[i];
 	    }
 	    return buffer;
 	}
@@ -988,7 +988,7 @@ module.exports = {
     },
     querycontacts : function(req, res, contactsCallback) {
 	var searchmode = (req.body.columns && req.body.order);
-	
+
 	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
 
 	var dpgift = false; // Flag for dpgift join
@@ -1006,19 +1006,17 @@ module.exports = {
 
 	var selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP` '; // Outer
 	// Select
-	if(!searchmode){
+	if (!searchmode) {
 	    selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP`, `TITLE`, `SECLN`, `SAL`';
 	}
-	
-	
 
 	var innerOrderOffsetLimit = '';
-	if (searchmode){//req.body.columns && req.body.order) {
+	if (searchmode) {//req.body.columns && req.body.order) {
 	    innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
 	}
 
 	if (joinCount == 0) {
-	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres!='' ? 'WHERE ' : ' ') + dpWheres;
+	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres != '' ? 'WHERE ' : ' ') + dpWheres;
 	} else {
 	    if (mode == 'or') {
 		if (dpgift) {
@@ -1041,34 +1039,69 @@ module.exports = {
 
 	console.log('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`');
 
-	async.parallel({
-	    data : function(cb) {
-		Database.knex.raw('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`').exec(function(err, response) {
-		    if (err)
-			return cb(err);
-		    cb(null, response[0]);
-		});
-	    },
-	    recordsFiltered : function(cb) {
-		Database.knex.raw('SELECT COUNT(*) AS count FROM (' + innerSelect + ') AS `dpIds`').exec(function(err, countresponse) {
-		    if (err)
-			return cb(err);
-		    cb(null, countresponse[0][0].count);
-		});
-	    },
-	    recordsTotal : function(cb) {
-		Database.knex.count('id as count').from('dp').exec(function(err, totalcountresponse) {
-		    if (err)
-			return cb(err);
-		    cb(null, totalcountresponse[0].count);
-		});
-	    },
-	}, function(err, results) {
-	    if (err)
-		return contactsCallback(err);
-	    contactsCallback(null, results);
+	if (searchmode) {
+	    async.parallel({
+		data : function(cb) {
+		    Database.knex.raw('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`').exec(function(err, response) {
+			if (err)
+			    return cb(err);
+			cb(null, response[0]);
+		    });
+		},
+		recordsFiltered : function(cb) {
+		    Database.knex.raw('SELECT COUNT(*) AS count FROM (' + innerSelect + ') AS `dpIds`').exec(function(err, countresponse) {
+			if (err)
+			    return cb(err);
+			cb(null, countresponse[0][0].count);
+		    });
+		},
+		recordsTotal : function(cb) {
+		    Database.knex.count('id as count').from('dp').exec(function(err, totalcountresponse) {
+			if (err)
+			    return cb(err);
+			cb(null, totalcountresponse[0].count);
+		    });
+		},
+	    }, function(err, results) {
+		if (err)
+		    return contactsCallback(err);
+		contactsCallback(null, results);
 
-	});
+	    });
+	} else { // export mode
+	    Database.knex.raw('SELECT COUNT(*) AS count FROM (' + innerSelect + ') AS `dpIds`').exec(function(err, countresponse) {
+		if (err)
+		    return contactsCallback(err);
+
+		if (countresponse[0][0].count > 100000) {
+		    return res.json({
+			oversize : 'Too many records',
+			recordsFiltered : countresponse[0][0].count
+		    });
+		}
+		async.parallel({
+		    data : function(cb) {
+			Database.knex.raw('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`').exec(function(err, response) {
+			    if (err)
+				return cb(err);
+			    cb(null, response[0]);
+			});
+		    },
+		    recordsTotal : function(cb) {
+			Database.knex.count('id as count').from('dp').exec(function(err, totalcountresponse) {
+			    if (err)
+				return cb(err);
+			    cb(null, totalcountresponse[0].count);
+			});
+		    },
+		}, function(err, results) {
+		    if (err)
+			return contactsCallback(err);
+		    results.recordsFiltered = countresponse[0][0].count;
+		    contactsCallback(null, results);
+		});
+	    });
+	}
 
 	function addDpWheres() {
 	    var donorFullText = Utilities.prepfulltext(req.body.contact.id);

@@ -611,7 +611,7 @@ module.exports.views = {
 			order : 2,
 			type : 'text',
 			value : 1,
-			hidden : true,
+			hidden : false,
 			locale_label : {
 			    en : 'Currency'
 			}
@@ -1387,37 +1387,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }, {
-			locale : {
-			    en : "City"
-			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "State"
-			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "Zip"
-			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
+		    },  {
 			locale : {
 			    en : "Country"
 			},
@@ -1537,18 +1507,20 @@ module.exports.views = {
 		    },
 		    'includecountries' : {
 			order : 3,
-			type : 'text',
+			type : 'multiselect',
+			source : 'countries',
 			value : null,
-			hidden : true,
+			hidden : false,
 			locale_label : {
 			    en : 'Include Countries'
 			}
 		    },
 		    'excludecountries' : {
 			order : 4,
-			type : 'text',
+			type : 'multiselect',
+			source : 'countries',
 			value : null,
-			hidden : true,
+			hidden : false,
 			locale_label : {
 			    en : 'Exclude Countries'
 			}

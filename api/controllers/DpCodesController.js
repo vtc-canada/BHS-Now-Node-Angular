@@ -78,32 +78,7 @@ module.exports = {
 	    }
 	    if (req.body.dpsearch.field != null && req.body.dpsearch.field != '') {
 		selectIds.andWhere(Database.knex.raw('dpcodes.FIELD = ?', [ req.body.dpsearch.field ]));
-	    }/*
-		 * if (req.body.dpsearch.CITY != null && req.body.dpsearch.CITY !=
-		 * '') { selectIds.andWhere(Database.knex.raw('dpcodes.CITY =
-		 * ?', [ req.body.dpsearch.CITY ])); } if (req.body.dpsearch.ST !=
-		 * null && req.body.dpsearch.ST != '') {
-		 * selectIds.andWhere(Database.knex.raw('dpcodes.ST = ?', [
-		 * req.body.dpsearch.ST ])); } if (req.body.dpsearch.COUNTRY !=
-		 * null && req.body.dpsearch.COUNTRY != '') {
-		 * selectIds.andWhere(Database.knex.raw('dpcodes.COUNTRY = ?', [
-		 * req.body.dpsearch.COUNTRY ])); } if (req.body.dpsearch.ZIP !=
-		 * null && req.body.dpsearch.ZIP != '') {
-		 * selectIds.andWhere(Database.knex.raw('dpcodes.ZIP = ?', [
-		 * req.body.dpsearch.ZIP ])); } if (req.body.dpsearch.CHECKBOX !=
-		 * null && req.body.dpsearch.CHECKBOX == 'Y') {
-		 * selectIds.andWhere(Database.knex.raw('dpcodes.database_origin =
-		 * 3')); } if (req.body.dpsearch.CHECKBOX != null &&
-		 * req.body.dpsearch.CHECKBOX == 'N') {
-		 * selectIds.andWhere(Database.knex.raw('dpcodes.database_origin !=
-		 * 3')); } if (req.body.dpsearch.CLASS != null &&
-		 * req.body.dpsearch.CLASS.length > 0) { var passtring = ''; for
-		 * (var i = 0; i < req.body.dpsearch.CLASS.length; i++) { if
-		 * (passtring != '') { passtring += ',' } passtring += "'" +
-		 * req.body.dpsearch.CLASS[i] + "'"; }
-		 * selectIds.andWhere(Database.knex.raw("dpcodes.CLASS IN (" +
-		 * passtring + ")")); }
-		 */
+	    }
 	}
 
 	// Select Data

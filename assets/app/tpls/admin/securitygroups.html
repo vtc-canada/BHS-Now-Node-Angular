@@ -75,13 +75,44 @@
 					<h3 class="panel-title">Resources</h3>
 				</div>
 				<div class="panel-body">
+					
+					
+					<div class="form-group" >
+						<label class="col-sm-5 control-label" ></label>
+						<div class="col-sm-7">
+							<div class="row">
+								<div class="col-xs-2">
+									Create
+								</div>
+								<div class="col-xs-2">
+									Read
+								</div>
+								<div class="col-xs-2">
+									Update
+								</div>
+								<div class="col-xs-2">
+									Delete
+								</div>
+							</div>
+						</div>
+					</div>
+					
 					<div class="form-group" ng-repeat="resource in group.resources">
 						<label class="col-sm-5 control-label" for="resource_{{resource.id}}">{{resource.name}}</label>
 						<div class="col-sm-7">
-							<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch iswitch-secondary" name="resource.create_{{resource.id}}" ng-checked="resource.create" ng-model="resource.create">
-							<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch iswitch-secondary" name="resource.read_{{resource.id}}" ng-checked="resource.read" ng-model="resource.read">
-							<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch iswitch-secondary" name="resource.update_{{resource.id}}" ng-checked="resource.update" ng-model="resource.update">
-							<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch iswitch-secondary" name="resource.delete_{{resource.id}}" ng-checked="resource.delete" ng-model="resource.delete">
+							<div class="row">
+								<div class="col-xs-2">
+									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.create_{{resource.id}}" ng-checked="resource.create" ng-model="resource.create">
+								</div>
+								<div class="col-xs-2">
+									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.read_{{resource.id}}" ng-checked="resource.read" ng-model="resource.read">
+								</div>
+								<div class="col-xs-2">
+									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.update_{{resource.id}}" ng-checked="resource.update" ng-model="resource.update">
+								</div>
+								<div class="col-xs-2">
+									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.delete_{{resource.id}}" ng-checked="resource.delete" ng-model="resource.delete">
+								</div>
 						</div>
 					</div>
 				</div>

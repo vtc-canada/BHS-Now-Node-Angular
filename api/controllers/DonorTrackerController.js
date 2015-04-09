@@ -1,14 +1,54 @@
 /**
  * DonorTrackerController
- *
+ * 
  * @description :: Server-side logic for managing Donortrackers
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * @help :: See http://links.sailsjs.org/docs/controllers
  */
 
 module.exports = {
 
     index : function(req, res) {
-	res.view({preloaded:{first:'value'}});
+	res.view({
+	    preloaded : {
+		first : 'value'
+	    }
+	});
+    },
+    getfxechangeattributes : function(req, res) {
+	async.parallel({
+	    currencies : function(callback) {
+		Database.knex('dpcurrency').select('id', 'name').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    }
+	}, function(err, result) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : result
+	    });
+	});
+    },
+    getreportattributes : function(req, res) {
+	async.parallel({
+	    countries : function(callback) {
+		Database.knex('dp').distinct('COUNTRY').select().whereNotNull('COUNTRY').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    }
+	}, function(err, result) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : result
+	    });
+	});
     },
     getdpcodeattributes : function(req, res) {
 
@@ -29,18 +69,43 @@ module.exports = {
 	    });
 	});
     },
-    
+
     getattributes : function(req, res) {
 
 	async.parallel({
-	    litems : function(callback){
-		Database.knex('dpcodes').select('DESC','OTHER').distinct('CODE').where({
+	    litems : function(callback) {
+		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
+	    },
+	    exchange : function(callback) {
+		Database.knex.raw('SELECT `currency_from`, `exchange_rate`, DATE_FORMAT(date,"%Y-%m-%d") AS `date`  FROM dpexchange').exec(function(err, dpexchange) {
+		    if (err) {
+			return console.log('SERVICE ERROR. Failed getting DPExchange on BOOT. ' + err);
+		    }
+		    var exchange = {};
+		    dpexchange = dpexchange[0];
+		    for (row in dpexchange) {
+			if (typeof (exchange[dpexchange[row].currency_from]) == 'undefined') {
+			    exchange[dpexchange[row].currency_from] = {};
+			}
+			exchange[dpexchange[row].currency_from][dpexchange[row].date] = dpexchange[row].exchange_rate;
+		    }
+		    callback(null, exchange);
+		});
+	    },
+	    ship_from : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SHIPFROM'
+		}).exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		})
 	    },
 	    titles : function(callback) {
 		Database.knex('dp').distinct('TITLE').select().exec(function(err, titles) {
@@ -50,126 +115,133 @@ module.exports = {
 		});
 	    },
 	    sols : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SOL'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
+		});
+	    },
+	    currencies : function(callback) {
+		Database.knex('dpcurrency').select('id', 'name').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
 		});
 	    },
 	    lists : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LIST'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
-	    languages : function(callback){
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+	    languages : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    tba_requests : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TBAREQS'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    demands : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DEMAND'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    relationships : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LINK'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    requests_plural : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'REQUESTS'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    pledgegroups : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'GL'
-		}).select().exec(function(err, sols) {
+		}).exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
 		});
 	    },
 	    reasons : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'NM_REASON'
-		}).select().exec(function(err, types) {
+		}).exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
 	    cfns : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'CFN'
-		}).select().exec(function(err, types) {
+		}).exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
 	    pledgors : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PLEDGOR'
-		}).select().exec(function(err, types) {
+		}).exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
 	    accounts_received : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'AR'
-		}).select().exec(function(err, types) {
+		}).exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
 	    types : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TYPE'
-		}).select().exec(function(err, types) {
+		}).exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
 	    states : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ST'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -203,108 +275,108 @@ module.exports = {
 		} ]);
 	    },
 	    countries : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    county_codes : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTY'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    phone_types : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PHTYPE'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    address_types : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ADDTYPE'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    languages : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    english : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ENGLISH'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    decision : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DECIS'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    mass_said : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'Q17'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    billing_schedules : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'MQA'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    transacts : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TRANSACT'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    designates : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DESIGNATE'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    modes : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'MODE'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -312,23 +384,23 @@ module.exports = {
 	    },
 	    /*
 	     * , donor_classes : function(callback){
-	     * Database.knex('dpcodes').select('DESC').distinct('CODE').where({
-	     * FIELD : 'CLASS' }).select().exec(function(err, results) { if
+	     * Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+	     * FIELD : 'CLASS' }).exec(function(err, results) { if
 	     * (err) return callback(err); callback(null, results); }); }
 	     */
 	    willsaymass : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SAYMASS'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
 	    values_traditional : function(callback) {
-		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'Q18'
-		}).select().exec(function(err, results) {
+		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -337,9 +409,9 @@ module.exports = {
 	    dtvols1 : function(callback) {
 		async.parallel({
 		    origin : function(dtvols1callback) {
-			Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+			Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 			    FIELD : 'ORIGIN'
-			}).select().exec(function(err, results) {
+			}).exec(function(err, results) {
 			    if (err)
 				return dtvols1callback(err);
 			    dtvols1callback(null, results);
@@ -360,4 +432,3 @@ module.exports = {
 	});
     }
 };
-

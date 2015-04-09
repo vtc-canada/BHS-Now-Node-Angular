@@ -383,6 +383,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	var newOrder = {
 	    id : null,
 	    tempId : Math.floor((Math.random() * 10000000) + 1),
+	    order_type : 1, // TODO- seelect mode based on logged in USER type.
 	    SOL : null,
 	    DATE : $filter('date')(new Date(), 'yyyy-MM-dd'),
 	    ORDNUM : null,
@@ -392,7 +393,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    ORIGDATE : null,
 	    ORIGENV : null,
 	    IPAID : null,
-	    SANDH : null, // S+H
+	    SANDH : true, // S+H
 	    SANDHAMT : 0, // S+h amount
 	    CREDITCD : null, // 
 	    CASHONLY : null, // / ??
@@ -488,6 +489,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
 	if (!angular.equals(newValue, oldValue)) {
 	    angular.forEach(newValue, function(row) {
+		// Update descriptions
 		if (typeof ($scope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($scope.litemdetails[row.LITEMP].description)) {
 		    row.LITEMD = $scope.litemdetails[row.LITEMP].description;
 		    // $scope.selectedOrderSummary.is_modified = true;
@@ -506,7 +508,131 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		if ($scope.selectedOrderSummary) {
 		    $scope.selectedOrderSummary.is_modified = true;
 		}
+		// TODO : BLOCK THIS IF IT's opening some old order with
+		// previous
+		// shipping calculating values..- based on date basically....
+		if ($scope.selectedOrderSummary != null) {
+		    var etotal = 0;
+		    var hstcalc = 0;
+		    var gstcalc = 0;
+		    var pstcalc = 0;
+		    var shiptax = 0;
+
+		    var exchangerate = 1;
+		    if ($scope.selectedOrderSummary.FUNDS != null) {
+			for ( var key in $scope.exchange[$scope.selectedOrderSummary.FUNDS]) {
+			    if ($scope.exchange[$scope.selectedOrderSummary.FUNDS].hasOwnProperty(key)) {
+				//
+				if (new Date(key).getTime() >= new Date($scope.selectedOrderSummary.DATE).getTime()) {
+				    exchangerate = $scope.exchange[$scope.selectedOrderSummary.FUNDS][key];
+				    break;
+				}
+
+			    }
+			}
+		    }
+
+		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
+			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
+
+			etotal += itemp; // sums up item price
+
+			var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
+			var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
+			var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
+			if (detail.LITEMP.indexOf('B') === 0) {
+			    hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.05 : 0; // GST
+			    // portion
+			    // (8%)
+			    // reduced
+			    // off,
+			    // leaving
+			    // it
+			    // 5%
+			    // as
+			    // before.
+			    gstrate = 0; // GST not counted on books
+			    pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.05 : 0; // PST
+			    // used
+			    // to
+			    // be
+			    // reduced
+			    // to
+			    // .05
+			    // i
+			    // believe
+			    // for
+			    // books
+			}
+
+			hstcalc += (itemp / exchangerate) * hstrate; // sums
+									// up
+			// item
+			// taxes
+			gstcalc += (itemp / exchangerate) * gstrate;
+			pstcalc += (itemp / exchangerate) * pstrate;
+
+		    });
+
+		    $scope.selectedOrderSummary.ETOTAL = etotal;
+
+		    $scope.selectedOrderSummary.ECONV = etotal / parseFloat(exchangerate);
+
+		    var eship = 0;
+		    if ($scope.selectedOrderSummary.SANDH == 'Y') {
+			if ($scope.selectedOrderSummary.FUNDS == 'C') {
+			    if ($scope.selectedOrderSummary.ETOTAL < 10) {
+				eship = 4.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 25) {
+				eship = 6.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 50) {
+				eship = 8.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 75) {
+				eship = 10.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 100) {
+				eship = 12.00;
+			    } else {
+				eship = $scope.selectedOrderSummary.ECONV * 0.15;
+			    }
+			} else if ($scope.selectedOrderSummary.FUNDS == 'U') {
+			    if ($scope.selectedOrderSummary.ETOTAL < 10) {
+				eship = 4.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 25) {
+				eship = 6.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 50) {
+				eship = 7.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 75) {
+				eship = 9.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 100) {
+				eship = 10.00;
+			    } else {
+				eship = $scope.selectedOrderSummary.ECONV * 0.12;
+			    }
+			}
+		    } else {
+			eship = $scope.selectedOrderSummary.SANDHAMT;
+		    }
+
+		    $scope.selectedOrderSummary.ESHIP = eship;
+
+		    // Add tax to shipping component.
+		    var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
+		    var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
+		    var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
+
+		    hstcalc += eship * hstrate;
+		    gstcalc += eship * gstrate;
+		    pstcalc += eship * pstrate;
+
+		    $scope.selectedOrderSummary.HSTCALC = hstcalc;
+		    $scope.selectedOrderSummary.GSTCALC = gstcalc;
+		    $scope.selectedOrderSummary.PSTCALC = pstcalc;
+
+		    $scope.selectedOrderSummary.GTOTAL = $scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP + $scope.selectedOrderSummary.HSTCALC + $scope.selectedOrderSummary.GSTCALC + $scope.selectedOrderSummary.PSTCALC;
+
+		}
 	    }
+
 	}
     }, true);
 
@@ -682,13 +808,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.changeNote = function(note) {
 	$scope.contact.notes[note.type].text = $scope.contact.notes[note.type].text;
     }
-    $scope.modifyNote = function($event, note,noteType) {
+    $scope.modifyNote = function($event, note, noteType) {
 	note.focused = true;
 	note.modify_text = note.text == null ? '' : note.text;
 	$timeout(function() {
 	    $('#' + noteType).find('.note-row textarea:not(.ng-hide)').focus();
-	    
-	    //$($event.currentTarget).parent().parent().find('textarea').focus();
+
+	    // $($event.currentTarget).parent().parent().find('textarea').focus();
 	}, 5);
     }
     $scope.saveNote = function(note) {
@@ -923,6 +1049,43 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    description : data.litems[i].DESC,
 		    price : data.litems[i].OTHER
 		};
+	    }
+
+	    $scope.order_types = [ {
+		id : 1,
+		label : 'Sale'
+	    }, {
+		id : 2,
+		label : 'Free Gift'
+	    } ]
+
+	    $scope.exchange = angular.copy(data.exchange);
+
+	    $scope.ship_from = [];
+	    for (var i = 0; i < data.ship_from.length; i++) {
+		$scope.ship_from.push({
+		    id : data.ship_from[i].CODE,
+		    label : data.ship_from[i].CODE + " - " + data.ship_from[i].DESC
+		});
+	    }
+
+	    $rootScope.all_currencies = [];
+	    $rootScope.non_us_currencies = [];
+
+	    for (var i = 0; i < data.currencies.length; i++) {
+		$rootScope.all_currencies.push({
+		    id : data.currencies[i].id,
+		    label : data.currencies[i].name
+		});
+		if (data.currencies[i].id == 'U') {
+		    continue;
+		}
+		$rootScope.non_us_currencies.push({
+		    id : data.currencies[i].id,
+		    selector_label : data.currencies[i].name + ' to United States Dollar',
+		    label : data.currencies[i].name
+		});
+
 	    }
 
 	    $rootScope.pledgegroups = [];
@@ -1207,6 +1370,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 }).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $reports, $reportselects, $sails, $http, $modal) {
     var vm = this;
     vm.$scope = $scope;
+    $scope.reportselects = {};
+
     $scope.reports = $reports;
     $scope.report = $reports[0];
     $scope.reporthtml = null;
@@ -1260,7 +1425,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // its simply some source - just load it once.
 	    // svm.source = true; // flag as loaded
 	    // svm.data =
-	    return $reportselects[parameter.source];
+	    return $scope.reportselects[parameter.source];
 	}
 
 	// / Otherwise, we assume it's an ajax source.
@@ -1344,7 +1509,26 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$scope.reporthtml = $sce.trustAsHtml(html);
 	    }, 0);
 	});
-    }
+    };
+
+    (function() {
+	$sails.get('/donortracker/getreportattributes').success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    var data = data.result;
+	    $scope.reportselects.countries = [];
+	    for (var i = 0; i < data.countries.length; i++) {
+		$scope.reportselects.countries.push({
+		    id : data.countries[i].COUNTRY,
+		    label : data.countries[i].COUNTRY
+		});
+	    }
+
+	}).error(function(data) {
+	    alert('err!' + data.toString());
+	});
+    })();
 
 }).controller('ModalCtrl', function($scope, $rootScope) {
     var vm = this;
@@ -1918,7 +2102,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		 */
 	    }, 300);
 	}
-    }, true);//  //Collection
+    }, true);// //Collection
 
     $rootScope.saveTemplate = function() {
 	$rootScope.newTemplateModal.id = null;
@@ -1982,7 +2166,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			}
 		    });
 
-		    $rootScope.search_contact = $scope.contact;// = $scope.search_templates[i].data;
+		    $rootScope.search_contact = $scope.contact;// =
+		    // $scope.search_templates[i].data;
 		    // $rootScope.search_contact hopefully will stay tied..
 		    // $rootScope.newTemplateModal.id =
 		    // $scope.search_templates[i].id;
@@ -2188,6 +2373,58 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 300);
     });
 
+}).controller('FxChangeSearch', function($scope, $rootScope, $sails) {
+    var vm = this;
+
+    $scope.fxsearch = {};
+    $scope.fxsearch.currency_from = "C";
+
+    /*
+     * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
+     * 'No' } ];
+     */
+
+    // initialization routine.
+    (function() {
+	$sails.get('/donortracker/getfxechangeattributes').success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    var data = data.result;
+
+	    $rootScope.all_currencies = [];
+	    $rootScope.non_us_currencies = [];
+
+	    for (var i = 0; i < data.currencies.length; i++) {
+		$rootScope.all_currencies.push({
+		    id : data.currencies[i].id,
+		    label : data.currencies[i].name
+		});
+		if (data.currencies[i].id == 'U') {
+		    continue;
+		}
+		$rootScope.non_us_currencies.push({
+		    id : data.currencies[i].id,
+		    selector_label : data.currencies[i].name + ' to United States Dollar',
+		    label : data.currencies[i].name
+		});
+
+	    }
+	});
+
+    })();
+
+    $rootScope.fxsearch = $scope.fxsearch;
+
+    $scope.$watchCollection('fxsearch', function() {
+	if (vm.updateTable) {
+	    clearTimeout(vm.updateTable);
+	}
+	vm.updateTable = setTimeout(function() {
+	    $rootScope.updateFxChangeDataTable();
+	}, 300);
+    });
+
 }).controller(
     'AddContactDatatable',
     function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder) {
@@ -2248,6 +2485,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }).controller(
     'ContactsDatatable',
     function($scope, $rootScope, $timeout, $sails, $modal, $contact, DTOptionsBuilder, DTColumnBuilder) {
+	$scope.exportDisabled = false;
+
 	var vm = this;
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
@@ -2269,6 +2508,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$(nRow).addClass('selected');
 	    }
 	    return nRow;
+	}).withOption('drawCallback', function rowCallback(settings) {
+	    if (settings._iRecordsDisplay > 100000) {
+		$timeout(function() {
+		    $scope.exportDisabled = true;
+		}, 0);
+	    } else {
+		$timeout(function() {
+		    $scope.exportDisabled = false;
+		}, 0);
+	    }
 	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
 	// l length
 	// r processing
@@ -2282,6 +2531,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.$on('event:dataTableLoaded', function(event, data) {
 	    $scope.tableId = data.id; // Record table ID, for refreshes
 	    // later.
+	    // alert('loaded');
 	});
 	$rootScope.updateContactsTable = function(event, args) {
 	    if ($scope.tableId) {
@@ -2305,8 +2555,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    // LOGGEDIN!!!!!
 		    location.reload(); // Will boot back to login screen
 		}
+		if (response.oversize) {
+		    $rootScope.currentModal.dismiss('oversize');
+		    return alert('Unable to export ' + response.recordsFiltered + ' records. The system can export a maximum of 100,000 records.');
+
+		}
 		$timeout(function() {
-		    //$rootScope.pdfurl = response.pdfurl;
+		    // $rootScope.pdfurl = response.pdfurl;
 		    $rootScope.contact_export_csvurl = response.csvurl;
 		    $rootScope.contact_export_dbfurl = response.dbfurl;
 		    delete $rootScope.exporting_contacts;
@@ -2806,6 +3061,187 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}
 
     }).controller('LoginCtrl', function($scope, $rootScope) {
+    $rootScope.isLoginPage = true;
+    $rootScope.isLightLoginPage = false;
+    $rootScope.isLockscreenPage = false;
+    $rootScope.isMainPage = false;
+}).controller('FxChangeDatatable', function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder, $sails, $modal) {
+
+    var vm = this;
+    $scope.selectedExChange = null;
+
+    vm.rowClicked = rowClicked;
+    vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	dataSrc : 'data',
+	url : '/fxchange/ajax',
+	type : 'POST'
+    }).withOption('pageLength', 100).withOption('order', [ [ 3, "asc" ] ]).withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	aoData.fxsearch = $rootScope.fxsearch;
+	$timeout(function() { // Whenever the table searches, it clears
+	    // the selected
+	    if ($scope.retrieveId) { // passes through the selectedCode..
+		$scope.selectedExChange = $scope.retrieveId;
+		$scope.retrieveId = null;
+	    } else {
+		$scope.selectedExChange = null;
+	    }
+	}, 0);
+    }).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	$('td', nRow).unbind('click');
+	$('td', nRow).bind('click', function() {
+	    // $scope.$apply(function() {
+	    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+	    // });
+	});
+	if ($scope.selectedExChange != null && aData.id == $scope.selectedExChange.id) {
+	    $(nRow).addClass('selected');
+	}
+	return nRow;
+    }).withPaginationType('full_numbers').withDOM('rt<"row"<"col-lg-4"i><"col-lg-8"p>>'); // <"row"<"col-xs-12"l>>
+    // l length
+    // r processing
+    // f filtering
+    // t table
+    // i info
+    // p pagination
+    // DTColumnBuilder.newColumn('id').withTitle('ID'),
+    vm.dtColumns = [ DTColumnBuilder.newColumn('currency_from').withTitle('From'), DTColumnBuilder.newColumn('currency_to').withTitle('To'), DTColumnBuilder.newColumn('exchange_rate').withTitle('Rate'), DTColumnBuilder.newColumn('date').withTitle('Date') ];
+
+    $scope.$on('event:dataTableLoaded', function(event, data) {
+	$scope.tableId = data.id; // Record table ID, for refreshes
+	// later.
+    });
+    $rootScope.updateFxChangeDataTable = function(event, args) {
+	if ($scope.tableId) {
+	    $('#' + $scope.tableId).DataTable().ajax.reload(function() {
+	    }, false);
+	}
+    }
+
+    /*
+     * $scope.$on('refreshContactsx', function(event, args){
+     * //console.log('deb'); vm.contact = args;
+     * $timeout(vm.dtOptions.reloadData,500); //(); });
+     */
+
+    function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	$('tr').removeClass('selected');
+	$(nRow).addClass('selected');
+	$timeout(function() {
+	    $scope.selectedExChange = aData;
+	}, 0);
+    }
+
+    $scope.isDatatableEditDisabled = function() {
+	return $scope.selectedExChange == null;
+    }
+
+    $scope.editDatatableRow = function(modal_id, modal_size, modal_backdrop) {
+	$sails.post("/fxchange/getdpexchange", {
+	    id : $scope.selectedExChange.id
+	}).success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    if (data.success) {
+		$rootScope.modalSelectedExChange = angular.copy(data.dpexchange);
+		$rootScope.currentModal = $modal.open({
+		    templateUrl : modal_id,
+		    size : modal_size,
+		    backdrop : typeof modal_backdrop == 'undefined' ? true : modal_backdrop
+		});
+		$rootScope.currentModal.result.then(function(selectedItem) {
+		}, function(triggerElement) {
+		    if (triggerElement == 'save') {
+			$sails.post('/fxchange/save', $rootScope.modalSelectedExChange).success(function(data) {
+			    if (data.error != undefined) { // USER NO
+				// LONGER LOGGED
+				// IN!!!!!
+				location.reload(); // Will boot back to
+				// login screen
+			    }
+			    if (data.success) {
+				$scope.retrieveId = $scope.selectedExChange;
+				$rootScope.updateFxChangeDataTable();
+			    }
+			}).error(function(data) {
+			    alert('err!');
+			});
+		    }
+		});
+	    }
+	}).error(function(data) {
+	    alert('err!');
+	});
+    };
+
+    $scope.deleteDatatableRow = function(modal_id, modal_size) {
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : modal_id,
+	    size : modal_size,
+	    backdrop : true
+	});
+	$rootScope.deleteModalText = $scope.selectedExChange.id;// + ' ' +
+	// $scope.selectedExChange.FIELD
+	// + ' ' +
+	// $scope.selectedCode.CODE
+	// + ' ' +
+	// $scope.selectedCode.DESC;
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'delete') {
+		$sails.post('/fxchange/destroy', $scope.selectedExChange).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			// $scope.retrieveId = $scope.selectedCode;
+			$rootScope.updateFxChangeDataTable();
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
+
+    $scope.addDatatableRow = function(modal_id, modal_size) {
+	$('#' + $scope.tableId).find('tr.selected').removeClass('selected');
+	$scope.selectedExChange = null;
+	$rootScope.modalSelectedExChange = {
+	    id : null,
+	    currency_from : $rootScope.fxsearch.field,
+	    currency_to : 'U',
+	    date : null,
+	    exchange_rate : null
+	};
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : modal_id,
+	    size : modal_size,
+	    backdrop : typeof modal_backdrop == 'undefined' ? true : modal_backdrop
+	});
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'save') {
+		$sails.post('/fxchange/save', $rootScope.modalSelectedExChange).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			// $scope.retrieveId = $scope.selectedCode;
+			$rootScope.updateFxChangeDataTable();
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
+}).controller('LoginCtrl', function($scope, $rootScope) {
     $rootScope.isLoginPage = true;
     $rootScope.isLightLoginPage = false;
     $rootScope.isLockscreenPage = false;

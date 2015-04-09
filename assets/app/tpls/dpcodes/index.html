@@ -57,7 +57,7 @@
 	
 	<div class="modal-footer">
 		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
-		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save changes</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Save</button>
 	</div>
 </script>
 
@@ -88,7 +88,7 @@
 
 				</form>
 			</div>
-			<div class="panel-heading panel-second-heading">
+			<!--<div class="panel-heading panel-second-heading">
 				<a href="" data-toggle="panel" class="panel-title-wrapper">
 					<h3 class="panel-title">&nbsp&nbspAdvanced Criteria</h3>
 				</a>
@@ -105,7 +105,7 @@
 						<label class="col-sm-2 control-label" for="">None</label>
 					</div>
 				</form>
-			</div>
+			</div>-->
 		</div>
 
 	</div>
@@ -114,12 +114,7 @@
 <div class="panel panel-default" ng-controller="DpCodesDatatable as showCase">
 	<div class="panel-heading">
 		<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspCodes</h3>
-		<div class="pull-right isn-panel-pull-right">
-			<div class="btn btn-secondary" ng-click="">New</div>
-		</div>
-		<div class="pull-right pull-right-stack isn-panel-pull-right">
-			<div class="btn btn-secondary" ng-class="" ng-click="">Export List</div>
-		</div>
+		
 	</div>
 	{{message}}
 	<div class="panel-body">

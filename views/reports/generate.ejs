@@ -134,7 +134,7 @@ function toClientDateTimeString(date){
         <!-- Iterate the rows -->
 
 
-        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'&&(data[i]['tableclass']!='wide'||typeof(phantom)=='undefined')){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].data.sorting)!='undefined'&&data[i].data.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].data.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
+        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'&&(data[i]['tableclass']!='wide'||(typeof(phantom)=='undefined'||phantom==false))){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].data.sorting)!='undefined'&&data[i].data.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].data.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
 
         <% var j = 0 ; %>
 

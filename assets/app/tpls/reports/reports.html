@@ -46,7 +46,7 @@
 					</div>
 					<div class="form-group" ng-repeat="parameter in report.parameters | orderObjectBy : 'order':false" ng-hide="parameter.hidden">
 						<div class="col-sm-3 control-label">{{parameter.locale_label.en}}</div>
-						<div ng-if="parameter.type == 'datetime'" class="col-sm-5 control-label">
+						<div ng-if="parameter.type == 'datetime'" class="col-sm-5 ">
 							<div class="input-group">
 								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="datetime" ng-model="parameter.value">
 								<div class="input-group-addon">
@@ -54,10 +54,13 @@
 								</div>
 							</div>
 						</div>
-						<div ng-if="parameter.type == 'select'" class="col-sm-5 control-label">
+						<div ng-if="parameter.type == 'multiselect'" class="col-sm-5 ">
+							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value" multiple></select2>
+						</div>
+						<div ng-if="parameter.type == 'select'" class="col-sm-5 ">
 							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value"></select2>
 						</div>
-						<div ng-if="parameter.type == 'text'" class="col-sm-5 control-label">
+						<div ng-if="parameter.type == 'text'" class="col-sm-5 ">
 							<input type="text" class="form-control" name="contact.RELIGIOUS" ng-model="parameter.value" >
 						</div>
 					</div>
