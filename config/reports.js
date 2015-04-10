@@ -34,7 +34,7 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_CategoryReport',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includesummary' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
 		    split:{
 			mode:'like',
 			column:0,
@@ -222,7 +222,7 @@ module.exports.views = {
 		}, {
 		    order : 1,
 		    sproc : 'reports_CategoryReportSummary',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includesummary' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -385,7 +385,7 @@ module.exports.views = {
 		}, {
 		    order : 2,
 		    sproc : 'reports_CategoryReportSummaryNil',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includesummary' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -541,7 +541,7 @@ module.exports.views = {
 		}, {
 		    order : 3,
 		    sproc : 'reports_CategoryReportGT',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includesummary' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -609,8 +609,9 @@ module.exports.views = {
 		    },
 		    'currency' : {
 			order : 2,
-			type : 'text',
-			value : 1,
+			type : 'select',
+			source: 'currencies',
+			value : 'U',
 			hidden : false,
 			locale_label : {
 			    en : 'Currency'
@@ -624,13 +625,24 @@ module.exports.views = {
 			    en : 'Solicitation Codes'
 			}
 		    },
-		    'includesummary' : {
+		    'includecountries' : {
 			order : 4,
-			type : 'text',
-			value : 1,
-			hidden : true,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
 			locale_label : {
-			    en : 'Include Summary'
+			    en : 'Include Country'
+			}
+		    },
+		    'excludecountries' : {
+			order : 5,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Exclude Country'
 			}
 		    }
 		}
@@ -650,7 +662,7 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'I', 'Country', '' ],
+		    parameters : [ 'I', 'includecountry','excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
@@ -778,7 +790,7 @@ module.exports.views = {
 		},{
 		    order : 1,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'G', 'Country', '' ],
+		    parameters : [ 'G', 'includecountry','excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
@@ -906,7 +918,7 @@ module.exports.views = {
 		},{
 		    order : 2,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'E', 'Country', '' ],
+		    parameters : [ 'E', 'includecountry','excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
@@ -1034,7 +1046,7 @@ module.exports.views = {
 		},{
 		    order : 3,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'C', 'Country', '' ],
+		    parameters : [ 'C', 'includecountry','excludecountry'],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
@@ -1162,7 +1174,7 @@ module.exports.views = {
 		},{
 		    order : 4,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'A', 'Country', '' ],
+		    parameters : [ 'A', 'includecountry','excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
@@ -1290,12 +1302,21 @@ module.exports.views = {
 		} ],
 		parameters : {
 
-		    'Country' : {
-			order : 1,
-			type : 'text',
-			value : 'Canada',
+		    'includecountry' : {
+			order : 0,
+			type : 'multiselect',
+			source:'countries',
+			value : null,
 			locale_label : {
-			    en : 'Country'
+			    en : 'Include Country'
+			}
+		    },'excludecountry' : {
+			order : 1,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			locale_label : {
+			    en : 'Exclude Country'
 			}
 		    }
 		}
@@ -1888,21 +1909,20 @@ module.exports.views = {
 		} ],
 		parameters : {
 		    'includecountries' : {
-			order : 3,
-			type : 'text',
+			order : 0,
+			type : 'multiselect',
+			source:'countries',
 			value : null,
-			hidden : true,
 			locale_label : {
-			    en : 'Include Countries'
+			    en : 'Include Country'
 			}
-		    },
-		    'excludecountries' : {
-			order : 4,
-			type : 'text',
+		    },'excludecountries' : {
+			order : 1,
+			type : 'multiselect',
+			source : 'countries',
 			value : null,
-			hidden : true,
 			locale_label : {
-			    en : 'Exclude Countries'
+			    en : 'Exclude Country'
 			}
 		    }
 		}
@@ -2279,21 +2299,20 @@ module.exports.views = {
 		} ],
 		parameters : {
 		    'includecountries' : {
-			order : 3,
-			type : 'text',
+			order : 0,
+			type : 'multiselect',
+			source:'countries',
 			value : null,
-			hidden : true,
 			locale_label : {
-			    en : 'Include Countries'
+			    en : 'Include Country'
 			}
-		    },
-		    'excludecountries' : {
-			order : 4,
-			type : 'text',
+		    },'excludecountries' : {
+			order : 1,
+			type : 'multiselect',
+			source : 'countries',
 			value : null,
-			hidden : true,
 			locale_label : {
-			    en : 'Exclude Countries'
+			    en : 'Exclude Country'
 			}
 		    }
 		}

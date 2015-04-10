@@ -1517,6 +1517,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		location.reload(); // Will boot back to login screen
 	    }
 	    var data = data.result;
+	    
+	    $scope.reportselects.currencies = [];
+	    for (var i = 0; i < data.currencies.length; i++) {
+		$scope.reportselects.currencies.push({
+		    id : data.currencies[i].id,
+		    label : data.currencies[i].name,
+		    code : data.currencies[i].code
+		});
+	    }
+	    
 	    $scope.reportselects.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$scope.reportselects.countries.push({

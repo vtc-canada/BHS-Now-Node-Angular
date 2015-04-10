@@ -226,9 +226,9 @@ function buildReportData(report, phantom_bool, cb) {
 	    } else if (typeof (report.parameters[table.parameters[i]].prepfulltext) != 'undefined' && report.parameters[table.parameters[i]].prepfulltext) {
 		parameters.push(sails.controllers.utilities.prepfulltext(report.parameters[table.parameters[i]].value));
 	    } else if (typeof (report.parameters[table.parameters[i]].type) != 'undefined' && report.parameters[table.parameters[i]].type == 'multiselect') {
-		parameters.push((report.parameters[table.parameters[i]].value == null)?null:report.parameters[table.parameters[i]].value.toString());
+		parameters.push((report.parameters[table.parameters[i]].value == null)?null:((report.parameters[table.parameters[i]].value == '')?null:report.parameters[table.parameters[i]].value.toString()));
 	    } else {
-		parameters.push(report.parameters[table.parameters[i]].value);
+		parameters.push(report.parameters[table.parameters[i]].value==''?null:report.parameters[table.parameters[i]].value);
 	    }
 	}
 

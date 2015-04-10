@@ -108,6 +108,9 @@ function toClientDateTimeString(date){
   <div class="row report-main-content">
 <!-- Iterates through all the sections -->
 <% for (var i=0;i<data.length;i++){ %>
+
+    <% if(typeof(data[i])=='undefined'){ continue; } %>
+
     <% if((typeof(data[i].startrow)!='undefined') &&  data[i].startrow ){ %>
          <div class="row report-new-row <% if(data[i].unbreakable){ %>unbreakable<% } %>">
     <% } %>

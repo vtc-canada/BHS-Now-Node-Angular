@@ -58,45 +58,45 @@ var databases = [ {
 ];
 
 var tables = [ {
-   name : 'dp',
-   columns : {}
+    name : 'dp',
+    columns : {}
 }, {
-   name : 'dpcodes',
-   columns : {}
+    name : 'dpcodes',
+    columns : {}
 }, {
-   name : 'dpgift',
-   columns : {}
+    name : 'dpgift',
+    columns : {}
 }, {
-   name : 'dplink',
-   columns : {}
+    name : 'dplink',
+    columns : {}
 }, {
-   name : 'dpmisc',
-   columns : {}
+    name : 'dpmisc',
+    columns : {}
 }, {
-   name : 'dpothadd',
-   columns : {}
+    name : 'dpothadd',
+    columns : {}
 }, {
-   name : 'dpother',
-   columns : {}
+    name : 'dpother',
+    columns : {}
 }, {
-   name : 'dpplg',
-   columns : {}
+    name : 'dpplg',
+    columns : {}
 }, {
-   name : 'dpplg2',
-   columns : {}
+    name : 'dpplg2',
+    columns : {}
 }, {
-   name : 'dtbishop',
-   columns : {}
+    name : 'dtbishop',
+    columns : {}
 }, {
-   name : 'dtdondet',
-   columns : {}
+    name : 'dtdondet',
+    columns : {}
 }, {
-   name : 'dtdonmas',
-   columns : {}
-},{
+    name : 'dtdonmas',
+    columns : {}
+}, {
     name : 'dtdonsum',
     columns : {}
-} , {
+}, {
     name : 'dtmail',
     columns : {}
 }, {
@@ -125,8 +125,95 @@ var destination = 'fatima_center_donor_tracker_v2'; // Remember. this drops the
 // database.
 var destroy_database_BEWARE = false;
 
+var currencies = [ 'C', 'E', 'P', 'R', 'U' ];
+
 module.exports = {
 
+    paddexchange : function(req, res) {
+	Database.knex.raw('SELECT `id`, `currency_from`, `currency_to`, `exchange_rate`, DATE_FORMAT(date,"%Y-%m-%d") AS `date`  FROM dpexchange_history').exec(function(err, dpexchange) {
+	    if (err) {
+		return console.log('Failed getting DPExchange. ' + err);
+	    }
+	    var i = 0;
+	    var exchange = {};
+	    for ( var row in dpexchange[0]) {
+
+		i++;
+		if (typeof (exchange[dpexchange[0][row]['date']]) == 'undefined') {
+		    exchange[dpexchange[0][row]['date']] = {};
+		}
+		if (typeof (exchange[dpexchange[0][row]['date']][dpexchange[0][row]['currency_from']]) == 'undefined') {
+		    exchange[dpexchange[0][row]['date']][dpexchange[0][row]['currency_from']] = {};
+		}
+		exchange[dpexchange[0][row]['date']][dpexchange[0][row]['currency_from']][dpexchange[0][row]['currency_to']] = dpexchange[0][row]['exchange_rate'];
+		if (i % 100 == 0) {
+		    console.log(i);
+		}
+
+	    }// ,function(err,result){
+	    // console.log(JSON.stringify(exchange['2008-02-03']));
+
+	    setTimeout(function() {
+
+		var newobj = [];
+		var i = 0;
+		var j = 0;
+
+		for ( var date in exchange) {
+		    for ( var cFrom in currencies) {
+			for ( var cTo in currencies) {
+			    if (typeof (exchange[date][currencies[cFrom]]) == 'undefined' || typeof (exchange[date][currencies[cFrom]][currencies[cTo]]) == 'undefined') { // missing
+				var rate = 1;
+				if (currencies[cTo] != 'U') { // not to US
+								// //What about
+								// US to non-US
+				    if (currencies[cFrom] == 'U') {
+					rate = 1 / exchange[date][currencies[cTo]]['U']; // inverts
+											    // original
+				    } else {
+					rate = exchange[date][currencies[cFrom]]['U'] / exchange[date][currencies[cTo]]['U'];
+				    }
+				}
+				i++;
+				if(i>=10000){
+				    j++;
+				    i=0;
+				}
+				if (typeof (newobj[j]) == 'undefined') {
+				    newobj[j] = [];
+				}
+				    newobj[j].push({
+					currency_from : currencies[cFrom],
+					currency_to : currencies[cTo],
+					date : date,
+					exchange_rate : rate
+				    });
+			    }
+			}
+		    }
+		}
+
+		console.log('trying bulk insert ' + i + ' ' + j);
+
+		setTimeout(function() {
+		    async.eachSeries(newobj,function(obj,callback){
+			Database.knex('dpexchange_history').insert(obj).exec(function(err, response) {
+				callback(err,response);
+			    });
+		    },function(err,response){
+			if (err)
+			    console.log(err.toString());
+			res.json({
+			    loaded : 'Success'
+			});
+		    });
+
+		}, 500);
+	    }, 1000)
+
+	});
+
+    },
     languages : function(req, res) {
 	Database.knex('dp').select('id', 'LANGUAGE', 'ENGLISH', 'database_origin').exec(function(err, results) {
 	    if (err) {
@@ -236,7 +323,8 @@ module.exports = {
 		    // console.log('origin:'+dbknex.database_origin);//should be
 		    // integer
 
-		    dbknex.raw('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', ' + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ').exec( //LIMIT 50000
+		    dbknex.raw('INSERT INTO `' + destination + '`.`' + table.name + '` (' + columns + ', `database_origin`) SELECT ' + columnvalues + ', ' + dbknex.database_origin + '  FROM `' + dbknex.database_name + '`.`' + table.name + '` ').exec( // LIMIT
+																															    // 50000
 		    function(err, inserted) {
 			if (err) {
 			    console.log('ERROR:' + err.toString());

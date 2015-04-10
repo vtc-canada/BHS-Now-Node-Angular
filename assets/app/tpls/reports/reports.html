@@ -55,7 +55,7 @@
 							</div>
 						</div>
 						<div ng-if="parameter.type == 'multiselect'" class="col-sm-5 ">
-							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value" multiple></select2>
+							<select2 class="form-control" ng-disabled="false" name="report.multiselect" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value" multiple ></select2>
 						</div>
 						<div ng-if="parameter.type == 'select'" class="col-sm-5 ">
 							<select2 class="form-control" ng-disabled="false" name="report.select" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value"></select2>

@@ -40,6 +40,13 @@ module.exports = {
 			return callback(err);
 		    callback(null, titles);
 		});
+	    },
+	    currencies:function(callback){
+		Database.knex('dpcurrency').select('id','name','code').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
 	    }
 	}, function(err, result) {
 	    if (err)
