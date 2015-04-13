@@ -38,6 +38,10 @@ module.exports.policies = {
     'reports':{
         '*':'RoutePolicy',
         'view':true
+    },
+    'contacts':{
+	'*':'RoutePolicy',
+	'view_order':true
     }
     
     

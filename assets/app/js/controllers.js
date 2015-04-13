@@ -9,6 +9,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.selectedOrderSummary = null;
     $scope.selectedOrderDetails = null;
 
+    $scope.lastOrderFunds = null;
+
     $scope.selectedDataTableRow = {
 	'dpgift' : null,
 	'dpplg' : null,
@@ -490,8 +492,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	if (!angular.equals(newValue, oldValue)) {
 	    angular.forEach(newValue, function(row) {
 		// Update descriptions
-		if (typeof ($scope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($scope.litemdetails[row.LITEMP].description)) {
+		if (typeof ($scope.litemdetails) != 'undefined' && typeof ($scope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($scope.litemdetails[row.LITEMP].description)) {
 		    row.LITEMD = $scope.litemdetails[row.LITEMP].description;
+		    row.LPRICE = $scope.litemdetails[row.LITEMP].price;
 		    // $scope.selectedOrderSummary.is_modified = true;
 		}
 		// if(row.LITEMP)
@@ -504,10 +507,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	if (!angular.equals(newValue, oldValue)) {
 	    if (vm.blockOrderSelectedModified) {
 		vm.blockOrderSelectedModified = false;
+		$scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS; //Backs up last funds
 	    } else {
 		if ($scope.selectedOrderSummary) {
 		    $scope.selectedOrderSummary.is_modified = true;
 		}
+
 		// TODO : BLOCK THIS IF IT's opening some old order with
 		// previous
 		// shipping calculating values..- based on date basically....
@@ -531,6 +536,23 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    }
 			}
 		    }
+
+		    if ($scope.selectedOrderSummary.FUNDS != 'C') { // forces canadian taxes off
+			$scope.selectedOrderSummary.HST = 'N';
+			$scope.selectedOrderSummary.GST = 'N';
+			$scope.selectedOrderSummary.PST = 'N';
+		    } else if ($scope.lastOrderFunds != 'C') { //from another currency
+			$scope.selectedOrderSummary.HST = 'Y';
+			$scope.selectedOrderSummary.GST = 'N';
+			$scope.selectedOrderSummary.PST = 'N';
+		    }
+		    if ($scope.lastOrderFunds != $scope.selectedOrderSummary.FUNDS && $scope.selectedOrderSummary.FUNDS != 'C' && $scope.selectedOrderSummary.FUNDS != 'U') { // foreign
+			$scope.selectedOrderSummary.SANDH = 'N'; //manual
+		    } else if ($scope.lastOrderFunds != $scope.selectedOrderSummary.FUNDS && ($scope.selectedOrderSummary.FUNDS == 'C' || $scope.selectedOrderSummary.FUNDS == 'U')) { // american/canadian
+			$scope.selectedOrderSummary.SANDH = 'Y'; //auto
+		    }
+
+		    $scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS;
 
 		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
 			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
@@ -566,7 +588,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			}
 
 			hstcalc += (itemp / exchangerate) * hstrate; // sums
-									// up
+			// up
 			// item
 			// taxes
 			gstcalc += (itemp / exchangerate) * gstrate;
@@ -609,6 +631,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				eship = $scope.selectedOrderSummary.ECONV * 0.12;
 			    }
 			}
+			$scope.selectedOrderSummary.SANDHAMT = 0;
 		    } else {
 			eship = $scope.selectedOrderSummary.SANDHAMT;
 		    }
@@ -628,13 +651,64 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.selectedOrderSummary.GSTCALC = gstcalc;
 		    $scope.selectedOrderSummary.PSTCALC = pstcalc;
 
-		    $scope.selectedOrderSummary.GTOTAL = $scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP + $scope.selectedOrderSummary.HSTCALC + $scope.selectedOrderSummary.GSTCALC + $scope.selectedOrderSummary.PSTCALC;
+		    // Currency has to be in US dollars and COUNTY must be set to have NY tax
+		    $scope.selectedOrderSummary.NYTAX = ($scope.selectedOrderSummary.COUNTY == null || $scope.selectedOrderSummary.FUNDS != 'U' ? 0 : $rootScope.county_rates[$scope.selectedOrderSummary.COUNTY]);
+		    $scope.selectedOrderSummary.NYTCALC = ($scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP) * ($scope.selectedOrderSummary.NYTAX / 100);
+
+		    $scope.selectedOrderSummary.GTOTAL = $scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP + $scope.selectedOrderSummary.HSTCALC + $scope.selectedOrderSummary.GSTCALC + $scope.selectedOrderSummary.PSTCALC + $scope.selectedOrderSummary.NYTCALC;
 
 		}
 	    }
 
 	}
+	function getNYTAX() {
+	    if ($scope.selectedOrderSummary.COUNTY == null) {
+		return 0;
+	    }
+
+	}
+
     }, true);
+
+    $scope.getNYTaxLabel = function(county_c) {
+	if (typeof (county_c) == 'undefined' || typeof ($rootScope.county_rates) == 'undefined') {
+	    return null;
+	}
+	return $rootScope.county_rates[county_c] + '%';
+    }
+
+    $scope.exportOrder = function() {
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'export-order-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.exporting_order = true;
+	var exportOrder = angular.copy($scope.selectedOrderSummary);
+	exportOrder.timezoneoffset = new Date().getTimezoneOffset();  // gets client timezone
+	exportOrder.SHIPFROM = $scope.ship_name[exportOrder.SHIPFROM];
+	exportOrder.FUNDS = $scope.fundsFormat(exportOrder.FUNDS);
+	$sails.post('/contacts/export_order', {
+	    order : exportOrder
+	}).success(function(response) {
+	    if (response.error != undefined) { // USER NO LONGER
+		// LOGGEDIN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    $timeout(function() {
+		// $rootScope.pdfurl = response.pdfurl;
+		$rootScope.order_export_pdf = response.pdfurl;
+		delete $rootScope.exporting_order;
+	    }, 0);
+	});
+    }
+
+    $scope.fundsFormat = function(fund) {
+	if (typeof (fund) == 'undefined' || typeof ($rootScope.currency_format) == 'undefined') {
+	    return null;
+	}
+	return $rootScope.currency_format[fund].code;
+    }
 
     $scope.getDatatableDeleteButtonDisabled = function(table_name) {
 	return ($scope.selectedDataTableRow[table_name] == null);
@@ -1062,17 +1136,26 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.exchange = angular.copy(data.exchange);
 
 	    $scope.ship_from = [];
+	    $scope.ship_name = {};
 	    for (var i = 0; i < data.ship_from.length; i++) {
 		$scope.ship_from.push({
 		    id : data.ship_from[i].CODE,
 		    label : data.ship_from[i].CODE + " - " + data.ship_from[i].DESC
 		});
+		$scope.ship_name[data.ship_from[i].CODE] = data.ship_from[i].DESC;
 	    }
+
+	    $rootScope.currency_format = {};
 
 	    $rootScope.all_currencies = [];
 	    $rootScope.non_us_currencies = [];
 
 	    for (var i = 0; i < data.currencies.length; i++) {
+
+		$rootScope.currency_format[data.currencies[i].id] = {
+		    name : data.currencies[i].name,
+		    code : data.currencies[i].code
+		};
 		$rootScope.all_currencies.push({
 		    id : data.currencies[i].id,
 		    label : data.currencies[i].name
@@ -1324,12 +1407,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.countries[i].CODE
 		});
 	    }
+	    $rootScope.county_rates = {};
+
 	    $rootScope.county_codes = [];
 	    for (var i = 0; i < data.county_codes.length; i++) {
 		$rootScope.county_codes.push({
 		    id : data.county_codes[i].CODE,
 		    label : data.county_codes[i].CODE
 		});
+		$rootScope.county_rates[data.county_codes[i].CODE] = data.county_codes[i].MCAT_LO;
 	    }
 	    $rootScope.phone_types = [];
 	    for (var i = 0; i < data.phone_types.length; i++) {
@@ -1367,7 +1453,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.helpers = public_vars.helpers;
     var vm = this;
 
-}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $reports, $reportselects, $sails, $http, $modal) {
+}).controller('ReportSearch', function($scope, $rootScope, $sce, $timeout, $filter, $reports, $reportselects, $sails, $http, $modal) {
     var vm = this;
     vm.$scope = $scope;
     $scope.reportselects = {};
@@ -1377,10 +1463,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.reporthtml = null;
     angular.forEach($scope.report.parameters, function(parameter, key) {
 	if (parameter.type == 'datetime') {
-	    parameter.value = '2013-01-01';
+	    parameter.value =  $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
 	}
 	if (key == 'end_time') {
-	    parameter.value = '2013-01-03';
+	    parameter.value = $filter('date')(new Date(), 'yyyy-MM-dd');//'2013-01-03';
 	}
     });
 
@@ -1517,7 +1603,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		location.reload(); // Will boot back to login screen
 	    }
 	    var data = data.result;
-	    
+
 	    $scope.reportselects.currencies = [];
 	    for (var i = 0; i < data.currencies.length; i++) {
 		$scope.reportselects.currencies.push({
@@ -1526,7 +1612,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    code : data.currencies[i].code
 		});
 	    }
-	    
+
 	    $scope.reportselects.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$scope.reportselects.countries.push({

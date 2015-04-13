@@ -17,7 +17,7 @@ module.exports = {
     getfxechangeattributes : function(req, res) {
 	async.parallel({
 	    currencies : function(callback) {
-		Database.knex('dpcurrency').select('id', 'name').exec(function(err, titles) {
+		Database.knex('dpcurrency').select('id', 'name', 'code').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -131,7 +131,7 @@ module.exports = {
 		});
 	    },
 	    currencies : function(callback) {
-		Database.knex('dpcurrency').select('id', 'name').exec(function(err, titles) {
+		Database.knex('dpcurrency').select('id', 'name', 'code').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -291,7 +291,7 @@ module.exports = {
 		});
 	    },
 	    county_codes : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC','MCAT_LO').where({
 		    FIELD : 'COUNTY'
 		}).exec(function(err, results) {
 		    if (err)

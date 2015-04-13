@@ -83,6 +83,9 @@ module.exports = {
 				    }
 
 				    for (var i = 0; i < data.length; i++) {
+					if(typeof(data[i])=='undefined'){
+					    continue;
+					}
 					for (var j = 0; j < data[i].data.length; j++) { /// Add header, footer, totals, based on report Config settings TODO
 					    for (var k = 0; k < data[i].data[j].length; k++) {
 						if (k > 0) {

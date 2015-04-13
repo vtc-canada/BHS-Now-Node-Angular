@@ -7,6 +7,89 @@
 
 module.exports = {
 
+    export_order : function(req, res) {
+	var order = req.body.order;
+	var phantom = require('node-phantom');
+	var fs = require("fs");
+	var footnotes = order.footnotes || [];
+	var orientation = order.orientation || 'portrait';
+	order.locale = req.session.user.locale || 'en';
+	order.footer = {
+	    logo : 'default.png'
+	};
+
+	phantom.create(function(err, ph) {
+	    ph.createPage(function(err, page) {
+		page.set('viewportSize', {
+		    width : 1024,
+		    height : 480
+		});
+		var path = sails.config.appPath + '\\assets\\reports\\footer\\' + order.footer.logo;
+		fs.readFile(path, function(err, original_data) {
+		    var base64Image = original_data.toString('base64');
+
+		    footerheight = (orientation == 'landscape' ? 15 : 30) + (4 * footnotes.length) + (footnotes.length > 0 ? 5 : 0);
+		    page.set('paperSize', {
+			format : 'A4',
+			orientation : orientation,
+			header : {
+
+			    height : "1cm",
+			    contents : ''
+			},
+			footer : {
+			    height : footerheight + "mm", // 30mm
+			    footnotes : footnotes,
+			    logo : 'data:image/png;base64,' + base64Image,
+			    bot_left : toClientDateTimeString(new Date(), order.timezoneoffset),
+			    orientation : orientation
+			}
+		    }, function() {
+			var start = new Date().getTime();
+			console.log(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)));
+			page.open(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)), function() {
+			    var reportName = 'invoice_' + new Date().getTime();  //report.name.locale_label[report.locale] + 
+			    var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
+			    var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
+
+			    page.render(filename, function() {
+				var end = new Date().getTime();
+				console.log('Page Rendered in ' + (end - start).toString() + 'ms.');
+				ph.exit();
+
+				res.json({
+				    pdfurl : url,
+				});
+			    });
+			});
+		    });
+		});
+	    })
+	});
+	
+//	res.json({
+//	    success : 'Test',
+//	    pdfurl : '/test/url/'
+//	});
+
+    },
+    view_order : function(req, res) {
+	var order;
+	// var pass_locale;
+	// var phantom_bool;
+	if (typeof (req.query) != 'undefined' && typeof (req.query.order) != 'undefined') {
+	    // see if we're passing in the report stuff as GET parameters
+	    order = JSON.parse(req.query.order);
+	    // pass_locale = report.locale;
+	    // phantom_bool = true;
+	}
+	res.view('reports/invoice.ejs', {
+	    phantom : true,
+	    layout : false,
+	    title : '',
+	    order : order
+	});
+    },
     save : function(req, res) {
 	var contact = req.body;
 	if (contact.id == 'new') { // New Contact.
@@ -928,7 +1011,7 @@ module.exports = {
 		    SAL : results[i].SAL || ''
 		});
 	    }
-	    //console.log(bodystring);
+	    // console.log(bodystring);
 
 	    var exportName = 'contacts_' + new Date().getTime();
 	    var filenamecsv = '.tmp\\public\\data\\' + exportName + '.csv';
@@ -1011,7 +1094,7 @@ module.exports = {
 	}
 
 	var innerOrderOffsetLimit = '';
-	if (searchmode) {//req.body.columns && req.body.order) {
+	if (searchmode) {// req.body.columns && req.body.order) {
 	    innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
 	}
 
@@ -1191,3 +1274,17 @@ module.exports = {
 
     }
 };
+
+function toClientDateTimeString(date, offset) {
+    var tdate = new Date(date.getTime());
+    tdate = new Date(tdate.setMinutes(tdate.getMinutes() - offset)); // SHIFTING
+    // HERE!!!
+    return tdate.getUTCFullYear() + '-' + padLeft((tdate.getUTCMonth() + 1).toString(), 2) + '-' + padLeft(tdate.getUTCDate(), 2) + ' ' + padLeft(tdate.getUTCHours(), 2) + ':' + padLeft(tdate.getUTCMinutes(), 2) + ':' + padLeft(tdate.getUTCSeconds(), 2);
+}
+
+function padLeft(nr, n, str) {
+    if (String(nr).length >= n) {
+	return String(nr);
+    }
+    return Array(n - String(nr).length + 1).join(str || '0') + nr;
+}

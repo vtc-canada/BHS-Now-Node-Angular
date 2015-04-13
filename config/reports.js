@@ -25,7 +25,7 @@ module.exports.views = {
 		    }
 		},
 		title : {
-		    logo : 'iSystemsNow-Logo-RGB-Black.png'
+		    logo : 'Fatima-Center-Logo.png'
 		},
 		footer : {
 		    logo : 'default.png'
@@ -654,7 +654,7 @@ module.exports.views = {
 		    }
 		},
 		title : {
-		    logo : 'iSystemsNow-Logo-RGB-Black.png'
+		    logo : 'Fatima-Center-Logo.png'
 		},
 		footer : {
 		    logo : 'default.png'
@@ -1328,7 +1328,7 @@ module.exports.views = {
 		    }
 		},
 		title : {
-		    logo : 'iSystemsNow-Logo-RGB-Black.png'
+		    logo : 'Fatima-Center-Logo.png'
 		},
 		footer : {
 		    logo : 'default.png'
@@ -1519,9 +1519,10 @@ module.exports.views = {
 		    },
 		    'currency' : {
 			order : 2,
-			type : 'text',
-			value : 1,
-			hidden : true,
+			type : 'select',
+			source : 'currencies',
+			value : 'U',
+			hidden : false,
 			locale_label : {
 			    en : 'Currency'
 			}
@@ -1555,7 +1556,7 @@ module.exports.views = {
 		    }
 		},
 		title : {
-		    logo : 'iSystemsNow-Logo-RGB-Black.png'
+		    logo : 'Fatima-Center-Logo.png'
 		},
 		footer : {
 		    logo : 'default.png'
@@ -1934,7 +1935,7 @@ module.exports.views = {
 		    }
 		},
 		title : {
-		    logo : 'iSystemsNow-Logo-RGB-Black.png'
+		    logo : 'Fatima-Center-Logo.png'
 		},
 		footer : {
 		    logo : 'default.png'
