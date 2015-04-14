@@ -83,10 +83,20 @@ module.exports = {
 				    }
 
 				    for (var i = 0; i < data.length; i++) {
-					if(typeof(data[i])=='undefined'){
+					if (typeof (data[i]) == 'undefined') {
 					    continue;
 					}
-					for (var j = 0; j < data[i].data.length; j++) { /// Add header, footer, totals, based on report Config settings TODO
+					for (var j = 0; j < data[i].data.length; j++) { // /
+					    // Add
+					    // header,
+					    // footer,
+					    // totals,
+					    // based
+					    // on
+					    // report
+					    // Config
+					    // settings
+					    // TODO
 					    for (var k = 0; k < data[i].data[j].length; k++) {
 						if (k > 0) {
 						    outputstring += ",";
@@ -207,8 +217,36 @@ function buildReportData(report, phantom_bool, cb) {
     line.push(report.name.locale_label[report.locale]);
     if (typeof (start_label) != 'undefined') {
 	line.push(start_label + ': ' + toClientDateTimeString(start_datetime, report.timezoneoffset));
-    } else if (typeof (end_label) != 'undefined') {
+    }
+    if (typeof (end_label) != 'undefined') {
 	line.push(end_label + ': ' + toClientDateTimeString(end_datetime, report.timezoneoffset));
+    }
+    for ( var key in report.parameters) {
+	if (report.parameters.hasOwnProperty(key) && key != 'start_time' && key != 'end_time') {
+	    if (typeof (report.parameters[key].value) != 'undefined' && report.parameters[key].value != null && report.parameters[key].value != '') {
+		if (report.parameters[key].source == 'currencies') {
+		    var paramV = null;
+		    if (report.parameters[key].value == 'U') {
+			paramV = 'USD';
+		    }
+		    if (report.parameters[key].value == 'C') {
+			paramV = 'CAD';
+		    }
+		    if (report.parameters[key].value == 'P') {
+			paramV = 'PHP';
+		    }
+		    if (report.parameters[key].value == 'E') {
+			paramV = 'EUR';
+		    }
+		    if (report.parameters[key].value == 'R') {
+			paramV = 'INR';
+		    }
+		    line.push(report.parameters[key].locale_label[report.locale] + ': ' + paramV);
+		} else {
+		    line.push(report.parameters[key].locale_label[report.locale] + ': ' + report.parameters[key].value);
+		}
+	    }
+	}
     }
 
     header.line = line;
@@ -229,9 +267,9 @@ function buildReportData(report, phantom_bool, cb) {
 	    } else if (typeof (report.parameters[table.parameters[i]].prepfulltext) != 'undefined' && report.parameters[table.parameters[i]].prepfulltext) {
 		parameters.push(sails.controllers.utilities.prepfulltext(report.parameters[table.parameters[i]].value));
 	    } else if (typeof (report.parameters[table.parameters[i]].type) != 'undefined' && report.parameters[table.parameters[i]].type == 'multiselect') {
-		parameters.push((report.parameters[table.parameters[i]].value == null)?null:((report.parameters[table.parameters[i]].value == '')?null:report.parameters[table.parameters[i]].value.toString()));
+		parameters.push((report.parameters[table.parameters[i]].value == null) ? null : ((report.parameters[table.parameters[i]].value == '') ? null : report.parameters[table.parameters[i]].value.toString()));
 	    } else {
-		parameters.push(report.parameters[table.parameters[i]].value==''?null:report.parameters[table.parameters[i]].value);
+		parameters.push(report.parameters[table.parameters[i]].value == '' ? null : report.parameters[table.parameters[i]].value);
 	    }
 	}
 
@@ -293,9 +331,9 @@ function buildReportData(report, phantom_bool, cb) {
 	});
     }, function(err, results) {
 	cb(data);
-	//if (phantom_bool) {
-	//    DataCache.destroy(report.cacheId);
-	//}
+	// if (phantom_bool) {
+	// DataCache.destroy(report.cacheId);
+	// }
     });
 
     /*

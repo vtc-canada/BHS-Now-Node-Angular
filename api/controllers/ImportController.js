@@ -128,6 +128,7 @@ var destroy_database_BEWARE = false;
 var currencies = [ 'C', 'E', 'P', 'R', 'U' ];
 
 module.exports = {
+    
 
     paddexchange : function(req, res) {
 	Database.knex.raw('SELECT `id`, `currency_from`, `currency_to`, `exchange_rate`, DATE_FORMAT(date,"%Y-%m-%d") AS `date`  FROM dpexchange_history').exec(function(err, dpexchange) {

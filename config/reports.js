@@ -1504,7 +1504,6 @@ module.exports.views = {
 		    'start_time' : {
 			order : 0,
 			type : 'datetime',
-			value : '2010-04-08',
 			locale_label : {
 			    en : 'Start Time'
 			}
@@ -1512,7 +1511,6 @@ module.exports.views = {
 		    'end_time' : {
 			order : 1,
 			type : 'datetime',
-			value : '2010-04-08',
 			locale_label : {
 			    en : 'End Time'
 			}

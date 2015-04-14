@@ -1465,9 +1465,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	if (parameter.type == 'datetime') {
 	    parameter.value =  $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
 	}
-	if (key == 'end_time') {
-	    parameter.value = $filter('date')(new Date(), 'yyyy-MM-dd');//'2013-01-03';
-	}
     });
 
     $scope.report_id = $scope.report.id; // first ID
@@ -1478,6 +1475,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    for ( var key in $reports) {
 		if ($reports[key].id == $scope.report_id) {
 		    $scope.report = $reports[key];
+		    angular.forEach($scope.report.parameters, function(parameter, key) {
+			if (parameter.type == 'datetime') {
+			    parameter.value =  $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
+			}
+		    });
 		    $rootScope.report = $scope.report;
 		    return;
 		}
