@@ -3600,6 +3600,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    userProfile : true
 	},
 	chat : {
+	    iconVisible : true,
 	    isOpen : false,
 	},
 	settingsPane : {
