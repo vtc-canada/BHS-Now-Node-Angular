@@ -455,6 +455,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// $scope.dpordersummary.
 	// alert('a');
     }
+    
+    $scope.getLEXT = function(row){
+	return $filter('currency')(row.LPRICE * row.LQTY, '$', 2);
+	 
+    };
 
     $scope.addDpDetail = function() {
 	// $scope.contact.
@@ -677,6 +682,30 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	return $rootScope.county_rates[county_c] + '%';
     }
 
+    $scope.exportContact = function() {
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'export-contact-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.exporting_contact = true;
+
+	$sails.post('/contacts/export_contact', {
+	    id : $scope.contact.id,
+	    timezoneoffset : new Date().getTimezoneOffset()
+	}).success(function(response) {
+	    if (response.error != undefined) { // USER NO LONGER
+		// LOGGEDIN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    $timeout(function() {
+		// $rootScope.pdfurl = response.pdfurl;
+		$rootScope.contact_export_pdfurl = response.pdfurl;
+		delete $rootScope.exporting_contact;
+	    }, 0);
+	});
+    }
+
     $scope.exportOrder = function() {
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : 'export-order-modal',
@@ -685,7 +714,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
 	$rootScope.exporting_order = true;
 	var exportOrder = angular.copy($scope.selectedOrderSummary);
-	exportOrder.timezoneoffset = new Date().getTimezoneOffset();  // gets client timezone
+	exportOrder.timezoneoffset = new Date().getTimezoneOffset(); // gets client timezone
 	exportOrder.SHIPFROM = $scope.ship_name[exportOrder.SHIPFROM];
 	exportOrder.FUNDS = $scope.fundsFormat(exportOrder.FUNDS);
 	$sails.post('/contacts/export_order', {
@@ -1463,7 +1492,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.reporthtml = null;
     angular.forEach($scope.report.parameters, function(parameter, key) {
 	if (parameter.type == 'datetime') {
-	    parameter.value =  $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
+	    parameter.value = $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
 	}
     });
 
@@ -1477,7 +1506,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.report = $reports[key];
 		    angular.forEach($scope.report.parameters, function(parameter, key) {
 			if (parameter.type == 'datetime') {
-			    parameter.value =  $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
+			    parameter.value = $filter('date')(new Date(), 'yyyy-MM-dd');// '2013-01-01';
 			}
 		    });
 		    $rootScope.report = $scope.report;
@@ -1620,6 +1649,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$scope.reportselects.countries.push({
 		    id : data.countries[i].COUNTRY,
 		    label : data.countries[i].COUNTRY
+		});
+	    }
+
+	    $scope.reportselects.ship_from = [];
+	    for (var i = 0; i < data.ship_from.length; i++) {
+		$scope.reportselects.ship_from.push({
+		    id : data.ship_from[i].CODE,
+		    label : data.ship_from[i].DESC
 		});
 	    }
 

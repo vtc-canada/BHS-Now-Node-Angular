@@ -1,6 +1,27 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
 
+<script type="text/ng-template" id="export-contact-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Contact Export</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		<div ng-show="exporting_contact">
+		Generating Export
+		<span >&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span>
+		</div>
+		<div ng-hide="exporting_contact">
+			<a class="btn btn-success" href="{{contact_export_pdfurl}}" target="_blank">Download PDF</a>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+	</div>
+</script>
+
 <script type="text/ng-template" id="export-contacts-modal">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
@@ -1019,6 +1040,9 @@
 									<h3 class="panel-title">Contact Information</h3>
 									
 									<div class="pull-right isn-panel-pull-right">
+										<div type="submit" class="btn btn-white" ng-class="{true: '', false: 'disabled'}[contact.is_modified == false]" ng-click="exportContact()">Export PDF<span ng-show="false">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+									</div>
+									<div class="pull-right pull-right-stack isn-panel-pull-right">
 										<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[contact.is_modified == false]" ng-click="saveContact('layman')">Save<span ng-show="contact.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
 									</div>
 									<div ng-show="contact.is_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
@@ -1153,7 +1177,7 @@
 													{{note.created | date:'medium' }}
 												</div>
 												<div class="col-sm-2">
-													Administrator
+													{{note.user}}
 												</div>
 												<div class="col-sm-6">
 													<pre class="isn-note-pre" ng-hide="note.focused">{{ note.text || ''}}</pre>
@@ -3072,7 +3096,8 @@
 										<td><input type="number" class="form-control" ng-model="row.LPRICE" ng-model-options="" placeholder=""></td>
 										<!--<td><input type="number" class="form-control" id="row.LPRICE" ng-model="row.LPRICE" ng-model-options="" placeholder="">{{row.LCURR}}</td>-->
 										<td><input type="number" class="form-control" ng-model="row.LDISC" ng-model-options="" placeholder=""></td>
-										<td><input type="number" class="form-control" ng-model="row.LEXT" ng-model-options="" placeholder=""></td>
+										<td>{{ getLEXT(row); }}</td>
+										
 										<!--<td><select2 class="form-control" name="row.LSTOC" ng-options="title.id as title.label for title in staticyesno" ng-model="row.LSTOC"></select2></td>-->
 										<td><button class="btn btn-danger" ng-click="deleteDpDetail(row)">Delete</button></td>
 									</tr>	
@@ -3101,7 +3126,7 @@
 										<label class="col-xs-5 control-label" for="selectedOrderSummary.ECONV">Subtotal ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.ECONV | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.ECONV |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3112,7 +3137,7 @@
 										<label class="col-xs-5 control-label" >Shipping and Handling ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.ESHIP | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.ESHIP |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3123,7 +3148,7 @@
 										<label class="col-xs-5 control-label" >New York Tax ({{getNYTaxLabel(selectedOrderSummary.COUNTY)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.NYTCALC | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.NYTCALC |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3135,7 +3160,7 @@
 										<label class="col-xs-5 control-label" >HST ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.HSTCALC | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.HSTCALC |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3146,7 +3171,7 @@
 										<label class="col-xs-5 control-label" >GST ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.GSTCALC | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.GSTCALC |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3157,7 +3182,7 @@
 										<label class="col-xs-5 control-label" >PST ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.PSTCALC | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.PSTCALC |  currency : '$' : 2}}</label>
 										</div>
 									</div>
 								</div>
@@ -3173,7 +3198,7 @@
 										<label class="col-xs-5 control-label" for="selectedOrderSummary.GTOTAL">Grand Total ({{fundsFormat(selectedOrderSummary.FUNDS)}}):</label>
 				
 										<div class="col-xs-7">
-											<label class="control-label control-label-value" >{{selectedOrderSummary.GTOTAL | number : 2}}</label>
+											<label class="control-label control-label-value" >{{selectedOrderSummary.GTOTAL | currency : selectedOrderSummary.FUNDS=='C'?'$':'&' : 2}}</label>
 										</div>
 									</div>
 								</div>

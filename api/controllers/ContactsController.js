@@ -48,7 +48,8 @@ module.exports = {
 			var start = new Date().getTime();
 			console.log(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)));
 			page.open(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)), function() {
-			    var reportName = 'invoice_' + new Date().getTime();  //report.name.locale_label[report.locale] + 
+			    var reportName = 'invoice_' + new Date().getTime(); // report.name.locale_label[report.locale]
+										// +
 			    var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
 			    var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
 
@@ -66,12 +67,29 @@ module.exports = {
 		});
 	    })
 	});
-	
-//	res.json({
-//	    success : 'Test',
-//	    pdfurl : '/test/url/'
-//	});
 
+	// res.json({
+	// success : 'Test',
+	// pdfurl : '/test/url/'
+	// });
+
+    },
+    view_contact : function(req,res){
+	var contact;
+	// var pass_locale;
+	// var phantom_bool;
+	if (typeof (req.query) != 'undefined' && typeof (req.query.contact) != 'undefined') {
+	    // see if we're passing in the report stuff as GET parameters
+	    contact = JSON.parse(req.query.contact);
+	    // pass_locale = report.locale;
+	    // phantom_bool = true;
+	}
+	res.view('reports/contact.ejs', {
+	    phantom : true,
+	    layout : false,
+	    title : '',
+	    contact : contact
+	});
     },
     view_order : function(req, res) {
 	var order;
@@ -740,7 +758,94 @@ module.exports = {
 	    });
 	}
     },
+    export_contact : function(req, res) {
+	// sails.cont
+	sails.controllers.contacts.doGetContact(req, res, function(err, results) {
+	    if (err) {
+		return res.json(err, 500);
+	    }
+	    var contact = results['contact'];
+	    contact.timezoneoffset = req.body.timezoneoffset;
+	    for(var i=0;i<contact.notes.layman.length;i++){
+		contact.notes.layman[i].last_modified = toClientDateTimeString(contact.notes.layman[i].last_modified,contact.timezoneoffset);
+		
+	    }
+	    
+	    
+	    var phantom = require('node-phantom');
+	    var fs = require("fs");
+	    var footnotes =  [];
+	    var orientation =  'portrait';
+	    contact.locale = req.session.user.locale || 'en';
+	    contact.footer = {
+		logo : 'default.png'
+	    };
+
+	    phantom.create(function(err, ph) {
+		ph.createPage(function(err, page) {
+		    page.set('viewportSize', {
+			width : 1024,
+			height : 480
+		    });
+		    var path = sails.config.appPath + '\\assets\\reports\\footer\\' + contact.footer.logo;
+		    fs.readFile(path, function(err, original_data) {
+			var base64Image = original_data.toString('base64');
+
+			footerheight = (orientation == 'landscape' ? 15 : 30) + (4 * footnotes.length) + (footnotes.length > 0 ? 5 : 0);
+			page.set('paperSize', {
+			    format : 'A4',
+			    orientation : orientation,
+			    header : {
+
+				height : "1cm",
+				contents : ''
+			    },
+			    footer : {
+				height : footerheight + "mm", // 30mm
+				footnotes : footnotes,
+				logo : 'data:image/png;base64,' + base64Image,
+				bot_left : toClientDateTimeString(new Date(), contact.timezoneoffset),
+				orientation : orientation
+			    }
+			}, function() {
+			    var start = new Date().getTime();
+			    console.log(sails.getBaseurl() + '/contacts/view_contact?contact=' + encodeURIComponent(JSON.stringify(contact)));
+			    page.open(sails.getBaseurl() + '/contacts/view_contact?contact=' + encodeURIComponent(JSON.stringify(contact)), function() {
+				var reportName = 'contact_' + new Date().getTime(); // report.name.locale_label[report.locale]
+										    // +
+				var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
+				var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
+
+				page.render(filename, function() {
+				    var end = new Date().getTime();
+				    console.log('Page Rendered in ' + (end - start).toString() + 'ms.');
+				    ph.exit();
+
+				    res.json({
+					pdfurl : url,
+				    });
+				});
+			    });
+			});
+		    });
+		})
+	    });
+
+	});
+    },
     getcontact : function(req, res) {
+
+	sails.controllers.contacts.doGetContact(req, res, function(err, results) {
+	    if (err) {
+		return res.json(err, 500);
+	    }
+	    res.json({
+		success : 'Donor data.',
+		contact : results['contact']
+	    });
+	});
+    },
+    doGetContact : function(req, res, getContactCallback) {
 	var contactId = req.body.id;
 	// Database.knex
 	// .raw()
@@ -905,18 +1010,15 @@ module.exports = {
 		    }
 		}, function(err, results) {
 		    if (err)
-			return res.json(err, 500);
+			return getContactCallback(err);
+		    // return res.json(err, 500);
 		    for ( var key in results) {
 			if (key != 'contact') {
 			    results['contact'][key] = results[key];
 			}
 		    }
+		    getContactCallback(null, results);
 
-		    res.json({
-			success : 'Donor data.',
-			contact : results['contact']
-		    // customer[0][0]
-		    });
 		});
 	// });
 

@@ -2315,8 +2315,388 @@ module.exports.views = {
 			}
 		    }
 		}
+	    },
+	    {
+		id : 6,
+		name : {
+		    locale_label : {
+			en : 'Volunteer Inventory Report'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		orientation:'portrait',
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_VolunteerInventoryReport',
+		    parameters : [ 'start_time', 'end_time', 'start_ship_time', 'end_ship_time','ship_from_codes', 'includecountries','excludecountries' ],
+		    section : {
+			startrow : true,
+			endrow : true,
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "Item #"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : 'Totals',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Description"
+			},
+			align : 'left',
+			titlealign : 'left',
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Order Quantity"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    } ]
+		} ],
+		parameters : {
+		    'start_time' : {
+			order : 0,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Time'
+			}
+		    },
+		    'end_time' : {
+			order : 1,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Time'
+			}
+		    },
+		    'start_ship_time' : {
+			order : 2,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Ship Time'
+			}
+		    },
+		    'end_ship_time' : {
+			order : 3,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Ship Time'
+			}
+		    },
+		    'ship_from_codes' : {
+			order : 4,
+			type : 'multiselect',
+			source: 'ship_from',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Ship From'
+			}
+		    },
+		    'includecountries' : {
+			order : 5,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Include Country'
+			}
+		    },
+		    'excludecountries' : {
+			order : 6,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Exclude Country'
+			}
+		    }
+		}
 	    }
+	    , {
+		id : 7,
+		name : {
+		    locale_label : {
+			en : 'Donor History Report'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_DonorHistoryReport',
+		    parameters : [ 'includecountry','excludecountry' ],
+		    pivot : {
+			id : 'Date',
+			name : 'Donor Status',
+			value : 'Count',
+			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, TOTAL:4, 'Inactive to Lapsed':5, 'Lapsed to Active':6, 'Reinstated':7 , 'Removed':8, 'Active to Inactive':9, 'Inactive to Active':10}
+		    },
+		    section : {
+			startrow : true,
+			endrow : true,
+			unbreakable : true,
+			groupheading : {
+			    spantype : 'col-xs-12',
+			    grid : [ [ {
+				val : 'Donors',
+				bold : true
+			    } ] ]
+			},
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "Date"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : 'Totals',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Active"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Inactive"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "New"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Total"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Inactive to Lapsed"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    } , {
+			locale : {
+			    en : "Lapsed to Active"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    } , {
+			locale : {
+			    en : "Reinstated"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    } , {
+			locale : {
+			    en : "Removed"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Active to Inactive"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Inactive to Active"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }]
+		} ],
+		parameters : {
 
+		    'includecountry' : {
+			order : 0,
+			type : 'multiselect',
+			source:'countries',
+			value : null,
+			locale_label : {
+			    en : 'Include Country'
+			}
+		    },'excludecountry' : {
+			order : 1,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			locale_label : {
+			    en : 'Exclude Country'
+			}
+		    }
+		}
+	    },
+	    {
+		id : 8,
+		name : {
+		    locale_label : {
+			en : 'Pledge DelinquentReport'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		orientation:'portrait',
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_PledgeDelinquentReport',
+		    parameters : [ 'includecountries','excludecountries' ],
+		    section : {
+			startrow : true,
+			endrow : true,
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "Donor #"
+			}
+		    }, {
+			locale : {
+			    en : "Name"
+			},
+			align : 'left',
+			titlealign : 'left'
+		    }, {
+			locale : {
+			    en : "Address"
+			}
+		    }, {
+			locale : {
+			    en : "Last Pledge Payment"
+			}
+		    } ]
+		} ],
+		parameters : {
+		    'includecountries' : {
+			order : 0,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Include Country'
+			}
+		    },
+		    'excludecountries' : {
+			order : 1,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Exclude Country'
+			}
+		    }
+		}
+	    }
 	    ]
 	}
     }

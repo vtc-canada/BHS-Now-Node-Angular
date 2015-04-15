@@ -464,6 +464,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.notes[noteType].push({
 		id : null,
 		tempId : Math.floor((Math.random() * 100000) + 1),
+		user : $rootScope.firstname,
 		DONOR : null,
 		type : noteType,
 		text : null,

@@ -77,7 +77,7 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 	    $rootScope.isLightLoginPage = false;
 	    $rootScope.isLockscreenPage = false;
 	    $rootScope.isMainPage = true;
-	    $rootScope.username = $user.firstname;
+	    $rootScope.firstname = $user.firstname;
 	}
     }).// Dashboards
     state('app.admin-users', {
