@@ -49,7 +49,7 @@ module.exports = {
 			console.log(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)));
 			page.open(sails.getBaseurl() + '/contacts/view_order?order=' + encodeURIComponent(JSON.stringify(order)), function() {
 			    var reportName = 'invoice_' + new Date().getTime(); // report.name.locale_label[report.locale]
-										// +
+			    // +
 			    var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
 			    var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
 
@@ -74,7 +74,7 @@ module.exports = {
 	// });
 
     },
-    view_contact : function(req,res){
+    view_contact : function(req, res) {
 	var contact;
 	// var pass_locale;
 	// var phantom_bool;
@@ -605,7 +605,7 @@ module.exports = {
 		var dporderdetails = order.dporderdetails;
 		delete order.dporderdetails;
 
-		if (order.id == null) { // create a new one
+		if (order.id == "new") { // create a new one
 		    order.DONOR = contactId;
 		    delete order.id;
 		    delete order.is_modified;
@@ -766,16 +766,15 @@ module.exports = {
 	    }
 	    var contact = results['contact'];
 	    contact.timezoneoffset = req.body.timezoneoffset;
-	    for(var i=0;i<contact.notes.layman.length;i++){
-		contact.notes.layman[i].last_modified = toClientDateTimeString(contact.notes.layman[i].last_modified,contact.timezoneoffset);
-		
+	    for (var i = 0; i < contact.notes.layman.length; i++) {
+		contact.notes.layman[i].last_modified = toClientDateTimeString(contact.notes.layman[i].last_modified, contact.timezoneoffset);
+
 	    }
-	    
-	    
+
 	    var phantom = require('node-phantom');
 	    var fs = require("fs");
-	    var footnotes =  [];
-	    var orientation =  'portrait';
+	    var footnotes = [];
+	    var orientation = 'portrait';
 	    contact.locale = req.session.user.locale || 'en';
 	    contact.footer = {
 		logo : 'default.png'
@@ -812,7 +811,7 @@ module.exports = {
 			    console.log(sails.getBaseurl() + '/contacts/view_contact?contact=' + encodeURIComponent(JSON.stringify(contact)));
 			    page.open(sails.getBaseurl() + '/contacts/view_contact?contact=' + encodeURIComponent(JSON.stringify(contact)), function() {
 				var reportName = 'contact_' + new Date().getTime(); // report.name.locale_label[report.locale]
-										    // +
+				// +
 				var filename = '.tmp\\public\\data\\' + reportName + '.pdf';
 				var url = '/data/' + reportName + '.pdf'; // sails.config.siteurl+
 
@@ -843,6 +842,143 @@ module.exports = {
 		success : 'Donor data.',
 		contact : results['contact']
 	    });
+	});
+    },
+    destroy : function(req, res) {
+	var contact = req.body;
+	if (isNaN(parseInt(contact.id))) {
+	    return console.log('attempt to delete NON-Integer Contact ID: POSTed-' + JSON.stringify(contact));
+	}
+	async.parallel({
+	    dpordersummary : function(callback) {
+		Database.knex('dporderdetails').where('DONORD', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    Database.knex('dpordersummary').where('DONOR', contact.id).del().exec(function(err, data) {
+			if (err) {
+			    return callback(err);
+			}
+			callback(null, data);
+		    });
+		});
+	    },
+
+	    otherAddresses : function(callback) {
+		Database.knex('dpothadd').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dtmail : function(callback) {
+		Database.knex('dtmail').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dpgift : function(callback) {
+		Database.knex('dpgift').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dpother : function(callback) {
+		Database.knex('dpother').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dpplg : function(callback) {
+		Database.knex('dpplg').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dplink : function(callback) {
+		Database.knex('dplink').where('ID1', contact.id).orWhere('ID2', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dplang : function(callback) {
+		Database.knex('dplang').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dptrans : function(callback) {
+		Database.knex('dptrans').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dtmajor : function(callback) {
+		Database.knex('dtmajor').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dtvols1 : function(callback) {
+		Database.knex('dtvols1').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    dtbishop : function(callback) {
+		Database.knex('dtbishop').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
+	    notes : function(callback) {
+		Database.knex('notes').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    }
+	}, function(err, results) {
+	    if (err) {
+		console.log(JSON.stringify(err));
+		return res.json({
+		    error : JSON.stringify(err)
+		}, 500);
+	    }
+	    Database.knex('dp').where('id', contact.id).del().exec(function(err, data) {
+		if (err) {
+		    console.log(JSON.stringify(err));
+		    return res.json({
+			error : JSON.stringify(err)
+		    }, 500);
+		}
+		return res.json({
+		    success : 'Deleted Contact ' + contact.id
+		});
+	    });
+
 	});
     },
     doGetContact : function(req, res, getContactCallback) {

@@ -38,6 +38,11 @@ a.panel-title-wrapper:hover, a.panel-title-wrapper:focus{
 .panel.collapsed .panel-body.always-visible{
 	display:block;
 }
+.table.table-condensed>tbody>tr>td.isn-line-total{
+	padding-top: 13px;
+	font-weight: bold;
+	text-align: right;
+}
 
 
 .changes-pending{

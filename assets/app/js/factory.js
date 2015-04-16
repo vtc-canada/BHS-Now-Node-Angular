@@ -522,6 +522,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	     * self.ST = { id : self.ST, label : self.ST };
 	     */
 	    this.is_saving = false;
+	    this.is_deleting = false;
 	    this.is_modified = false; // make unmodified as soon as you set a
 	    // contact.
 	}

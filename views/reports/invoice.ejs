@@ -179,35 +179,35 @@ var n = this,
 						<% if(order.FUNDS!='USD'){ %>
 						<span>
 							Subtotal (<%=order.FUNDS%>): 
-							<strong>$<%=order.ECONV.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.ECONV.formatMoney(2)%></strong>
 						</span>
 						<% } %>
 						<span>
 							Shipping and Handling (<%=order.FUNDS%>):
-							<strong>$<%=order.ESHIP.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.ESHIP.formatMoney(2)%></strong>
 						</span>
 						<% if(order.HSTCALC!=null&&order.HSTCALC!=0){ %>
 						<span>
 							HST (<%=order.FUNDS%>):
-							<strong>$<%=order.HSTCALC.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.HSTCALC.formatMoney(2)%></strong>
 						</span>
 						<% } %>
 						<% if(order.GSTCALC!=null&&order.GSTCALC!=0){ %>
 						<span>
 							GST (<%=order.FUNDS%>):
-							<strong>$<%=order.GSTCALC.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.GSTCALC.formatMoney(2)%></strong>
 						</span>
 						<% } %>
 						<% if(order.PSTCALC!=null&&order.PSTCALC!=0){ %>
 						<span>
 							PST (<%=order.FUNDS%>):
-							<strong>$<%=order.PSTCALC.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.PSTCALC.formatMoney(2)%></strong>
 						</span>
 						<% } %>
 						<% if(order.NYTCALC!=null&&order.NYTCALC!=0){ %>
 						<span>
 							New York Tax (<%=order.NYTAX%>%):
-							<strong>$<%=order.NYTCALC.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.NYTCALC.formatMoney(2)%></strong>
 						</span>
 						<% } %>
 						
@@ -218,7 +218,7 @@ var n = this,
 						<hr>
 						<span>
 							Grand Total (<%=order.FUNDS%>): 
-							<strong>$<%=order.GTOTAL.formatMoney(2)%></strong>
+							<strong><%=order.fundsSymbol%><%=order.GTOTAL.formatMoney(2)%></strong>
 						</span>
 					</div>
 					<!--<div class="invoice-bill-info">
