@@ -1248,7 +1248,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    price : data.litems[i].OTHER
 		};
 	    }
-	    
+
 	    $rootScope.sources = [];
 	    for (var i = 0; i < data.sources.length; i++) {
 		$rootScope.sources.push({
@@ -1466,6 +1466,27 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$rootScope.cfns.push({
 		    id : data.cfns[i].CODE,
 		    label : data.cfns[i].CODE + " - " + data.cfns[i].DESC
+		});
+	    }
+	    $rootScope.genders = [];
+	    for (var i = 0; i < data.genders.length; i++) {
+		$rootScope.genders.push({
+		    id : data.genders[i].CODE,
+		    label : data.genders[i].CODE + " - " + data.genders[i].DESC
+		});
+	    }
+	    $rootScope.dioceses = [];
+	    for (var i = 0; i < data.dioceses.length; i++) {
+		$rootScope.dioceses.push({
+		    id : data.dioceses[i].CODE,
+		    label : data.dioceses[i].CODE + " - " + data.dioceses[i].DESC
+		});
+	    }
+	    $rootScope.groups = [];
+	    for (var i = 0; i < data.groups.length; i++) {
+		$rootScope.groups.push({
+		    id : data.groups[i].CODE,
+		    label : data.groups[i].CODE + " - " + data.groups[i].DESC
 		});
 	    }
 	    $rootScope.pledgors = [];
@@ -2044,12 +2065,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 }).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout) {
     var vm = this;
 
-
     $scope.longSelectOptions = {
 	minimumInputLength : 2
     };
-    
-    var blankSearch = {    // #CONTACT_SEARCH_PARAMETER
+
+    var blankSearch = { // #CONTACT_SEARCH_PARAMETER
 	id : '',
 	mode : false,
 	ADD : null,
@@ -2060,9 +2080,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	COUNTY : null,
 	NOMAIL : null,
 	TYPE : null,
-	
-	CHECKBOX : null,
+	SOURCE : null,
 	CLASS : null,
+	CALL : null,
+	NM_REASON : null,
+	CFN : null,
+	CFNID : null,
+	STATUS : null,
+	OCCUPATION : null,
+	GENDER : null,
+	DIOCESE : null,
+	GROUP : null,
+
+	CHECKBOX : null,
 	// DPOTHER
 	dpother : {
 	    DEMAND : null
@@ -2342,17 +2372,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $rootScope.search_contact = $scope.contact;
 
-    $scope.searchContacts = function(){
+    $scope.searchContacts = function() {
 	$rootScope.updateContactsTable();
     }
-    
+
     $scope.$watch('contact', function(newValue, oldValue) {
 	if (!angular.equals(newValue, oldValue)) {
 	    if (vm.updateTable) {
 		clearTimeout(vm.updateTable);
 	    }
 	    vm.updateTable = setTimeout(function() {
-		//$rootScope.updateContactsTable();
+		$rootScope.updateContactsTable();
+		// AutoUpdate
+
 		// $rootScope.newTemplateModal.name = null;
 		/*
 		 * if ($scope.template == null) { $scope.template = 'new'; }
@@ -2408,7 +2440,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift'|| key == 'dtmail') {
+			if (key == 'dpother' || key == 'dpgift' || key == 'dtmail') {
 			    angular.forEach(value, function(innerValue, innerKey) {
 				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];

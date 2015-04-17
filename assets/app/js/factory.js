@@ -187,6 +187,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    // var self = this;
 	    this.FNAME = '';
 	    this.LNAME = '';
+	    this.GENDER = '';
 	    this.PTITLE = '';
 	    this.SECLN = '';
 	    this.PETSIGN = '';
@@ -217,6 +218,9 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 
 	    // Other Information
 	    this.TYPE = null;
+	    this.SOURCE = null;
+	    this.DIOCESE = null;
+	    this.GROUP = null;
 	    this.FLAGS = null;
 	    this.NM_REASON = null;
 	    this.CFN = null;

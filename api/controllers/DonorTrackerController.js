@@ -235,6 +235,33 @@ module.exports = {
 		    callback(null, types);
 		});
 	    },
+	    genders : function(callback){
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'GENDER'
+		}).exec(function(err, types) {
+		    if (err)
+			return callback(err);
+		    callback(null, types);
+		});
+	    },
+	    dioceses : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'DIOCESE'
+		}).exec(function(err, types) {
+		    if (err)
+			return callback(err);
+		    callback(null, types);
+		});
+	    },
+	    groups : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'GROUP'
+		}).exec(function(err, types) {
+		    if (err)
+			return callback(err);
+		    callback(null, types);
+		});
+	    },
 	    pledgors : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PLEDGOR'

@@ -956,19 +956,84 @@
 						</div>
 					</div>
 					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CLASS">Donor Class:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
+						</div>
+					</div>	
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CALL">Do Not Call:</label>
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.CALL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.CALL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.NM_REASON">Reason Code:</label>
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.NM_REASON" ng-options="title.id as title.label for title in reasons" ng-model="contact.NM_REASON"></select2>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CFN">Catholic Family News Subscriber:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.CFN" ng-options="title.id as title.label for title in cfns" ng-model="contact.CFN"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.CFNID">Catholic Family News ID:</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.CFNID" ng-model="contact.CFNID" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.STATUS">Donor Status:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.STATUS" ng-options="title.id as title.label for title in [{id:'ACTIVE', label:'Active'},{id:'ACTIVE_LAPSED', label:'Active Lapsed'},{id:'INACTIVE', label:'Inactive'},{id:'INACTIVE_LAPSED', label:'Inactive Lapsed'},{id:'LIMBO', label:'Limbo'},{id:'REMOVED', label:'Removed'}]" ng-model="contact.STATUS" multiple></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.OCCUPATION">Occupation:</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.OCCUPATION" ng-model="contact.OCCUPATION" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.GENDER">Gender:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.GENDER" ng-options="title.id as title.label for title in genders" ng-model="contact.GENDER" multiple></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contactsearch.DIOCESE">Diocese:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" options="longSelectOptions" id="contact.DIOCESE_LONG" name="contactsearch.DIOCESE" ng-options="title.id as title.label for title in dioceses" ng-model="contact.DIOCESE" multiple></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contactsearch.GROUP">Group:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control"  id="contact.GROUP" name="contactsearch.GROUP" ng-options="title.id as title.label for title in groups" ng-model="contact.GROUP" multiple></select2>
+						</div>
+					</div>
+					
+					
 					
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="contact.CHECKBOX">Ecclesiastical:</label>
 
 						<div class="col-sm-10">
 							<select2 class="form-control" name="contact.CHECKBOX" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.CHECKBOX"></select2>
-						</div>
-					</div>	
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CLASS">Donor Class:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
 						</div>
 					</div>	
 
@@ -1137,6 +1202,12 @@
 										<label class="col-sm-5 control-label" for="contact_first_name">First Name:</label>
 										<div class="col-sm-7">
 											<input type="text" class="form-control" name="contact_first_name" id="contact_first_name" ng-model="contact.FNAME" ng-model-options="" placeholder="">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-5 control-label" for="contact_gender">Gender:</label>
+										<div class="col-sm-7">
+											<select2 class="form-control" name="contact.GENDER" ng-options="title.id as title.label for title in genders" ng-model="contact.GENDER"></select2>
 										</div>
 									</div>
 									<div class="form-group">
@@ -1637,6 +1708,13 @@
 															<select2 class="form-control" id="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE"></select2>
 														</div>
 													</div>
+													
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.SOURCE">Source:</label>
+														<div class="col-sm-7">
+															<select2 class="form-control" name="contact.SOURCE" ng-options="title.id as title.label for title in sources" ng-model="contact.SOURCE" ></select2>
+														</div>
+													</div>
 													<div class="form-group">
 														<label class="col-sm-5 control-label" for="contact.FLAGS">Flags:</label>
 								
@@ -1664,6 +1742,20 @@
 															<input type="text" inputmask data-mask="numeric" class="form-control" name="contact.CFNID" id="contact.CFNID" ng-model="contact.CFNID" >
 														</div>
 													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.DIOCESE">Diocese:</label>
+														<div class="col-sm-7">
+															<select2 class="form-control" options="longSelectOptions" id="contact.DIOCESE" ng-options="title.id as title.label for title in dioceses" ng-model="contact.DIOCESE"></select2>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-sm-5 control-label" for="contact.GROUP">Group:</label>
+														<div class="col-sm-7">
+															<select2 class="form-control" id="contact.GROUP" ng-options="title.id as title.label for title in groups" ng-model="contact.GROUP"></select2>
+														</div>
+													</div>
+					
+					
 													<div class="form-group">
 														<label class="col-sm-5 control-label" for="contact.CFNID">Pledgor:</label>
 														<div class="col-sm-7">
