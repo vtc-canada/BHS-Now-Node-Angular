@@ -47,9 +47,6 @@ module.exports = {
     dataSproc: function(sprocName, data, cb) {
 	this.doSproc(this.getDataPool(),sprocName,data,cb);
     },
-    
-    
-    
     localPool : false,
     getLocalPool: function(){
 	if(this.localPool===false){

@@ -204,9 +204,9 @@ module.exports = {
 		    },function(err,response){
 			if (err)
 			    console.log(err.toString());
-			res.json({
-			    loaded : 'Success'
-			});
+			//res.json({
+			//    loaded : 'Success'
+			//});
 		    });
 
 		}, 500);

@@ -17,7 +17,7 @@ module.exports = {
     getfxechangeattributes : function(req, res) {
 	async.parallel({
 	    currencies : function(callback) {
-		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').exec(function(err, titles) {
+		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -42,7 +42,7 @@ module.exports = {
 		});
 	    },
 	    currencies:function(callback){
-		Database.knex('dpcurrency').select('id','name','code', 'symbol').exec(function(err, titles) {
+		Database.knex('dpcurrency').select('id','name','code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -85,13 +85,21 @@ module.exports = {
 	    });
 	});
     },
-
     getattributes : function(req, res) {
 
 	async.parallel({
 	    litems : function(callback) {
 		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    sources : function(callback) {
+		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		    FIELD : 'SOURCE'
 		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);
@@ -140,7 +148,7 @@ module.exports = {
 		});
 	    },
 	    currencies : function(callback) {
-		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').exec(function(err, titles) {
+		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);

@@ -437,10 +437,6 @@
 			<alert type="danger" ng-show="modalDataSet.dplink.errors.LINK" close="modalDataSet.dplink.errors.LINK = false" >
 				<strong>Error!</strong> Please select a relationship type and try again.
 			</alert>
-			
-			
-			
-			
 			<div class="search-link-contacts" ng-controller="ContactsLinkSearch">
 				<div class="form-group">
 				
@@ -846,8 +842,15 @@
 		<div class="panel panel-default collapsed panel-stack">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="linecons-search"></i>&nbsp&nbspSearch Filter</h3>
+				
 				<div class="pull-right isn-panel-pull-right">
-					<div class="btn btn-primary " ng-click="clearTemplates();">Clear</div>
+					<div class="btn btn-blue " ng-click="searchContacts();">Search</div>
+				</div>
+				<div class="pull-right pull-right-stack isn-panel-pull-right">
+					<div class="isn-button-seperator"></div>
+				</div>
+				<div class="pull-right pull-right-stack isn-panel-pull-right">
+					<div class="btn btn-white " ng-click="clearTemplates();">Clear</div>
 				</div>
 				<div class="pull-right pull-right-stack isn-panel-pull-right">
 					<div class="btn btn-secondary" ng-click="saveTemplateModal()" >Save Template</div>
@@ -925,6 +928,36 @@
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.COUNTY">County:</label>
+
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="contact.COUNTY" ng-model="contact.COUNTY" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.NOMAIL">Do Not Mail:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.NOMAIL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.NOMAIL"></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.TYPE">Type:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE" multiple></select2>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.SOURCE">Source:</label>
+
+						<div class="col-sm-10">
+							<select2 class="form-control" name="contact.SOURCE" ng-options="title.id as title.label for title in sources" ng-model="contact.SOURCE" multiple></select2>
+						</div>
+					</div>
+					
+					
+					<div class="form-group">
 						<label class="col-sm-2 control-label" for="contact.CHECKBOX">Ecclesiastical:</label>
 
 						<div class="col-sm-10">
@@ -993,18 +1026,36 @@
 				</form>
 			</div>
 		</div>
-		<div class="panel panel-default deep-search-panel">
+		<div class="panel panel-default collapsed panel-stack">
+			<div class="panel-heading panel-second-heading">
 				<div class="panel-options panel-options-left">
-					<input type="checkbox" class="form-control iswitch-info" name="contact.mode" ng-checked="contact.mode" ng-model="contact.mode">
-					
+					<a href="" data-toggle="panel">
+						<span class="collapse-icon">&ndash;</span>
+						<span class="expand-icon">+</span>
+					</a>
 				</div>
-				<div href="" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspDeep Search Mode : <b>{{contact.mode?'Constrain':'Expand'}}</b></h3>
-				</div>
-				
-				
-				
-			
+				<a href="" data-toggle="panel" class="panel-title-wrapper">
+					<h3 class="panel-title">&nbsp&nbspMail Criteria</h3>
+				</a>
+			</div>
+			<div class="panel-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact.dtmail.SOL">SOL Code</label>
+						<div class="col-sm-10">
+							<select2 class="form-control" options="longSelectOptions" id="contact.dtmail.SOL" name="contact.dtmail.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dtmail.SOL" multiple></select2>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="panel panel-default deep-search-panel">
+			<div class="panel-options panel-options-left">
+				<input type="checkbox" class="form-control iswitch-info" name="contact.mode" ng-checked="contact.mode" ng-model="contact.mode">
+			</div>
+			<div href="" class="panel-title-wrapper">
+				<h3 class="panel-title">&nbsp&nbspDeep Search Mode : <b>{{contact.mode?'Constrain':'Expand'}}</b></h3>
+			</div>
 		</div>
 	</div>
 </div>
@@ -1013,7 +1064,7 @@
 	<div class="panel-heading">
 		<h3 class="panel-title"><i class="fa-users"></i>&nbsp&nbspContacts</h3>
 		<div class="pull-right isn-panel-pull-right">
-			<div class="btn btn-secondary" ng-click="">New</div>
+			<div class="btn btn-secondary" ng-click="newContact()">New</div>
 		</div>
 		<div class="pull-right pull-right-stack isn-panel-pull-right">
 			<div class="btn btn-secondary" ng-class="" ng-disabled="exportDisabled" ng-click="exportList();">Export</div>

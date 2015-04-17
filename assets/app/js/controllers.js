@@ -182,7 +182,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.selectedOrderSummary = null;
 	}, 0);
     }
-    
+
     $scope.resetSelectedDataTableRow = function(table_name) {
 	$timeout(function() {
 	    $scope.selectedDataTableRow[table_name] = null;
@@ -367,7 +367,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.doDeleteDpOrderSummary = function() {
-	//$scope.tryDestroyDataTable('dpordersummary');
+	// $scope.tryDestroyDataTable('dpordersummary');
 	$timeout(function() {
 	    if ($scope.selectedOrderSummary.is_deleted) { // undelete it!
 		delete $scope.selectedOrderSummary.is_deleted;
@@ -379,7 +379,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.selectedOrderSummary.is_deleted = true;
 		}
 	    }
-	    //$scope.rebindOrderSummaryDataTable();
+	    // $scope.rebindOrderSummaryDataTable();
 	}, 0);
     }
 
@@ -457,11 +457,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    PRINREM : null
 	};
 
-	//$scope.tryDestroyDataTable('dpordersummary');
+	// $scope.tryDestroyDataTable('dpordersummary');
 	$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
 
 	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length - 1];
-	//$scope.rebindOrderSummaryDataTable();
+	// $scope.rebindOrderSummaryDataTable();
 
 	// "LASTPAGE":null,"PRINFLAG":1,"TSRECID":"C00012220","TSDATE":"20120626","TSTIME":"132058","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"KJ",
 
@@ -707,7 +707,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	return $rootScope.county_rates[county_c] + '%';
     }
 
-    $rootScope.doDeleteContact = function(){
+    $rootScope.doDeleteContact = function() {
 	delete $scope.contact.is_saving;
 	delete $rootScope.is_contact_deleting;
 	$sails.post("/contacts/destroy", $scope.contact).success(function(data) {
@@ -723,7 +723,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.tryDestroyDataTable(key);
 		}
 		$timeout(function() {
-		    
+
 		    $contact.init(); // sets is_saving and is_deleting to
 		    // false.
 		    resetContactForms();
@@ -731,13 +731,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $rootScope.currentModal.dismiss();
 		    // table at the
 		    // top!
-//		    $timeout(function() {
-//			for ( var key in $scope.selectedDataTableRow) { // iterate
-//			    // destroying
-//			    // datatables!
-//			    //$scope.rebindDataTable(key);  //probably unnecessary here
-//			}
-//		    }, 0);
+		    // $timeout(function() {
+		    // for ( var key in $scope.selectedDataTableRow) { //
+		    // iterate
+		    // // destroying
+		    // // datatables!
+		    // //$scope.rebindDataTable(key); //probably unnecessary
+		    // here
+		    // }
+		    // }, 0);
 		}, 0);
 	    }
 	}).error(function(data) {
@@ -746,8 +748,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	$rootScope.is_contact_deleting = true;
     }
-    
-    $scope.deleteContact = function(){
+
+    $scope.deleteContact = function() {
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : 'delete-contact-modal',
 	    size : 'sm',
@@ -755,7 +757,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
 	$rootScope.deleteContactMessage = 'Are you sure you want to delete this contact: <b>' + $scope.contact.FNAME + ' ' + $scope.contact.LNAME + '</b>';
     }
-    
+
     $scope.exportContact = function() {
 	$rootScope.currentModal = $modal.open({
 	    templateUrl : 'export-contact-modal',
@@ -1047,11 +1049,26 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     // $scope.$watchCollection('otherAddresses', $scope.tryModified);
 
     $rootScope.$on("getcontact", function(args, message) {
-	$scope.$apply(function() {
+	$timeout(function() {
 	    vm.watchEnabled = false;
 	    if (message.id == 'new') {
+		$scope.selectedTransaction = null; // wipes
+		for ( var key in $scope.selectedDataTableRow) { // iterate
+		    // destroying
+		    // datatables!
+		    $scope.tryDestroyDataTable(key);
+		}
 		$contact.init();
+		$contact.id = 'new';
 		resetContactForms();
+		$timeout(function() {
+		    $(window).scrollTop($('.nav-tabs').offset().top - 8);
+		    for ( var key in $scope.selectedDataTableRow) { // iterate
+			// destroying
+			// datatables!
+			$scope.rebindDataTable(key);
+		    }
+		}, 0);
 	    } else {
 		$sails.post("/contacts/getcontact", {
 		    id : message.id
@@ -1072,7 +1089,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    // datatables!
 			    $scope.tryDestroyDataTable(key);
 			}
-			//$scope.tryDestroyDataTable('dpordersummary');
+			// $scope.tryDestroyDataTable('dpordersummary');
 			$timeout(function() {
 			    $contact.set(data.contact);
 			    resetContactForms();
@@ -1083,7 +1100,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				    // datatables!
 				    $scope.rebindDataTable(key);
 				}
-				//$scope.rebindOrderSummaryDataTable();
+				// $scope.rebindOrderSummaryDataTable();
 			    }, 0);
 			}, 0);
 		    }
@@ -1136,7 +1153,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    // datatables!
 			    $scope.tryDestroyDataTable(key);
 			}
-			//$scope.tryDestroyDataTable('dpordersummary');
+			// $scope.tryDestroyDataTable('dpordersummary');
 
 			$timeout(function() {
 			    $contact.set(data.contact); // sets is_saving to
@@ -1151,7 +1168,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				    // datatables!
 				    $scope.rebindDataTable(key);
 				}
-				//$scope.rebindOrderSummaryDataTable();
+				// $scope.rebindOrderSummaryDataTable();
 			    }, 0);
 			}, 0);
 		    }
@@ -1230,6 +1247,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    description : data.litems[i].DESC,
 		    price : data.litems[i].OTHER
 		};
+	    }
+	    
+	    $rootScope.sources = [];
+	    for (var i = 0; i < data.sources.length; i++) {
+		$rootScope.sources.push({
+		    id : data.sources[i].CODE,
+		    label : data.sources[i].CODE + " - " + data.sources[i].DESC
+		});
 	    }
 
 	    $scope.order_types = [ {
@@ -2019,7 +2044,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 }).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout) {
     var vm = this;
 
-    var blankSearch = {
+
+    $scope.longSelectOptions = {
+	minimumInputLength : 2
+    };
+    
+    var blankSearch = {    // #CONTACT_SEARCH_PARAMETER
 	id : '',
 	mode : false,
 	ADD : null,
@@ -2027,6 +2057,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	ST : null,
 	COUNTRY : null,
 	ZIP : null,
+	COUNTY : null,
+	NOMAIL : null,
+	TYPE : null,
+	
 	CHECKBOX : null,
 	CLASS : null,
 	// DPOTHER
@@ -2035,6 +2069,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	},
 	dpgift : {
 	    DEMAND : null
+	},
+	dtmail : {
+	    SOL : null
 	}
     };
 
@@ -2305,13 +2342,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $rootScope.search_contact = $scope.contact;
 
+    $scope.searchContacts = function(){
+	$rootScope.updateContactsTable();
+    }
+    
     $scope.$watch('contact', function(newValue, oldValue) {
 	if (!angular.equals(newValue, oldValue)) {
 	    if (vm.updateTable) {
 		clearTimeout(vm.updateTable);
 	    }
 	    vm.updateTable = setTimeout(function() {
-		$rootScope.updateContactsTable();
+		//$rootScope.updateContactsTable();
 		// $rootScope.newTemplateModal.name = null;
 		/*
 		 * if ($scope.template == null) { $scope.template = 'new'; }
@@ -2367,7 +2408,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift') {
+			if (key == 'dpother' || key == 'dpgift'|| key == 'dtmail') {
 			    angular.forEach(value, function(innerValue, innerKey) {
 				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
@@ -2755,6 +2796,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
 		}, false);
 	    }
+	}
+
+	$scope.newContact = function() {
+	    $rootScope.$broadcast("getcontact", {
+		id : "new"
+	    });
 	}
 
 	$scope.exportList = function() {
@@ -3287,6 +3334,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     var vm = this;
     $scope.selectedExChange = null;
 
+    $rootScope.updateFxSuccess = false;
+
     vm.rowClicked = rowClicked;
     vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	dataSrc : 'data',
@@ -3361,6 +3410,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		location.reload(); // Will boot back to login screen
 	    }
 	    if (data.success) {
+		// $rootScope.updateFxSuccess = false;
 		$rootScope.modalSelectedExChange = angular.copy(data.dpexchange);
 		$rootScope.currentModal = $modal.open({
 		    templateUrl : modal_id,
@@ -3378,8 +3428,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				// login screen
 			    }
 			    if (data.success) {
+				$rootScope.updateFxSuccess = true;
 				$scope.retrieveId = $scope.selectedExChange;
 				$rootScope.updateFxChangeDataTable();
+				$timeout(function() {
+				    $rootScope.updateFxSuccess = false;
+				}, 3000);
 			    }
 			}).error(function(data) {
 			    alert('err!');
@@ -3414,8 +3468,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// screen
 		    }
 		    if (data.success) {
-			// $scope.retrieveId = $scope.selectedCode;
-			$rootScope.updateFxChangeDataTable();
+			$timeout(function() {
+			    $rootScope.updateFxSuccess = true;
+			    // $scope.retrieveId = $scope.selectedCode;
+			    $rootScope.updateFxChangeDataTable();
+			    $timeout(function() {
+				$rootScope.updateFxSuccess = false;
+			    }, 3000);
+			}, 0);
 		    }
 		}).error(function(data) {
 		    alert('err!');
@@ -3449,8 +3509,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// screen
 		    }
 		    if (data.success) {
-			// $scope.retrieveId = $scope.selectedCode;
-			$rootScope.updateFxChangeDataTable();
+			$timeout(function() {
+			    $rootScope.updateFxSuccess = true;
+			    // $scope.retrieveId = $scope.selectedCode;
+			    $rootScope.updateFxChangeDataTable();
+			    $timeout(function() {
+				$rootScope.updateFxSuccess = false;
+			    }, 3000);
+			}, 0);
 		    }
 		}).error(function(data) {
 		    alert('err!');

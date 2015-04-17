@@ -110,171 +110,170 @@ module.exports = {
     },
     save : function(req, res) {
 	var contact = req.body;
-	if (contact.id == 'new') { // New Contact.
+	var contactId = contact.id;
 
-	    Database.knex('dp').insert({
-		FNAME : contact.FNAME,
-		LNAME : contact.LNAME,
-		TITLE : contact.TITLE,
-		PTITLE : contact.PTITLE,
-		PETSIGN : contact.PETSIGN,
-		LASTCONT : contact.LASTCONT,
-		SAL : contact.SAL,
-		SUFF : contact.SUFF
-	    }).exec(function(err, response) {
+	delete contact.id;
+	delete contact.is_modified;
+
+	var otherAddresses = contact.otherAddresses;
+	var dtmail = contact.dtmail;
+	var dpgift = contact.dpgift;
+	var dpordersummary = contact.dpordersummary;
+	var dpplg = contact.dpplg;
+	var dplink = contact.dplink;
+	var dplang = contact.dplang;
+	var dplang_modified = contact.dplang_modified;
+	var dptrans = contact.dptrans;
+	var dptrans_modified = contact.dptrans_modified;
+	var dpother = contact.dpother;
+	var dtmajor = contact.dtmajor;
+	var dtvols1 = contact.dtvols1;
+	var dtbishop = contact.dtbishop;
+	var notes = contact.notes.layman.concat(contact.notes.ecclesiastical).concat(contact.notes.volunteer).concat(contact.notes.orders);
+	delete contact.otherAddresses;
+	delete contact.dtmail;
+	delete contact.dpgift;
+	delete contact.dpordersummary;
+	delete contact.dpplg;
+	delete contact.dplink;
+	delete contact.dplang;
+	delete contact.dplang_modified;
+	delete contact.dptrans;
+	delete contact.dptrans_modified;
+	delete contact.dpother;
+	delete contact.dtmajor;
+	delete contact.dtvols1;
+	delete contact.dtbishop;
+	delete contact.notes;
+
+	if (contactId == 'new') { // New Contact.
+
+	    Database.knex('dp').insert(contact).exec(function(err, response) {
 		if (err)
 		    return res.json(err, 500);
-		Database.knex('dp').select('*').where({
-		    id : response[0]
-		}).exec(function(err, customer) {
-		    if (err)
-			return res.json(err, 500);
-		    res.json({
-			success : 'Donor has been saved.',
-			contact : customer[0]
-		    });
-		});
+		contactId = response[0]; // copies in new contactId
+		updateContactTables();
+
+		// Database.knex('dp').select('*').where({
+		// id : response[0]
+		// }).exec(function(err, customer) {
+		// if (err)
+		// return res.json(err, 500);
+		// res.json({
+		// success : 'Donor has been saved.',
+		// contact : customer[0]
+		// });
+		// });
+
 	    });
 	} else {
 
-	    var contactId = contact.id;
 	    // contact.LASTCONT = contact.LASTCONT_DATE;
 	    // contact.TITLE = contact.TITLE;
 	    // contact.ST = contact.ST.id;
 	    // delete contact.LASTCONT_DATE;
-	    delete contact.id;
-	    delete contact.is_modified;
-
-	    var otherAddresses = contact.otherAddresses;
-	    var dtmail = contact.dtmail;
-	    var dpgift = contact.dpgift;
-	    var dpordersummary = contact.dpordersummary;
-	    var dpplg = contact.dpplg;
-	    var dplink = contact.dplink;
-	    var dplang = contact.dplang;
-	    var dplang_modified = contact.dplang_modified;
-	    var dptrans = contact.dptrans;
-	    var dptrans_modified = contact.dptrans_modified;
-	    var dpother = contact.dpother;
-	    var dtmajor = contact.dtmajor;
-	    var dtvols1 = contact.dtvols1;
-	    var dtbishop = contact.dtbishop;
-	    var notes = contact.notes.layman.concat(contact.notes.ecclesiastical).concat(contact.notes.volunteer).concat(contact.notes.orders);
-	    delete contact.otherAddresses;
-	    delete contact.dtmail;
-	    delete contact.dpgift;
-	    delete contact.dpordersummary;
-	    delete contact.dpplg;
-	    delete contact.dplink;
-	    delete contact.dplang;
-	    delete contact.dplang_modified;
-	    delete contact.dptrans;
-	    delete contact.dptrans_modified;
-	    delete contact.dpother;
-	    delete contact.dtmajor;
-	    delete contact.dtvols1;
-	    delete contact.dtbishop;
-	    delete contact.notes;
 
 	    Database.knex('dp').where({
 		id : contactId
 	    }).update(contact).exec(function(err, response) {
 		if (err)
 		    return res.json(err, 500);
+		updateContactTables();
+	    });
+	}
 
-		async.parallel([ function(callback) {
-		    updateOtherAddresses(contactId, otherAddresses, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateAllChildElements('dtmajor', contactId, dtmajor, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateDpTable('dtmail', contactId, dtmail, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateDpOrders(contactId, dpordersummary, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateDpTable('dpgift', contactId, dpgift, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateDpTable('dpother', contactId, dpother, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateDpTable('dpplg', contactId, dpplg, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateLinks(contactId, dplink, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    if (dplang_modified) {
-			updateMultiSelect('dplang', 'LANGUAGE', contactId, contact.database_origin, dplang, function(err, data) {
-			    if (err)
-				return callback(err);
-			    callback(null);
-			});
-		    } else {
-			callback(null);
-		    }
-		}, function(callback) {
-		    if (dptrans_modified) {
-			updateMultiSelect('dptrans', 'LANGUAGE', contactId, contact.database_origin, dptrans, function(err, data) {
-			    if (err)
-				return callback(err);
-			    callback(null);
-			});
-		    } else {
-			callback(null);
-		    }
-		}, function(callback) {
-		    updateDtVols1(contactId, dtvols1, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateBishop(contactId, dtbishop, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, function(callback) {
-		    updateChildElements('notes', contactId, notes, function(err, data) {
-			if (err)
-			    return callback(err);
-			callback(null);
-		    });
-		}, ], function(err, result) {
+	function updateContactTables() {
+	    async.parallel([ function(callback) {
+		updateOtherAddresses(contactId, otherAddresses, function(err, data) {
 		    if (err)
-			return res.json(err, 500);
-		    req.body.id = contactId;
-		    sails.controllers.contacts.getcontact(req, res);
-
+			return callback(err);
+		    callback(null);
 		});
+	    }, function(callback) {
+		updateAllChildElements('dtmajor', contactId, dtmajor, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpTable('dtmail', contactId, dtmail, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpOrders(contactId, dpordersummary, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpTable('dpgift', contactId, dpgift, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpTable('dpother', contactId, dpother, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpTable('dpplg', contactId, dpplg, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateLinks(contactId, dplink, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		if (dplang_modified) {
+		    updateMultiSelect('dplang', 'LANGUAGE', contactId, contact.database_origin, dplang, function(err, data) {
+			if (err)
+			    return callback(err);
+			callback(null);
+		    });
+		} else {
+		    callback(null);
+		}
+	    }, function(callback) {
+		if (dptrans_modified) {
+		    updateMultiSelect('dptrans', 'LANGUAGE', contactId, contact.database_origin, dptrans, function(err, data) {
+			if (err)
+			    return callback(err);
+			callback(null);
+		    });
+		} else {
+		    callback(null);
+		}
+	    }, function(callback) {
+		updateDtVols1(contactId, dtvols1, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateBishop(contactId, dtbishop, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateChildElements('notes', contactId, notes, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, ], function(err, result) {
+		if (err)
+		    return res.json(err, 500);
+		req.body.id = contactId;
+		sails.controllers.contacts.getcontact(req, res);
 
 	    });
 	}
@@ -1312,13 +1311,22 @@ module.exports = {
 
 	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
 
-	var dpgift = false; // Flag for dpgift join
-	var dpother = false; // Flag for dpother join
+	var dpgift = req.body.contact.dpgift;
+	var dpother = req.body.contact.dpother;
+	var dtmail = req.body.contact.dtmail;
+	delete req.body.contact.dpgift;
+	delete req.body.contact.dpother;
+	delete req.body.contact.dtmail;
+
+	var dpgiftFlag = false; // Flag for dpgift join
+	var dpotherFlag = false; // Flag for dpother join
+	var dtmailFlag = false;
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
 	addDpWheres();
 	var dpGiftWheres = '';
 	var dpOtherWheres = '';
+	var dtMailWheres = '';
 
 	determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
 	// dpGiftWheres, dpother flag, dpOtherWheres
@@ -1340,20 +1348,26 @@ module.exports = {
 	    innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres != '' ? 'WHERE ' : ' ') + dpWheres;
 	} else {
 	    if (mode == 'or') {
-		if (dpgift) {
+		if (dpgiftFlag) {
 		    innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
 		}
-		if (dpother) {
+		if (dpotherFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dtmailFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmail` ON `dp`.`id` = `dtmail`.`DONOR` ' + dtMailWheres + (joinCount > 1 ? ')' : '');
 		}
 	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
 
-		if (dpgift) {
+		if (dpgiftFlag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
 		}
-		if (dpother) {
+		if (dpotherFlag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
+		}
+		if (dtmailFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dtmail` ON `dp`.`id` =  `dtmail`.`DONOR`' + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
 		}
 	    }
 	}
@@ -1434,37 +1448,66 @@ module.exports = {
 		    dpWheres = (dpWheres == '' ? '' : ' AND ') + 'dp.id = ' + req.body.contact.id;
 		}
 	    }
-	    if (req.body.contact.ADD != null && req.body.contact.ADD != '') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ADD = ' + "'" + req.body.contact.ADD + "'";
-	    }
-	    if (req.body.contact.CITY != null && req.body.contact.CITY != '') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CITY = ' + "'" + req.body.contact.CITY + "'";
-	    }
-	    if (req.body.contact.ST != null && req.body.contact.ST != '') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ST = ' + "'" + req.body.contact.ST + "'";
-	    }
-	    if (req.body.contact.COUNTRY != null && req.body.contact.COUNTRY != '') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.COUNTRY = ' + "'" + req.body.contact.COUNTRY + "'";
-	    }
-	    if (req.body.contact.ZIP != null && req.body.contact.ZIP != '') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP = ' + "'" + req.body.contact.ZIP + "'";
-	    }
-	    if (req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'Y') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin = 3';
-	    }
-	    if (req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'N') {
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin != 3';
-	    }
-	    if (req.body.contact.CLASS != null && req.body.contact.CLASS.length > 0) {
-		var passtring = '';
-		for (var i = 0; i < req.body.contact.CLASS.length; i++) {
-		    if (passtring != '') {
-			passtring += ','
-		    }
-		    passtring += "'" + req.body.contact.CLASS[i] + "'";
+
+	    Object.keys(req.body.contact).forEach(function(key) {
+		var val = req.body.contact[key];
+		if (key == 'id'|| key == 'mode') { // Skip these guys
+		    return;
 		}
-		dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
-	    }
+		if (key == 'CHECKBOX' && req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'Y') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin = 3';
+		    return;
+		}
+		if (key == 'CHECKBOX' && req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'N') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin != 3';
+		    return;
+		}
+		if (key == 'CLASS' && req.body.contact.CLASS != null && req.body.contact.CLASS.length > 0) {
+		    var passtring = '';
+		    for (var i = 0; i < req.body.contact.CLASS.length; i++) {
+			if (passtring != '') {
+			    passtring += ','
+			}
+			passtring += "'" + req.body.contact.CLASS[i] + "'";
+		    }
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
+		    return;
+		}
+
+		if (val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp." + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		}
+	    });
+
+	    //	    
+	    // if (req.body.contact.ADD != null && req.body.contact.ADD != '') {
+	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ADD =
+	    // ' + "'" +
+	    // req.body.contact.ADD + "'";
+	    // }
+	    // if (req.body.contact.CITY != null && req.body.contact.CITY != '')
+	    // {
+	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CITY
+	    // = ' + "'" +
+	    // req.body.contact.CITY + "'";
+	    // }
+	    // if (req.body.contact.ST != null && req.body.contact.ST != '') {
+	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ST =
+	    // ' + "'" +
+	    // req.body.contact.ST + "'";
+	    // }
+	    // if (req.body.contact.COUNTRY != null && req.body.contact.COUNTRY
+	    // != '') {
+	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') +
+	    // 'dp.COUNTRY = ' + "'"
+	    // + req.body.contact.COUNTRY + "'";
+	    // }
+	    // if (req.body.contact.ZIP != null && req.body.contact.ZIP != '') {
+	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP =
+	    // ' + "'" +
+	    // req.body.contact.ZIP + "'";
+	    // }
+
 	    console.log('mode:' + mode);
 	    if (dpWheres != '' && mode == 'or') { // add initial WHERE command
 		dpWheres = 'WHERE ' + dpWheres;
@@ -1472,15 +1515,16 @@ module.exports = {
 	}
 
 	function determineJoinsAndWheres() {
-	    if (req.body.contact.dpother) {
-		Object.keys(req.body.contact.dpother).forEach(function(key) {
-		    var val = req.body.contact.dpother[key];
+	    if (dpother) {
+		Object.keys(dpother).forEach(function(key) {
+		    var val = dpother[key];
 		    if (val != null && val != '') {
-			if (!dpother) {
+			if (!dpotherFlag) {
 			    joinCount++;
 			}
-			dpother = true;
-			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + ' = ' + "'" + val + "'";
+			dpotherFlag = true;
+			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			// ' = ' + "'" + val + "'";
 		    }
 		});
 		if (dpWheres != '') {
@@ -1490,21 +1534,41 @@ module.exports = {
 		}
 	    }
 
-	    if (req.body.contact.dpgift) {
-		Object.keys(req.body.contact.dpgift).forEach(function(key) {
-		    var val = req.body.contact.dpgift[key];
+	    if (dpgift) {
+		Object.keys(dpgift).forEach(function(key) {
+		    var val = dpgift[key];
 		    if (val != null && val != '') {
-			if (!dpgift) {
+			if (!dpgiftFlag) {
 			    joinCount++;
 			}
-			dpgift = true;
-			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + ' = ' + "'" + val + "'";
+			dpgiftFlag = true;
+			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			// ' = ' + "'" + val + "'";
 		    }
 		});
 		if (dpWheres != '') {
 		    dpGiftWheres = dpWheres + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
 		} else if (dpGiftWheres != '') {
 		    dpGiftWheres = (mode == 'or' ? 'WHERE ' : '') + dpGiftWheres;
+		}
+	    }
+
+	    if (dtmail) {
+		Object.keys(dtmail).forEach(function(key) {
+		    var val = dtmail[key];
+		    if (val != null && val != '') {
+			if (!dtmailFlag) {
+			    joinCount++;
+			}
+			dtmailFlag = true;
+			dtMailWheres = dtMailWheres + (dtMailWheres == '' ? '' : ' AND ') + 'dtmail.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			// ' = ' + "'" + val + "'";
+		    }
+		});
+		if (dpWheres != '') {
+		    dtMailWheres = dpWheres + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
+		} else if (dtMailWheres != '') {
+		    dtMailWheres = (mode == 'or' ? 'WHERE ' : '') + dtMailWheres;
 		}
 	    }
 

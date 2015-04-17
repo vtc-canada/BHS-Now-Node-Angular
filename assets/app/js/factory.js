@@ -178,7 +178,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 
     var obj = {
 
-	init : function() {
+	init : function() {  
 	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
 	    this.dtbishop = initDtBishop;
 

@@ -30,18 +30,18 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		orientation:'landscape',
+		orientation : 'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_CategoryReport',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
-		    split:{
-			mode:'like',
-			column:0,
-			against:{
-			    'AC':{
-				0:'Total for AC',
-				1:'Address Change'
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries', 'excludecountries' ],
+		    split : {
+			mode : 'like',
+			column : 0,
+			against : {
+			    'AC' : {
+				0 : 'Total for AC',
+				1 : 'Address Change'
 			    },
 			}
 		    },
@@ -222,7 +222,7 @@ module.exports.views = {
 		}, {
 		    order : 1,
 		    sproc : 'reports_CategoryReportSummary',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries', 'excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -385,7 +385,7 @@ module.exports.views = {
 		}, {
 		    order : 2,
 		    sproc : 'reports_CategoryReportSummaryNil',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries', 'excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -541,7 +541,7 @@ module.exports.views = {
 		}, {
 		    order : 3,
 		    sproc : 'reports_CategoryReportGT',
-		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries','excludecountries' ],
+		    parameters : [ 'start_time', 'end_time', 'currency', 'solcodes', 'includecountries', 'excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -610,7 +610,7 @@ module.exports.views = {
 		    'currency' : {
 			order : 2,
 			type : 'select',
-			source: 'currencies',
+			source : 'currencies',
 			value : 'U',
 			hidden : false,
 			locale_label : {
@@ -662,12 +662,22 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'I', 'includecountry','excludecountry' ],
+		    parameters : [ 'I', 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, LIMBO:4, REMOVED:5, ACTIVE_LAPSED:6, INACTIVE_LAPSED:7 , Total:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    LIMBO : 4,
+			    REMOVED : 5,
+			    ACTIVE_LAPSED : 6,
+			    INACTIVE_LAPSED : 7,
+			    Total : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -753,7 +763,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Active"
 			},
@@ -764,7 +774,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Inactive"
 			},
@@ -775,7 +785,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Total"
 			},
@@ -786,16 +796,26 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
-		},{
+		    } ]
+		}, {
 		    order : 1,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'G', 'includecountry','excludecountry' ],
+		    parameters : [ 'G', 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, LIMBO:4, REMOVED:5, ACTIVE_LAPSED:6, INACTIVE_LAPSED:7 , Total:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    LIMBO : 4,
+			    REMOVED : 5,
+			    ACTIVE_LAPSED : 6,
+			    INACTIVE_LAPSED : 7,
+			    Total : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -881,7 +901,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Active"
 			},
@@ -892,7 +912,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Inactive"
 			},
@@ -903,7 +923,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Total"
 			},
@@ -914,16 +934,26 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
-		},{
+		    } ]
+		}, {
 		    order : 2,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'E', 'includecountry','excludecountry' ],
+		    parameters : [ 'E', 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, LIMBO:4, REMOVED:5, ACTIVE_LAPSED:6, INACTIVE_LAPSED:7 , Total:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    LIMBO : 4,
+			    REMOVED : 5,
+			    ACTIVE_LAPSED : 6,
+			    INACTIVE_LAPSED : 7,
+			    Total : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1009,7 +1039,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Active"
 			},
@@ -1020,7 +1050,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Inactive"
 			},
@@ -1031,7 +1061,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Total"
 			},
@@ -1042,16 +1072,26 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
-		},{
+		    } ]
+		}, {
 		    order : 3,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'C', 'includecountry','excludecountry'],
+		    parameters : [ 'C', 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, LIMBO:4, REMOVED:5, ACTIVE_LAPSED:6, INACTIVE_LAPSED:7 , Total:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    LIMBO : 4,
+			    REMOVED : 5,
+			    ACTIVE_LAPSED : 6,
+			    INACTIVE_LAPSED : 7,
+			    Total : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1137,7 +1177,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Active"
 			},
@@ -1148,7 +1188,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Inactive"
 			},
@@ -1159,7 +1199,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Total"
 			},
@@ -1170,16 +1210,26 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
-		},{
+		    } ]
+		}, {
 		    order : 4,
 		    sproc : 'reports_DonorClassReport',
-		    parameters : [ 'A', 'includecountry','excludecountry' ],
+		    parameters : [ 'A', 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, LIMBO:4, REMOVED:5, ACTIVE_LAPSED:6, INACTIVE_LAPSED:7 , Total:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    LIMBO : 4,
+			    REMOVED : 5,
+			    ACTIVE_LAPSED : 6,
+			    INACTIVE_LAPSED : 7,
+			    Total : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1265,7 +1315,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Active"
 			},
@@ -1276,7 +1326,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed Inactive"
 			},
@@ -1287,7 +1337,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Total"
 			},
@@ -1298,19 +1348,20 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
+		    } ]
 		} ],
 		parameters : {
 
 		    'includecountry' : {
 			order : 0,
 			type : 'multiselect',
-			source:'countries',
+			source : 'countries',
 			value : null,
 			locale_label : {
 			    en : 'Include Country'
 			}
-		    },'excludecountry' : {
+		    },
+		    'excludecountry' : {
 			order : 1,
 			type : 'multiselect',
 			source : 'countries',
@@ -1333,8 +1384,8 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		footnotes : ['Footer 1', 'Footer 2'],
-		orientation:'landscape',
+		footnotes : [ 'Footer 1', 'Footer 2' ],
+		orientation : 'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_DailyMailComputerReport',
@@ -1388,7 +1439,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Name"
 			},
@@ -1408,7 +1459,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    },  {
+		    }, {
 			locale : {
 			    en : "Country"
 			},
@@ -1498,7 +1549,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }  ]
+		    } ]
 		} ],
 		parameters : {
 		    'start_time' : {
@@ -1559,8 +1610,8 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		footnotes : ['Footer 1', 'Footer 2', 'Footer 3', 'Footer 4', 'Footer 5', 'Footer 6', 'Footer 7', 'Footer 8', 'Footer 9'],
-		orientation:'landscape',
+		footnotes : [ 'Footer 1', 'Footer 2', 'Footer 3', 'Footer 4', 'Footer 5', 'Footer 6', 'Footer 7', 'Footer 8', 'Footer 9' ],
+		orientation : 'landscape',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_LapsedDonorReport',
@@ -1569,7 +1620,21 @@ module.exports.views = {
 			id : 'Year',
 			name : 'Class',
 			value : 'Count',
-			columns:{id:0, IA:1, IB:2, IC:3, ID:4, IE:5, IF:6, IG:7, IH:8, II:9, IJ:10, IK:11, Total:12}
+			columns : {
+			    id : 0,
+			    IA : 1,
+			    IB : 2,
+			    IC : 3,
+			    ID : 4,
+			    IE : 5,
+			    IF : 6,
+			    IG : 7,
+			    IH : 8,
+			    II : 9,
+			    IJ : 10,
+			    IK : 11,
+			    Total : 12
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1607,7 +1672,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1618,7 +1683,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1629,7 +1694,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1640,7 +1705,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1651,7 +1716,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1662,7 +1727,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1673,7 +1738,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1684,7 +1749,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1695,7 +1760,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1706,7 +1771,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1717,7 +1782,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1728,12 +1793,12 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
 		    } ]
-		},{
+		}, {
 		    order : 1,
 		    sproc : 'reports_LapsedDonorReport',
 		    parameters : [ 'includecountries', 'excludecountries', 'INACTIVE_LAPSED' ],
@@ -1741,7 +1806,21 @@ module.exports.views = {
 			id : 'Year',
 			name : 'Class',
 			value : 'Count',
-			columns:{id:0, IA:1, IB:2, IC:3, ID:4, IE:5, IF:6, IG:7, IH:8, II:9, IJ:10, IK:11, Total:12}
+			columns : {
+			    id : 0,
+			    IA : 1,
+			    IB : 2,
+			    IC : 3,
+			    ID : 4,
+			    IE : 5,
+			    IF : 6,
+			    IG : 7,
+			    IH : 8,
+			    II : 9,
+			    IJ : 10,
+			    IK : 11,
+			    Total : 12
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1779,7 +1858,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1790,7 +1869,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1801,7 +1880,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1812,7 +1891,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1823,7 +1902,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1834,7 +1913,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1845,7 +1924,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1856,7 +1935,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1867,7 +1946,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1878,7 +1957,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1889,7 +1968,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1900,7 +1979,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1910,12 +1989,13 @@ module.exports.views = {
 		    'includecountries' : {
 			order : 0,
 			type : 'multiselect',
-			source:'countries',
+			source : 'countries',
 			value : null,
 			locale_label : {
 			    en : 'Include Country'
 			}
-		    },'excludecountries' : {
+		    },
+		    'excludecountries' : {
 			order : 1,
 			type : 'multiselect',
 			source : 'countries',
@@ -1941,12 +2021,21 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_MailoutReportActiveInactive',
-		    parameters : [ 'includecountries', 'excludecountries'],
+		    parameters : [ 'includecountries', 'excludecountries' ],
 		    pivot : {
 			id : 'CLASS',
 			name : 'Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, Total:3, CE:5, CO:6, XS:7, XY:8}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    Total : 3,
+			    CE : 5,
+			    CO : 6,
+			    XS : 7,
+			    XY : 8
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -1985,7 +2074,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -1996,7 +2085,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2007,7 +2096,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2018,7 +2107,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2029,7 +2118,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2040,7 +2129,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2051,7 +2140,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2062,7 +2151,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2073,7 +2162,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2084,7 +2173,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2095,7 +2184,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2106,7 +2195,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2117,20 +2206,32 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
 		    } ]
-		},{
+		}, {
 		    order : 1,
 		    sproc : 'reports_MailoutReportLapsed',
-		    parameters : [ 'includecountries', 'excludecountries'],
+		    parameters : [ 'includecountries', 'excludecountries' ],
 		    pivot : {
 			id : 'Year',
 			name : 'Column',
 			value : 'Count',
-			columns:{id:0, ACTIVE_LAPSED:1, CE_ACTIVE_LAPSED:2, CO_ACTIVE_LAPSED:3, XS_ACTIVE_LAPSED:4, XY_ACTIVE_LAPSED:5, INACTIVE_LAPSED:7, CE_INACTIVE_LAPSED:8, CO_INACTIVE_LAPSED:9, XS_INACTIVE_LAPSED:10, XY_INACTIVE_LAPSED:11}
+			columns : {
+			    id : 0,
+			    ACTIVE_LAPSED : 1,
+			    CE_ACTIVE_LAPSED : 2,
+			    CO_ACTIVE_LAPSED : 3,
+			    XS_ACTIVE_LAPSED : 4,
+			    XY_ACTIVE_LAPSED : 5,
+			    INACTIVE_LAPSED : 7,
+			    CE_INACTIVE_LAPSED : 8,
+			    CO_INACTIVE_LAPSED : 9,
+			    XS_INACTIVE_LAPSED : 10,
+			    XY_INACTIVE_LAPSED : 11
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -2169,7 +2270,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2180,7 +2281,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2191,7 +2292,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2202,7 +2303,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2213,7 +2314,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2224,7 +2325,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2235,7 +2336,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2246,7 +2347,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2257,7 +2358,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2268,7 +2369,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2279,7 +2380,7 @@ module.exports.views = {
 			value : '0',
 			lastrow : {
 			    type : 'sum',
-			    decimalplaces: 0,
+			    decimalplaces : 0,
 			    bold : true,
 			    bordertop : true
 			}
@@ -2290,7 +2391,7 @@ module.exports.views = {
 			value : '',
 			lastrow : {
 			    type : 'custom',
-			    value: '',
+			    value : '',
 			    bold : true,
 			    bordertop : true
 			}
@@ -2300,12 +2401,13 @@ module.exports.views = {
 		    'includecountries' : {
 			order : 0,
 			type : 'multiselect',
-			source:'countries',
+			source : 'countries',
 			value : null,
 			locale_label : {
 			    en : 'Include Country'
 			}
-		    },'excludecountries' : {
+		    },
+		    'excludecountries' : {
 			order : 1,
 			type : 'multiselect',
 			source : 'countries',
@@ -2315,8 +2417,7 @@ module.exports.views = {
 			}
 		    }
 		}
-	    },
-	    {
+	    }, {
 		id : 6,
 		name : {
 		    locale_label : {
@@ -2329,11 +2430,11 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		orientation:'portrait',
+		orientation : 'portrait',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_VolunteerInventoryReport',
-		    parameters : [ 'start_time', 'end_time', 'start_ship_time', 'end_ship_time','ship_from_codes', 'includecountries','excludecountries' ],
+		    parameters : [ 'start_time', 'end_time', 'start_ship_time', 'end_ship_time', 'ship_from_codes', 'includecountries', 'excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -2411,7 +2512,7 @@ module.exports.views = {
 		    'ship_from_codes' : {
 			order : 4,
 			type : 'multiselect',
-			source: 'ship_from',
+			source : 'ship_from',
 			value : null,
 			hidden : false,
 			locale_label : {
@@ -2439,8 +2540,7 @@ module.exports.views = {
 			}
 		    }
 		}
-	    }
-	    , {
+	    }, {
 		id : 7,
 		name : {
 		    locale_label : {
@@ -2456,12 +2556,24 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_DonorHistoryReport',
-		    parameters : [ 'includecountry','excludecountry' ],
+		    parameters : [ 'includecountry', 'excludecountry' ],
 		    pivot : {
 			id : 'Date',
 			name : 'Donor Status',
 			value : 'Count',
-			columns:{id:0, ACTIVE:1, INACTIVE:2, NEW:3, TOTAL:4, 'Inactive to Lapsed':5, 'Lapsed to Active':6, 'Reinstated':7 , 'Removed':8, 'Active to Inactive':9, 'Inactive to Active':10}
+			columns : {
+			    id : 0,
+			    ACTIVE : 1,
+			    INACTIVE : 2,
+			    NEW : 3,
+			    TOTAL : 4,
+			    'Inactive to Lapsed' : 5,
+			    'Lapsed to Active' : 6,
+			    'Reinstated' : 7,
+			    'Removed' : 8,
+			    'Active to Inactive' : 9,
+			    'Inactive to Active' : 10
+			}
 		    },
 		    section : {
 			startrow : true,
@@ -2547,7 +2659,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Lapsed to Active"
 			},
@@ -2558,7 +2670,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Reinstated"
 			},
@@ -2569,7 +2681,7 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    } , {
+		    }, {
 			locale : {
 			    en : "Removed"
 			},
@@ -2602,19 +2714,20 @@ module.exports.views = {
 			    bold : true,
 			    bordertop : true
 			}
-		    }]
+		    } ]
 		} ],
 		parameters : {
 
 		    'includecountry' : {
 			order : 0,
 			type : 'multiselect',
-			source:'countries',
+			source : 'countries',
 			value : null,
 			locale_label : {
 			    en : 'Include Country'
 			}
-		    },'excludecountry' : {
+		    },
+		    'excludecountry' : {
 			order : 1,
 			type : 'multiselect',
 			source : 'countries',
@@ -2624,12 +2737,11 @@ module.exports.views = {
 			}
 		    }
 		}
-	    },
-	    {
+	    }, {
 		id : 8,
 		name : {
 		    locale_label : {
-			en : 'Pledge DelinquentReport'
+			en : 'Pledge Delinquent Report'
 		    }
 		},
 		title : {
@@ -2638,11 +2750,11 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		orientation:'portrait',
+		orientation : 'portrait',
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_PledgeDelinquentReport',
-		    parameters : [ 'includecountries','excludecountries' ],
+		    parameters : [ 'includecountries', 'excludecountries' ],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -2696,8 +2808,307 @@ module.exports.views = {
 			}
 		    }
 		}
-	    }
-	    ]
+	    }, {
+		id : 9,
+		name : {
+		    locale_label : {
+			en : 'Order Item Distribution Report'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		orientation : 'portrait',
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_OrderItemDistributionReport',
+		    parameters : [ 'start_time', 'end_time', 'start_ship_time', 'end_ship_time', 'ship_from_codes', 'includecountries', 'excludecountries' ],
+		    pivot : {
+			id : 'Item # - Description',
+			name : 'Column',
+			value : 'Value',
+			columns : {
+			    id : 0,
+			    'Sales Qty' : 1,
+			    'Sales Orders' : 2,
+			    'Donated Qty' : 3,
+			    'Donated Orders' : 4
+			}
+		    },
+		    section : {
+			startrow : true,
+			endrow : true,
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "Item # - Description"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : 'Totals',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Sales Qty"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    value : '0',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Sales Orders"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 2,
+			    value : '0',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Donated Qty"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    value : '0',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Donated Orders"
+			},
+			value : '0',
+			lastrow : {
+			    type : 'sum',
+			    value : '0',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    } ]
+		} ],
+		parameters : {
+		    'start_time' : {
+			order : 0,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Time'
+			}
+		    },
+		    'end_time' : {
+			order : 1,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Time'
+			}
+		    },
+		    'start_ship_time' : {
+			order : 2,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Ship Time'
+			}
+		    },
+		    'end_ship_time' : {
+			order : 3,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Ship Time'
+			}
+		    },
+		    'ship_from_codes' : {
+			order : 4,
+			type : 'multiselect',
+			source : 'ship_from',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Ship From'
+			}
+		    },
+		    'includecountries' : {
+			order : 5,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Include Country'
+			}
+		    },
+		    'excludecountries' : {
+			order : 6,
+			type : 'multiselect',
+			source : 'countries',
+			value : null,
+			hidden : false,
+			locale_label : {
+			    en : 'Exclude Country'
+			}
+		    }
+		}
+	    }, {
+		id : 10,
+		name : {
+		    locale_label : {
+			en : 'Mail Drop Report'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		orientation : 'portrait',
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_MailDropReport',
+		    parameters : [ 'start_time', 'end_time' ],
+		    section : {
+			startrow : true,
+			endrow : true,
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "Sol+List/GL"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : 'Totals',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Description"
+			},
+			align : 'left',
+			titlealign : 'left',
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Package Items"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Date"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Ship From"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Count"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Postage"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Package"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Labour"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    } ]
+		} ],
+		parameters : {
+		    'start_time' : {
+			order : 0,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Time'
+			}
+		    },
+		    'end_time' : {
+			order : 1,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Time'
+			}
+		    }
+		}
+	    } ]
 	}
     }
 };

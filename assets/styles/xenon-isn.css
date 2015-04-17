@@ -26,6 +26,14 @@ a.panel-title-wrapper:hover, a.panel-title-wrapper:focus{
 	text-decoration:none;	
 }
 	
+	
+.isn-button-seperator{
+	height: 28px;
+	border-left: 1px solid rgb(226, 226, 226);
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
 
 .panel .panel-second-heading{
 	padding-top:18px;
@@ -322,6 +330,7 @@ table.dataTable{
 
 .isn-panel-pull-right{
 	
+	margin-bottom:5px;
 }
 
 .isn-panel-pull-right div.btn{
@@ -332,13 +341,13 @@ table.dataTable{
 /* Panel Stylings */
 
 .panel .panel-heading {
-	padding-bottom: 8px;
+	padding-bottom: 2px;
 	border-bottom: 2px solid #E2E2E2;
 }
 
 
 .panel .panel-heading>.panel-title {
-	line-height: 33px;
+	line-height: 37px;
 	font-weight:bold;
 }
 

@@ -21,6 +21,7 @@ module.exports = {
 		res.json({
 		    success : 'Success'
 		});
+		Exchange.trigger();
 	    });
 	} else {
 	    Database.knex('dpexchange').insert(dpCode).exec(function(err, response) {
@@ -29,6 +30,7 @@ module.exports = {
 		res.json({
 		    success : 'Success'
 		});
+		Exchange.trigger();
 	    });
 	}
     },
