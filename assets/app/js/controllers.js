@@ -16,10 +16,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dpplg' : null,
 	'dtmail' : null,
 	'dpother' : null,
-	'dplink' : null
+	'dplink' : null,
+	'dpmisc' : null
     };
 
-    $scope.longSelectOptions = {
+    $rootScope.longSelectOptions = {
 	minimumInputLength : 2
     };
 
@@ -107,6 +108,24 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		"width" : "30%" // Date
 	    } ]
 	},
+	'dpmisc' : {
+	    "autoWidth" : true,
+	    "bDestroy" : true,
+	    'dom' : '<"row"<"col-xs-12"f>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>',
+	    "columns" : [ {
+		"width" : "10%" // id
+	    }, {
+		"width" : "15%" // ProvCode
+	    }, {
+		"width" : "15%" // MType
+	    }, {
+		"width" : "15%" // `MCOUNT`
+	    }, {
+		"width" : "15%" //`MAMT`,
+	    }, {
+		"width" : "30%" // `MDATE`,
+	    } ]
+	},
 	'dpplg' : {
 	    "autoWidth" : true,
 	    "bDestroy" : true,
@@ -182,6 +201,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.selectedOrderSummary = null;
 	}, 0);
     }
+    
+    $scope.getFullSol = function(sol){
+	return $rootScope.label_sols[sol];
+	
+    }
+    $scope.getFullType = function(mtype){
+	return $rootScope.label_mtypes[mtype];
+	
+    }
 
     $scope.resetSelectedDataTableRow = function(table_name) {
 	$timeout(function() {
@@ -240,7 +268,29 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		TBAREQS : null
 	    };
 
-	} else if (table_name == 'dpother') {
+	} else if (table_name == 'dpmisc') {
+	    $rootScope.modalDataSet[table_name] = {
+		id : $scope.selectedDataTableRow[table_name].id,
+		tempId : $scope.selectedDataTableRow[table_name].tempId,
+		DONOR : $contact.id,
+		SOL : null,
+		MDATE : null,
+		MTYPE : null,
+		MYEAR : null,
+		MCOUNT : null,
+		MAMT : null,
+		MNOTES : null,
+		TSRECID : null,
+		TSDATE : null,
+		TSTIME : null,
+		TSCHG : null,
+		TSBASE : null,
+		TSLOCAT : null,
+		TSIDCODE : null,
+		database_origin : $contact.database_origin
+	    };
+
+	}else if (table_name == 'dpother') {
 	    $rootScope.modalDataSet[table_name] = {
 		id : $scope.selectedDataTableRow[table_name].id,
 		tempId : $scope.selectedDataTableRow[table_name].tempId,
@@ -1236,6 +1286,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'CAD - Canadian Dollars'
 	    } ];
 
+	    $rootScope.label_mtypes = {};
+	    $rootScope.mtypes = [];
+	    for (var i = 0; i < data.mtypes.length; i++) {
+		$rootScope.mtypes.push({
+		    id : data.mtypes[i].CODE,
+		    label : data.mtypes[i].CODE + " - " + data.mtypes[i].DESC
+		});
+		$rootScope.label_mtypes[data.mtypes[i].CODE] = data.mtypes[i].CODE + " - " + data.mtypes[i].DESC;
+	    }
+	    
+
 	    $scope.litems = [];
 	    $scope.litemdetails = {};
 	    for (var i = 0; i < data.litems.length; i++) {
@@ -1370,8 +1431,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		id : 'dplink',
 		label : 'Links'
 	    }, {
-		id : 6,
-		label : 'Myst'
+		id : 'dpmisc',
+		label : 'Misc'
 	    } ];
 
 	    $rootScope.staticyesnounknown = [ {
@@ -1503,20 +1564,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.types[i].CODE
 		});
 	    }
+	    $rootScope.label_sols = {};
 	    $rootScope.sols = [];
 	    for (var i = 0; i < data.sols.length; i++) {
 		$rootScope.sols.push({
 		    id : data.sols[i].CODE,
 		    label : data.sols[i].CODE
 		});
+		$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
 	    }
-	    $rootScope.sols = [];
-	    for (var i = 0; i < data.sols.length; i++) {
-		$rootScope.sols.push({
-		    id : data.sols[i].CODE,
-		    label : data.sols[i].CODE
-		});
-	    }
+	    
 	    $rootScope.billing_schedules = [];
 	    for (var i = 0; i < data.billing_schedules.length; i++) {
 		$rootScope.billing_schedules.push({
@@ -2095,7 +2152,28 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	CHECKBOX : null,
 	// DPOTHER
 	dpother : {
-	    DEMAND : null
+	    DEMAND : null,
+//	    DATE : null,
+//	    TRANSACT : null,
+//	    LIST : null,
+//	    AMT_MIN : null,
+//	    AMT_MAX : null,
+//	    
+//	    
+//	    
+//	    date	date range	Transaction Date
+//	    transact	multi select	Transact Code
+//	    list	multi select	List Code
+//	    amt	numeric range	Amount Code
+//	    sol	multi select	Prov Code
+//	    demand	multi select	Demand Code
+//	    mode	multi select	Mode
+//	    gl	multi select	Pledge Group
+//	    requests	multi select	Requests
+//	    tbareqs	multi select	TBA Requests
+
+	    
+	    
 	},
 	dpgift : {
 	    DEMAND : null

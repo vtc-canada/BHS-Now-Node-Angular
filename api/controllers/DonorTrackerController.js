@@ -41,8 +41,8 @@ module.exports = {
 		    callback(null, titles);
 		});
 	    },
-	    currencies:function(callback){
-		Database.knex('dpcurrency').select('id','name','code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
+	    currencies : function(callback) {
+		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -88,6 +88,16 @@ module.exports = {
     getattributes : function(req, res) {
 
 	async.parallel({
+
+	    mtypes : function(callback) {
+		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
+		    FIELD : 'MTYPE'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
 	    litems : function(callback) {
 		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
@@ -235,7 +245,7 @@ module.exports = {
 		    callback(null, types);
 		});
 	    },
-	    genders : function(callback){
+	    genders : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'GENDER'
 		}).exec(function(err, types) {
@@ -335,7 +345,7 @@ module.exports = {
 		});
 	    },
 	    county_codes : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC','MCAT_LO').where({
+		Database.knex('dpcodes').distinct('CODE').select('DESC', 'MCAT_LO').where({
 		    FIELD : 'COUNTY'
 		}).exec(function(err, results) {
 		    if (err)

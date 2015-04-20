@@ -693,6 +693,65 @@
 	</div>
 </script>
 
+<script type="text/ng-template" id="edit-dpmisc-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Edit Misc</h4>
+	</div>
+	<div class="modal-body form-horizontal">
+		<form role="form" class="form-horizontal">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_date">Date:</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="modalDataSet.dpmisc.MDATE" ng-model="modalDataSet.dpmisc.MDATE" >
+								<div class="input-group-addon">
+									<a href=""><i class="linecons-calendar"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" options="longSelectOptions" id="modalDataSet.dpmisc.SOL" name="modalDataSet.dpmisc.SOL" ng-options="title.id as title.label for title in sols" ng-model="modalDataSet.dpmisc.SOL" ></select2>
+							<!--<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpmisc.SOL" ng-model-options="" placeholder="">-->
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_type">Type:</label>
+						<div class="col-sm-8">
+							<select2 class="form-control" id="modalDataSet.dpmisc.MTYPE" name="modalDataSet.dpmisc.MTYPE" ng-options="title.id as title.label for title in mtypes" ng-model="modalDataSet.dpmisc.MTYPE" ></select2>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_count">Count:</label>
+						<div class="col-sm-8">
+							<input type="number" class="form-control" id="modal_count" ng-model="modalDataSet.dpmisc.MCOUNT" ng-model-options="" placeholder="">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="modal_amt">Dollar Amount:</label>
+						<div class="col-sm-8">
+							<input type="number" class="form-control" id="modal_amt" ng-model="modalDataSet.dpmisc.MAMT" value="modalDataSet.dpmisc.MAMT|currency"  ng-model-options="" placeholder="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-info" ng-click="currentModal.dismiss('save');">Set</button>
+	</div>
+</script>
+
+
 <script type="text/ng-template" id="edit-dpother-modal" ng-controller="ModalCtrl">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
@@ -1534,6 +1593,44 @@
 										</div>
 									</div>
 								</div>
+								
+								<div class="panel-body" ng-show="transaction_type=='dpmisc'">
+									<!-- Gifts -->
+									<div class="table-gifts">
+										<table id="{{'dpmisc'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
+											<thead>
+												<tr>
+													<th >id</th>
+													<th >Sol Code</th>
+													<th >Type</th>
+													<th >Count</th>
+													<th >Amount</th>
+													<th >Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="row in contact.dpmisc" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isDatatableRowFocused('dpmisc',row)}" ng-click="selectDataTableRow('dpmisc',row)" >
+													<td>{{row.id}} | {{row.tempId}}</td>
+													<td>{{getFullSol(row.SOL)}}</td>
+													<td>{{getFullType(row.MTYPE)}}</td>
+													<td>{{row.MCOUNT}}</td>
+													<td>{{row.MAMT | number:2 }}</td>
+													<td>{{row.MDATE | date : "MM/dd/yyyy" }}</td>
+												</tr>	
+											</tbody>
+										</table>
+										<div class="pull-right">
+											<div class="btn btn-primary" ng-click="addDatatableRow('dpmisc', 'edit-dpmisc-modal','lg')">Add</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled('dpmisc')}" ng-click="editDatatableRow('dpmisc','edit-dpmisc-modal','lg')">Edit</div>
+										</div>
+										<div class="pull-right pull-right-stack">
+											<div class="btn btn-danger" ng-class="{'btn-orange':isDatatableDeleteButtonText('dpmisc'),disabled:isDatatableDeleteRestoreDisabled('dpmisc')}" ng-click="doDeleteDataTable('dpmisc')">{{getDatatableDeleteButtonText('dpmisc')}}</div>
+										</div>
+									</div>
+								</div>
+								
 							</div>
 						</div>
 					</div>

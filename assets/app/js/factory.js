@@ -242,6 +242,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 
 	    this.dtmail = [];
 	    this.dpgift = [];
+	    this.dpmisc = [];
 	    this.dpordersummary = [];
 	    this.dpplg = [];
 	    this.dplink = [];

@@ -118,6 +118,7 @@ module.exports = {
 	var otherAddresses = contact.otherAddresses;
 	var dtmail = contact.dtmail;
 	var dpgift = contact.dpgift;
+	var dpmisc = contact.dpmisc;
 	var dpordersummary = contact.dpordersummary;
 	var dpplg = contact.dpplg;
 	var dplink = contact.dplink;
@@ -133,6 +134,7 @@ module.exports = {
 	delete contact.otherAddresses;
 	delete contact.dtmail;
 	delete contact.dpgift;
+	delete contact.dpmisc;
 	delete contact.dpordersummary;
 	delete contact.dpplg;
 	delete contact.dplink;
@@ -209,6 +211,12 @@ module.exports = {
 		});
 	    }, function(callback) {
 		updateDpTable('dpgift', contactId, dpgift, function(err, data) {
+		    if (err)
+			return callback(err);
+		    callback(null);
+		});
+	    }, function(callback) {
+		updateDpTable('dpmisc', contactId, dpmisc, function(err, data) {
 		    if (err)
 			return callback(err);
 		    callback(null);
@@ -887,6 +895,14 @@ module.exports = {
 		    callback(null, data);
 		});
 	    },
+	    dpmisc : function(callback) {
+		Database.knex('dpmisc').where('DONOR', contact.id).del().exec(function(err, data) {
+		    if (err) {
+			return callback(err);
+		    }
+		    callback(null, data);
+		});
+	    },
 	    dpother : function(callback) {
 		Database.knex('dpother').where('DONOR', contact.id).del().exec(function(err, data) {
 		    if (err) {
@@ -1047,6 +1063,13 @@ module.exports = {
 		    },
 		    dpgift : function(callback) {
 			Database.knex.raw("SELECT dpgift.*, dpcodes.DESC FROM   dpgift LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpgift.SOL AND dpgift.database_origin = dpcodes.database_origin ) WHERE  DONOR = " + contactId).exec(function(err, data) {
+			    if (err)
+				return callback(err)
+			    return callback(null, data[0]);
+			});
+		    },
+		    dpmisc : function(callback) {
+			Database.knex.raw('SELECT `dpmisc`.`id`,`dpmisc`.`DONOR`,`dpmisc`.`SOL`, DATE_FORMAT(`MDATE`,"%Y-%m-%d") AS `MDATE`, `dpmisc`.`MTYPE`,`dpmisc`.`MYEAR`,`dpmisc`.`MCOUNT`,`dpmisc`.`MAMT`,`dpmisc`.`MNOTES`,`dpmisc`.`TSRECID`,`dpmisc`.`TSDATE`,`dpmisc`.`TSTIME`,`dpmisc`.`TSCHG`,`dpmisc`.`TSBASE`,`dpmisc`.`TSLOCAT`,`dpmisc`.`TSIDCODE`,`dpmisc`.`database_origin`, dpcodes.DESC FROM   dpmisc LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpmisc.SOL AND dpcodes.database_origin = dpmisc.database_origin ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
