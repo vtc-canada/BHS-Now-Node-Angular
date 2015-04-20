@@ -418,7 +418,7 @@ var public_vars = public_vars || {};
 
 				var $this = $(el),
 					opts = {
-						format: attrDefault($this, 'format', 'MM/DD/YYYY'),
+						format: attrDefault($this, 'format', 'yyyy-mm-dd'),
 						timePicker: attrDefault($this, 'timePicker', false),
 						timePickerIncrement: attrDefault($this, 'timePickerIncrement', false),
 						separator: attrDefault($this, 'separator', ' - '),

@@ -1337,19 +1337,25 @@ module.exports = {
 	var dpgift = req.body.contact.dpgift;
 	var dpother = req.body.contact.dpother;
 	var dtmail = req.body.contact.dtmail;
+	var dpplg = req.body.contact.dpplg;
+	
 	delete req.body.contact.dpgift;
 	delete req.body.contact.dpother;
 	delete req.body.contact.dtmail;
-
+	delete req.body.contact.dpplg;
+	
 	var dpgiftFlag = false; // Flag for dpgift join
 	var dpotherFlag = false; // Flag for dpother join
 	var dtmailFlag = false;
+	var dpplgFlag = false;
+	
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
 	addDpWheres();
 	var dpGiftWheres = '';
 	var dpOtherWheres = '';
 	var dtMailWheres = '';
+	var dpPlgWheres = '';
 
 	determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
 	// dpGiftWheres, dpother flag, dpOtherWheres
@@ -1380,6 +1386,9 @@ module.exports = {
 		if (dtmailFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmail` ON `dp`.`id` = `dtmail`.`DONOR` ' + dtMailWheres + (joinCount > 1 ? ')' : '');
 		}
+		if (dpplgFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpplg` ON `dp`.`id` = `dpplg`.`DONOR` ' + dpPlgWheres + (joinCount > 1 ? ')' : '');
+		}
 	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
 
@@ -1391,6 +1400,9 @@ module.exports = {
 		}
 		if (dtmailFlag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dtmail` ON `dp`.`id` =  `dtmail`.`DONOR`' + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
+		}
+		if (dpplgFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpplg` ON `dp`.`id` =  `dpplg`.`DONOR`' + (dpPlgWheres == '' ? '' : ' AND ') + dpPlgWheres;
 		}
 	    }
 	}
@@ -1541,12 +1553,34 @@ module.exports = {
 	    if (dpother) {
 		Object.keys(dpother).forEach(function(key) {
 		    var val = dpother[key];
+		    
+		    
 		    if (val != null && val != '') {
 			if (!dpotherFlag) {
 			    joinCount++;
 			}
+			
 			dpotherFlag = true;
+
+			if(key=='AMT_MIN'){
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT >= '  + val;
+			    return;
+			}
+			if(key=='AMT_MAX'){
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT <= '  + val;
+			    return;
+			}
+			if(key=='DATE_MIN'){
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE >= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='DATE_MAX'){
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= '  + "'" + val + "'";
+			    return;
+			}
 			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			
+			
 			// ' = ' + "'" + val + "'";
 		    }
 		});
@@ -1565,6 +1599,23 @@ module.exports = {
 			    joinCount++;
 			}
 			dpgiftFlag = true;
+
+			if(key=='AMT_MIN'){
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT >= '  + val;
+			    return;
+			}
+			if(key=='AMT_MAX'){
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT <= '  + val;
+			    return;
+			}
+			if(key=='DATE_MIN'){
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE >= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='DATE_MAX'){
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= '  + "'" + val + "'";
+			    return;
+			}
 			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
 			// ' = ' + "'" + val + "'";
 		    }
@@ -1573,6 +1624,54 @@ module.exports = {
 		    dpGiftWheres = dpWheres + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
 		} else if (dpGiftWheres != '') {
 		    dpGiftWheres = (mode == 'or' ? 'WHERE ' : '') + dpGiftWheres;
+		}
+	    }
+	    
+	    if (dpplg) {
+		Object.keys(dpplg).forEach(function(key) {
+		    var val = dpplg[key];
+		    if (val != null && val != ''&& (key !='PLEDGOR'||val == 'Y')) {
+			if (!dpplgFlag) {
+			    joinCount++;
+			}
+			dpplgFlag = true;
+			if(key =='PLEDGOR'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'TRUE';
+			    return;
+			}
+			
+			if(key=='AMT_MIN'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT >= '  + val;
+			    return;
+			}
+			if(key=='AMT_MAX'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT <= '  + val;
+			    return;
+			}
+			if(key=='START_DT_MIN'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT >= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='START_DT_MAX'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT <= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='MADE_DT_MIN'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT >= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='MADE_DT_MAX'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= '  + "'" + val + "'";
+			    return;
+			}
+			dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			// ' = ' + "'" + val + "'";
+		    }
+		});
+		if (dpWheres != '') {
+		    dpPlgWheres = dpWheres + (dpPlgWheres == '' ? '' : ' AND ') + dpPlgWheres;
+		} else if (dpPlgWheres != '') {
+		    dpPlgWheres = (mode == 'or' ? 'WHERE ' : '') + dpPlgWheres;
 		}
 	    }
 

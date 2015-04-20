@@ -201,14 +201,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.selectedOrderSummary = null;
 	}, 0);
     }
-    
-    $scope.getFullSol = function(sol){
-	return $rootScope.label_sols[sol];
-	
+
+    $scope.getFullSol = function(sol) {
+	if ($rootScope.label_sols) {
+	    return $rootScope.label_sols[sol];
+	}
+	return '';
+
     }
-    $scope.getFullType = function(mtype){
-	return $rootScope.label_mtypes[mtype];
-	
+    $scope.getFullType = function(mtype) {
+	if ($rootScope.label_mtypes) {
+	    return $rootScope.label_mtypes[mtype];
+	}
+	return '';
     }
 
     $scope.resetSelectedDataTableRow = function(table_name) {
@@ -290,7 +295,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		database_origin : $contact.database_origin
 	    };
 
-	}else if (table_name == 'dpother') {
+	} else if (table_name == 'dpother') {
 	    $rootScope.modalDataSet[table_name] = {
 		id : $scope.selectedDataTableRow[table_name].id,
 		tempId : $scope.selectedDataTableRow[table_name].tempId,
@@ -1295,7 +1300,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 		$rootScope.label_mtypes[data.mtypes[i].CODE] = data.mtypes[i].CODE + " - " + data.mtypes[i].DESC;
 	    }
-	    
 
 	    $scope.litems = [];
 	    $scope.litemdetails = {};
@@ -1368,48 +1372,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    }
 
-	    $rootScope.pledgegroups = [];
-	    for (var i = 0; i < data.pledgegroups.length; i++) {
-		$rootScope.pledgegroups.push({
-		    id : data.pledgegroups[i].CODE,
-		    label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
-		});
-	    }
-
-	    $rootScope.tba_requests = [];
-	    for (var i = 0; i < data.tba_requests.length; i++) {
-		$rootScope.tba_requests.push({
-		    id : data.tba_requests[i].CODE,
-		    label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
-		});
-	    }
-
-	    $rootScope.lists = [];
-	    for (var i = 0; i < data.lists.length; i++) {
-		$rootScope.lists.push({
-		    id : data.lists[i].CODE,
-		    label : data.lists[i].CODE + " - " + data.lists[i].DESC
-		});
-	    }
-	    $rootScope.demands = [];
-	    for (var i = 0; i < data.demands.length; i++) {
-		$rootScope.demands.push({
-		    id : data.demands[i].CODE,
-		    label : data.demands[i].CODE + " - " + data.demands[i].DESC
-		});
-	    }
 	    $rootScope.relationships = [];
 	    for (var i = 0; i < data.relationships.length; i++) {
 		$rootScope.relationships.push({
 		    id : data.relationships[i].CODE,
 		    label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
-		});
-	    }
-	    $rootScope.requests_plural = [];
-	    for (var i = 0; i < data.requests_plural.length; i++) {
-		$rootScope.requests_plural.push({
-		    id : data.requests_plural[i].CODE,
-		    label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
 		});
 	    }
 
@@ -1564,16 +1531,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.types[i].CODE
 		});
 	    }
-	    $rootScope.label_sols = {};
-	    $rootScope.sols = [];
-	    for (var i = 0; i < data.sols.length; i++) {
-		$rootScope.sols.push({
-		    id : data.sols[i].CODE,
-		    label : data.sols[i].CODE
-		});
-		$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
-	    }
-	    
+
 	    $rootScope.billing_schedules = [];
 	    for (var i = 0; i < data.billing_schedules.length; i++) {
 		$rootScope.billing_schedules.push({
@@ -1581,26 +1539,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
 		});
 	    }
-
-	    $rootScope.transacts = [];
-	    for (var i = 0; i < data.transacts.length; i++) {
-		$rootScope.transacts.push({
-		    id : data.transacts[i].CODE,
-		    label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
-		});
-	    }
 	    $rootScope.designates = [];
 	    for (var i = 0; i < data.designates.length; i++) {
 		$rootScope.designates.push({
 		    id : data.designates[i].CODE,
 		    label : data.designates[i].CODE + " - " + data.designates[i].DESC
-		});
-	    }
-	    $rootScope.modes = [];
-	    for (var i = 0; i < data.modes.length; i++) {
-		$rootScope.modes.push({
-		    id : data.modes[i].CODE,
-		    label : data.modes[i].CODE + " - " + data.modes[i].DESC
 		});
 	    }
 
@@ -2152,34 +2095,59 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	CHECKBOX : null,
 	// DPOTHER
 	dpother : {
+	    TRANSACT : null,
+	    LIST : null,
+	    AMT_MIN : null,
+	    AMT_MAX : null,
+	    DATE_MIN : null,
+	    DATE_MAX : null,
+	    SOL : null,
 	    DEMAND : null,
-//	    DATE : null,
-//	    TRANSACT : null,
-//	    LIST : null,
-//	    AMT_MIN : null,
-//	    AMT_MAX : null,
-//	    
-//	    
-//	    
-//	    date	date range	Transaction Date
-//	    transact	multi select	Transact Code
-//	    list	multi select	List Code
-//	    amt	numeric range	Amount Code
-//	    sol	multi select	Prov Code
-//	    demand	multi select	Demand Code
-//	    mode	multi select	Mode
-//	    gl	multi select	Pledge Group
-//	    requests	multi select	Requests
-//	    tbareqs	multi select	TBA Requests
+	    MODE : null,
+	    GL : null,
+	    REQUESTS : null,
+	    TBAREQS : null
+	//	    
+	//	    
+	//	    
+	//	    date	date range	Transaction Date
+	//	    transact	multi select	Transact Code
+	//	    list	multi select	List Code
+	//	    amt	numeric range	Amount Code
+	//	    sol	multi select	Prov Code
+	//	    demand	multi select	Demand Code
+	//	    mode	multi select	Mode
+	//	    gl	multi select	Pledge Group
+	//	    requests	multi select	Requests
+	//	    tbareqs	multi select	TBA Requests
 
-	    
-	    
 	},
 	dpgift : {
-	    DEMAND : null
+	    DATE_MIN : null,
+	    DATE_MAX : null,
+	    AMT_MIN : null,
+	    AMT_MAX : null,
+	    GL : null,
+	    SOL : null,
+	    PLEDGE : null,
+	    LIST : null,
+	    TRANSACT : null,
+	    DEMAND : null,
+	    MODE : null,
+	    REQUESTS : null,
+	    TBAREQS : null,
+	    CAMP_TYPE : null
+	//ms
 	},
 	dtmail : {
 	    SOL : null
+	},
+	dpplg : {
+	    PLEDGOR : 'ANY',
+	    MADE_DT_MIN : null,
+	    MADE_DT_MAX : null,
+	    START_DT_MIN : null,
+	    START_DT_MAX : null,
 	}
     };
 
@@ -2191,6 +2159,86 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     };
 
     (function() {
+
+	$sails.get('/donortracker/getsearchattributes').success(function(data) {
+
+	    data = data.result;
+	    $rootScope.transacts = [];
+	    for (var i = 0; i < data.transacts.length; i++) {
+		$rootScope.transacts.push({
+		    id : data.transacts[i].CODE,
+		    label : data.transacts[i].CODE + " - " + data.transacts[i].DESC
+		});
+	    }
+
+	    $rootScope.staticyesany = [ {
+		id : 'Y',
+		label : 'Yes'
+	    }, {
+		id : 'ANY',
+		label : 'Any'
+	    } ];
+
+	    $rootScope.lists = [];
+	    for (var i = 0; i < data.lists.length; i++) {
+		$rootScope.lists.push({
+		    id : data.lists[i].CODE,
+		    label : data.lists[i].CODE + " - " + data.lists[i].DESC
+		});
+	    }
+
+	    $rootScope.label_sols = {};
+	    $rootScope.sols = [];
+	    for (var i = 0; i < data.sols.length; i++) {
+		$rootScope.sols.push({
+		    id : data.sols[i].CODE,
+		    label : data.sols[i].CODE
+		});
+		$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
+	    }
+
+	    $rootScope.demands = [];
+	    for (var i = 0; i < data.demands.length; i++) {
+		$rootScope.demands.push({
+		    id : data.demands[i].CODE,
+		    label : data.demands[i].CODE + " - " + data.demands[i].DESC
+		});
+	    }
+
+	    $rootScope.modes = [];
+	    for (var i = 0; i < data.modes.length; i++) {
+		$rootScope.modes.push({
+		    id : data.modes[i].CODE,
+		    label : data.modes[i].CODE + " - " + data.modes[i].DESC
+		});
+	    }
+
+	    $rootScope.pledgegroups = [];
+	    for (var i = 0; i < data.pledgegroups.length; i++) {
+		$rootScope.pledgegroups.push({
+		    id : data.pledgegroups[i].CODE,
+		    label : data.pledgegroups[i].CODE + " - " + data.pledgegroups[i].DESC
+		});
+	    }
+
+	    $rootScope.tba_requests = [];
+	    for (var i = 0; i < data.tba_requests.length; i++) {
+		$rootScope.tba_requests.push({
+		    id : data.tba_requests[i].CODE,
+		    label : data.tba_requests[i].CODE + " - " + data.tba_requests[i].DESC
+		});
+	    }
+
+	    $rootScope.requests_plural = [];
+	    for (var i = 0; i < data.requests_plural.length; i++) {
+		$rootScope.requests_plural.push({
+		    id : data.requests_plural[i].CODE,
+		    label : data.requests_plural[i].CODE + " - " + data.requests_plural[i].DESC
+		});
+	    }
+
+	})
+
 	$sails.get('/template/contacts').success(function(data) {
 	    $scope.search_templates = [];
 	    for (var i = 0; i < data.length; i++) {
@@ -2518,7 +2566,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift' || key == 'dtmail') {
+			if (key == 'dpother' || key == 'dpgift' || key == 'dtmail' || key == 'dpplg') {
 			    angular.forEach(value, function(innerValue, innerKey) {
 				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
@@ -2864,7 +2912,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	})
 	// .withDataProp('data')
 	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
-	    aoData.contact = $rootScope.search_contact;
+	    var searcht = angular.copy($rootScope.search_contact);
+	    //delete searcht.AMT_MIN;
+	    //delete searcht.AMT_MAX;
+	    aoData.contact = searcht;
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
 	    $('td', nRow).bind('click', function() {

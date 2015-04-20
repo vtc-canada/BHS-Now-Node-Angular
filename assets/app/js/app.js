@@ -215,6 +215,9 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 	    datepicker : function($ocLazyLoad) {
 		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
 	    },
+	    daterangepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.core.moment, ASSETS.forms.daterangepicker, ]);
+	    },
 	    jqui : function($ocLazyLoad) {
 		return $ocLazyLoad.load({
 		    files : ASSETS.core.jQueryUI
