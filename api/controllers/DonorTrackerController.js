@@ -98,6 +98,42 @@ module.exports = {
 		    callback(null, sols);
 		});
 	    },
+	    decision : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'DECIS'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    willsaymass : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SAYMASS'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    mass_said : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'Q17'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    values_traditional : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'Q18'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
 	    billing_schedules : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'MQA'
@@ -442,24 +478,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    decision : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'DECIS'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
-	    mass_said : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'Q17'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
+	    
 	    designates : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DESIGNATE'
@@ -476,24 +495,8 @@ module.exports = {
 	     * FIELD : 'CLASS' }).exec(function(err, results) { if (err) return
 	     * callback(err); callback(null, results); }); }
 	     */
-	    willsaymass : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'SAYMASS'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
-	    values_traditional : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'Q18'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
+	   
+	    
 	    dtvols1 : function(callback) {
 		async.parallel({
 		    origins : function(dtvols1callback) {

@@ -862,6 +862,16 @@ directive('tagsinput', function() {
 		});  
 		
 	    });
+	    
+	    scope.$watch('ngModelMin',function(newValue,oldValue){
+		if(newValue!=oldValue){
+		    if(newValue==null){
+			if ($this.hasClass('daterange-inline')) {
+			    $this.find('span').html(""); 
+			}
+		    }
+		}
+	    });
 
 	    if (typeof opts['ranges'] == 'object') {
 		$this.data('daterangepicker').container.removeClass('show-calendar');

@@ -1069,11 +1069,14 @@ module.exports = {
 			});
 		    },
 		    dpmisc : function(callback) {
-			Database.knex.raw('SELECT `dpmisc`.`id`,`dpmisc`.`DONOR`,`dpmisc`.`SOL`, DATE_FORMAT(`MDATE`,"%Y-%m-%d") AS `MDATE`, `dpmisc`.`MTYPE`,`dpmisc`.`MYEAR`,`dpmisc`.`MCOUNT`,`dpmisc`.`MAMT`,`dpmisc`.`MNOTES`,`dpmisc`.`TSRECID`,`dpmisc`.`TSDATE`,`dpmisc`.`TSTIME`,`dpmisc`.`TSCHG`,`dpmisc`.`TSBASE`,`dpmisc`.`TSLOCAT`,`dpmisc`.`TSIDCODE`,`dpmisc`.`database_origin`, dpcodes.DESC FROM   dpmisc LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpmisc.SOL AND dpcodes.database_origin = dpmisc.database_origin ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
-			    if (err)
-				return callback(err)
-			    return callback(null, data[0]);
-			});
+			Database.knex
+			    .raw(
+				'SELECT `dpmisc`.`id`,`dpmisc`.`DONOR`,`dpmisc`.`SOL`, DATE_FORMAT(`MDATE`,"%Y-%m-%d") AS `MDATE`, `dpmisc`.`MTYPE`,`dpmisc`.`MYEAR`,`dpmisc`.`MCOUNT`,`dpmisc`.`MAMT`,`dpmisc`.`MNOTES`,`dpmisc`.`TSRECID`,`dpmisc`.`TSDATE`,`dpmisc`.`TSTIME`,`dpmisc`.`TSCHG`,`dpmisc`.`TSBASE`,`dpmisc`.`TSLOCAT`,`dpmisc`.`TSIDCODE`,`dpmisc`.`database_origin`, dpcodes.DESC FROM   dpmisc LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpmisc.SOL AND dpcodes.database_origin = dpmisc.database_origin ) WHERE  DONOR = '
+				    + contactId).exec(function(err, data) {
+				if (err)
+				    return callback(err)
+				return callback(null, data[0]);
+			    });
 		    },
 		    dpother : function(callback) {
 			Database.knex.raw("SELECT dpother.*, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpother.SOL AND dpother.database_origin = dpcodes.database_origin ) WHERE  DONOR = " + contactId).exec(function(err, data) {
@@ -1338,17 +1341,23 @@ module.exports = {
 	var dpother = req.body.contact.dpother;
 	var dtmail = req.body.contact.dtmail;
 	var dpplg = req.body.contact.dpplg;
-	
+	var dpmisc = req.body.contact.dpmisc;
+	var dtvols1 = req.body.contact.dtvols1;
+
 	delete req.body.contact.dpgift;
 	delete req.body.contact.dpother;
 	delete req.body.contact.dtmail;
 	delete req.body.contact.dpplg;
-	
+	delete req.body.contact.dpmisc;
+	delete req.body.contact.dtvols1;
+
 	var dpgiftFlag = false; // Flag for dpgift join
 	var dpotherFlag = false; // Flag for dpother join
 	var dtmailFlag = false;
 	var dpplgFlag = false;
-	
+	var dpmiscFlag = false;
+	var dtvols1Flag = false;
+
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
 	addDpWheres();
@@ -1356,6 +1365,8 @@ module.exports = {
 	var dpOtherWheres = '';
 	var dtMailWheres = '';
 	var dpPlgWheres = '';
+	var dpMiscWheres = '';
+	var dtVols1Wheres = '';
 
 	determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
 	// dpGiftWheres, dpother flag, dpOtherWheres
@@ -1389,6 +1400,12 @@ module.exports = {
 		if (dpplgFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpplg` ON `dp`.`id` = `dpplg`.`DONOR` ' + dpPlgWheres + (joinCount > 1 ? ')' : '');
 		}
+		if (dpmiscFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpmisc` ON `dp`.`id` = `dpmisc`.`DONOR` ' + dpMiscWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dtvols1Flag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtvols1` ON `dp`.`id` = `dtvols1`.`DONOR` ' + dtVols1Wheres + (joinCount > 1 ? ')' : '');
+		}
 	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
 
@@ -1403,6 +1420,12 @@ module.exports = {
 		}
 		if (dpplgFlag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dpplg` ON `dp`.`id` =  `dpplg`.`DONOR`' + (dpPlgWheres == '' ? '' : ' AND ') + dpPlgWheres;
+		}
+		if (dpmiscFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpmisc` ON `dp`.`id` =  `dpmisc`.`DONOR`' + (dpMiscWheres == '' ? '' : ' AND ') + dpMiscWheres;
+		}
+		if (dtvols1Flag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dtvols1` ON `dp`.`id` =  `dtvols1`.`DONOR`' + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
 		}
 	    }
 	}
@@ -1486,7 +1509,7 @@ module.exports = {
 
 	    Object.keys(req.body.contact).forEach(function(key) {
 		var val = req.body.contact[key];
-		if (key == 'id'|| key == 'mode') { // Skip these guys
+		if (key == 'id' || key == 'mode') { // Skip these guys
 		    return;
 		}
 		if (key == 'CHECKBOX' && req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'Y') {
@@ -1514,35 +1537,6 @@ module.exports = {
 		}
 	    });
 
-	    //	    
-	    // if (req.body.contact.ADD != null && req.body.contact.ADD != '') {
-	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ADD =
-	    // ' + "'" +
-	    // req.body.contact.ADD + "'";
-	    // }
-	    // if (req.body.contact.CITY != null && req.body.contact.CITY != '')
-	    // {
-	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CITY
-	    // = ' + "'" +
-	    // req.body.contact.CITY + "'";
-	    // }
-	    // if (req.body.contact.ST != null && req.body.contact.ST != '') {
-	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ST =
-	    // ' + "'" +
-	    // req.body.contact.ST + "'";
-	    // }
-	    // if (req.body.contact.COUNTRY != null && req.body.contact.COUNTRY
-	    // != '') {
-	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') +
-	    // 'dp.COUNTRY = ' + "'"
-	    // + req.body.contact.COUNTRY + "'";
-	    // }
-	    // if (req.body.contact.ZIP != null && req.body.contact.ZIP != '') {
-	    // dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP =
-	    // ' + "'" +
-	    // req.body.contact.ZIP + "'";
-	    // }
-
 	    console.log('mode:' + mode);
 	    if (dpWheres != '' && mode == 'or') { // add initial WHERE command
 		dpWheres = 'WHERE ' + dpWheres;
@@ -1553,34 +1547,32 @@ module.exports = {
 	    if (dpother) {
 		Object.keys(dpother).forEach(function(key) {
 		    var val = dpother[key];
-		    
-		    
+
 		    if (val != null && val != '') {
 			if (!dpotherFlag) {
 			    joinCount++;
 			}
-			
+
 			dpotherFlag = true;
 
-			if(key=='AMT_MIN'){
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT >= '  + val;
+			if (key == 'AMT_MIN') {
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT >= ' + val;
 			    return;
 			}
-			if(key=='AMT_MAX'){
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT <= '  + val;
+			if (key == 'AMT_MAX') {
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.AMT <= ' + val;
 			    return;
 			}
-			if(key=='DATE_MIN'){
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE >= '  + "'" + val + "'";
+			if (key == 'DATE_MIN') {
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE >= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='DATE_MAX'){
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= '  + "'" + val + "'";
+			if (key == 'DATE_MAX') {
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= ' + "'" + val + "'";
 			    return;
 			}
 			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
-			
-			
+
 			// ' = ' + "'" + val + "'";
 		    }
 		});
@@ -1600,20 +1592,20 @@ module.exports = {
 			}
 			dpgiftFlag = true;
 
-			if(key=='AMT_MIN'){
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT >= '  + val;
+			if (key == 'AMT_MIN') {
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT >= ' + val;
 			    return;
 			}
-			if(key=='AMT_MAX'){
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT <= '  + val;
+			if (key == 'AMT_MAX') {
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.AMT <= ' + val;
 			    return;
 			}
-			if(key=='DATE_MIN'){
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE >= '  + "'" + val + "'";
+			if (key == 'DATE_MIN') {
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE >= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='DATE_MAX'){
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= '  + "'" + val + "'";
+			if (key == 'DATE_MAX') {
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= ' + "'" + val + "'";
 			    return;
 			}
 			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
@@ -1626,50 +1618,66 @@ module.exports = {
 		    dpGiftWheres = (mode == 'or' ? 'WHERE ' : '') + dpGiftWheres;
 		}
 	    }
-	    
+
 	    if (dpplg) {
 		Object.keys(dpplg).forEach(function(key) {
 		    var val = dpplg[key];
-		    if (val != null && val != ''&& (key !='PLEDGOR'||val == 'Y')) {
+		    if (val != null && val != '' && (key != 'PLEDGOR' || val == 'Y')) {
 			if (!dpplgFlag) {
 			    joinCount++;
 			}
 			dpplgFlag = true;
-			if(key =='PLEDGOR'){
+			if (key == 'PLEDGOR') {
 			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'TRUE';
 			    return;
 			}
-			
-			if(key=='AMT_MIN'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT >= '  + val;
+
+			if (key == 'AMT_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT >= ' + val;
 			    return;
 			}
-			if(key=='AMT_MAX'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT <= '  + val;
+			if (key == 'AMT_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.AMT <= ' + val;
 			    return;
 			}
-			if(key=='START_DT_MIN'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT >= '  + "'" + val + "'";
+			if (key == 'START_DT_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT >= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='START_DT_MAX'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT <= '  + "'" + val + "'";
+			if (key == 'START_DT_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT <= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='MADE_DT_MIN'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT >= '  + "'" + val + "'";
+			if (key == 'MADE_DT_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT >= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='MADE_DT_MAX'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= '  + "'" + val + "'";
+			if (key == 'MADE_DT_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='CHANGE_DT_MIN'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT >= '  + "'" + val + "'";
+			if (key == 'CHANGE_DT_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT >= ' + "'" + val + "'";
 			    return;
 			}
-			if(key=='CHANGE_DT_MAX'){
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT <= '  + "'" + val + "'";
+			if (key == 'CHANGE_DT_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT <= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'BILL_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.BILL >= ' + val;
+			    return;
+			}
+			if (key == 'BILL_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.BILL <= ' + val;
+			    return;
+			}
+			if (key == 'TOTAL_MIN') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.TOTAL >= ' + val;
+			    return;
+			}
+			if (key == 'TOTAL_MAX') {
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.TOTAL <= ' + val;
 			    return;
 			}
 			dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
@@ -1699,6 +1707,88 @@ module.exports = {
 		    dtMailWheres = dpWheres + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
 		} else if (dtMailWheres != '') {
 		    dtMailWheres = (mode == 'or' ? 'WHERE ' : '') + dtMailWheres;
+		}
+	    }
+
+	    if (dpmisc) {
+		Object.keys(dpmisc).forEach(function(key) {
+		    var val = dpmisc[key];
+		    if (val != null && val != '') {
+			if (!dpmiscFlag) {
+			    joinCount++;
+			}
+			dpmiscFlag = true;
+			if (key == 'MDATE_MIN') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'MDATE_MAX') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE <= ' + "'" + val + "'";
+			    return;
+			}
+
+			if (key == 'MCOUNT_MIN') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MCOUNT >= ' + val;
+			    return;
+			}
+			if (key == 'MCOUNT_MAX') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MCOUNT <= ' + val;
+			    return;
+			}
+
+			if (key == 'MAMT_MIN') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MAMT >= ' + val;
+			    return;
+			}
+			if (key == 'MAMT_MAX') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MAMT <= ' + val;
+			    return;
+			}
+			if (key == 'MYEAR_MIN') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'MYEAR_MAX') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR <= ' + "'" + val + "'";
+			    return;
+			}
+			dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dpMiscWheres = dpWheres + (dpMiscWheres == '' ? '' : ' AND ') + dpMiscWheres;
+		} else if (dpMiscWheres != '') {
+		    dpMiscWheres = (mode == 'or' ? 'WHERE ' : '') + dpMiscWheres;
+		}
+	    }
+
+	    if (dtvols1) {
+		Object.keys(dtvols1).forEach(function(key) {
+		    var val = dtvols1[key];
+		    if (val != null && val != '' && (key != 'VOLUNTEER' || val == 'Y')) {
+			if (!dtvols1Flag) {
+			    joinCount++;
+			}
+			dtvols1Flag = true;
+			if (key == 'VOLUNTEER') {
+			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'TRUE';
+			    return;
+			}
+			if (key == 'VSDATE_MIN') {
+			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VSDATE_MAX') {
+			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE <= ' + "'" + val + "'";
+			    return;
+			}
+			dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dtVols1Wheres = dpWheres + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
+		} else if (dtVols1Wheres != '') {
+		    dtVols1Wheres = (mode == 'or' ? 'WHERE ' : '') + dtVols1Wheres;
 		}
 	    }
 

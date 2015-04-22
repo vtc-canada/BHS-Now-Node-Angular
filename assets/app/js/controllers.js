@@ -1402,16 +1402,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'Misc'
 	    } ];
 
-	    $rootScope.staticyesnounknown = [ {
-		id : 'Y',
-		label : 'Yes'
-	    }, {
-		id : 'U',
-		label : 'Unknown'
-	    }, {
-		id : 'N',
-		label : 'No'
-	    } ];
+	    
 
 	    /*
 	     * for (var i = 0; i < data.donor_classes.length; i++) {
@@ -1437,35 +1428,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$rootScope.languages.push({
 		    id : data.languages[i].CODE,
 		    label : data.languages[i].CODE + " - " + data.languages[i].DESC
-		});
-	    }
-	    $rootScope.values_traditional = [];
-	    for (var i = 0; i < data.values_traditional.length; i++) {
-		$rootScope.values_traditional.push({
-		    id : data.values_traditional[i].CODE,
-		    label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
-		});
-	    }
-	    $rootScope.decision = [];
-	    for (var i = 0; i < data.decision.length; i++) {
-		$rootScope.decision.push({
-		    id : data.decision[i].CODE,
-		    label : data.decision[i].CODE + " - " + data.decision[i].DESC
-		});
-	    }
-	    $rootScope.mass_said = [];
-	    for (var i = 0; i < data.mass_said.length; i++) {
-		$rootScope.mass_said.push({
-		    id : data.mass_said[i].CODE,
-		    label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
-		});
-	    }
-
-	    $rootScope.willsaymass = [];
-	    for (var i = 0; i < data.willsaymass.length; i++) {
-		$rootScope.willsaymass.push({
-		    id : data.willsaymass[i].CODE,
-		    label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
 		});
 	    }
 	    $rootScope.english = [];
@@ -2064,6 +2026,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     var blankSearch = { // #CONTACT_SEARCH_PARAMETER
 	id : '',
+	PHONE : null,
 	mode : false,
 	ADD : null,
 	CITY : null,
@@ -2085,7 +2048,44 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	DIOCESE : null,
 	GROUP : null,
 
-	CHECKBOX : null,
+	
+	
+	// Ecclesiastical -
+	ecc_enabled : null,
+	RELIGIOUS : null,
+	Q01 : null,
+	Q02 : null,
+	Q03: null,
+	Q04: null,
+	Q05: null,
+	Q06: null,
+	Q07: null,
+	Q08: null,
+	Q09: null,
+	Q10: null,
+	Q11: null,
+	Q12: null,
+	Q13: null,
+	Q14: null,
+	Q15: null,
+	Q16: null,
+	Q17: null,
+	Q18: null,
+	Q19: null,
+	Q20: null,
+	Q21: null,
+	Q22: null,
+	Q23: null,
+	BIRTHDATE: null,
+	ORDINATION: null,
+	SAYMASS: null,
+	DECIS: null,
+	PPRIEST: null,
+	CONSECRATE: null,
+	EP020: null,
+	
+	
+	
 	// DPOTHER
 	dpother : {
 	    TRANSACT : null,
@@ -2141,8 +2141,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    MADE_DT_MAX : null,
 	    START_DT_MIN : null,
 	    START_DT_MAX : null,
-	    TOTAL : null,
-	    BILL : null,
+	    TOTAL_MIN : null,
+	    TOTAL_MAX : null,
+	    BILL_MIN : null,
+	    BILL_MAX : null,
 	    MQA : null,
 	    REMIND : null,
 	    CHANGE_DT_MIN : null,
@@ -2150,6 +2152,43 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    GL : null,
 	    ORIGIN : null,
 	    SOL : null
+	},
+	dpmisc : {
+	    MDATE_MIN : null,
+	    MDATE_MAX : null,
+	    SOL : null,
+	    MTYPE : null,
+	    MCOUNT_MIN : null,
+	    MCOUNT_MAX : null,
+	    MAMT_MIN : null,
+	    MAMT_MAX : null,
+	    MYEAR_MIN : null,
+	    MYEAR_MAX : null
+	},
+	dtvols1 : {
+	    VOLUNTEER : null,
+
+	    VORIGIN : null,
+	    VSDATE_MIN : null,
+	    VSDATE_MAX : null,
+	    VCATEG : null,
+	    VGRADE01 : null,
+	    VGRADE02 : null,
+	    VGRADE03 : null,
+	    VGRADE04 : null,
+	    VGRADE05 : null,
+	    VGRADE06 : null,
+	    VGRADE07 : null,
+	    VGRADE08 : null,
+	    VGRADE09 : null,
+	    VGRADE10 : null,
+	    VGRADE11 : null,
+	    VGRADE12 : null,
+	    VGRADE13 : null,
+	    VGRADE14 : null,
+	    VGRADE15 : null,
+	    VGRADE16 : null,
+	    VSPECTAL : null
 	}
     };
 
@@ -2160,8 +2199,23 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	name : null
     };
 
+    $scope.clearVars = function(vars) {
+	$timeout(function() {
+	    angular.forEach(vars, function(value, key) {
+		vars[key] = null;
+	    });
+	    $scope.contact.dtvols1.VSDATE_MIN = null;
+	    $scope.contact.dtvols1.VSDATE_MAX = null;
+	    
+	}, 0);
+    };
+
     (function() {
 
+	$rootScope.staticyes = [ {
+	    id : 'Y',
+	    label : 'Yes'
+	} ];
 	$rootScope.staticyesno = [ {
 	    id : 'Y',
 	    label : 'Yes'
@@ -2169,6 +2223,24 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    id : 'N',
 	    label : 'No'
 	} ];
+	$rootScope.staticyesnobool = [ {
+	    id : 1,
+	    label : 'Yes'
+	}, {
+	    id : 0,
+	    label : 'No'
+	} ];
+	$rootScope.staticyesnounknown = [ {
+		id : 'Y',
+		label : 'Yes'
+	    }, {
+		id : 'U',
+		label : 'Unknown'
+	    }, {
+		id : 'N',
+		label : 'No'
+	    } ];
+	
 
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
@@ -2189,6 +2261,40 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'Any'
 	    } ];
 
+
+	    $rootScope.decision = [];
+	    for (var i = 0; i < data.decision.length; i++) {
+		$rootScope.decision.push({
+		    id : data.decision[i].CODE,
+		    label : data.decision[i].CODE + " - " + data.decision[i].DESC
+		});
+	    }
+
+	    $rootScope.willsaymass = [];
+	    for (var i = 0; i < data.willsaymass.length; i++) {
+		$rootScope.willsaymass.push({
+		    id : data.willsaymass[i].CODE,
+		    label : data.willsaymass[i].CODE + " - " + data.willsaymass[i].DESC
+		});
+	    }
+
+	    $rootScope.mass_said = [];
+	    for (var i = 0; i < data.mass_said.length; i++) {
+		$rootScope.mass_said.push({
+		    id : data.mass_said[i].CODE,
+		    label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
+		});
+	    }
+	    
+	    $rootScope.values_traditional = [];
+	    for (var i = 0; i < data.values_traditional.length; i++) {
+		$rootScope.values_traditional.push({
+		    id : data.values_traditional[i].CODE,
+		    label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
+		});
+	    }
+	    
+	    
 	    $rootScope.billing_schedules = [];
 	    for (var i = 0; i < data.billing_schedules.length; i++) {
 		$rootScope.billing_schedules.push({
@@ -2592,7 +2698,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift' || key == 'dtmail' || key == 'dpplg') {
+			if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail') {
 			    angular.forEach(value, function(innerValue, innerKey) {
 				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
