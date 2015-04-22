@@ -1532,13 +1532,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $rootScope.billing_schedules = [];
-	    for (var i = 0; i < data.billing_schedules.length; i++) {
-		$rootScope.billing_schedules.push({
-		    id : data.billing_schedules[i].CODE,
-		    label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
-		});
-	    }
 	    $rootScope.designates = [];
 	    for (var i = 0; i < data.designates.length; i++) {
 		$rootScope.designates.push({
@@ -1591,12 +1584,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    // DTVOLS1
 	    $rootScope.dtvols1 = {};
-	    $rootScope.dtvols1.origin = [];
-	    $rootScope.origin = [];
-	    for (var i = 0; i < data.dtvols1.origin.length; i++) {
-		$rootScope.dtvols1.origin.push({
-		    id : data.dtvols1.origin[i].CODE,
-		    label : data.dtvols1.origin[i].CODE + ' - ' + data.dtvols1.origin[i].DESC
+	    $rootScope.dtvols1.origins = [];
+	    //$rootScope.origin = [];
+	    for (var i = 0; i < data.dtvols1.origins.length; i++) {
+		$rootScope.dtvols1.origins.push({
+		    id : data.dtvols1.origins[i].CODE,
+		    label : data.dtvols1.origins[i].CODE + ' - ' + data.dtvols1.origins[i].DESC
 		});
 	    }
 
@@ -2148,6 +2141,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    MADE_DT_MAX : null,
 	    START_DT_MIN : null,
 	    START_DT_MAX : null,
+	    TOTAL : null,
+	    BILL : null,
+	    MQA : null,
+	    REMIND : null,
+	    CHANGE_DT_MIN : null,
+	    CHANGE_DT_MAX : null,
+	    GL : null,
+	    ORIGIN : null,
+	    SOL : null
 	}
     };
 
@@ -2159,6 +2161,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     };
 
     (function() {
+
+	$rootScope.staticyesno = [ {
+	    id : 'Y',
+	    label : 'Yes'
+	}, {
+	    id : 'N',
+	    label : 'No'
+	} ];
 
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
@@ -2178,6 +2188,22 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		id : 'ANY',
 		label : 'Any'
 	    } ];
+
+	    $rootScope.billing_schedules = [];
+	    for (var i = 0; i < data.billing_schedules.length; i++) {
+		$rootScope.billing_schedules.push({
+		    id : data.billing_schedules[i].CODE,
+		    label : data.billing_schedules[i].CODE + " - " + data.billing_schedules[i].DESC
+		});
+	    }
+
+	    $rootScope.origins = [];
+	    for (var i = 0; i < data.origins.length; i++) {
+		$rootScope.origins.push({
+		    id : data.origins[i].CODE,
+		    label : data.origins[i].CODE + " - " + data.origins[i].DESC
+		});
+	    }
 
 	    $rootScope.lists = [];
 	    for (var i = 0; i < data.lists.length; i++) {

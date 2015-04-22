@@ -1664,6 +1664,14 @@ module.exports = {
 			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= '  + "'" + val + "'";
 			    return;
 			}
+			if(key=='CHANGE_DT_MIN'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT >= '  + "'" + val + "'";
+			    return;
+			}
+			if(key=='CHANGE_DT_MAX'){
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT <= '  + "'" + val + "'";
+			    return;
+			}
 			dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
 			// ' = ' + "'" + val + "'";
 		    }
