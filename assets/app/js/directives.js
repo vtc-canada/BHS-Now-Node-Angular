@@ -302,7 +302,7 @@ directive('tagsinput', function() {
 	    $el.autosize();
 	}
     }
-}).directive('slider', function() {
+}).directive('slider', function($timeout) {
     return {
 	restrict : 'AC',
 	scope : {
@@ -330,6 +330,7 @@ directive('tagsinput', function() {
 
 	    // Range Slider Options
 	    if (is_range) {
+
 		$this.slider({
 		    range : true,
 		    orientation : orientation,
@@ -338,36 +339,92 @@ directive('tagsinput', function() {
 		    values : [ min_val, max_val ],
 		    step : step,
 		    slide : function(e, ui) {
-			var min_val =  ui.values[0] , max_val = ui.values[1];
+			var min_val = ui.values[0], max_val = ui.values[1];
 
-			$label_1.html((prefix ? prefix : '') +min_val+ (postfix ? postfix : ''));
-			$label_2.html((prefix ? prefix : '') + max_val + (postfix ? postfix : ''));
+			if (min_val == $this.slider("option").min) { // minimum
+			    $label_1.html('Any');
+			} else {
+			    $label_1.html((prefix ? prefix : '') + min_val + (postfix ? postfix : ''));
+			}
+			if (max_val == $this.slider("option").max) { // minimum
+			    $label_2.html('Any');
+			} else {
+			    $label_2.html((prefix ? prefix : '') + max_val + (postfix ? postfix : ''));
+
+			}
+
+			// $label_1.html((prefix ? prefix : '') + min_val +
+			// (postfix ? postfix : ''));
+			// $label_2.html((prefix ? prefix : '') + max_val +
+			// (postfix ? postfix : ''));
 
 			if (fill)
-			    $fill.val((prefix ? prefix : '') +min_val+ (postfix ? postfix : '') + ',' + (prefix ? prefix : '') +max_val+ (postfix ? postfix : ''));
+			    $fill.val($label_1.html() + ',' + $label_2.html());
 
 			reps++;
 		    },
 		    change : function(ev, ui) {
 			var min_val = ui.values[0], max_val = ui.values[1];
+			$timeout(function() {
 
-			scope.$apply(function() {
-			    scope.ngModelMin =  min_val;
-			    scope.ngModelMax = max_val;// scope.$eval(attr.ngModel + "= '" + min_val + ',' + max_val + "'");
-			});
+			    scope.ngModelMin = min_val == $this.slider("option").min ? null : min_val;
+			    scope.ngModelMax = max_val == $this.slider("option").max ? null : max_val;
+			}, 0);
 
 			if (reps == 1) {
-
-			    $label_1.html((prefix ? prefix : '') + min_val +  (postfix ? postfix : ''));
-			    $label_2.html((prefix ? prefix : '') + max_val +  (postfix ? postfix : ''));
+			    if (min_val == $this.slider("option").min) { // minimum
+				$label_1.html('Any');
+			    } else {
+				$label_1.html((prefix ? prefix : '') + min_val + (postfix ? postfix : ''));
+			    }
+			    if (max_val == $this.slider("option").max) { // minimum
+				$label_2.html('Any');
+			    } else {
+				$label_2.html((prefix ? prefix : '') + max_val + (postfix ? postfix : ''));
+			    }
 
 			    if (fill)
-				$fill.val((prefix ? prefix : '') + min_val +  (postfix ? postfix : '') + ',' + (prefix ? prefix : '') + max_val +  (postfix ? postfix : ''));
+				$fill.val($label_1.html() + ',' + $label_2.html());
 			}
 
 			reps = 0;
 		    }
 		});
+
+		scope.$watch('[ngModelMin,ngModelMax]', function(newValue, oldValue) {
+		    if (newValue != oldValue) {
+			var changed = false;
+			if ($this.slider("values")[0] != scope.ngModelMin && !($this.slider("values")[0] == 0 && scope.ngModelMin == null)) {
+			    // if(scope.ngModelMin == null){
+			    $this.slider("values", 0, scope.ngModelMin || 0);
+
+			    // }
+			    changed = true;
+			}
+			if ($this.slider("values")[1] != scope.ngModelMax && !($this.slider("values")[1] == 10000 && scope.ngModelMax == null)) {
+			    $this.slider("values", 1, scope.ngModelMax || 10000);
+			    changed = true;
+			}
+			if (changed) {
+			    $this.slider("values", $this.slider("values")); // $this.slider("refresh");
+			    if ($this.slider("values")[0] == $this.slider("option").min) { // minimum
+				$label_1.html('Any');
+			    } else {
+				$label_1.html((prefix ? prefix : '') + $this.slider("values")[0] + (postfix ? postfix : ''));
+			    }
+			    if ($this.slider("values")[1] == $this.slider("option").max) { // minimum
+				$label_2.html('Any');
+			    } else {
+				$label_2.html((prefix ? prefix : '') + $this.slider("values")[1] + (postfix ? postfix : ''));
+
+			    }
+
+			    if (fill)
+				$fill.val($label_1.html() + ',' + $label_2.html());
+
+			}
+		    }
+		}, true);
 
 		var $handles = $this.find('.ui-slider-handle');
 
@@ -399,18 +456,18 @@ directive('tagsinput', function() {
 		    },
 		    change : function(ev, ui) {
 			var val = ui.value;
-			    
+
 			scope.$apply(function() {
-			    scope.ngModel =  val;
+			    scope.ngModel = val;
 			});
-			
+
 			if (reps == 1) {
 			    var val = (prefix ? prefix : '') + ui.value + (postfix ? postfix : '');
 
-			    $label_1.html((prefix ? prefix : '') + val+ (postfix ? postfix : ''));
+			    $label_1.html((prefix ? prefix : '') + val + (postfix ? postfix : ''));
 
 			    if (fill)
-				$fill.val((prefix ? prefix : '') +val+ (postfix ? postfix : ''));
+				$fill.val((prefix ? prefix : '') + val + (postfix ? postfix : ''));
 			}
 
 			reps = 0;
@@ -854,20 +911,20 @@ directive('tagsinput', function() {
 		}
 
 		if ($this.hasClass('daterange-inline')) {
-		    $this.find('span').html(start.format(drp.format) + drp.separator + end.format(drp.format)); 
+		    $this.find('span').html(start.format(drp.format) + drp.separator + end.format(drp.format));
 		}
 		scope.$apply(function() {
-		    scope.ngModelMin =  start.format(drp.format);
+		    scope.ngModelMin = start.format(drp.format);
 		    scope.ngModelMax = end.format(drp.format);
-		});  
-		
+		});
+
 	    });
-	    
-	    scope.$watch('ngModelMin',function(newValue,oldValue){
-		if(newValue!=oldValue){
-		    if(newValue==null){
+
+	    scope.$watch('ngModelMin', function(newValue, oldValue) {
+		if (newValue != oldValue) {
+		    if (newValue == null) {
 			if ($this.hasClass('daterange-inline')) {
-			    $this.find('span').html(""); 
+			    $this.find('span').html("");
 			}
 		    }
 		}

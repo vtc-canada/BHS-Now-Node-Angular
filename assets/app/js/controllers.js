@@ -121,7 +121,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, {
 		"width" : "15%" // `MCOUNT`
 	    }, {
-		"width" : "15%" //`MAMT`,
+		"width" : "15%" // `MAMT`,
 	    }, {
 		"width" : "30%" // `MDATE`,
 	    } ]
@@ -580,8 +580,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $scope.$watch('selectedOrderSummary', function(newValue, oldValue) {
 	if (!angular.equals(newValue, oldValue)) {
-	    if (vm.currencies && $scope.selectedOrderSummary != null && vm.currencies[$scope.selectedOrderSummary.FUNDS]) {
-		$scope.fundsSymbol = vm.currencies[$scope.selectedOrderSummary.FUNDS].symbol;
+	    if ($rootScope.currencies && $scope.selectedOrderSummary != null && $rootScope.currencies[$scope.selectedOrderSummary.FUNDS]) {
+		$scope.fundsSymbol = $rootScope.currencies[$scope.selectedOrderSummary.FUNDS].symbol;
 	    }
 	    if (vm.blockOrderSelectedModified) {
 		vm.blockOrderSelectedModified = false;
@@ -848,7 +848,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	exportOrder.timezoneoffset = new Date().getTimezoneOffset(); // gets
 	// client
 	// timezone
-	exportOrder.SHIPFROM = $scope.ship_name[exportOrder.SHIPFROM];
+	exportOrder.SHIPFROM = $rootScope.ship_name[exportOrder.SHIPFROM];
 	exportOrder.FUNDS = $scope.fundsFormat(exportOrder.FUNDS);
 	exportOrder.fundsSymbol = $scope.fundsSymbol;
 	$sails.post('/contacts/export_order', {
@@ -867,7 +867,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.fundsFormat = function(fund) {
-	if (typeof (fund) == 'undefined' || typeof ($rootScope.currency_format) == 'undefined') {
+	if (typeof (fund) == 'undefined' || fund==null|| typeof ($rootScope.currency_format) == 'undefined') {
 	    return null;
 	}
 	return $rootScope.currency_format[fund].code;
@@ -1264,17 +1264,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 	    var data = data.result;
 
-	    $rootScope.response = [ {
-		id : '1',
-		label : 'Not yet known'
-	    }, {
-		id : '2',
-		label : 'Positive'
-	    }, {
-		id : '3',
-		label : 'Negative'
-	    } ]
-
 	    $rootScope.staticyesno = [ {
 		id : 'Y',
 		label : 'Yes'
@@ -1322,55 +1311,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $scope.order_types = [ {
-		id : 1,
-		label : 'Sale'
-	    }, {
-		id : 2,
-		label : 'Free Gift'
-	    } ]
-
 	    $scope.exchange = angular.copy(data.exchange);
 
-	    $scope.ship_from = [];
-	    $scope.ship_name = {};
-	    for (var i = 0; i < data.ship_from.length; i++) {
-		$scope.ship_from.push({
-		    id : data.ship_from[i].CODE,
-		    label : data.ship_from[i].CODE + " - " + data.ship_from[i].DESC
-		});
-		$scope.ship_name[data.ship_from[i].CODE] = data.ship_from[i].DESC;
-	    }
-
-	    $rootScope.currency_format = {};
-
-	    $rootScope.all_currencies = [];
-	    $rootScope.non_us_currencies = [];
-	    vm.currencies = {};
-	    for (var i = 0; i < data.currencies.length; i++) {
-		vm.currencies[data.currencies[i].id] = {
-		    name : data.currencies[i].name,
-		    code : data.currencies[i].code,
-		    symbol : data.currencies[i].symbol
-		}
-		$rootScope.currency_format[data.currencies[i].id] = {
-		    name : data.currencies[i].name,
-		    code : data.currencies[i].code
-		};
-		$rootScope.all_currencies.push({
-		    id : data.currencies[i].id,
-		    label : data.currencies[i].name
-		});
-		if (data.currencies[i].id == 'U') {
-		    continue;
-		}
-		$rootScope.non_us_currencies.push({
-		    id : data.currencies[i].id,
-		    selector_label : data.currencies[i].name + ' to United States Dollar',
-		    label : data.currencies[i].name
-		});
-
-	    }
+	    
 
 	    $rootScope.relationships = [];
 	    for (var i = 0; i < data.relationships.length; i++) {
@@ -1402,8 +1345,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'Misc'
 	    } ];
 
-	    
-
 	    /*
 	     * for (var i = 0; i < data.donor_classes.length; i++) {
 	     * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
@@ -1416,27 +1357,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	     * for(var i=0;i<atts.length;i++){ $scope[key].push({ id : atts[i].
 	     * }); } ) })
 	     */
-	    $rootScope.titles = [];
-	    for (var i = 0; i < data.titles.length; i++) {
-		$rootScope.titles.push({
-		    id : data.titles[i].TITLE,
-		    label : data.titles[i].TITLE
-		});
-	    }
-	    $rootScope.languages = [];
-	    for (var i = 0; i < data.languages.length; i++) {
-		$rootScope.languages.push({
-		    id : data.languages[i].CODE,
-		    label : data.languages[i].CODE + " - " + data.languages[i].DESC
-		});
-	    }
-	    $rootScope.english = [];
-	    for (var i = 0; i < data.english.length; i++) {
-		$rootScope.english.push({
-		    id : data.english[i].CODE,
-		    label : data.english[i].CODE + " - " + data.english[i].DESC
-		});
-	    }
 	    $rootScope.accounts_received = [];
 	    for (var i = 0; i < data.accounts_received.length; i++) {
 		$rootScope.accounts_received.push({
@@ -1502,16 +1422,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $rootScope.states = [];
-	    for (var i = 0; i < data.states.length; i++) {
-		$rootScope.states.push({
-		    id : data.states[i].CODE,
-		    label : data.states[i].CODE
-		});
-	    }
-	    $rootScope.pledge_schedule = data.pledge_schedule;
-	    $rootScope.major_donation_types = data.major_donation_types;
-
 	    $rootScope.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$rootScope.countries.push({
@@ -1536,18 +1446,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.phone_types[i].CODE
 		});
 	    }
-	    $rootScope.address_types = [];
-	    for (var i = 0; i < data.address_types.length; i++) {
-		$rootScope.address_types.push({
-		    id : data.address_types[i].CODE,
-		    label : data.address_types[i].CODE
-		});
-	    }
 
 	    // DTVOLS1
 	    $rootScope.dtvols1 = {};
 	    $rootScope.dtvols1.origins = [];
-	    //$rootScope.origin = [];
+	    // $rootScope.origin = [];
 	    for (var i = 0; i < data.dtvols1.origins.length; i++) {
 		$rootScope.dtvols1.origins.push({
 		    id : data.dtvols1.origins[i].CODE,
@@ -2048,44 +1951,40 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	DIOCESE : null,
 	GROUP : null,
 
-	
-	
 	// Ecclesiastical -
 	ecc_enabled : null,
 	RELIGIOUS : null,
 	Q01 : null,
 	Q02 : null,
-	Q03: null,
-	Q04: null,
-	Q05: null,
-	Q06: null,
-	Q07: null,
-	Q08: null,
-	Q09: null,
-	Q10: null,
-	Q11: null,
-	Q12: null,
-	Q13: null,
-	Q14: null,
-	Q15: null,
-	Q16: null,
-	Q17: null,
-	Q18: null,
-	Q19: null,
-	Q20: null,
-	Q21: null,
-	Q22: null,
-	Q23: null,
-	BIRTHDATE: null,
-	ORDINATION: null,
-	SAYMASS: null,
-	DECIS: null,
-	PPRIEST: null,
-	CONSECRATE: null,
-	EP020: null,
-	
-	
-	
+	Q03 : null,
+	Q04 : null,
+	Q05 : null,
+	Q06 : null,
+	Q07 : null,
+	Q08 : null,
+	Q09 : null,
+	Q10 : null,
+	Q11 : null,
+	Q12 : null,
+	Q13 : null,
+	Q14 : null,
+	Q15 : null,
+	Q16 : null,
+	Q17 : null,
+	Q18 : null,
+	Q19 : null,
+	Q20 : null,
+	Q21 : null,
+	Q22 : null,
+	Q23 : null,
+	BIRTHDATE : null,
+	ORDINATION : null,
+	SAYMASS : null,
+	DECIS : null,
+	PPRIEST : null,
+	CONSECRATE : null,
+	EP020 : null,
+
 	// DPOTHER
 	dpother : {
 	    TRANSACT : null,
@@ -2103,16 +2002,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	//	    
 	//	    
 	//	    
-	//	    date	date range	Transaction Date
-	//	    transact	multi select	Transact Code
-	//	    list	multi select	List Code
-	//	    amt	numeric range	Amount Code
-	//	    sol	multi select	Prov Code
-	//	    demand	multi select	Demand Code
-	//	    mode	multi select	Mode
-	//	    gl	multi select	Pledge Group
-	//	    requests	multi select	Requests
-	//	    tbareqs	multi select	TBA Requests
+	// date date range Transaction Date
+	// transact multi select Transact Code
+	// list multi select List Code
+	// amt numeric range Amount Code
+	// sol multi select Prov Code
+	// demand multi select Demand Code
+	// mode multi select Mode
+	// gl multi select Pledge Group
+	// requests multi select Requests
+	// tbareqs multi select TBA Requests
 
 	},
 	dpgift : {
@@ -2130,7 +2029,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    REQUESTS : null,
 	    TBAREQS : null,
 	    CAMP_TYPE : null
-	//ms
+	// ms
 	},
 	dtmail : {
 	    SOL : null
@@ -2189,7 +2088,68 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    VGRADE15 : null,
 	    VGRADE16 : null,
 	    VSPECTAL : null
+	},
+	dpothadd : {
+	    ADDTYPE : null,
+	    ADD : null,
+	    CITY : null,
+	    ST : null,
+	    ZIP : null
+	},
+	dpordersummary : {
+	    order_type : null,
+	    SOL : null,
+	    DATE_MIN : null,
+	    DATE_MAX : null,
+	    IPAID : null,
+	    ORIGENV : null,
+	    ORIGDATE_MIN : null,
+	    ORIGDATE_MAX : null,
+	    FUNDS : null,
+	    SHIPFROM : null,
+	    CASH_MIN : null,
+	    CASH_MAX : null,
+	    CREDIT_MIN : null,
+	    CREDIT_MAX : null,
+	    GTOTAL_MIN : null,
+	    GTOTAL_MAX : null
+	},
+	dptrans : {
+	    LANGUAGE : null
+	},
+	dplang : {
+	    LANGUAGE : null
+	},
+	dtmajor : {
+	    FORCEJOIN : null,
+	    TYPE : null,
+	    ASKAMT_MIN : null,
+	    ASKAMT_MAX : null,
+	    PLEDAMT_MIN : null,
+	    PLEDAMT_MAX : null,
+	    PAIDAMT_MIN : null,
+	    PAIDAMT_MAX : null,
+	    PLEDSCHED : null,
+	    GIFTOFF : null,
+	    WEALTHID : null,
+	    STATUS : null,
+	    ANNTRUST : null,
+	    INSURANC : null,
+	    VISDATE1_MIN : null,
+	    VISDATE1_MAX : null,
+	    VISDATE2_MIN : null,
+	    VISDATE2_MAX : null,
+	    VISDATE3_MIN : null,
+	    VISDATE3_MAX : null,
+	    VISDATE4_MIN : null,
+	    VISDATE4_MAX : null
+
+	},
+	dtbishop : {
+	    FORCEJOIN : null
+
 	}
+
     };
 
     $scope.contact = angular.copy(blankSearch);
@@ -2206,7 +2166,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    });
 	    $scope.contact.dtvols1.VSDATE_MIN = null;
 	    $scope.contact.dtvols1.VSDATE_MAX = null;
-	    
+
 	}, 0);
     };
 
@@ -2223,6 +2183,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    id : 'N',
 	    label : 'No'
 	} ];
+
 	$rootScope.staticyesnobool = [ {
 	    id : 1,
 	    label : 'Yes'
@@ -2231,20 +2192,80 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    label : 'No'
 	} ];
 	$rootScope.staticyesnounknown = [ {
-		id : 'Y',
-		label : 'Yes'
-	    }, {
-		id : 'U',
-		label : 'Unknown'
-	    }, {
-		id : 'N',
-		label : 'No'
-	    } ];
-	
+	    id : 'Y',
+	    label : 'Yes'
+	}, {
+	    id : 'U',
+	    label : 'Unknown'
+	}, {
+	    id : 'N',
+	    label : 'No'
+	} ];
+
+	$rootScope.responses = [ {
+	    id : '1',
+	    label : 'Not yet known'
+	}, {
+	    id : '2',
+	    label : 'Positive'
+	}, {
+	    id : '3',
+	    label : 'Negative'
+	} ];
+
+	$rootScope.order_types = [ {
+	    id : 1,
+	    label : 'Sale'
+	}, {
+	    id : 2,
+	    label : 'Free Gift'
+	} ];
 
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
 	    data = data.result;
+	    
+	    
+	    $rootScope.ship_from = [];
+	    $rootScope.ship_name = {};
+	    for (var i = 0; i < data.ship_from.length; i++) {
+		$rootScope.ship_from.push({
+		    id : data.ship_from[i].CODE,
+		    label : data.ship_from[i].CODE + " - " + data.ship_from[i].DESC
+		});
+		$scope.ship_name[data.ship_from[i].CODE] = data.ship_from[i].DESC;
+	    }
+
+	    $rootScope.currency_format = {};
+
+	    $rootScope.all_currencies = [];
+	    $rootScope.non_us_currencies = [];
+	    $rootScope.currencies = {};
+	    for (var i = 0; i < data.currencies.length; i++) {
+		$rootScope.currencies[data.currencies[i].id] = {
+		    name : data.currencies[i].name,
+		    code : data.currencies[i].code,
+		    symbol : data.currencies[i].symbol
+		}
+		$rootScope.currency_format[data.currencies[i].id] = {
+		    name : data.currencies[i].name,
+		    code : data.currencies[i].code
+		};
+		$rootScope.all_currencies.push({
+		    id : data.currencies[i].id,
+		    label : data.currencies[i].name
+		});
+		if (data.currencies[i].id == 'U') {
+		    continue;
+		}
+		$rootScope.non_us_currencies.push({
+		    id : data.currencies[i].id,
+		    selector_label : data.currencies[i].name + ' to United States Dollar',
+		    label : data.currencies[i].name
+		});
+
+	    }
+	    
 	    $rootScope.transacts = [];
 	    for (var i = 0; i < data.transacts.length; i++) {
 		$rootScope.transacts.push({
@@ -2253,14 +2274,46 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $rootScope.staticyesany = [ {
-		id : 'Y',
-		label : 'Yes'
-	    }, {
-		id : 'ANY',
-		label : 'Any'
-	    } ];
+	    $rootScope.titles = [];
+	    for (var i = 0; i < data.titles.length; i++) {
+		$rootScope.titles.push({
+		    id : data.titles[i].TITLE,
+		    label : data.titles[i].TITLE
+		});
+	    }
+	    $rootScope.languages = [];
+	    for (var i = 0; i < data.languages.length; i++) {
+		$rootScope.languages.push({
+		    id : data.languages[i].CODE,
+		    label : data.languages[i].CODE + " - " + data.languages[i].DESC
+		});
+	    }
+	    $rootScope.english = [];
+	    for (var i = 0; i < data.english.length; i++) {
+		$rootScope.english.push({
+		    id : data.english[i].CODE,
+		    label : data.english[i].CODE + " - " + data.english[i].DESC
+		});
+	    }
 
+	    $rootScope.states = [];
+	    for (var i = 0; i < data.states.length; i++) {
+		$rootScope.states.push({
+		    id : data.states[i].CODE,
+		    label : data.states[i].CODE
+		});
+	    }
+
+	    $rootScope.address_types = [];
+	    for (var i = 0; i < data.address_types.length; i++) {
+		$rootScope.address_types.push({
+		    id : data.address_types[i].CODE,
+		    label : data.address_types[i].CODE
+		});
+	    }
+
+	    $rootScope.pledge_schedule = data.pledge_schedule;
+	    $rootScope.major_donation_types = data.major_donation_types;
 
 	    $rootScope.decision = [];
 	    for (var i = 0; i < data.decision.length; i++) {
@@ -2285,7 +2338,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.mass_said[i].CODE + " - " + data.mass_said[i].DESC
 		});
 	    }
-	    
+
 	    $rootScope.values_traditional = [];
 	    for (var i = 0; i < data.values_traditional.length; i++) {
 		$rootScope.values_traditional.push({
@@ -2293,8 +2346,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.values_traditional[i].CODE + " - " + data.values_traditional[i].DESC
 		});
 	    }
-	    
-	    
+
 	    $rootScope.billing_schedules = [];
 	    for (var i = 0; i < data.billing_schedules.length; i++) {
 		$rootScope.billing_schedules.push({
@@ -2698,7 +2750,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail') {
+			if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
 			    angular.forEach(value, function(innerValue, innerKey) {
 				if ($scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
@@ -2884,13 +2936,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'No'
 	    } ];
 
-	    $rootScope.currencies = [ {
-		id : 'U',
-		label : 'USD - United States'
-	    }, {
-		id : 'C',
-		label : 'CAD - Canadian Dollars'
-	    } ];
 
 	    $rootScope.dpcodefields = [];
 	    $rootScope.dpcodefields.push({
@@ -3045,8 +3090,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// .withDataProp('data')
 	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
 	    var searcht = angular.copy($rootScope.search_contact);
-	    //delete searcht.AMT_MIN;
-	    //delete searcht.AMT_MAX;
+	    // delete searcht.AMT_MIN;
+	    // delete searcht.AMT_MAX;
 	    aoData.contact = searcht;
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');

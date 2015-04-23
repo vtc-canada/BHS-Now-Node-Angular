@@ -88,7 +88,92 @@ module.exports = {
     getsearchattributes : function(req, res) {
 
 	async.parallel({
-
+	    english : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'ENGLISH'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    ship_from : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SHIPFROM'
+		}).exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		})
+	    },
+	    currencies : function(callback) {
+		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
+	    languages : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'LANGUAGE'
+		}).exec(function(err, sols) {
+		    if (err)
+			return callback(err);
+		    callback(null, sols);
+		});
+	    },
+	    titles : function(callback) {
+		Database.knex('dp').distinct('TITLE').select().exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
+	    address_types : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'ADDTYPE'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    states : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'ST'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    major_donation_types : function(callback) {
+		callback(null, [ {
+		    id : 'A',
+		    label : 'Capital Campaign - The Hasten Her Triumph'
+		}, {
+		    id : 'B',
+		    label : 'Peace Pledge Campaign'
+		} ]);
+	    },
+	    pledge_schedule : function(callback) {
+		callback(null, [ {
+		    id : 1,
+		    label : 'Not a Pledge'
+		}, {
+		    id : 2,
+		    label : 'Monthly'
+		}, {
+		    id : 3,
+		    label : 'Quarterly'
+		}, {
+		    id : 4,
+		    label : 'Semi-anually'
+		}, {
+		    id : 5,
+		    label : 'Anually'
+		} ])
+	    },
 	    lists : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LIST'
@@ -272,39 +357,6 @@ module.exports = {
 		    callback(null, exchange);
 		});
 	    },
-	    ship_from : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'SHIPFROM'
-		}).exec(function(err, titles) {
-		    if (err)
-			return callback(err);
-		    callback(null, titles);
-		})
-	    },
-	    titles : function(callback) {
-		Database.knex('dp').distinct('TITLE').select().exec(function(err, titles) {
-		    if (err)
-			return callback(err);
-		    callback(null, titles);
-		});
-	    },
-	    currencies : function(callback) {
-		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
-		    if (err)
-			return callback(err);
-		    callback(null, titles);
-		});
-	    },
-	    languages : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'LANGUAGE'
-		}).exec(function(err, sols) {
-		    if (err)
-			return callback(err);
-		    callback(null, sols);
-		});
-	    },
-	    
 	    
 	    relationships : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
@@ -388,42 +440,8 @@ module.exports = {
 		    callback(null, types);
 		});
 	    },
-	    states : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'ST'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
-	    pledge_schedule : function(callback) {
-		callback(null, [ {
-		    id : 1,
-		    label : 'Not a Pledge'
-		}, {
-		    id : 2,
-		    label : 'Monthly'
-		}, {
-		    id : 3,
-		    label : 'Quarterly'
-		}, {
-		    id : 4,
-		    label : 'Semi-anually'
-		}, {
-		    id : 5,
-		    label : 'Anually'
-		} ])
-	    },
-	    major_donation_types : function(callback) {
-		callback(null, [ {
-		    id : 'A',
-		    label : 'Capital Campaign - The Hasten Her Triumph'
-		}, {
-		    id : 'B',
-		    label : 'Peace Pledge Campaign'
-		} ]);
-	    },
+	    
+	    
 	    countries : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
@@ -451,27 +469,10 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    address_types : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'ADDTYPE'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
+	    
 	    languages : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
-		}).exec(function(err, results) {
-		    if (err)
-			return callback(err);
-		    callback(null, results);
-		});
-	    },
-	    english : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'ENGLISH'
 		}).exec(function(err, results) {
 		    if (err)
 			return callback(err);

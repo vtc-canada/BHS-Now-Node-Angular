@@ -1337,6 +1337,12 @@ module.exports = {
 
 	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
 
+	var dpothadd = req.body.contact.dpothadd;
+	var dpordersummary = req.body.contact.dpordersummary;
+	var dplang = req.body.contact.dplang;
+	var dptrans = req.body.contact.dptrans;
+	var dtmajor = req.body.contact.dtmajor;
+	var dtbishop = req.body.contact.dtbishop;
 	var dpgift = req.body.contact.dpgift;
 	var dpother = req.body.contact.dpother;
 	var dtmail = req.body.contact.dtmail;
@@ -1344,6 +1350,15 @@ module.exports = {
 	var dpmisc = req.body.contact.dpmisc;
 	var dtvols1 = req.body.contact.dtvols1;
 
+	
+
+	delete req.body.contact.dpothadd;
+	delete req.body.contact.dpordersummary;
+	delete req.body.contact.dplang;
+	delete req.body.contact.dptrans;
+	delete req.body.contact.dtmajor;
+	delete req.body.contact.dtbishop;
+	
 	delete req.body.contact.dpgift;
 	delete req.body.contact.dpother;
 	delete req.body.contact.dtmail;
@@ -1351,6 +1366,13 @@ module.exports = {
 	delete req.body.contact.dpmisc;
 	delete req.body.contact.dtvols1;
 
+	var dpothaddFlag = false;
+	var dpordersummaryFlag = false;
+	var dplangFlag = false;
+	var dptransFlag = false;
+	var dtmajorFlag = false;
+	var dtbishopFlag = false;
+	
 	var dpgiftFlag = false; // Flag for dpgift join
 	var dpotherFlag = false; // Flag for dpother join
 	var dtmailFlag = false;
@@ -1361,6 +1383,16 @@ module.exports = {
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
 	addDpWheres();
+	
+	
+	
+	var dpothaddWheres = '';
+	var dpordersummaryWheres = '';
+	var dplangWheres = '';
+	var dptransWheres = '';
+	var dtmajorWheres = '';
+	var dtbishopWheres = '';
+	
 	var dpGiftWheres = '';
 	var dpOtherWheres = '';
 	var dtMailWheres = '';
@@ -1406,6 +1438,26 @@ module.exports = {
 		if (dtvols1Flag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtvols1` ON `dp`.`id` = `dtvols1`.`DONOR` ' + dtVols1Wheres + (joinCount > 1 ? ')' : '');
 		}
+		if (dpothaddFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpothadd` ON `dp`.`id` = `dpothadd`.`DONOR` ' + dpothaddWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dpordersummaryFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpordersummary` ON `dp`.`id` = `dpordersummary`.`DONOR` ' + dpordersummaryWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dplangFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dplang` ON `dp`.`id` = `dplang`.`DONOR` ' + dplangWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dptransFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dptrans` ON `dp`.`id` = `dptrans`.`DONOR` ' + dptransWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dtmajorFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmajor` ON `dp`.`id` = `dtmajor`.`DONOR` ' + dtmajorWheres + (joinCount > 1 ? ')' : '');
+		}
+		if (dtbishopFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtbishop` ON `dp`.`id` = `dtbishop`.`DONOR` ' + dtbishopWheres + (joinCount > 1 ? ')' : '');
+		}
+		
+		
 	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
 
@@ -1426,6 +1478,24 @@ module.exports = {
 		}
 		if (dtvols1Flag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dtvols1` ON `dp`.`id` =  `dtvols1`.`DONOR`' + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
+		}
+		if (dpothaddFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpothadd` ON `dp`.`id` =  `dpothadd`.`DONOR`' + (dpothaddWheres == '' ? '' : ' AND ') + dpothaddWheres;
+		}
+		if (dpordersummaryFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dpordersummary` ON `dp`.`id` =  `dpordersummary`.`DONOR`' + (dpordersummaryWheres == '' ? '' : ' AND ') + dpordersummaryWheres;
+		}
+		if (dplangFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dplang` ON `dp`.`id` =  `dplang`.`DONOR`' + (dplangWheres == '' ? '' : ' AND ') + dplangWheres;
+		}
+		if (dptransFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dptrans` ON `dp`.`id` =  `dptrans`.`DONOR`' + (dptransWheres == '' ? '' : ' AND ') + dptransWheres;
+		}
+		if (dtmajorFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dtmajor` ON `dp`.`id` =  `dtmajor`.`DONOR`' + (dtmajorWheres == '' ? '' : ' AND ') + dtmajorWheres;
+		}
+		if (dtbishopFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `dtbishop` ON `dp`.`id` =  `dtbishop`.`DONOR`' + (dtbishopWheres == '' ? '' : ' AND ') + dtbishopWheres;
 		}
 	    }
 	}
@@ -1512,12 +1582,8 @@ module.exports = {
 		if (key == 'id' || key == 'mode') { // Skip these guys
 		    return;
 		}
-		if (key == 'CHECKBOX' && req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'Y') {
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin = 3';
-		    return;
-		}
-		if (key == 'CHECKBOX' && req.body.contact.CHECKBOX != null && req.body.contact.CHECKBOX == 'N') {
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.database_origin != 3';
+		if(key == 'PHONE' && val != null && val != ''){
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + '( dp.PHONE = ' + "'" + val + "'" + ' OR ' + 'dp.PHON2 = ' + "'" + val + "'" + ' OR ' + 'dp.PHON3 = ' + "'" + val + "'" + ')';
 		    return;
 		}
 		if (key == 'CLASS' && req.body.contact.CLASS != null && req.body.contact.CLASS.length > 0) {
@@ -1789,6 +1855,223 @@ module.exports = {
 		    dtVols1Wheres = dpWheres + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
 		} else if (dtVols1Wheres != '') {
 		    dtVols1Wheres = (mode == 'or' ? 'WHERE ' : '') + dtVols1Wheres;
+		}
+	    }
+	    
+	    if (dpothadd) {
+		Object.keys(dpothadd).forEach(function(key) {
+		    var val = dpothadd[key];
+		    if (val != null && val != '') {
+			if (!dpothaddFlag) {
+			    joinCount++;
+			}
+			dpothaddFlag = true;
+			dpothaddWheres = dpothaddWheres + (dpothaddWheres == '' ? '' : ' AND ') + 'dpothadd.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dpothaddWheres = dpWheres + (dpothaddWheres == '' ? '' : ' AND ') + dpothaddWheres;
+		} else if (dpothaddWheres != '') {
+		    dpothaddWheres = (mode == 'or' ? 'WHERE ' : '') + dpothaddWheres;
+		}
+	    }
+	    
+	    if (dpordersummary) {
+		Object.keys(dpordersummary).forEach(function(key) {
+		    var val = dpordersummary[key];
+		    if (val != null && val != '') {
+			if (!dpordersummaryFlag) {
+			    joinCount++;
+			}
+			dpordersummaryFlag = true;
+			if (key == 'DATE_MIN') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'DATE_MAX') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE <= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'ORIGDATE_MIN') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'ORIGDATE_MAX') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE <= ' + "'" + val + "'";
+			    return;
+			}
+
+			if (key == 'CASH_MIN') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CASH >= ' +  val;
+			    return;
+			}
+			if (key == 'CASH_MAX') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CASH <= ' + val;
+			    return;
+			}
+			if (key == 'CREDIT_MIN') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT >= ' + val ;
+			    return;
+			}
+			if (key == 'CREDIT_MAX') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT <= ' + val ;
+			    return;
+			}
+			if (key == 'GTOTAL_MIN') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL >= ' + val ;
+			    return;
+			}
+			if (key == 'GTOTAL_MAX') {
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL <= ' + val ;
+			    return;
+			}
+			
+			dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dpordersummaryWheres = dpWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + dpordersummaryWheres;
+		} else if (dpordersummaryWheres != '') {
+		    dpordersummaryWheres = (mode == 'or' ? 'WHERE ' : '') + dpordersummaryWheres;
+		}
+	    }
+	    
+	    if (dplang) {
+		Object.keys(dplang).forEach(function(key) {
+		    var val = dplang[key];
+		    if (val != null && val != '') {
+			if (!dplangFlag) {
+			    joinCount++;
+			}
+			dplangFlag = true;
+			dplangWheres = dplangWheres + (dplangWheres == '' ? '' : ' AND ') + 'dplang.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dplangWheres = dpWheres + (dplangWheres == '' ? '' : ' AND ') + dplangWheres;
+		} else if (dplangWheres != '') {
+		    dplangWheres = (mode == 'or' ? 'WHERE ' : '') + dplangWheres;
+		}
+	    }
+	    
+	    if (dptrans) {
+		Object.keys(dptrans).forEach(function(key) {
+		    var val = dptrans[key];
+		    if (val != null && val != '') {
+			if (!dptransFlag) {
+			    joinCount++;
+			}
+			dptransFlag = true;
+			dptransWheres = dptransWheres + (dptransWheres == '' ? '' : ' AND ') + 'dptrans.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dptransWheres = dpWheres + (dptransWheres == '' ? '' : ' AND ') + dptransWheres;
+		} else if (dptransWheres != '') {
+		    dptransWheres = (mode == 'or' ? 'WHERE ' : '') + dptransWheres;
+		}
+	    }
+	    
+	    if (dtmajor) {
+		Object.keys(dtmajor).forEach(function(key) {
+		    var val = dtmajor[key];
+		    if (val != null && val != ''&& (key != 'FORCEJOIN' || val == 'Y')) {
+			if (!dtmajorFlag) {
+			    joinCount++;
+			}
+			dtmajorFlag = true;
+			if (key == 'FORCEJOIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'TRUE';
+			    return;
+			}
+
+			if (key == 'ASKAMT_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.ASKAMT >= ' + val;
+			    return;
+			}
+			if (key == 'ASKAMT_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.ASKAMT <= '  + val ;
+			    return;
+			}
+			if (key == 'PLEDAMT_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PLEDAMT >= ' + val;
+			    return;
+			}
+			if (key == 'PLEDAMT_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PLEDAMT <= ' + val;
+			    return;
+			}
+
+			if (key == 'PAIDAMT_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PAIDAMT >= ' + val;
+			    return;
+			}
+			if (key == 'PAIDAMT_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PAIDAMT <= '  + val ;
+			    return;
+			}
+
+			if (key == 'VISDATE1_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE1_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 <= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE2_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE2_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 <= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE3_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE3_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 <= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE4_MIN') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 >= ' + "'" + val + "'";
+			    return;
+			}
+			if (key == 'VISDATE4_MAX') {
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 <= ' + "'" + val + "'";
+			    return;
+			}
+			dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dtmajorWheres = dpWheres + (dtmajorWheres == '' ? '' : ' AND ') + dtmajorWheres;
+		} else if (dtmajorWheres != '') {
+		    dtmajorWheres = (mode == 'or' ? 'WHERE ' : '') + dtmajorWheres;
+		}
+	    }
+	    
+	    if (dtbishop) {
+		Object.keys(dtbishop).forEach(function(key) {
+		    var val = dtbishop[key];
+		    if (val != null && val != ''&& (key != 'FORCEJOIN' || val == 'Y')) {
+			if (!dtbishopFlag) {
+			    joinCount++;
+			}
+			dtbishopFlag = true;
+			if (key == 'FORCEJOIN') {
+			    dtbishopWheres = dtbishopWheres + (dtbishopWheres == '' ? '' : ' AND ') + 'TRUE';
+			    return;
+			}
+			dtbishopWheres = dtbishopWheres + (dtbishopWheres == '' ? '' : ' AND ') + 'dtbishop.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    }
+		});
+		if (dpWheres != '') {
+		    dtbishopWheres = dpWheres + (dtbishopWheres == '' ? '' : ' AND ') + dtbishopWheres;
+		} else if (dtbishopWheres != '') {
+		    dtbishopWheres = (mode == 'or' ? 'WHERE ' : '') + dtbishopWheres;
 		}
 	    }
 
