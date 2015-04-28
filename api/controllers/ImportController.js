@@ -130,7 +130,7 @@ var currencies = [ 'C', 'E', 'P', 'R', 'U' ];
 module.exports = {
     
 
-    paddexchange : function(req, res) {
+    paddexchange : function(req, res, cb) {
 	Database.knex.raw('SELECT `id`, `currency_from`, `currency_to`, `exchange_rate`, DATE_FORMAT(date,"%Y-%m-%d") AS `date`  FROM dpexchange_history').exec(function(err, dpexchange) {
 	    if (err) {
 		return console.log('Failed getting DPExchange. ' + err);
@@ -202,11 +202,17 @@ module.exports = {
 				callback(err,response);
 			    });
 		    },function(err,response){
-			if (err)
+			if (err){
 			    console.log(err.toString());
+			}
+			    
 			//res.json({
 			//    loaded : 'Success'
 			//});
+			
+			if(cb){
+			    cb(err,response);
+			}
 		    });
 
 		}, 500);

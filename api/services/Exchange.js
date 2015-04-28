@@ -5,6 +5,7 @@
 //
 var exchangeUpdateTimer = null;
 
+var updateBlocker = false;
 
 
 module.exports = {
@@ -18,6 +19,14 @@ module.exports = {
 }
 
 function doFxUpdate(){
+    if(updateBlocker){ // checks to see if it's already running.
+	if(exchangeUpdateTimer){
+	    clearTimeout(exchangeUpdateTimer);
+	}
+	exchangeUpdateTimer = setTimeout(doFxUpdate,60000);
+	return;
+    }
+    updateBlocker = true;
     Database.knex('dpexchange_history').truncate().exec(function(err,result){
 	if(err){
 	    return console.log('Error- unable to truncate dpexchange_history');
@@ -52,13 +61,22 @@ function doFxUpdate(){
 	    });
 	}],function(err,results){
 	    if(err){
+		 updateBlocker = false; // release update latch.
 		return console.log('Error- unable to fill dp_exchange_history');
 	    }
 	    Database.dataSproc('update_dpexchange_history', [], function(err, result){
 		if(err){
+		    updateBlocker = false; // release update latch.
 		    return cb(err);
 		}
-		sails.controllers.import.paddexchange();   
+		sails.controllers.import.paddexchange(null,null,function(err,response){
+		    updateBlocker = false;  //releases updateBlocker
+		    if(err){
+			console.log('Error updating paddexchange');
+			return ;
+		    }
+		    console.log('Successfully Updated FxEchange History Table');
+		});   
 	    });
 	})
 
