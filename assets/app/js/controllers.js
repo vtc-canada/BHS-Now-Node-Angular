@@ -1226,7 +1226,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// $scope.tryDestroyDataTable('dpordersummary');
 
 			$timeout(function() {
-			    if($rootScope.blockSearchingModal){
+			    if ($rootScope.blockSearchingModal) {
 				$rootScope.blockSearchingModal();
 			    }
 			    $contact.set(data.contact); // sets is_saving to
@@ -4692,7 +4692,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    size : modal_size,
 	    backdrop : true
 	});
-	$rootScope.deleteModalText = $scope.selectedGroup.id + ' ' + $scope.selectedGroup.name;
+	$rootScope.deleteModalText = $scope.selectedGroup.name; // $scope.selectedGroup.id + ' ' +
 	$rootScope.currentModal.result.then(function(selectedItem) {
 	}, function(triggerElement) {
 	    if (triggerElement == 'delete') {
@@ -4773,6 +4773,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.user = angular.copy(this.blank_user);
 	$rootScope.user_modified = false;
 	$scope.selectedUser = null;
+	$scope.updateUserSuccess = false;
+	$scope.updateUserSuccessMessage = null;
+	$scope.updateUserPasswordMatchError = false;
+
 	var vm = this;
 	var userWatcher = null;
 	vm.rowClicked = rowClicked;
@@ -4816,6 +4820,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    if (vm.userWatcher != null) {
 		vm.userWatcher();
 	    }
+	    $scope.updateUserSuccess = false;
+	    $scope.updateUserPasswordMatchError = false;
 	    $sails.post('/users/getuserandgroups', {
 		id : aData.id
 	    }).success(function(response) {
@@ -4856,6 +4862,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}
 
 	$scope.newUser = function() {
+	    $scope.updateUserSuccess = false;
+	    $scope.updateUserPasswordMatchError = false;
+
 	    $sails.get('/security/getsecuritygroups').success(function(securitygroups) {
 		if (securitygroups.error != undefined) { // USER NO
 		    // LONGER
@@ -4872,6 +4881,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    securitygroups[key].member = 0;
 		}
 		$timeout(function() {
+
 		    $scope.selectedUser = null;
 		    $('tr').removeClass('selected');
 		    $scope.user = angular.copy(vm.blank_user);
@@ -4896,12 +4906,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}
 
 	$scope.deleteUser = function(modal_id, modal_size) {
+
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : modal_id,
 		size : modal_size,
 		backdrop : true
 	    });
-	    $rootScope.deleteModalText = $scope.selectedUser.id + ' ' + $scope.selectedUser.username;
+	    $rootScope.deleteModalText =  $scope.selectedUser.username;  //$scope.selectedUser.id + ' ' +
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
@@ -4934,15 +4945,41 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 	    $('#users_table tr').removeClass('selected');
 	    $timeout(function() {
+
+		$scope.updateUserSuccess = false;
+		$scope.updateUserPasswordMatchError = false;
 		$rootScope.user_modified = false;
 		$scope.selectedUser = null;
 	    }, 0);
 	}
 
 	$scope.saveUser = function() {
+
+	    $scope.updateUserSuccess = false;
+	    $scope.updateUserPasswordMatchError = false;
+
 	    $('#' + (($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form').valid();
 	    if ($rootScope.validator[(($scope.selectedUser == null || $scope.selectedUser.id == null) ? 'new_' : '') + 'users_form'].numberOfInvalids() > 0) { // error
 		return;
+	    }
+
+	    if ($scope.user.password && $scope.user.password != null && $scope.user.password != '') {
+		if ($scope.user.confirm_password && $scope.user.confirm_password != null && $scope.user.confirm_password != '' && $scope.user.password == $scope.user.confirm_password) { // check
+																							    // if
+																							    // confirm_password
+																							    // is
+																							    // good
+
+		} else {
+		    $scope.updateUserPasswordMatchError = true;
+		    return;
+		}
+	    }
+
+	    if ($scope.selectedUser == null || $scope.selectedUser.id == null) { // new
+		$scope.updateUserSuccessMessage = 'User Successfully Created!';
+	    } else {
+		$scope.updateUserSuccessMessage = 'User Successfully Updated!';
 	    }
 
 	    $sails.post('/users/saveuserandgroups', {
@@ -4952,6 +4989,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    location.reload(); // Will boot back to login screen
 		}
 		if (data.success) {
+		    $timeout(function() {
+			$scope.updateUserSuccess = true;
+		    }, 0);
+		    
 		    if ($scope.selectedUser.id == null) {
 			if (vm.userWatcher != null) {
 			    vm.userWatcher();

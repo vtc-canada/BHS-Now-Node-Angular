@@ -369,60 +369,63 @@ directive('tagsinput', function() {
 
 			    scope.ngModelMin = min_val == $this.slider("option").min ? null : min_val;
 			    scope.ngModelMax = max_val == $this.slider("option").max ? null : max_val;
+
+			    if (reps == 1) {
+				if (min_val == $this.slider("option").min) { // minimum
+				    $label_1.html('Any');
+				} else {
+				    $label_1.html((prefix ? prefix : '') + min_val + (postfix ? postfix : ''));
+				}
+				if (max_val == $this.slider("option").max) { // minimum
+				    $label_2.html('Any');
+				} else {
+				    $label_2.html((prefix ? prefix : '') + max_val + (postfix ? postfix : ''));
+				}
+
+				if (fill)
+				    $fill.val($label_1.html() + ',' + $label_2.html());
+			    }
+
+			    reps = 0;
 			}, 0);
-
-			if (reps == 1) {
-			    if (min_val == $this.slider("option").min) { // minimum
-				$label_1.html('Any');
-			    } else {
-				$label_1.html((prefix ? prefix : '') + min_val + (postfix ? postfix : ''));
-			    }
-			    if (max_val == $this.slider("option").max) { // minimum
-				$label_2.html('Any');
-			    } else {
-				$label_2.html((prefix ? prefix : '') + max_val + (postfix ? postfix : ''));
-			    }
-
-			    if (fill)
-				$fill.val($label_1.html() + ',' + $label_2.html());
-			}
-
-			reps = 0;
 		    }
 		});
 
 		scope.$watch('[ngModelMin,ngModelMax]', function(newValue, oldValue) {
 		    if (newValue != oldValue) {
 			var changed = false;
-			if ($this.slider("values")[0] != scope.ngModelMin && !($this.slider("values")[0] == 0 && scope.ngModelMin == null)) {
-			    // if(scope.ngModelMin == null){
-			    $this.slider("values", 0, scope.ngModelMin || 0);
+			$timeout(function() {
 
-			    // }
-			    changed = true;
-			}
-			if ($this.slider("values")[1] != scope.ngModelMax && !($this.slider("values")[1] == 10000 && scope.ngModelMax == null)) {
-			    $this.slider("values", 1, scope.ngModelMax || 10000);
-			    changed = true;
-			}
-			if (changed) {
-			    $this.slider("values", $this.slider("values")); // $this.slider("refresh");
-			    if ($this.slider("values")[0] == $this.slider("option").min) { // minimum
-				$label_1.html('Any');
-			    } else {
-				$label_1.html((prefix ? prefix : '') + $this.slider("values")[0] + (postfix ? postfix : ''));
+			    if ($this.slider("values")[0] != scope.ngModelMin && !($this.slider("values")[0] == 0 && scope.ngModelMin == null)) {
+				// if(scope.ngModelMin == null){
+				$this.slider("values", 0, scope.ngModelMin || 0);
+
+				// }
+				changed = true;
 			    }
-			    if ($this.slider("values")[1] == $this.slider("option").max) { // minimum
-				$label_2.html('Any');
-			    } else {
-				$label_2.html((prefix ? prefix : '') + $this.slider("values")[1] + (postfix ? postfix : ''));
+			    if ($this.slider("values")[1] != scope.ngModelMax && !($this.slider("values")[1] == 10000 && scope.ngModelMax == null)) {
+				$this.slider("values", 1, scope.ngModelMax || 10000);
+				changed = true;
+			    }
+			    if (changed) {
+				$this.slider("values", $this.slider("values")); // $this.slider("refresh");
+				if ($this.slider("values")[0] == $this.slider("option").min) { // minimum
+				    $label_1.html('Any');
+				} else {
+				    $label_1.html((prefix ? prefix : '') + $this.slider("values")[0] + (postfix ? postfix : ''));
+				}
+				if ($this.slider("values")[1] == $this.slider("option").max) { // minimum
+				    $label_2.html('Any');
+				} else {
+				    $label_2.html((prefix ? prefix : '') + $this.slider("values")[1] + (postfix ? postfix : ''));
+
+				}
+
+				if (fill)
+				    $fill.val($label_1.html() + ',' + $label_2.html());
 
 			    }
-
-			    if (fill)
-				$fill.val($label_1.html() + ',' + $label_2.html());
-
-			}
+			}, 0);
 		    }
 		}, true);
 
@@ -917,7 +920,6 @@ directive('tagsinput', function() {
 		    scope.ngModelMin = start.format(drp.format);
 		    scope.ngModelMax = end.format(drp.format);
 		});
-
 	    });
 
 	    scope.$watch('ngModelMin', function(newValue, oldValue) {

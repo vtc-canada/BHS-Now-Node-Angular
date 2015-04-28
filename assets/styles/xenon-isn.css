@@ -382,6 +382,9 @@ table.dataTable{
 	font-weight:bold;
 }
 
+.panel .panel-heading>.lighter-weight-title{
+	/*font-weight:normal;*/
+}
 .quick-info-panel{
 	margin-bottom: 0px;
 	/*background: rgba(2, 82, 180, 0.29);*/
