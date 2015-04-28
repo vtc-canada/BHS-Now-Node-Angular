@@ -893,734 +893,161 @@
 			<div class="panel-body">
 
 				<form role="form" class="form-horizontal">
-
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact_phone">Phone:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact_phone" ng-model="contact.PHONE" ng-model-options="" placeholder="Phone, Fax, etc.">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.ADD">Address:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.ADD" ng-model="contact.ADD" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CITY">City:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.CITY" ng-model="contact.CITY" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.ST">State:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.ST" ng-model="contact.ST" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.COUNTRY">Country:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.COUNTRY" ng-model="contact.COUNTRY" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.ZIP">Zip:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.ZIP" ng-model="contact.ZIP" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.COUNTY">County:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.COUNTY" ng-model="contact.COUNTY" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.NOMAIL">Do Not Mail:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.NOMAIL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.NOMAIL" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.TYPE">Type:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.SOURCE">Source:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.SOURCE" ng-options="title.id as title.label for title in sources" ng-model="contact.SOURCE" multiple></select2>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CLASS">Donor Class:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
-						</div>
-					</div>	
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CALL">Do Not Call:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.CALL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.CALL" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.NM_REASON">Reason Code:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.NM_REASON" ng-options="title.id as title.label for title in reasons" ng-model="contact.NM_REASON" placeholder="All"></select2>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CFN">Catholic Family News Subscriber:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.CFN" ng-options="title.id as title.label for title in cfns" ng-model="contact.CFN" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CFNID">Catholic Family News ID:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.CFNID" ng-model="contact.CFNID" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.STATUS">Donor Status:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.STATUS" ng-options="title.id as title.label for title in [{id:'ACTIVE', label:'Active'},{id:'ACTIVE_LAPSED', label:'Active Lapsed'},{id:'INACTIVE', label:'Inactive'},{id:'INACTIVE_LAPSED', label:'Inactive Lapsed'},{id:'LIMBO', label:'Limbo'},{id:'REMOVED', label:'Removed'}]" ng-model="contact.STATUS" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.OCCUPATION">Occupation:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.OCCUPATION" ng-model="contact.OCCUPATION" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.GENDER">Gender:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.GENDER" ng-options="title.id as title.label for title in genders" ng-model="contact.GENDER" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contactsearch.DIOCESE">Diocese:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions" id="contact.DIOCESE_LONG" name="contactsearch.DIOCESE" ng-options="title.id as title.label for title in dioceses" ng-model="contact.DIOCESE" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contactsearch.GROUP">Group:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.GROUP" name="contactsearch.GROUP" ng-options="title.id as title.label for title in groups" ng-model="contact.GROUP" multiple></select2>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dplang.LANGUAGE">Languages:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dplang.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.dplang.LANGUAGE" multiple placeholder="All"></select2>
-						</div>
-					</div>
-
-
-
-
-				</form>
-			</div>
-		</div>
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspOther Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.MDATE">Date Range:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpother.DATE_MIN" ng-model-max="contact.dpother.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpother.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpother.DATE_MIN = null; contact.dpother.DATE_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.TRANSACT">Transact:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dpother.TRANSACT" name="contact.dpother.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="contact.dpother.TRANSACT" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.LIST">List:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions"  id="contact.dpother.LIST" name="contact.dpother.LIST" ng-options="title.id as title.label for title in lists" ng-model="contact.dpother.LIST" multiple></select2>
-							
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.AMOUNT">Amount:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpother.AMT_MIN" ng-model-max="contact.dpother.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-							<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.LIST">Sol Codes:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions"  id="contact.dpother.SOL" name="contact.dpother.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpother.SOL" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.DEMAND">Demand:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpother.DEMAND" name="contact.dpother.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="contact.dpother.DEMAND" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.MODE">Mode:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpother.MODE" name="contact.dpother.MODE" ng-options="title.id as title.label for title in modes" ng-model="contact.dpother.MODE" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.GL">Pledge Groups:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpother.GL" name="contact.dpother.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpother.GL" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.REQUESTS">Requests:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpother.REQUESTS" name="contact.dpother.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="contact.dpother.REQUESTS" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpother.TBAREQS">TBA Requests:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpother.TBAREQS" name="contact.dpother.TBAREQS" ng-options="title.id as title.label for title in tba_requests" ng-model="contact.dpother.TBAREQS" multiple></select2>
-							
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspGift Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.DATE">Date Range:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpgift.DATE_MIN" ng-model-max="contact.dpgift.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpgift.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpgift.DATE_MIN = null; contact.dpgift.DATE_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.AMOUNT">Amount:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpgift.AMT_MIN" ng-model-max="contact.dpgift.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-							<!-- <input type="text" class="form-control" id="contact.dpgift.DEMAND" ng-model="contact.dpgift.AMT_MAX" ng-model-options="" placeholder=""> -->
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.GL">Pledge Groups:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpgift.GL" name="contact.dpgift.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpgift.GL" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.LIST">Sol Codes:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions"  id="contact.dpgift.SOL" name="contact.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpgift.SOL" multiple></select2>
-							
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.PLEDGE">Pledge:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.PLEDGE" ng-model="contact.PLEDGE" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.LIST">List:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions"  id="contact.dpgift.LIST" name="contact.dpgift.LIST" ng-options="title.id as title.label for title in lists" ng-model="contact.dpgift.LIST" multiple></select2>
-							
-						</div>
-					</div>
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.TRANSACT">Transact:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dpgift.TRANSACT" name="contact.dpgift.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="contact.dpgift.TRANSACT" multiple></select2>
-							
-						</div>
-					</div>
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.DEMAND">Demand:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpgift.DEMAND" name="contact.dpgift.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="contact.dpgift.DEMAND" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.MODE">Mode:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpgift.MODE" name="contact.dpgift.MODE" ng-options="title.id as title.label for title in modes" ng-model="contact.dpgift.MODE" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.REQUESTS">Requests:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpgift.REQUESTS" name="contact.dpgift.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="contact.dpgift.REQUESTS" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpgift.TBAREQS">TBA Requests:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpgift.TBAREQS" name="contact.dpgift.TBAREQS" ng-options="title.id as title.label for title in tba_requests" ng-model="contact.dpgift.TBAREQS" multiple></select2>
-							
-						</div>
-					</div>
-					
-				</form>
-			</div>
-		</div>
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspPledge Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.PLEDGOR">Pledgor</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpplg.PLEDGOR" name="contact.dpplg.PLEDGOR" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dpplg.PLEDGOR" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.MADE_DT">Made Date Range:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.MADE_DT_MIN" ng-model-max="contact.dpplg.MADE_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpplg.MADE_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.MADE_DT_MIN = null; contact.dpplg.MADE_DT_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.START_DT">Start Date Range:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.START_DT_MIN" ng-model-max="contact.dpplg.START_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpplg.START_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.START_DT_MIN = null; contact.dpplg.START_DT_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.TOTAL">Total:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpplg.TOTAL_MIN" ng-model-max="contact.dpplg.TOTAL_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.BILL">Bill:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpplg.BILL_MIN" ng-model-max="contact.dpplg.BILL_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.MQA">Billing Schedule</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpplg.MQA" name="contact.dpplg.MQA" ng-options="title.id as title.label for title in billing_schedules" ng-model="contact.dpplg.MQA" ></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.REMIND">Send Reminder:</label>
-			
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dpplg.REMIND" name="contact.dpplg.REMIND" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dpplg.REMIND" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.CHANGE_DT">Date to Charge:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.CHANGE_DT_MIN" ng-model-max="contact.dpplg.CHANGE_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpplg.CHANGE_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.CHANGE_DT_MIN = null; contact.dpplg.CHANGE_DT_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.GL">Pledge Groups:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpplg.GL" name="contact.dpplg.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpplg.GL" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.ORIGIN">Origin:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dpplg.ORIGIN" name="contact.dpplg.ORIGIN" ng-options="title.id as title.label for title in origins" ng-model="contact.dpplg.ORIGIN" multiple></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpplg.SOL">Sol Codes:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions"  id="contact.dpplg.SOL" name="contact.dpplg.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpplg.SOL" multiple></select2>
-						</div>
-					</div>
-					
-				</form>
-			</div>
-		</div>
-		
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspVolunteer Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VOLUNTEER">Volunteer:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dtvols1.VOLUNTEER" name="contact.dtvols1.VOLUNTEER" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtvols1.VOLUNTEER" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dptrans.LANGUAGE">Translator:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dptrans.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.dptrans.LANGUAGE" multiple placeholder="All"></select2>
-						</div>
-					</div>
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VORIGIN">Origin:</label>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact_phone">Phone:</label>
 	
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.dtvols1.VORIGIN" ng-model="contact.dtvols1.VORIGIN" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VSDATE">Start Date:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtvols1.VSDATE_MIN" ng-model-max="contact.dtvols1.VSDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01" >
-								<i class="fa-calendar"></i>
-								<span></span>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact_phone" ng-model="contact.PHONE" ng-model-options="" placeholder="Phone, Fax, etc.">
 							</div>
-							<abbr ng-show="contact.dtvols1.VSDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dtvols1.VSDATE_MIN = null; contact.dtvols1.VSDATE_MAX = null;" ></abbr>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VCATEG">Category:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.dtvols1.VCATEG" ng-model="contact.dtvols1.VCATEG" ng-model-options="" placeholder="">
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.ADD">Address:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.ADD" ng-model="contact.ADD" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE01">Pray:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE01" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE01" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.CITY">City:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.CITY" ng-model="contact.CITY" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE02">Distribute Materials:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE02" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE02" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.ST">State:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.ST" ng-model="contact.ST" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE03">Signature Collection:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE03" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE03" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.COUNTRY">Country:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.COUNTRY" ng-model="contact.COUNTRY" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE04">Phoning:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE04" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE04" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.ZIP">Zip:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.ZIP" ng-model="contact.ZIP" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE05">OLD Rosary Guild:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE05" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE05" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.COUNTY">County:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.COUNTY" ng-model="contact.COUNTY" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE06">Mail Monitor:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE06" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE06" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.NOMAIL">Do Not Mail:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.NOMAIL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.NOMAIL" placeholder="All"></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE07">7:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE07" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE07" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.TYPE">Type:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE" multiple></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE08">HPP On Radio Stations:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE08" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE08" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.SOURCE">Source:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.SOURCE" ng-options="title.id as title.label for title in sources" ng-model="contact.SOURCE" multiple></select2>
+							</div>
 						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.CLASS">Donor Class:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.CLASS" ng-options="title.id as title.label for title in donor_classes" ng-model="contact.CLASS" multiple></select2>
+							</div>
+						</div>	
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE09">FTMHC On TV Stations:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE09" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE09" placeholder="All"></select2>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.CALL">Do Not Call:</label>
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.CALL" ng-options="title.id as title.label for title in [{id:0, label:'No'},{id:1, label:'Yes'}]" ng-model="contact.CALL" placeholder="All"></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE10">Help Put Books in Stores and Library:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE10" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE10" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.NM_REASON">Reason Code:</label>
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.NM_REASON" ng-options="title.id as title.label for title in reasons" ng-model="contact.NM_REASON" placeholder="All"></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE11">Place Fatima Ads in Newspapers:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE11" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE11" placeholder="All"></select2>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.CFN">Catholic Family News Subscriber:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.CFN" ng-options="title.id as title.label for title in cfns" ng-model="contact.CFN" placeholder="All"></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE12">Rosary Maker:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE12" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE12" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.CFNID">Catholic Family News ID:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.CFNID" ng-model="contact.CFNID" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE13">Green Scapular Maker:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE13" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE13" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.STATUS">Donor Status:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.STATUS" ng-options="title.id as title.label for title in [{id:'ACTIVE', label:'Active'},{id:'ACTIVE_LAPSED', label:'Active Lapsed'},{id:'INACTIVE', label:'Inactive'},{id:'INACTIVE_LAPSED', label:'Inactive Lapsed'},{id:'LIMBO', label:'Limbo'},{id:'REMOVED', label:'Removed'}]" ng-model="contact.STATUS" multiple></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE14">Other Apostolates:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE14" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE14" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.OCCUPATION">Occupation:</label>
+	
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="contact.OCCUPATION" ng-model="contact.OCCUPATION" ng-model-options="" placeholder="">
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE15">Distribution Center:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE15" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE15" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.GENDER">Gender:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" name="contact.GENDER" ng-options="title.id as title.label for title in genders" ng-model="contact.GENDER" multiple></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VGRADE16">Volunteer Count:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtvols1.VGRADE16" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE16" placeholder="All"></select2>
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contactsearch.DIOCESE">Diocese:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control" options="longSelectOptions" id="contact.DIOCESE_LONG" name="contactsearch.DIOCESE" ng-options="title.id as title.label for title in dioceses" ng-model="contact.DIOCESE" multiple></select2>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtvols1.VSPECTAL">Special:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.dtvols1.VSPECTAL" ng-model="contact.dtvols1.VSPECTAL" ng-model-options="" placeholder="">
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contactsearch.GROUP">Group:</label>
+	
+							<div class="col-sm-8">
+								<select2 class="form-control"  id="contact.GROUP" name="contactsearch.GROUP" ng-options="title.id as title.label for title in groups" ng-model="contact.GROUP" multiple></select2>
+							</div>
 						</div>
-					</div>
+						
+						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact.dplang.LANGUAGE">Languages:</label>
+							<div class="col-sm-8">
+								<select2 class="form-control" id="contact.dplang.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.dplang.LANGUAGE" multiple placeholder="All"></select2>
+							</div>
+						</div>
+					</div>	
 				</form>
 			</div>
 		</div>
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspMisc Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.MDATE">Start Date:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpmisc.MDATE_MIN" ng-model-max="contact.dpmisc.MDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpmisc.MDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpmisc.MDATE_MIN = null; contact.dpmisc.MDATE_MAX = null;" ></abbr>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.SOL">SOL Code</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions" id="contact.dpmisc.SOL" name="contact.dpmisc.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpmisc.SOL" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.MTYPE">Transaction Type:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.dpmisc.MTYPE" ng-model="contact.dpmisc.MTYPE" ng-model-options="" placeholder="">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.MCOUNT">Count:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								
-								<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpmisc.MCOUNT_MIN" ng-model-max="contact.dpmisc.MCOUNT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-							<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.AMT">Amount:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpmisc.AMT_MIN" ng-model-max="contact.dpmisc.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-							<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpmisc.MYEAR">Transaction Year:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY" ng-model-min="contact.dpmisc.MYEAR_MIN" ng-model-max="contact.dpmisc.MYEAR_MAX" data-start-date="2014" data-end-date="2015">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dpmisc.MYEAR_MIN != null" class="isn-calendar-clear" ng-click="contact.dpmisc.MYEAR_MIN = null; contact.dpmisc.MYEAR_MAX = null;" ></abbr>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspMail Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmail.SOL">SOL Code</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions" id="contact.dtmail.SOL" name="contact.dtmail.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dtmail.SOL" multiple></select2>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
+		
 		
 		<div class="panel panel-default collapsed panel-stack">
 			<div class="panel-heading panel-second-heading">
@@ -1631,707 +1058,1342 @@
 					</a>
 				</div>
 				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspEcclesiastical</h3>
+					<h3 class="panel-title">&nbsp&nbspDeep Search</h3>
 				</a>
 			</div>
 			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.ecc_enabled">Ecclesiastical:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.ecc_enabled" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.ecc_enabled" placeholder="All"></select2>
+			
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
 						</div>
-					</div>	
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.BIRTHDATE">Birth Date:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.BIRTHDATE_MIN" ng-model-max="contact.BIRTHDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.BIRTHDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.BIRTHDATE_MIN = null; contact.BIRTHDATE_MAX = null;" ></abbr>
-						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspOther Criteria</h3>
+						</a>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.ORDINATION">Ordination:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.ORDINATION_MIN" ng-model-max="contact.ORDINATION_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.ORDINATION_MIN != null" class="isn-calendar-clear" ng-click="contact.ORDINATION_MIN = null; contact.ORDINATION_MAX = null;" ></abbr>
-							
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.CONSECRATE">Consecration:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.CONSECRATE_MIN" ng-model-max="contact.CONSECRATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.CONSECRATE_MIN != null" class="isn-calendar-clear" ng-click="contact.CONSECRATE_MIN = null; contact.CONSECRATE_MAX = null;" ></abbr>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.SAYMASS">Will Say Mass:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.SAYMASS" ng-options="title.id as title.label for title in willsaymass" ng-model="contact.SAYMASS" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.DECIS">Decision:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.DECIS" ng-options="title.id as title.label for title in decision" ng-model="contact.DECIS" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.RELIGIOUS">Religious:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.RELIGIOUS" id="contact.RELIGIOUS" ng-model="contact.RELIGIOUS" >
-						</div>
-					</div>
-					
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q01">Will speak to the Pope about Consecration:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q01" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q01" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q03">Signed Petition to Consecrate:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q03" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q03" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q20">Will Encourage Bishop to Consecrate:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q20" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q20" placeholder="All"></select2>
-							
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q02">Signed affidavit of Willingness:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q02" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q02" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q04">Belief on whether it is fulfilled:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q04" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q04" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q22">Agrees Consecration is necessary:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q22" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q22" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q05">Devotion to Our Lady:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q05" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q05" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q07">3rd Secret should be released:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q07" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q07" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q09">Will attend Bishop Conference:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q09" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q09" placeholder="All"></select2>
-							
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q06">Belief in Fatima:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q06" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q06" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q08">Signed 14 Resolutions:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q08" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q08" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q10">Signed the Peace Pledge:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q10" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q10" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q11">Will Promote 5 First Saturdays In Diocese:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q11" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q11" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q21">Offer Prayer/Mass re Satan attacks:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q21" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q21" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q12">Will Promote Rosary in Diocese:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q12" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q12" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q13">Will Offer Masses for apostolate intentions:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q13" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q13" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q15">Will circulate our literature within diocese:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q15" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q15" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.EP020">Signed Public Appeal:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.EP020" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.EP020" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q23">Supports Father Gruners Stand:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q23" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q23" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q14">Will endorse (imprimatur) our literature:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q14" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q14" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q16">Will accept Statue Visit:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q16" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q16" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q17">Mass said:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q17" ng-options="title.id as title.label for title in mass_said" ng-model="contact.Q17" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q19">Did attend a Bishops Conference:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q19" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q19" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.Q18">Values - Traditional or Liberal:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.Q18" ng-options="title.id as title.label for title in values_traditional" ng-model="contact.Q18" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.PPRIEST">Persecuted Priest:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.PPRIEST" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.PPRIEST" placeholder="All"></select2>
-						</div>
-					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.MDATE">Date Range:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpother.DATE_MIN" ng-model-max="contact.dpother.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpother.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpother.DATE_MIN = null; contact.dpother.DATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.TRANSACT">Transact:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dpother.TRANSACT" name="contact.dpother.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="contact.dpother.TRANSACT" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.LIST">List:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions"  id="contact.dpother.LIST" name="contact.dpother.LIST" ng-options="title.id as title.label for title in lists" ng-model="contact.dpother.LIST" multiple></select2>
+										
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.AMOUNT">Amount:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
 											
-				</form>
-			</div>
-		</div>
-		
-		
-		
-		
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
+											<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpother.AMT_MIN" ng-model-max="contact.dpother.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+										<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.LIST">Sol Codes:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions"  id="contact.dpother.SOL" name="contact.dpother.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpother.SOL" multiple></select2>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.DEMAND">Demand:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpother.DEMAND" name="contact.dpother.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="contact.dpother.DEMAND" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.MODE">Mode:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpother.MODE" name="contact.dpother.MODE" ng-options="title.id as title.label for title in modes" ng-model="contact.dpother.MODE" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.GL">Pledge Groups:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpother.GL" name="contact.dpother.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpother.GL" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.REQUESTS">Requests:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpother.REQUESTS" name="contact.dpother.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="contact.dpother.REQUESTS" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpother.TBAREQS">TBA Requests:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpother.TBAREQS" name="contact.dpother.TBAREQS" ng-options="title.id as title.label for title in tba_requests" ng-model="contact.dpother.TBAREQS" multiple></select2>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
 				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspBishop Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtbishop.FORCEJOIN">Bishop:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dtbishop.FORCEJOIN" name="contact.dtbishop.FORCEJOIN" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtbishop.FORCEJOIN" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtbishop.RESPONSE">Response:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtbishop.RESPONSE" ng-options="title.id as title.label for title in responses" ng-model="contact.dtbishop.RESPONSE" placeholder="All"></select2>
-						</div>
-					</div>
-					<!-- <div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.CONTPERS">Contacting Person:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="contact.dtbishop.CONTPERS" id="contact.dtbishop.CONTPERS" ng-model="contact.dtbishop.CONTPERS" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 1:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="contact.dtbishop.PERSONV1" id="contact.dtbishop.PERSONV1" ng-model="contact.dtbishop.PERSONV1" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 2:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="contact.dtbishop.PERSONV2" id="contact.dtbishop.PERSONV2" ng-model="contact.dtbishop.PERSONV2" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 3:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="contact.dtbishop.PERSONV3" id="contact.dtbishop.PERSONV3" ng-model="contact.dtbishop.PERSONV3" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV4">Person Visiting 4:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="contact.dtbishop.PERSONV4" id="contact.dtbishop.PERSONV4" ng-model="contact.dtbishop.PERSONV4" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.BISHPRES">Bishop Present:</label>
-						<div class="col-sm-7">
-							<select2 class="form-control" name="contact.dtbishop.BISHPRES" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.BISHPRES" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.FOLLOWUP">Follow Up:</label>
-						<div class="col-sm-7">
-							<select2 class="form-control" name="contact.dtbishop.FOLLOWUP" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FOLLOWUP" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER1">1st Letter Sent:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER1" ng-model="contact.dtbishop.LETTER1" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.PHONEC1">1st Phone Call:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.PHONEC1" ng-model="contact.dtbishop.PHONEC1" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER2">2nd Letter Sent:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER2" ng-model="contact.dtbishop.LETTER2" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.VISREF">Visit Refused:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISREF" ng-model="contact.dtbishop.VISREF" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.VISITD">Visit Date:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISITD" ng-model="contact.dtbishop.VISITD" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPLET">Follow Up Letter Sent:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPLET" ng-model="contact.dtbishop.FOLUPLET" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPVIS">Follow Up Visit:</label>
-						<div class="col-sm-7">
-							<div class="input-group">
-								<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPVIS" ng-model="contact.dtbishop.FOLUPVIS" >
-								<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
-									<a href=""><i class="linecons-calendar"></i></a>
-								</div>
-								<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
-									<div href=""><i class="linecons-calendar"></i></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="contact.dtbishop.FILEDYN">Report Filed:</label>
-						<div class="col-sm-7">
-							<select2 class="form-control" name="contact.dtbishop.FILEDYN" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FILEDYN"></select2>
-						</div>
-					</div>
-					 -->
-					
-					
-					
-				</form>
-			</div>
-		</div>
-		
-		
-		
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspMajor Donor Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.FORCEJOIN">Major Donor:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control"  id="contact.dtmajor.FORCEJOIN" name="contact.dtmajor.FORCEJOIN" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtmajor.FORCEJOIN" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.TYPE">Major Gift Campaign:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" ng-options="title.id as title.label for title in major_donation_types" ng-model="contact.dtmajor.TYPE" placeholder="All"></select2>
-						</div>
-					</div>
-					<!-- 
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.ASKAMT">Ask Amount:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.ASKAMT_MIN" ng-model-max="contact.dtmajor.ASKAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.PLEDAMT">Total Pledged:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.PLEDAMT_MIN" ng-model-max="contact.dtmajor.PLEDAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.PAIDAMT">Total Paid:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.PAIDAMT_MIN" ng-model-max="contact.dtmajor.PAIDAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.PLEDSCHED">Pledge Schedule:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtmajor.PLEDSCHED" ng-options="title.id as title.label for title in pledge_schedule" ng-model="contact.dtmajor.PLEDSCHED" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.GIFTOFF">Major Gift Officer:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.dtmajor.GIFTOFF" id="contact.dtmajor.GIFTOFF" ng-model="contact.dtmajor.GIFTOFF" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.WEALTHID">Wealth Engine Id:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="donation.WEALTHID" id="contact.dtmajor.WEALTHID" ng-model="contact.dtmajor.WEALTHID" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.STATUS">Status:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.dtmajor.STATUS" id="contact.dtmajor.STATUS" ng-model="contact.dtmajor.STATUS" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.ANNTRUST">Annuity / Trust:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtmajor.ANNTRUST" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.dtmajor.ANNTRUST" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.INSURANC">Insurance:</label>
-
-						<div class="col-sm-10">
-							<select2 class="form-control" name="contact.dtmajor.INSURANC" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.dtmajor.INSURANC" placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.VISDATE1">1st Visit:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE1_MIN" ng-model-max="contact.dtmajor.VISDATE1_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dtmajor.VISDATE1_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE1_MIN = null; contact.dtmajor.VISDATE1_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.VISDATE2">2nd Visit:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE2_MIN" ng-model-max="contact.dtmajor.VISDATE2_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dtmajor.VISDATE2_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE2_MIN = null; contact.dtmajor.VISDATE2_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dtmajor.VISDATE3">3rd Visit:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE3_MIN" ng-model-max="contact.dtmajor.VISDATE3_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dtmajor.VISDATE3_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE3_MIN = null; contact.dtmajor.VISDATE3_MAX = null;" ></abbr>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="donation.VISDATE4">4th Visit:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE4_MIN" ng-model-max="contact.dtmajor.VISDATE4_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
-							</div>
-							<abbr ng-show="contact.dtmajor.VISDATE4_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE4_MIN = null; contact.dtmajor.VISDATE4_MAX = null;" ></abbr>
-						</div>
-					</div> -->
-					
-					
-					
-				</form>
-			</div>
-		</div>
-					
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspAlternate Address Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" >Address Type:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" ng-options="title.id as title.label for title in address_types" ng-model="contact.dpothadd.ADDTYPE" multiple placeholder="All"></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpothadd.ADD">Address:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.dpothadd.ADD" id="contact.dpothadd.ADD" ng-model="contact.dpothadd.ADD" placeholder="All">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpothadd.CITY">City:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.dpothadd.CITY" id="contact.dpothadd.CITY" ng-model="contact.dpothadd.CITY" placeholder="All">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpothadd.ST">State:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="contact.dpothadd.ST" placeholder="All" multiple></select2>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpothadd.ZIP">Zip:</label>
-
-						<div class="col-sm-10">
-							<input type="text" class="form-control" name="contact.dpothadd.ZIP" id="contact.dpothadd.ZIP" ng-model="contact.dpothadd.ZIP" placeholder="All">
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
 				
-		<div class="panel panel-default collapsed panel-stack">
-			<div class="panel-heading panel-second-heading">
-				<div class="panel-options panel-options-left">
-					<a href="" data-toggle="panel">
-						<span class="collapse-icon">&ndash;</span>
-						<span class="expand-icon">+</span>
-					</a>
-				</div>
-				<a href="" data-toggle="panel" class="panel-title-wrapper">
-					<h3 class="panel-title">&nbsp&nbspOrder Summary Criteria</h3>
-				</a>
-			</div>
-			<div class="panel-body">
-				<form role="form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.order_type">Type:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="contact.dpordersummary.order_type" placeholder="All" multiple></select2>
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspGift Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.DATE">Date Range:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpgift.DATE_MIN" ng-model-max="contact.dpgift.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpgift.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpgift.DATE_MIN = null; contact.dpgift.DATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.AMOUNT">Amount:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											
+											<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpgift.AMT_MIN" ng-model-max="contact.dpgift.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+										<!-- <input type="text" class="form-control" id="contact.dpgift.DEMAND" ng-model="contact.dpgift.AMT_MAX" ng-model-options="" placeholder=""> -->
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.GL">Pledge Groups:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpgift.GL" name="contact.dpgift.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpgift.GL" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.LIST">Sol Codes:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions"  id="contact.dpgift.SOL" name="contact.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpgift.SOL" multiple></select2>
+										
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.PLEDGE">Pledge:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.PLEDGE" ng-model="contact.PLEDGE" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.LIST">List:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions"  id="contact.dpgift.LIST" name="contact.dpgift.LIST" ng-options="title.id as title.label for title in lists" ng-model="contact.dpgift.LIST" multiple></select2>
+										
+									</div>
+								</div>
+								
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.TRANSACT">Transact:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dpgift.TRANSACT" name="contact.dpgift.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="contact.dpgift.TRANSACT" multiple></select2>
+										
+									</div>
+								</div>
+								
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.DEMAND">Demand:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpgift.DEMAND" name="contact.dpgift.DEMAND" ng-options="title.id as title.label for title in demands" ng-model="contact.dpgift.DEMAND" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.MODE">Mode:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpgift.MODE" name="contact.dpgift.MODE" ng-options="title.id as title.label for title in modes" ng-model="contact.dpgift.MODE" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.REQUESTS">Requests:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpgift.REQUESTS" name="contact.dpgift.REQUESTS" ng-options="title.id as title.label for title in requests_plural" ng-model="contact.dpgift.REQUESTS" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpgift.TBAREQS">TBA Requests:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpgift.TBAREQS" name="contact.dpgift.TBAREQS" ng-options="title.id as title.label for title in tba_requests" ng-model="contact.dpgift.TBAREQS" multiple></select2>
+										
+									</div>
+								</div>
+							</div>
 							
-						</div>
+						</form>
 					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.SOL">SOL Code:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" options="longSelectOptions" id="contact.dpordersummary.SOL" name="contact.dpordersummary.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpordersummary.SOL" multiple></select2>
+				</div>
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
 						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspPledge Criteria</h3>
+						</a>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.DATE">Date:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpordersummary.DATE_MIN" ng-model-max="contact.dpordersummary.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.PLEDGOR">Pledgor</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpplg.PLEDGOR" name="contact.dpplg.PLEDGOR" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dpplg.PLEDGOR" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.MADE_DT">Made Date Range:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.MADE_DT_MIN" ng-model-max="contact.dpplg.MADE_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpplg.MADE_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.MADE_DT_MIN = null; contact.dpplg.MADE_DT_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.START_DT">Start Date Range:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.START_DT_MIN" ng-model-max="contact.dpplg.START_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpplg.START_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.START_DT_MIN = null; contact.dpplg.START_DT_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.TOTAL">Total:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											
+											<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpplg.TOTAL_MIN" ng-model-max="contact.dpplg.TOTAL_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.BILL">Bill:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpplg.BILL_MIN" ng-model-max="contact.dpplg.BILL_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.MQA">Billing Schedule</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpplg.MQA" name="contact.dpplg.MQA" ng-options="title.id as title.label for title in billing_schedules" ng-model="contact.dpplg.MQA" ></select2>
+									</div>
+								</div>
 							</div>
-							<abbr ng-show="contact.dpordersummary.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpordersummary.DATE_MIN = null; contact.dpordersummary.DATE_MAX = null;" ></abbr>
-						</div>
-					</div>
-					
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.IPAID">Invoice Paid:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dpordersummary.IPAID"></select2>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.ORIGENV">Envelope #:</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="contact.dpordersummary.ORIGENV" ng-model="contact.dpordersummary.ORIGENV" placeholder="All">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.ORIGDATE">Original Date:</label>
-						<div class="col-sm-10">
-							<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpordersummary.ORIGDATE_MIN" ng-model-max="contact.dpordersummary.ORIGDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-								<i class="fa-calendar"></i>
-								<span></span>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.REMIND">Send Reminder:</label>
+						
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dpplg.REMIND" name="contact.dpplg.REMIND" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dpplg.REMIND" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.CHANGE_DT">Date to Charge:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpplg.CHANGE_DT_MIN" ng-model-max="contact.dpplg.CHANGE_DT_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpplg.CHANGE_DT_MIN != null" class="isn-calendar-clear" ng-click="contact.dpplg.CHANGE_DT_MIN = null; contact.dpplg.CHANGE_DT_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.GL">Pledge Groups:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpplg.GL" name="contact.dpplg.GL" ng-options="title.id as title.label for title in pledgegroups" ng-model="contact.dpplg.GL" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.ORIGIN">Origin:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dpplg.ORIGIN" name="contact.dpplg.ORIGIN" ng-options="title.id as title.label for title in origins" ng-model="contact.dpplg.ORIGIN" multiple></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpplg.SOL">Sol Codes:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions"  id="contact.dpplg.SOL" name="contact.dpplg.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpplg.SOL" multiple></select2>
+									</div>
+								</div>
 							</div>
-							<abbr ng-show="contact.dpordersummary.ORIGDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpordersummary.ORIGDATE_MIN = null; contact.dpordersummary.ORIGDATE_MAX = null;" ></abbr>
-						</div>
+							
+						</form>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.FUNDS">Funds:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dpordersummary.FUNDS" name="contact.dpordersummary.FUNDS" ng-options="title.id as title.label for title in all_currencies" ng-model="contact.dpordersummary.FUNDS" placeholder="All" multiple></select2>
+				</div>
+				
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
 						</div>
-					</div>	
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.SHIPFROM">Ship From:</label>
-						<div class="col-sm-10">
-							<select2 class="form-control" id="contact.dpordersummary.SHIPFROM" name="contact.dpordersummary.SHIPFROM" ng-options="title.id as title.label for title in ship_from" ng-model="contact.dpordersummary.SHIPFROM" placeholder="All" multiple></select2>
-						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspVolunteer Criteria</h3>
+						</a>
 					</div>
-					
-					<div class="form-group" >
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.CASH">Cash Received:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.CASH_MIN" ng-model-max="contact.dpordersummary.CASH_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VOLUNTEER">Volunteer:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dtvols1.VOLUNTEER" name="contact.dtvols1.VOLUNTEER" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtvols1.VOLUNTEER" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dptrans.LANGUAGE">Translator:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dptrans.LANGUAGE" ng-options="title.id as title.label for title in languages" ng-model="contact.dptrans.LANGUAGE" multiple placeholder="All"></select2>
+									</div>
+								</div>
+								
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VORIGIN">Origin:</label>
+				
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.dtvols1.VORIGIN" ng-model="contact.dtvols1.VORIGIN" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VSDATE">Start Date:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtvols1.VSDATE_MIN" ng-model-max="contact.dtvols1.VSDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01" >
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dtvols1.VSDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dtvols1.VSDATE_MIN = null; contact.dtvols1.VSDATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VCATEG">Category:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.dtvols1.VCATEG" ng-model="contact.dtvols1.VCATEG" ng-model-options="" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE01">Pray:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE01" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE01" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE02">Distribute Materials:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE02" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE02" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE03">Signature Collection:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE03" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE03" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE04">Phoning:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE04" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE04" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE05">OLD Rosary Guild:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE05" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE05" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE06">Mail Monitor:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE06" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE06" placeholder="All"></select2>
+									</div>
+								</div>
 							</div>
-						</div>
-					</div>
-					<div class="form-group" >
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.CREDIT">Credit Received:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.CREDIT_MIN" ng-model-max="contact.dpordersummary.CREDIT_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE07">7:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE07" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE07" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE08">HPP On Radio Stations:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE08" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE08" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE09">FTMHC On TV Stations:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE09" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE09" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE10">Help Put Books in Stores and Library:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE10" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE10" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE11">Place Fatima Ads in Newspapers:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE11" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE11" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE12">Rosary Maker:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE12" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE12" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE13">Green Scapular Maker:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE13" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE13" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE14">Other Apostolates:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE14" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE14" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE15">Distribution Center:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE15" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE15" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VGRADE16">Volunteer Count:</label>
+			
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtvols1.VGRADE16" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtvols1.VGRADE16" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtvols1.VSPECTAL">Special:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.dtvols1.VSPECTAL" ng-model="contact.dtvols1.VSPECTAL" ng-model-options="" placeholder="">
+									</div>
+								</div>
 							</div>
-						</div>
+						</form>
 					</div>
-					<div class="form-group" >
-						<label class="col-sm-2 control-label" for="contact.dpordersummary.GTOTAL">Grand Total:</label>
-						<div class="col-sm-10">
-							<div class="col-xs-12">
-								<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.GTOTAL_MIN" ng-model-max="contact.dpordersummary.GTOTAL_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+				</div>
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspMisc Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.MDATE">Start Date:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpmisc.MDATE_MIN" ng-model-max="contact.dpmisc.MDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpmisc.MDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpmisc.MDATE_MIN = null; contact.dpmisc.MDATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.SOL">SOL Code</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions" id="contact.dpmisc.SOL" name="contact.dpmisc.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpmisc.SOL" multiple></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.MTYPE">Transaction Type:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.dpmisc.MTYPE" ng-model="contact.dpmisc.MTYPE" ng-model-options="" placeholder="">
+									</div>
+								</div>
 							</div>
-						</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.MCOUNT">Count:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											
+											<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpmisc.MCOUNT_MIN" ng-model-max="contact.dpmisc.MCOUNT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+										<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.AMT">Amount:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											
+											<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dpmisc.AMT_MIN" ng-model-max="contact.dpmisc.AMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+										</div>
+										<!-- <input type="text" class="form-control" id="contact.dpother.DEMAND" ng-model="contact.dpother.AMT_MAX" ng-model-options="" placeholder=""> -->
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpmisc.MYEAR">Transaction Year:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY" ng-model-min="contact.dpmisc.MYEAR_MIN" ng-model-max="contact.dpmisc.MYEAR_MAX" data-start-date="2014" data-end-date="2015">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpmisc.MYEAR_MIN != null" class="isn-calendar-clear" ng-click="contact.dpmisc.MYEAR_MIN = null; contact.dpmisc.MYEAR_MAX = null;" ></abbr>
+									</div>
+								</div>
+							</div>
+						</form>
 					</div>
-				</form>
+				</div>
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspMail Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtmail.SOL">SOL Code</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions" id="contact.dtmail.SOL" name="contact.dtmail.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dtmail.SOL" multiple></select2>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspEcclesiastical</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+							
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.ecc_enabled">Ecclesiastical:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.ecc_enabled" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.ecc_enabled" placeholder="All"></select2>
+									</div>
+								</div>	
+								
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.BIRTHDATE">Birth Date:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.BIRTHDATE_MIN" ng-model-max="contact.BIRTHDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.BIRTHDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.BIRTHDATE_MIN = null; contact.BIRTHDATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.ORDINATION">Ordination:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.ORDINATION_MIN" ng-model-max="contact.ORDINATION_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.ORDINATION_MIN != null" class="isn-calendar-clear" ng-click="contact.ORDINATION_MIN = null; contact.ORDINATION_MAX = null;" ></abbr>
+										
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.CONSECRATE">Consecration:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.CONSECRATE_MIN" ng-model-max="contact.CONSECRATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.CONSECRATE_MIN != null" class="isn-calendar-clear" ng-click="contact.CONSECRATE_MIN = null; contact.CONSECRATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.SAYMASS">Will Say Mass:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.SAYMASS" ng-options="title.id as title.label for title in willsaymass" ng-model="contact.SAYMASS" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.DECIS">Decision:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.DECIS" ng-options="title.id as title.label for title in decision" ng-model="contact.DECIS" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.RELIGIOUS">Religious:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="contact.RELIGIOUS" id="contact.RELIGIOUS" ng-model="contact.RELIGIOUS" >
+									</div>
+								</div>
+								
+								
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q01">Will speak to the Pope about Consecration:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q01" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q01" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q03">Signed Petition to Consecrate:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q03" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q03" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q20">Will Encourage Bishop to Consecrate:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q20" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q20" placeholder="All"></select2>
+										
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q02">Signed affidavit of Willingness:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q02" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q02" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q04">Belief on whether it is fulfilled:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q04" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q04" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q22">Agrees Consecration is necessary:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q22" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q22" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q05">Devotion to Our Lady:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q05" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q05" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q07">3rd Secret should be released:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q07" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q07" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q09">Will attend Bishop Conference:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q09" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q09" placeholder="All"></select2>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q06">Belief in Fatima:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q06" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q06" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q08">Signed 14 Resolutions:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q08" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q08" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q10">Signed the Peace Pledge:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q10" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q10" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q11">Will Promote 5 First Saturdays In Diocese:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q11" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q11" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q21">Offer Prayer/Mass re Satan attacks:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q21" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q21" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q12">Will Promote Rosary in Diocese:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q12" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q12" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q13">Will Offer Masses for apostolate intentions:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q13" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q13" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q15">Will circulate our literature within diocese:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q15" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q15" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.EP020">Signed Public Appeal:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.EP020" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.EP020" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q23">Supports Father Gruners Stand:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q23" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q23" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q14">Will endorse (imprimatur) our literature:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q14" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q14" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q16">Will accept Statue Visit:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q16" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q16" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q17">Mass said:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q17" ng-options="title.id as title.label for title in mass_said" ng-model="contact.Q17" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q19">Did attend a Bishops Conference:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q19" ng-options="title.id as title.label for title in staticyesnounknown" ng-model="contact.Q19" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.Q18">Values - Traditional or Liberal:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.Q18" ng-options="title.id as title.label for title in values_traditional" ng-model="contact.Q18" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.PPRIEST">Persecuted Priest:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.PPRIEST" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.PPRIEST" placeholder="All"></select2>
+									</div>
+								</div>
+							</div>
+													
+						</form>
+					</div>
+				</div>
+				
+				
+				
+				
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspBishop Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtbishop.FORCEJOIN">Bishop:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dtbishop.FORCEJOIN" name="contact.dtbishop.FORCEJOIN" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtbishop.FORCEJOIN" placeholder="All"></select2>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtbishop.RESPONSE">Response:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" name="contact.dtbishop.RESPONSE" ng-options="title.id as title.label for title in responses" ng-model="contact.dtbishop.RESPONSE" placeholder="All"></select2>
+									</div>
+								</div>
+								<!-- <div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.CONTPERS">Contacting Person:</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" name="contact.dtbishop.CONTPERS" id="contact.dtbishop.CONTPERS" ng-model="contact.dtbishop.CONTPERS" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 1:</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" name="contact.dtbishop.PERSONV1" id="contact.dtbishop.PERSONV1" ng-model="contact.dtbishop.PERSONV1" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 2:</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" name="contact.dtbishop.PERSONV2" id="contact.dtbishop.PERSONV2" ng-model="contact.dtbishop.PERSONV2" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV1">Person Visiting 3:</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" name="contact.dtbishop.PERSONV3" id="contact.dtbishop.PERSONV3" ng-model="contact.dtbishop.PERSONV3" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.PERSONV4">Person Visiting 4:</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" name="contact.dtbishop.PERSONV4" id="contact.dtbishop.PERSONV4" ng-model="contact.dtbishop.PERSONV4" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.BISHPRES">Bishop Present:</label>
+									<div class="col-sm-7">
+										<select2 class="form-control" name="contact.dtbishop.BISHPRES" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.BISHPRES" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.FOLLOWUP">Follow Up:</label>
+									<div class="col-sm-7">
+										<select2 class="form-control" name="contact.dtbishop.FOLLOWUP" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FOLLOWUP" placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER1">1st Letter Sent:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER1" ng-model="contact.dtbishop.LETTER1" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.PHONEC1">1st Phone Call:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.PHONEC1" ng-model="contact.dtbishop.PHONEC1" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.LETTER2">2nd Letter Sent:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.LETTER2" ng-model="contact.dtbishop.LETTER2" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.VISREF">Visit Refused:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISREF" ng-model="contact.dtbishop.VISREF" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.VISITD">Visit Date:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.VISITD" ng-model="contact.dtbishop.VISITD" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPLET">Follow Up Letter Sent:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPLET" ng-model="contact.dtbishop.FOLUPLET" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.FOLUPVIS">Follow Up Visit:</label>
+									<div class="col-sm-7">
+										<div class="input-group">
+											<input type="text" class="form-control datepicker" data-format="yyyy-mm-dd" name="contact.dtbishop.FOLUPVIS" ng-model="contact.dtbishop.FOLUPVIS" >
+											<div  ng-show="contact.ecc_enabled && contact.dtbishop.enabled" class="input-group-addon">
+												<a href=""><i class="linecons-calendar"></i></a>
+											</div>
+											<div  ng-show="contact.ecc_enabled == false || contact.dtbishop.enabled == false" class="input-group-addon">
+												<div href=""><i class="linecons-calendar"></i></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-5 control-label" for="contact.dtbishop.FILEDYN">Report Filed:</label>
+									<div class="col-sm-7">
+										<select2 class="form-control" name="contact.dtbishop.FILEDYN" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dtbishop.FILEDYN"></select2>
+									</div>
+								</div>
+								 -->
+							
+							
+							</div>
+							
+						</form>
+					</div>
+				</div>
+				
+				
+				
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspMajor Donor Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtmajor.FORCEJOIN">Major Donor:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control"  id="contact.dtmajor.FORCEJOIN" name="contact.dtmajor.FORCEJOIN" ng-options="title.id as title.label for title in staticyes" ng-model="contact.dtmajor.FORCEJOIN" placeholder="All"></select2>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dtmajor.TYPE">Major Gift Campaign:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" ng-options="title.id as title.label for title in major_donation_types" ng-model="contact.dtmajor.TYPE" placeholder="All"></select2>
+									</div>
+								</div>
+							</div>
+							<!-- 
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.ASKAMT">Ask Amount:</label>
+								<div class="col-sm-8">
+									<div class="col-xs-12">
+										<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.ASKAMT_MIN" ng-model-max="contact.dtmajor.ASKAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.PLEDAMT">Total Pledged:</label>
+								<div class="col-sm-8">
+									<div class="col-xs-12">
+										<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.PLEDAMT_MIN" ng-model-max="contact.dtmajor.PLEDAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.PAIDAMT">Total Paid:</label>
+								<div class="col-sm-8">
+									<div class="col-xs-12">
+										<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.dtmajor.PAIDAMT_MIN" ng-model-max="contact.dtmajor.PAIDAMT_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.PLEDSCHED">Pledge Schedule:</label>
+								<div class="col-sm-8">
+									<select2 class="form-control" name="contact.dtmajor.PLEDSCHED" ng-options="title.id as title.label for title in pledge_schedule" ng-model="contact.dtmajor.PLEDSCHED" multiple></select2>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.GIFTOFF">Major Gift Officer:</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" name="contact.dtmajor.GIFTOFF" id="contact.dtmajor.GIFTOFF" ng-model="contact.dtmajor.GIFTOFF" >
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.WEALTHID">Wealth Engine Id:</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" name="donation.WEALTHID" id="contact.dtmajor.WEALTHID" ng-model="contact.dtmajor.WEALTHID" >
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.STATUS">Status:</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" name="contact.dtmajor.STATUS" id="contact.dtmajor.STATUS" ng-model="contact.dtmajor.STATUS" >
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.ANNTRUST">Annuity / Trust:</label>
+		
+								<div class="col-sm-8">
+									<select2 class="form-control" name="contact.dtmajor.ANNTRUST" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.dtmajor.ANNTRUST" placeholder="All"></select2>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.INSURANC">Insurance:</label>
+		
+								<div class="col-sm-8">
+									<select2 class="form-control" name="contact.dtmajor.INSURANC" ng-options="title.id as title.label for title in staticyesnobool" ng-model="contact.dtmajor.INSURANC" placeholder="All"></select2>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.VISDATE1">1st Visit:</label>
+								<div class="col-sm-8">
+									<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE1_MIN" ng-model-max="contact.dtmajor.VISDATE1_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+										<i class="fa-calendar"></i>
+										<span></span>
+									</div>
+									<abbr ng-show="contact.dtmajor.VISDATE1_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE1_MIN = null; contact.dtmajor.VISDATE1_MAX = null;" ></abbr>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.VISDATE2">2nd Visit:</label>
+								<div class="col-sm-8">
+									<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE2_MIN" ng-model-max="contact.dtmajor.VISDATE2_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+										<i class="fa-calendar"></i>
+										<span></span>
+									</div>
+									<abbr ng-show="contact.dtmajor.VISDATE2_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE2_MIN = null; contact.dtmajor.VISDATE2_MAX = null;" ></abbr>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="contact.dtmajor.VISDATE3">3rd Visit:</label>
+								<div class="col-sm-8">
+									<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE3_MIN" ng-model-max="contact.dtmajor.VISDATE3_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+										<i class="fa-calendar"></i>
+										<span></span>
+									</div>
+									<abbr ng-show="contact.dtmajor.VISDATE3_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE3_MIN = null; contact.dtmajor.VISDATE3_MAX = null;" ></abbr>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="donation.VISDATE4">4th Visit:</label>
+								<div class="col-sm-8">
+									<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dtmajor.VISDATE4_MIN" ng-model-max="contact.dtmajor.VISDATE4_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+										<i class="fa-calendar"></i>
+										<span></span>
+									</div>
+									<abbr ng-show="contact.dtmajor.VISDATE4_MIN != null" class="isn-calendar-clear" ng-click="contact.dtmajor.VISDATE4_MIN = null; contact.dtmajor.VISDATE4_MAX = null;" ></abbr>
+								</div>
+							</div> -->
+							
+							
+							
+						</form>
+					</div>
+				</div>
+							
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspAlternate Address Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" >Address Type:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" ng-options="title.id as title.label for title in address_types" ng-model="contact.dpothadd.ADDTYPE" multiple placeholder="All"></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpothadd.ADD">Address:</label>
+			
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="contact.dpothadd.ADD" id="contact.dpothadd.ADD" ng-model="contact.dpothadd.ADD" placeholder="All">
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpothadd.CITY">City:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="contact.dpothadd.CITY" id="contact.dpothadd.CITY" ng-model="contact.dpothadd.CITY" placeholder="All">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpothadd.ST">State:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" ng-options="title.id as title.label for title in states" ng-model="contact.dpothadd.ST" placeholder="All" multiple></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpothadd.ZIP">Zip:</label>
+			
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="contact.dpothadd.ZIP" id="contact.dpothadd.ZIP" ng-model="contact.dpothadd.ZIP" placeholder="All">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+						
+				<div class="panel panel-default collapsed panel-stack">
+					<div class="panel-heading panel-second-heading">
+						<div class="panel-options panel-options-left">
+							<a href="" data-toggle="panel">
+								<span class="collapse-icon">&ndash;</span>
+								<span class="expand-icon">+</span>
+							</a>
+						</div>
+						<a href="" data-toggle="panel" class="panel-title-wrapper">
+							<h3 class="panel-title">&nbsp&nbspOrder Summary Criteria</h3>
+						</a>
+					</div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.order_type">Type:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="contact.dpordersummary.order_type" placeholder="All" multiple></select2>
+										
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.SOL">SOL Code:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" options="longSelectOptions" id="contact.dpordersummary.SOL" name="contact.dpordersummary.SOL" ng-options="title.id as title.label for title in sols" ng-model="contact.dpordersummary.SOL" multiple></select2>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.DATE">Date:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpordersummary.DATE_MIN" ng-model-max="contact.dpordersummary.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpordersummary.DATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpordersummary.DATE_MIN = null; contact.dpordersummary.DATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+								
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.IPAID">Invoice Paid:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" ng-options="title.id as title.label for title in staticyesno" ng-model="contact.dpordersummary.IPAID"></select2>
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.ORIGENV">Envelope #:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="contact.dpordersummary.ORIGENV" ng-model="contact.dpordersummary.ORIGENV" placeholder="All">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.ORIGDATE">Original Date:</label>
+									<div class="col-sm-8">
+										<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="contact.dpordersummary.ORIGDATE_MIN" ng-model-max="contact.dpordersummary.ORIGDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+											<i class="fa-calendar"></i>
+											<span></span>
+										</div>
+										<abbr ng-show="contact.dpordersummary.ORIGDATE_MIN != null" class="isn-calendar-clear" ng-click="contact.dpordersummary.ORIGDATE_MIN = null; contact.dpordersummary.ORIGDATE_MAX = null;" ></abbr>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.FUNDS">Funds:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dpordersummary.FUNDS" name="contact.dpordersummary.FUNDS" ng-options="title.id as title.label for title in all_currencies" ng-model="contact.dpordersummary.FUNDS" placeholder="All" multiple></select2>
+									</div>
+								</div>	
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.SHIPFROM">Ship From:</label>
+									<div class="col-sm-8">
+										<select2 class="form-control" id="contact.dpordersummary.SHIPFROM" name="contact.dpordersummary.SHIPFROM" ng-options="title.id as title.label for title in ship_from" ng-model="contact.dpordersummary.SHIPFROM" placeholder="All" multiple></select2>
+									</div>
+								</div>
+								
+								<div class="form-group" >
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.CASH">Cash Received:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.CASH_MIN" ng-model-max="contact.dpordersummary.CASH_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group" >
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.CREDIT">Credit Received:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.CREDIT_MIN" ng-model-max="contact.dpordersummary.CREDIT_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group" >
+									<label class="col-sm-4 control-label" for="contact.dpordersummary.GTOTAL">Grand Total:</label>
+									<div class="col-sm-8">
+										<div class="col-xs-12">
+											<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="10000" ng-model-min="contact.dpordersummary.GTOTAL_MIN" ng-model-max="contact.dpordersummary.GTOTAL_MAX" data-min-val="0" data-max-val="10000" data-step="10"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				
+				
+				
+				
+				
+				
+				
 			</div>
-		</div>	
+		</div>
 					
 		
 		<div class="panel panel-default deep-search-panel">
