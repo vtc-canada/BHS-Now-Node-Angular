@@ -3400,37 +3400,42 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     $scope.$watch('template', function(newValue, oldValue) {
 	if (!angular.equals(newValue, oldValue)) {
-	    for (var i = 0; i < $scope.search_templates.length; i++) {
-		if ($scope.search_templates[i].id == $scope.template) { // matching
-		    // one
+	    if (newValue == null) {
+		$scope.clearTemplates();
+	    } else {
+		for (var i = 0; i < $scope.search_templates.length; i++) {
+		    if ($scope.search_templates[i].id == $scope.template) { // matching
+			// one
 
-		    angular.forEach($scope.contact, function(value, key) {
+			angular.forEach($scope.contact, function(value, key) {
 
-			if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
-			    angular.forEach(value, function(innerValue, innerKey) {
-				if ($scope.search_templates[i].data[key] && $scope.search_templates[i].data[key][innerKey]) {
-				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
+			    if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
+				angular.forEach(value, function(innerValue, innerKey) {
+				    if ($scope.search_templates[i].data[key] && $scope.search_templates[i].data[key][innerKey]) {
+					$scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
 
-				} else {
-				    $scope.contact[key][innerKey] = null;
-				}
-			    });
-			} else if ($scope.search_templates[i].data[key]) {
-			    $scope.contact[key] = $scope.search_templates[i].data[key];
-			} else {
-			    $scope.contact[key] = null;
-			}
-		    });
+				    } else {
+					$scope.contact[key][innerKey] = null;
+				    }
+				});
+			    } else if ($scope.search_templates[i].data[key]) {
+				$scope.contact[key] = $scope.search_templates[i].data[key];
+			    } else {
+				$scope.contact[key] = null;
+			    }
+			});
 
-		    $rootScope.search_contact = $scope.contact;// =
-		    // $scope.search_templates[i].data;
-		    // $rootScope.search_contact hopefully will stay tied..
-		    // $rootScope.newTemplateModal.id =
-		    // $scope.search_templates[i].id;
-		    $rootScope.newTemplateModal.name = $scope.search_templates[i].label;
-		    $rootScope.newTemplateModal.id = $scope.search_templates[i].id;
+			$rootScope.search_contact = $scope.contact;// =
+			// $scope.search_templates[i].data;
+			// $rootScope.search_contact hopefully will stay tied..
+			// $rootScope.newTemplateModal.id =
+			// $scope.search_templates[i].id;
+			$rootScope.newTemplateModal.name = $scope.search_templates[i].label;
+			$rootScope.newTemplateModal.id = $scope.search_templates[i].id;
+		    }
 		}
 	    }
+
 	}
     });
 
@@ -4912,7 +4917,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		size : modal_size,
 		backdrop : true
 	    });
-	    $rootScope.deleteModalText =  $scope.selectedUser.username;  //$scope.selectedUser.id + ' ' +
+	    $rootScope.deleteModalText = $scope.selectedUser.username; //$scope.selectedUser.id + ' ' +
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
@@ -4965,10 +4970,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    if ($scope.user.password && $scope.user.password != null && $scope.user.password != '') {
 		if ($scope.user.confirm_password && $scope.user.confirm_password != null && $scope.user.confirm_password != '' && $scope.user.password == $scope.user.confirm_password) { // check
-																							    // if
-																							    // confirm_password
-																							    // is
-																							    // good
+		    // if
+		    // confirm_password
+		    // is
+		    // good
 
 		} else {
 		    $scope.updateUserPasswordMatchError = true;
@@ -4992,7 +4997,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $timeout(function() {
 			$scope.updateUserSuccess = true;
 		    }, 0);
-		    
+
 		    if ($scope.selectedUser.id == null) {
 			if (vm.userWatcher != null) {
 			    vm.userWatcher();

@@ -854,7 +854,7 @@ directive('tagsinput', function() {
 	    }
 	}
     }
-}).directive('daterange', function() {
+}).directive('daterange', function($timeout, $filter) {
     return {
 	restrict : 'AC',
 	scope : {
@@ -916,21 +916,83 @@ directive('tagsinput', function() {
 		if ($this.hasClass('daterange-inline')) {
 		    $this.find('span').html(start.format(drp.format) + drp.separator + end.format(drp.format));
 		}
-		scope.$apply(function() {
+		$timeout(function() {
 		    scope.ngModelMin = start.format(drp.format);
 		    scope.ngModelMax = end.format(drp.format);
-		});
+		}, 0);
 	    });
 
-	    scope.$watch('ngModelMin', function(newValue, oldValue) {
+	    scope.$watch('[ngModelMin,ngModelMax]', function(newValue, oldValue) {
 		if (newValue != oldValue) {
-		    if (newValue == null) {
+		    //var changed = false;
+		    if (newValue[0] == null || newValue[1] == null) {  // both go null together.
+			var drp = $this.data('daterangepicker');
+			drp.setCustomDates(moment(start_date), moment(end_date));
 			if ($this.hasClass('daterange-inline')) {
 			    $this.find('span').html("");
 			}
+		    } else {
+			$timeout(function() {
+			    var drp = $this.data('daterangepicker');
+			    
+			    if (drp.startDate.format(drp.format) != newValue[0] || drp.endDate.format(drp.format) != newValue[1]) { 
+
+				drp.setCustomDates(moment(newValue[0]), moment(newValue[1]));
+				if ($this.hasClass('daterange-inline')) {
+				    $this.find('span').html(drp.startDate.format(drp.format) + drp.separator + drp.endDate.format(drp.format));
+				}
+
+				//changed = true;
+			    }
+			    // $filter('date');
+
+			}, 0);
+			// $timeout(function() {
+			// $this.a = 'test';
+			// if ($this.slider("values")[0] != scope.ngModelMin &&
+			// !($this.slider("values")[0] == 0 && scope.ngModelMin
+			// == null)) {
+			// // if(scope.ngModelMin == null){
+			// $this.slider("values", 0, scope.ngModelMin || 0);
+			//
+			// // }
+			// changed = true;
+			// }
+			// if ($this.slider("values")[1] != scope.ngModelMax &&
+			// !($this.slider("values")[1] == 10000 &&
+			// scope.ngModelMax == null)) {
+			// $this.slider("values", 1, scope.ngModelMax || 10000);
+			// changed = true;
+			// }
+			// if (changed) {
+			// $this.slider("values", $this.slider("values")); //
+			// $this.slider("refresh");
+			// if ($this.slider("values")[0] ==
+			// $this.slider("option").min) { // minimum
+			// $label_1.html('Any');
+			// } else {
+			// $label_1.html((prefix ? prefix : '') +
+			// $this.slider("values")[0] + (postfix ? postfix :
+			// ''));
+			// }
+			// if ($this.slider("values")[1] ==
+			// $this.slider("option").max) { // minimum
+			// $label_2.html('Any');
+			// } else {
+			// $label_2.html((prefix ? prefix : '') +
+			// $this.slider("values")[1] + (postfix ? postfix :
+			// ''));
+			//
+			// }
+			//
+			// if (fill)
+			// $fill.val($label_1.html() + ',' + $label_2.html());
+			//
+			// }
+			// }, 0);
 		    }
 		}
-	    });
+	    }, true);
 
 	    if (typeof opts['ranges'] == 'object') {
 		$this.data('daterangepicker').container.removeClass('show-calendar');
