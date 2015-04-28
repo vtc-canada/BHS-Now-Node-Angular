@@ -8,7 +8,7 @@
 module.exports = {
 
     promptsave : function(req, res) {
-
+	
 	var report = req.body.report;
 	var phantom = require('node-phantom');
 	var fs = require("fs");
@@ -181,6 +181,7 @@ module.exports = {
 };
 
 function buildReportData(report, phantom_bool, cb) {
+    
     // Generating report stuff
     // safety checks
     var startTime = true;
@@ -269,7 +270,7 @@ function buildReportData(report, phantom_bool, cb) {
 	    } else if (typeof (report.parameters[table.parameters[i]].type) != 'undefined' && report.parameters[table.parameters[i]].type == 'multiselect') {
 		parameters.push((report.parameters[table.parameters[i]].value == null) ? null : ((report.parameters[table.parameters[i]].value == '') ? null : report.parameters[table.parameters[i]].value.toString()));
 	    } else {
-		parameters.push(report.parameters[table.parameters[i]].value == '' ? null : report.parameters[table.parameters[i]].value);
+		parameters.push(report.parameters[table.parameters[i]].value == '' ? null :  report.parameters[table.parameters[i]].value);
 	    }
 	}
 

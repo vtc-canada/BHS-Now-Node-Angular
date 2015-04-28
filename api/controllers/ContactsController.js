@@ -354,11 +354,13 @@ module.exports = {
 		delete row.DESC;
 		delete row.$$hashKey;
 		delete row.errors;
+		delete row.NAME;
 		if (row.id == 'new') {
 		    row.ID1 = contactId;
 		    delete row.id;
 		    delete row.tempId;
 		    delete row.is_modified;
+		    row.database_origin = 1;
 		    Database.knex('dplink').insert(row).exec(function(err, response) {
 			if (err)
 			    return cb(err);
@@ -843,6 +845,7 @@ module.exports = {
 
 	sails.controllers.contacts.doGetContact(req, res, function(err, results) {
 	    if (err) {
+		console.log(err.toString());
 		return res.json(err, 500);
 	    }
 	    res.json({
@@ -1079,7 +1082,7 @@ module.exports = {
 			    });
 		    },
 		    dpother : function(callback) {
-			Database.knex.raw("SELECT dpother.*, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpother.SOL AND dpother.database_origin = dpcodes.database_origin ) WHERE  DONOR = " + contactId).exec(function(err, data) {
+			Database.knex.raw('SELECT `dpother`.`id`,`dpother`.`DONOR`,DATE_FORMAT(`dpother`.`DATE`,"%Y-%m-%d") AS `DATE` ,`dpother`.`SURVEY`,`dpother`.`SURV_ANS`,`dpother`.`TRANSACT`,`dpother`.`ENVNO`,`dpother`.`LIST`,`dpother`.`NARRA`,`dpother`.`AMT`,`dpother`.`CURR`,`dpother`.`SOL`,`dpother`.`CASH`,`dpother`.`DEMAND`,`dpother`.`LABEL`,`dpother`.`MODE`,`dpother`.`GL`,`dpother`.`WEB`,`dpother`.`CAMP_TYPE`,`dpother`.`REQUESTS`,`dpother`.`TBAREQS`,`dpother`.`TSRECID`,`dpother`.`TSDATE`,`dpother`.`TSTIME`,`dpother`.`TSCHG`,`dpother`.`TSBASE`,`dpother`.`TSLOCAT`,`dpother`.`TSIDCODE`,`dpother`.`database_origin`, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpother.SOL AND dpother.database_origin = dpcodes.database_origin ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
@@ -1093,7 +1096,7 @@ module.exports = {
 			});
 		    },
 		    dplink : function(callback) {
-			Database.knex.raw("SELECT dplink.* FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK AND dplink.database_origin = dpcodes.database_origin ) WHERE ID1 = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dplink.id, dplink.ID1, dplink.ID2, dplink.LINK, CONCAT ( dp.FNAME , ' ' , dp.LNAME ) as 'NAME', dpcodes.DESC FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK AND dplink.database_origin = dpcodes.database_origin ) INNER JOIN dp ON (dplink.ID2 = dp.id) WHERE ID1 = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
@@ -1333,6 +1336,8 @@ module.exports = {
 	});
     },
     querycontacts : function(req, res, contactsCallback) {
+	var mysql = require('mysql');
+	
 	var searchmode = (req.body.columns && req.body.order);
 
 	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
@@ -1583,7 +1588,7 @@ module.exports = {
 		    return;
 		}
 		if(key == 'PHONE' && val != null && val != ''){
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + '( dp.PHONE = ' + "'" + val + "'" + ' OR ' + 'dp.PHON2 = ' + "'" + val + "'" + ' OR ' + 'dp.PHON3 = ' + "'" + val + "'" + ')';
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + '( dp.PHONE LIKE ' + wrapPercents(mysql.escape(val)) + ' OR ' + 'dp.PHON2 LIKE ' + wrapPercents(mysql.escape(val)) + ' OR ' + 'dp.PHON3 LIKE ' + wrapPercents(mysql.escape(val)) + ')';
 		    return;
 		}
 		if (key == 'CLASS' && req.body.contact.CLASS != null && req.body.contact.CLASS.length > 0) {
@@ -1598,8 +1603,41 @@ module.exports = {
 		    return;
 		}
 
+		if(key == 'ZIP'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP LIKE ' +  wrapPercents(mysql.escape(val)) ;
+		    return;
+		}
+		if(key == 'CFNID'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CFNID LIKE ' + wrapPercents(mysql.escape(val));
+		    return;
+		}
+		if (key == 'BIRTHDATE_MIN'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.BIRTHDATE >= ' + mysql.escape(val);
+		    return;
+		}
+		if (key == 'BIRTHDATE_MAX'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.BIRTHDATE <= ' + mysql.escape(val);
+		    return;
+		}
+		if (key == 'ORDINATION_MIN'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ORDINATION >= ' + mysql.escape(val);
+		    return;
+		}
+		if (key == 'ORDINATION_MAX'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ORDINATION <= ' + mysql.escape(val);
+		    return;
+		}
+		if (key == 'CONSECRATE_MIN'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CONSECRATE >= ' + mysql.escape(val);
+		    return;
+		}
+		if (key == 'CONSECRATE_MAX'&&val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CONSECRATE <= ' + mysql.escape(val);
+		    return;
+		}
+
 		if (val != null && val != '') {
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp." + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp." + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val) );
 		}
 	    });
 
@@ -1630,14 +1668,14 @@ module.exports = {
 			    return;
 			}
 			if (key == 'DATE_MIN') {
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE >= ' + "'" + val + "'";
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'DATE_MAX') {
-			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= ' + "'" + val + "'";
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= ' + mysql.escape(val);
 			    return;
 			}
-			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 
 			// ' = ' + "'" + val + "'";
 		    }
@@ -1667,14 +1705,14 @@ module.exports = {
 			    return;
 			}
 			if (key == 'DATE_MIN') {
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE >= ' + "'" + val + "'";
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'DATE_MAX') {
-			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= ' + "'" + val + "'";
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= ' + mysql.escape(val);
 			    return;
 			}
-			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 			// ' = ' + "'" + val + "'";
 		    }
 		});
@@ -1707,27 +1745,27 @@ module.exports = {
 			    return;
 			}
 			if (key == 'START_DT_MIN') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT >= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'START_DT_MAX') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT <= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.START_DT <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'MADE_DT_MIN') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT >= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'MADE_DT_MAX') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.MADE_DT <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'CHANGE_DT_MIN') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT >= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'CHANGE_DT_MAX') {
-			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT <= ' + "'" + val + "'";
+			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.CHANGE_DT <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'BILL_MIN') {
@@ -1746,7 +1784,7 @@ module.exports = {
 			    dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.TOTAL <= ' + val;
 			    return;
 			}
-			dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpPlgWheres = dpPlgWheres + (dpPlgWheres == '' ? '' : ' AND ') + 'dpplg.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 			// ' = ' + "'" + val + "'";
 		    }
 		});
@@ -1765,7 +1803,7 @@ module.exports = {
 			    joinCount++;
 			}
 			dtmailFlag = true;
-			dtMailWheres = dtMailWheres + (dtMailWheres == '' ? '' : ' AND ') + 'dtmail.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dtMailWheres = dtMailWheres + (dtMailWheres == '' ? '' : ' AND ') + 'dtmail.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 			// ' = ' + "'" + val + "'";
 		    }
 		});
@@ -1785,11 +1823,11 @@ module.exports = {
 			}
 			dpmiscFlag = true;
 			if (key == 'MDATE_MIN') {
-			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE >= ' + "'" + val + "'";
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'MDATE_MAX') {
-			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE <= ' + "'" + val + "'";
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MDATE <= ' + mysql.escape(val);
 			    return;
 			}
 
@@ -1811,14 +1849,14 @@ module.exports = {
 			    return;
 			}
 			if (key == 'MYEAR_MIN') {
-			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR >= ' + "'" + val + "'";
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'MYEAR_MAX') {
-			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR <= ' + "'" + val + "'";
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR <= ' + mysql.escape(val);
 			    return;
 			}
-			dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -1841,14 +1879,14 @@ module.exports = {
 			    return;
 			}
 			if (key == 'VSDATE_MIN') {
-			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE >= ' + "'" + val + "'";
+			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VSDATE_MAX') {
-			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE <= ' + "'" + val + "'";
+			    dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.VSDATE <= ' + mysql.escape(val);
 			    return;
 			}
-			dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dtVols1Wheres = dtVols1Wheres + (dtVols1Wheres == '' ? '' : ' AND ') + 'dtvols1.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -1866,7 +1904,7 @@ module.exports = {
 			    joinCount++;
 			}
 			dpothaddFlag = true;
-			dpothaddWheres = dpothaddWheres + (dpothaddWheres == '' ? '' : ' AND ') + 'dpothadd.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpothaddWheres = dpothaddWheres + (dpothaddWheres == '' ? '' : ' AND ') + 'dpothadd.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -1885,19 +1923,19 @@ module.exports = {
 			}
 			dpordersummaryFlag = true;
 			if (key == 'DATE_MIN') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE >= ' + "'" + val + "'";
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'DATE_MAX') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE <= ' + "'" + val + "'";
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.DATE <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'ORIGDATE_MIN') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE >= ' + "'" + val + "'";
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'ORIGDATE_MAX') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE <= ' + "'" + val + "'";
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.ORIGDATE <= ' + mysql.escape(val);
 			    return;
 			}
 
@@ -1926,7 +1964,7 @@ module.exports = {
 			    return;
 			}
 			
-			dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -1944,7 +1982,7 @@ module.exports = {
 			    joinCount++;
 			}
 			dplangFlag = true;
-			dplangWheres = dplangWheres + (dplangWheres == '' ? '' : ' AND ') + 'dplang.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dplangWheres = dplangWheres + (dplangWheres == '' ? '' : ' AND ') + 'dplang.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -1962,7 +2000,7 @@ module.exports = {
 			    joinCount++;
 			}
 			dptransFlag = true;
-			dptransWheres = dptransWheres + (dptransWheres == '' ? '' : ' AND ') + 'dptrans.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dptransWheres = dptransWheres + (dptransWheres == '' ? '' : ' AND ') + 'dptrans.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -2012,38 +2050,38 @@ module.exports = {
 			}
 
 			if (key == 'VISDATE1_MIN') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 >= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE1_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 <= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE1 <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE2_MIN') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 >= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE2_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 <= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE2 <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE3_MIN') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 >= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE3_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 <= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE3 <= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE4_MIN') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 >= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 >= ' + mysql.escape(val);
 			    return;
 			}
 			if (key == 'VISDATE4_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 <= ' + "'" + val + "'";
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.VISDATE4 <= ' + mysql.escape(val);
 			    return;
 			}
-			dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -2065,7 +2103,7 @@ module.exports = {
 			    dtbishopWheres = dtbishopWheres + (dtbishopWheres == '' ? '' : ' AND ') + 'TRUE';
 			    return;
 			}
-			dtbishopWheres = dtbishopWheres + (dtbishopWheres == '' ? '' : ' AND ') + 'dtbishop.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = '" + val + "'");
+			dtbishopWheres = dtbishopWheres + (dtbishopWheres == '' ? '' : ' AND ') + 'dtbishop.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
 		if (dpWheres != '') {
@@ -2092,4 +2130,8 @@ function padLeft(nr, n, str) {
 	return String(nr);
     }
     return Array(n - String(nr).length + 1).join(str || '0') + nr;
+}
+
+function wrapPercents(str){
+    return str.substr(0,1) + '%' + str.substring(1,str.length-1) + '%' + str.substr(str.length-1,1)
 }

@@ -85,6 +85,129 @@ module.exports = {
 	    });
 	});
     },
+    getordersattributes : function(req, res) {
+	async.parallel({
+	    sols : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SOL'
+		}).exec(function(err, sols) {
+		    if (err)
+			return callback(err);
+		    callback(null, sols);
+		});
+	    },
+	    ship_from : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SHIPFROM'
+		}).exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		})
+	    },
+	    titles : function(callback) {
+		Database.knex('dp').distinct('TITLE').select().exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
+	    address_types : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'ADDTYPE'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    states : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'ST'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    sols : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SOL'
+		}).exec(function(err, sols) {
+		    if (err)
+			return callback(err);
+		    callback(null, sols);
+		});
+	    },
+	    exchange : function(callback) {
+		Database.knex.raw('SELECT `currency_from`, `exchange_rate`, DATE_FORMAT(date,"%Y-%m-%d") AS `date`  FROM dpexchange').exec(function(err, dpexchange) {
+		    if (err) {
+			return console.log('SERVICE ERROR. Failed getting DPExchange on BOOT. ' + err);
+		    }
+		    var exchange = {};
+		    dpexchange = dpexchange[0];
+		    for (row in dpexchange) {
+			if (typeof (exchange[dpexchange[row].currency_from]) == 'undefined') {
+			    exchange[dpexchange[row].currency_from] = {};
+			}
+			exchange[dpexchange[row].currency_from][dpexchange[row].date] = dpexchange[row].exchange_rate;
+		    }
+		    callback(null, exchange);
+		});
+	    },
+	    countries : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'COUNTRY'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    county_codes : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC', 'MCAT_LO').where({
+		    FIELD : 'COUNTY'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    phone_types : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'PHTYPE'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    },
+	    currencies : function(callback) {
+		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
+	    litems : function(callback) {
+		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
+		    FIELD : 'LITEMP'
+		}).exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    }
+
+	}, function(err, result) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : result
+	    });
+	});
+    },
     getsearchattributes : function(req, res) {
 
 	async.parallel({
@@ -357,7 +480,7 @@ module.exports = {
 		    callback(null, exchange);
 		});
 	    },
-	    
+
 	    relationships : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LINK'
@@ -367,7 +490,7 @@ module.exports = {
 		    callback(null, sols);
 		});
 	    },
-	    
+
 	    reasons : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'NM_REASON'
@@ -440,8 +563,7 @@ module.exports = {
 		    callback(null, types);
 		});
 	    },
-	    
-	    
+
 	    countries : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
@@ -469,7 +591,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    
+
 	    languages : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
@@ -479,7 +601,7 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    
+
 	    designates : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DESIGNATE'
@@ -489,15 +611,14 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
-	    
+
 	    /*
 	     * , donor_classes : function(callback){
 	     * Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 	     * FIELD : 'CLASS' }).exec(function(err, results) { if (err) return
 	     * callback(err); callback(null, results); }); }
 	     */
-	   
-	    
+
 	    dtvols1 : function(callback) {
 		async.parallel({
 		    origins : function(dtvols1callback) {

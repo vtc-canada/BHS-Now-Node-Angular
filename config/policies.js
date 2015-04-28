@@ -43,6 +43,9 @@ module.exports.policies = {
 	'*':'RoutePolicy',
 	'view_order':true,
 	'view_contact':true
+    },
+    'orders':{
+        '*':'RoutePolicy',
     }
     
     

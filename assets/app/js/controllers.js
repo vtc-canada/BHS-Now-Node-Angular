@@ -332,7 +332,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		tempId : $scope.selectedDataTableRow[table_name].tempId,
 		ID1 : $contact.id,
 		ID2 : null,
+		NAME : null,
 		LINK : null,
+		DESC : null,
 		TSDATE : null,
 		errors : {}
 	    };
@@ -360,6 +362,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}, 0);
 	    }
 	});
+
+	$rootScope.$watch('modalDataSet.dplink.LINK', function(newValue, oldValue) {
+	    if (table_name == 'dplink' && newValue != oldValue && $rootScope.modalDataSet.dplink != null) {
+		$rootScope.modalDataSet.dplink.DESC = $rootScope.relationship_name[newValue];
+	    }
+	})
 
 	$rootScope.currentModal.saveLink = function() {
 	    if (table_name == 'dplink') { // $rootScope.modalDataSet[table_name].errors
@@ -509,7 +517,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    OTHCOST : 0,
 	    RETURNED : null,
 	    MAILFLAG : null,
-	    PRINREM : null
+	    PRINREM : null,
+
+	    VNOTE : null
 	};
 
 	// $scope.tryDestroyDataTable('dpordersummary');
@@ -567,9 +577,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	if (!angular.equals(newValue, oldValue)) {
 	    angular.forEach(newValue, function(row) {
 		// Update descriptions
-		if (typeof ($scope.litemdetails) != 'undefined' && typeof ($scope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($scope.litemdetails[row.LITEMP].description)) {
-		    row.LITEMD = $scope.litemdetails[row.LITEMP].description;
-		    row.LPRICE = $scope.litemdetails[row.LITEMP].price;
+		if (typeof ($rootScope.litemdetails) != 'undefined' && typeof ($rootScope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($rootScope.litemdetails[row.LITEMP].description)) {
+		    row.LITEMD = $rootScope.litemdetails[row.LITEMP].description;
+		    row.LPRICE = $rootScope.litemdetails[row.LITEMP].price;
 		    // $scope.selectedOrderSummary.is_modified = true;
 		}
 		// if(row.LITEMP)
@@ -606,11 +616,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    var exchangerate = 1;
 		    if ($scope.selectedOrderSummary.FUNDS != null) {
-			for ( var key in $scope.exchange[$scope.selectedOrderSummary.FUNDS]) {
-			    if ($scope.exchange[$scope.selectedOrderSummary.FUNDS].hasOwnProperty(key)) {
+			for ( var key in $rootScope.exchange[$scope.selectedOrderSummary.FUNDS]) {
+			    if ($rootScope.exchange[$scope.selectedOrderSummary.FUNDS].hasOwnProperty(key)) {
 				//
 				if (new Date(key).getTime() >= new Date($scope.selectedOrderSummary.DATE).getTime()) {
-				    exchangerate = $scope.exchange[$scope.selectedOrderSummary.FUNDS][key];
+				    exchangerate = $rootScope.exchange[$scope.selectedOrderSummary.FUNDS][key];
 				    break;
 				}
 
@@ -646,7 +656,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
 			var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
 			var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
-			if (detail.LITEMP.indexOf('B') === 0) {
+			if (detail.LITEMP != null && detail.LITEMP.indexOf('B') === 0) {
 			    hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.05 : 0; // GST
 			    // portion
 			    // (8%)
@@ -867,7 +877,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.fundsFormat = function(fund) {
-	if (typeof (fund) == 'undefined' || fund==null|| typeof ($rootScope.currency_format) == 'undefined') {
+	if (typeof (fund) == 'undefined' || fund == null || typeof ($rootScope.currency_format) == 'undefined') {
 	    return null;
 	}
 	return $rootScope.currency_format[fund].code;
@@ -1099,9 +1109,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     // $scope.$watchCollection('contact', $scope.tryModified,true);
-    $scope.$watch('contact', $scope.tryModified, true);
     // $scope.$watch('contact.otherAddresses', $scope.tryModified,true);
     // $scope.$watchCollection('otherAddresses', $scope.tryModified);
+    $scope.$watch('contact', $scope.tryModified, true);
 
     $rootScope.$on("getcontact", function(args, message) {
 	$timeout(function() {
@@ -1203,6 +1213,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// screen
 		    }
 		    if (data.success) {
+
+			if ($scope.selectedOrderSummary && $scope.selectedOrderSummary.id == 'new') {
+			    $scope.selectedOrderSummary = null;
+			}
+
 			for ( var key in $scope.selectedDataTableRow) { // iterate
 			    // destroying
 			    // datatables!
@@ -1211,6 +1226,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// $scope.tryDestroyDataTable('dpordersummary');
 
 			$timeout(function() {
+			    if($rootScope.blockSearchingModal){
+				$rootScope.blockSearchingModal();
+			    }
 			    $contact.set(data.contact); // sets is_saving to
 			    // false.
 			    resetContactForms();
@@ -1223,7 +1241,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				    // datatables!
 				    $scope.rebindDataTable(key);
 				}
-				// $scope.rebindOrderSummaryDataTable();
+
+				// $timeout(function(){
+				if ($scope.selectedOrderSummary && $scope.selectedOrderSummary != 'new') {
+				    angular.forEach($scope.contact.dpordersummary, function(ordersummary) {
+					if (ordersummary.id == $scope.selectedOrderSummary.id) {
+					    $scope.selectedOrderSummary = ordersummary;
+					}
+
+				    });
+				}
 			    }, 0);
 			}, 0);
 		    }
@@ -1244,9 +1271,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// $scope.otherAddresses = $contact.otherAddresses;
 	if (vm.screenLoaded) {
 	    angular.forEach(vm.tabs, function(tabval) {
-		if ($rootScope.validator && $rootScope.validator[tabval]) {
-		    $rootScope.validator[tabval].resetForm();
-		    $('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
+		if ($rootScope.validator && $rootScope.validator[tabval] && ($scope.contact.id != null || $scope.contact.tempId != null)) {
+		    $timeout(function() {
+			$rootScope.validator[tabval].resetForm();
+			$('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
+
+		    }, 10);
 		}
 	    });
 
@@ -1290,14 +1320,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$rootScope.label_mtypes[data.mtypes[i].CODE] = data.mtypes[i].CODE + " - " + data.mtypes[i].DESC;
 	    }
 
-	    $scope.litems = [];
-	    $scope.litemdetails = {};
+	    $rootScope.litems = [];
+	    $rootScope.litemdetails = {};
 	    for (var i = 0; i < data.litems.length; i++) {
-		$scope.litems.push({
+		$rootScope.litems.push({
 		    id : data.litems[i].CODE,
 		    label : data.litems[i].CODE + " - " + data.litems[i].DESC
 		});
-		$scope.litemdetails[data.litems[i].CODE] = {
+		$rootScope.litemdetails[data.litems[i].CODE] = {
 		    description : data.litems[i].DESC,
 		    price : data.litems[i].OTHER
 		};
@@ -1311,16 +1341,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $scope.exchange = angular.copy(data.exchange);
+	    $rootScope.exchange = angular.copy(data.exchange);
 
-	    
-
+	    $rootScope.relationship_name = {};
 	    $rootScope.relationships = [];
 	    for (var i = 0; i < data.relationships.length; i++) {
 		$rootScope.relationships.push({
 		    id : data.relationships[i].CODE,
 		    label : data.relationships[i].CODE + " - " + data.relationships[i].DESC
 		});
+		$rootScope.relationship_name[data.relationships[i].CODE] = data.relationships[i].DESC;
 	    }
 
 	    $rootScope.transaction_type = 'dpplg';
@@ -1463,6 +1493,586 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
 
     })();
+
+    $rootScope.clearContact = function() {
+	vm.watchEnabled = false;
+	$contact.init(); // sets is_saving and is_deleting to
+	// false.
+	// $scope.contact = $contact; // copies in blank contact when changing
+	// search parameters
+
+	resetContactForms();
+    }
+
+}).controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $contact, $sails, Utility) {
+    $scope.helpers = public_vars.helpers;
+    var vm = this;
+    vm.blockOrderSelectedModified = false;
+
+    $scope.getPledgeBalance = function(donation) {
+	if ($scope.showPledgeBalance(donation)) {
+	    return (donation.PLEDAMT - donation.PAIDAMT);
+	}
+	return '';
+    }
+    $scope.showPledgeBalance = function(donation) {
+	return (donation.PLEDSCHED == 2 || donation.PLEDSCHED == 3 || donation.PLEDSCHED == 4 || donation.PLEDSCHED == 5);
+    }
+
+    $scope.getDpOrderSummaryButtonText = function() {
+
+	if ($scope.selectedOrderSummary == null || !$scope.isDpOrderSummaryDeleted()) {
+	    return 'Delete';
+	}
+	return 'Restore';
+    }
+
+    $scope.addDpOrderSummary = function() {
+	// $scope.selectedOrderSummary
+
+	var newOrder = {
+	    id : "new",
+	    tempId : Math.floor((Math.random() * 10000000) + 1),
+	    order_type : 1, // TODO- seelect mode based on logged in USER type.
+	    SOL : null,
+	    DATE : $filter('date')(new Date(), 'yyyy-MM-dd'),
+	    ORDNUM : null,
+	    SHIPFROM : null, // Add select2 for this TODO
+	    OPER : null,
+	    SHIPDATE : null,
+	    ORIGDATE : null,
+	    ORIGENV : null,
+	    IPAID : null,
+	    SANDH : true, // S+H
+	    SANDHAMT : 0, // S+h amount
+	    CREDITCD : null, // 
+	    CASHONLY : null, // / ??
+	    CASH : 0,
+	    CREDIT : 0,
+	    ETOTAL : 0, // ETOTAL is in american
+	    ECONV : 0, // ECONV in local currency
+	    ESHIP : 0, // TODO: Calculate shipping price from LITEMS
+	    // litemdetails.price
+	    GTOTAL : 0,
+
+	    PST : 'N',
+	    GST : 'N',
+	    HST : 'N',
+	    PSTCALC : 0,
+	    GSTCALC : 0,
+	    HSTCALC : 0,
+	    NYTCALC : 0,
+	    NYTAX : 0,
+	    COUNTY : null,
+	    COUNTYNM : null,
+	    // "ENT_DT":"1993-12-22T00:00:00.000Z", // TODO- currency conversion
+	    // "FUNDS":"U","GFUNDS":"U.S. Dollars","CURCONV":1.5,
+	    TITLE : $scope.contact.TITLE,
+	    FNAME : $scope.contact.FNAME,
+	    LNAME : $scope.contact.LNAME,
+	    SUFF : $scope.contact.SUFF,
+	    SECLN : $scope.contact.SECLN,
+	    ADD : $scope.contact.ADD,
+	    CITY : $scope.contact.CITY,
+	    ST : $scope.contact.ST,
+	    ZIP : $scope.contact.ZIP,
+	    COUNTRY : $scope.contact.COUNTRY,
+	    PHTYPE1 : $scope.contact.PHTYPE1,
+	    PHTYPE2 : $scope.contact.PHTYPE2,
+	    PHTYPE3 : $scope.contact.PHTYPE3,
+	    PHONE : $scope.contact.PHONE,
+	    PHON2 : $scope.contact.PHON2,
+	    PHON3 : $scope.contact.PHON3,
+	    database_origin : $scope.contact.database_origin,
+	    dporderdetails : [],
+	    SURFCOST : 0,
+	    MBAGCOST : 0,
+	    OTHCOST : 0,
+	    RETURNED : null,
+	    MAILFLAG : null,
+	    PRINREM : null
+	};
+
+	// $scope.tryDestroyDataTable('dpordersummary');
+	$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
+
+	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length - 1];
+	// $scope.rebindOrderSummaryDataTable();
+
+	// "LASTPAGE":null,"PRINFLAG":1,"TSRECID":"C00012220","TSDATE":"20120626","TSTIME":"132058","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"KJ",
+
+	// "DONOR":1000004 set donor in controller..
+
+	// $scope.dpordersummary.
+	// alert('a');
+    }
+
+    $scope.getLEXT = function(row) {
+	return $filter('currency')(row.LPRICE * row.LQTY, '$', 2);
+
+    };
+
+    $scope.addDpDetail = function() {
+	// $scope.contact.
+	// TODO- currency?? LCURR
+	$scope.selectedOrderSummary.dporderdetails.push({
+	    id : null,
+	    LQTY : 1,
+	    LITEMP : null,
+	    LITEMD : null,
+	    LPRICE : 0,
+	    LDISC : 0,
+	    LCURR : null,
+	    LEXT : 0,
+	    LSTOC : null
+	});
+
+	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC","database_origin":1})
+	// non-use columns
+	// ORDNUMD:null,"PAGED":"01","LINED":"01","DONORD":1000004,"SQTY":1,"BQTY":0,
+
+	// id : 'new',
+	// tempId : Math.floor((Math.random() * 100000) + 1),
+    }
+
+    $scope.deleteDpDetail = function(item) {
+	if (item.id == null) {
+	    var index = $scope.selectedOrderSummary.dporderdetails.indexOf(item);
+	    $scope.selectedOrderSummary.dporderdetails.splice(index, 1);
+	} else {
+	    item.is_deleted = true;
+	}
+    }
+
+    $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    angular.forEach(newValue, function(row) {
+		// Update descriptions
+		if (typeof ($rootScope.litemdetails) != 'undefined' && typeof ($rootScope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($rootScope.litemdetails[row.LITEMP].description)) {
+		    row.LITEMD = $rootScope.litemdetails[row.LITEMP].description;
+		    row.LPRICE = $rootScope.litemdetails[row.LITEMP].price;
+		    // $scope.selectedOrderSummary.is_modified = true;
+		}
+		// if(row.LITEMP)
+
+	    });
+	}
+    }, true);
+
+    $scope.$watch('selectedOrderSummary', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    if ($rootScope.currencies && $scope.selectedOrderSummary != null && $rootScope.currencies[$scope.selectedOrderSummary.FUNDS]) {
+		$scope.fundsSymbol = $rootScope.currencies[$scope.selectedOrderSummary.FUNDS].symbol;
+	    }
+	    if (vm.blockOrderSelectedModified) {
+		vm.blockOrderSelectedModified = false;
+		$scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS; // Backs
+		// up
+		// last
+		// funds
+	    } else {
+		if ($scope.selectedOrderSummary) {
+		    $scope.selectedOrderSummary.is_modified = true;
+		}
+
+		// TODO : BLOCK THIS IF IT's opening some old order with
+		// previous
+		// shipping calculating values..- based on date basically....
+		if ($scope.selectedOrderSummary != null) {
+		    var etotal = 0;
+		    var hstcalc = 0;
+		    var gstcalc = 0;
+		    var pstcalc = 0;
+		    var shiptax = 0;
+
+		    var exchangerate = 1;
+		    if ($scope.selectedOrderSummary.FUNDS != null) {
+			for ( var key in $rootScope.exchange[$scope.selectedOrderSummary.FUNDS]) {
+			    if ($rootScope.exchange[$scope.selectedOrderSummary.FUNDS].hasOwnProperty(key)) {
+				//
+				if (new Date(key).getTime() >= new Date($scope.selectedOrderSummary.DATE).getTime()) {
+				    exchangerate = $rootScope.exchange[$scope.selectedOrderSummary.FUNDS][key];
+				    break;
+				}
+
+			    }
+			}
+		    }
+
+		    if ($scope.selectedOrderSummary.FUNDS != 'C') { // forces
+			// canadian
+			// taxes off
+			$scope.selectedOrderSummary.HST = 'N';
+			$scope.selectedOrderSummary.GST = 'N';
+			$scope.selectedOrderSummary.PST = 'N';
+		    } else if ($scope.lastOrderFunds != 'C') { // from another
+			// currency
+			$scope.selectedOrderSummary.HST = 'Y';
+			$scope.selectedOrderSummary.GST = 'N';
+			$scope.selectedOrderSummary.PST = 'N';
+		    }
+		    if ($scope.lastOrderFunds != $scope.selectedOrderSummary.FUNDS && $scope.selectedOrderSummary.FUNDS != 'C' && $scope.selectedOrderSummary.FUNDS != 'U') { // foreign
+			$scope.selectedOrderSummary.SANDH = 'N'; // manual
+		    } else if ($scope.lastOrderFunds != $scope.selectedOrderSummary.FUNDS && ($scope.selectedOrderSummary.FUNDS == 'C' || $scope.selectedOrderSummary.FUNDS == 'U')) { // american/canadian
+			$scope.selectedOrderSummary.SANDH = 'Y'; // auto
+		    }
+
+		    $scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS;
+
+		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
+			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
+
+			etotal += itemp; // sums up item price
+
+			var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
+			var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
+			var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
+			if (detail.LITEMP != null && detail.LITEMP.indexOf('B') === 0) {
+			    hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.05 : 0; // GST
+			    // portion
+			    // (8%)
+			    // reduced
+			    // off,
+			    // leaving
+			    // it
+			    // 5%
+			    // as
+			    // before.
+			    gstrate = 0; // GST not counted on books
+			    pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.05 : 0; // PST
+			    // used
+			    // to
+			    // be
+			    // reduced
+			    // to
+			    // .05
+			    // i
+			    // believe
+			    // for
+			    // books
+			}
+
+			hstcalc += (itemp / exchangerate) * hstrate; // sums
+			// up
+			// item
+			// taxes
+			gstcalc += (itemp / exchangerate) * gstrate;
+			pstcalc += (itemp / exchangerate) * pstrate;
+
+		    });
+
+		    $scope.selectedOrderSummary.ETOTAL = etotal;
+
+		    $scope.selectedOrderSummary.ECONV = etotal / parseFloat(exchangerate);
+
+		    var eship = 0;
+		    if ($scope.selectedOrderSummary.SANDH == 'Y') {
+			if ($scope.selectedOrderSummary.FUNDS == 'C') {
+			    if ($scope.selectedOrderSummary.ETOTAL < 10) {
+				eship = 4.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 25) {
+				eship = 6.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 50) {
+				eship = 8.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 75) {
+				eship = 10.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 100) {
+				eship = 12.00;
+			    } else {
+				eship = $scope.selectedOrderSummary.ECONV * 0.15;
+			    }
+			} else if ($scope.selectedOrderSummary.FUNDS == 'U') {
+			    if ($scope.selectedOrderSummary.ETOTAL < 10) {
+				eship = 4.50;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 25) {
+				eship = 6.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 50) {
+				eship = 7.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 75) {
+				eship = 9.00;
+			    } else if ($scope.selectedOrderSummary.ETOTAL < 100) {
+				eship = 10.00;
+			    } else {
+				eship = $scope.selectedOrderSummary.ECONV * 0.12;
+			    }
+			}
+			$scope.selectedOrderSummary.SANDHAMT = 0;
+		    } else {
+			eship = $scope.selectedOrderSummary.SANDHAMT;
+		    }
+
+		    $scope.selectedOrderSummary.ESHIP = eship;
+
+		    // Add tax to shipping component.
+		    var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
+		    var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
+		    var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
+
+		    hstcalc += eship * hstrate;
+		    gstcalc += eship * gstrate;
+		    pstcalc += eship * pstrate;
+
+		    $scope.selectedOrderSummary.HSTCALC = hstcalc;
+		    $scope.selectedOrderSummary.GSTCALC = gstcalc;
+		    $scope.selectedOrderSummary.PSTCALC = pstcalc;
+
+		    // Currency has to be in US dollars and COUNTY must be set
+		    // to have NY tax
+		    $scope.selectedOrderSummary.NYTAX = ($scope.selectedOrderSummary.COUNTY == null || $scope.selectedOrderSummary.FUNDS != 'U' ? 0 : $rootScope.county_rates[$scope.selectedOrderSummary.COUNTY]);
+		    $scope.selectedOrderSummary.NYTCALC = ($scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP) * ($scope.selectedOrderSummary.NYTAX / 100);
+
+		    $scope.selectedOrderSummary.GTOTAL = $scope.selectedOrderSummary.ECONV + $scope.selectedOrderSummary.ESHIP + $scope.selectedOrderSummary.HSTCALC + $scope.selectedOrderSummary.GSTCALC + $scope.selectedOrderSummary.PSTCALC + $scope.selectedOrderSummary.NYTCALC;
+
+		}
+	    }
+
+	}
+	function getNYTAX() {
+	    if ($scope.selectedOrderSummary.COUNTY == null) {
+		return 0;
+	    }
+
+	}
+
+    }, true);
+
+    $scope.getNYTaxLabel = function(county_c) {
+	if (typeof (county_c) == 'undefined' || typeof ($rootScope.county_rates) == 'undefined') {
+	    return null;
+	}
+	return $rootScope.county_rates[county_c] + '%';
+    }
+
+    $scope.fundsFormat = function(fund) {
+	if (typeof (fund) == 'undefined' || fund == null || typeof ($rootScope.currency_format) == 'undefined') {
+	    return null;
+	}
+	return $rootScope.currency_format[fund].code;
+    }
+
+    $scope.selectOrderDetailsDataTableRow = function(row) {// transactionId,
+	// tempId,
+	// is_deleted) {
+	$scope.selectedOrderDetails = row;
+    }
+    $scope.isOrderDetailsDatatableRowFocused = function(row) {
+	if (typeof (row) == 'undefined' || row == null) {
+	    return $scope.selectedOrderDetails != null;
+	}
+	if ($scope.selectedOrderDetails == null) {
+	    return false;
+	}
+	return (row.tempId == $scope.selectedOrderDetails.tempId && row.tempId != null) || (row.id == $scope.selectedOrderDetails.id && row.id != 'new');
+    }
+
+    $scope.tryModified = function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {// newValue !== oldValue) {
+	    if (vm.updateModified) {
+		clearTimeout(vm.updateModified);
+	    }
+	    vm.updateModified = setTimeout(function() {
+		if (!vm.watchEnabled) { // Latch. Make watchEnabled
+		    // False to
+		    // make it ignore one update.
+		    vm.watchEnabled = true;
+		    return;
+		}
+		$timeout(function() {
+		    if ($state.current.name == 'app.orders') { // blocks
+			// lagging
+			// updates
+			// when
+			// we've
+			// already
+			// left the
+			// screen.
+			$contact.is_modified = $scope.is_modified = true;
+		    }
+		}, 0);
+	    }, 10);
+
+	}
+    }
+
+    // $scope.$watchCollection('contact', $scope.tryModified,true);
+    // $scope.$watch('contact.otherAddresses', $scope.tryModified,true);
+    // $scope.$watchCollection('otherAddresses', $scope.tryModified);
+    $scope.$watch('selectedOrderSummary', $scope.tryModified, true);
+
+    $rootScope.$on("getorder", function(args, message) {
+	$timeout(function() {
+	    vm.watchEnabled = false;
+	    if (message.id == 'new') {
+		// $scope.selectedTransaction = null; // wipes
+		// for ( var key in $scope.selectedDataTableRow) { // iterate
+		// // destroying
+		// // datatables!
+		// $scope.tryDestroyDataTable(key);
+		// }
+		// $contact.init();
+		// $contact.id = 'new';
+		// resetOrderForms();
+		// $timeout(function() {
+		// $(window).scrollTop($('.order-form').offset().top - 8);
+		// for ( var key in $scope.selectedDataTableRow) { // iterate
+		// // destroying
+		// // datatables!
+		// $scope.rebindDataTable(key);
+		// }
+		// }, 0);
+	    } else {
+		$sails.post("/orders/getorder", {
+		    id : message.id
+		}).success(function(data) {
+
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$timeout(function() {
+			    $scope.selectedOrderSummary = angular.copy(data.order);
+			    $scope.selectedOrderSummary.is_modified = $contact.is_modified = false;
+			    vm.blockOrderSelectedModified = true; // blocks
+			    // change
+			    // event on
+
+			    // selectedOrderSummary watcher
+
+			    // $contact.set(data.contact);
+			    // resetOrderForms();
+			    $timeout(function() {
+				$(window).scrollTop($('.order-form').offset().top - 8);
+			    }, 0);
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    });
+
+    $scope.exportOrder = function() {
+	if (typeof ($rootScope.ship_name) == 'undefined') {
+	    return;
+	}
+
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'export-order-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.exporting_order = true;
+	var exportOrder = angular.copy($scope.selectedOrderSummary);
+	exportOrder.timezoneoffset = new Date().getTimezoneOffset(); // gets
+	// client
+	// timezone
+	exportOrder.SHIPFROM = $rootScope.ship_name[exportOrder.SHIPFROM];
+	exportOrder.FUNDS = $scope.fundsFormat(exportOrder.FUNDS);
+	exportOrder.fundsSymbol = $scope.fundsSymbol;
+	$sails.post('/contacts/export_order', {
+	    order : exportOrder
+	}).success(function(response) {
+	    if (response.error != undefined) { // USER NO LONGER
+		// LOGGEDIN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    $timeout(function() {
+		// $rootScope.pdfurl = response.pdfurl;
+		$rootScope.order_export_pdf = response.pdfurl;
+		delete $rootScope.exporting_order;
+	    }, 0);
+	});
+    }
+
+    $scope.saveOrder = function(tab) {
+	$timeout(function() {
+	    // Order it, so we check the tabs in a sensible manner.
+
+	    var founderrors = false;
+	    $('#' + "orders").valid(); // this was blocked at some
+	    // point for some reason..
+	    // }
+	    if ($rootScope.validator["orders"].numberOfInvalids() > 0) { // error
+		founderrors = true;
+		// error'd tab
+	    }
+
+	    if (!founderrors) {
+		// $scope.contact.otherAddresses =
+		// $scope.otherAddresses;
+		// delete $scope.contact.initDtVols1;
+		delete $scope.selectedOrderSummary.is_saving;
+		delete $scope.selectedOrderSummary.is_deleting;
+		$sails.post("/orders/save", $scope.selectedOrderSummary).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			// for ( var key in $scope.selectedDataTableRow) { //
+			// iterate
+			// // destroying
+			// // datatables!
+			// $scope.tryDestroyDataTable(key);
+			// }
+			// $scope.tryDestroyDataTable('dpordersummary');
+
+			$timeout(function() {
+
+			    // $scope.selectedOrderSummary =
+			    // angular.copy(data.order);
+			    delete $scope.selectedOrderSummary.is_saving;
+			    $contact.is_modified = $scope.selectedOrderSummary.is_modified = false;// .set(data.contact);
+			    // //
+			    // sets
+			    // is_saving
+			    // to
+			    vm.blockOrderSelectedModified = true; // ?? not
+			    // sure if
+			    // this
+			    // needs to
+			    // be here.
+
+			    // false.
+			    resetOrderForms();
+			    $rootScope.updateOrdersDataTable();
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+
+		$scope.selectedOrderSummary.is_saving = true;
+	    }
+	}, 0);
+    }
+    function resetOrderForms() {
+	// $scope.$apply(function() {
+	vm.watchEnabled = false;
+	// $scope.contact = $contact; // this applies the contact to the
+	// scope..
+	// seems needed a bunch verified.
+	// $scope.otherAddresses = $contact.otherAddresses;
+	// if (vm.screenLoaded) {
+	// angular.forEach(vm.tabs, function(tabval) {
+	if ($rootScope.validator && $rootScope.validator["orders"]) {
+	    $rootScope.validator["orders"].resetForm();
+	    $('form#' + "orders" + ' .validate-has-error').removeClass('validate-has-error');
+	}
+	// });
+
+	// } else {
+	// vm.screenLoaded = true;
+	// }
+    }
+
+    $rootScope.getOrderSelectedOrder = function() {
+	return $scope.selectedOrderSummary;
+    };
 
 }).controller('UserSection', function($scope, $rootScope, $timeout, $state, $modal, $sails, Utility) {
     $scope.helpers = public_vars.helpers;
@@ -1920,7 +2530,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 300);
     });
 
-}).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout) {
+}).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout, $contact) {
     var vm = this;
 
     $scope.longSelectOptions = {
@@ -1977,12 +2587,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	Q21 : null,
 	Q22 : null,
 	Q23 : null,
-	BIRTHDATE : null,
-	ORDINATION : null,
+	BIRTHDATE_MIN : null,
+	BIRTHDATE_MAX : null,
+	ORDINATION_MIN : null,
+	ORDINATION_MAX : null,
 	SAYMASS : null,
 	DECIS : null,
 	PPRIEST : null,
-	CONSECRATE : null,
+	CONSECRATE_MIN : null,
+	CONSECRATE_MAX : null,
 	EP020 : null,
 
 	// DPOTHER
@@ -2170,6 +2783,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}, 0);
     };
 
+    $rootScope.getShipFromName = function(row) {
+	if (row && $rootScope.ship_name) {
+	    return $rootScope.ship_name[row];
+	}
+	return null;
+    };
+
     (function() {
 
 	$rootScope.staticyes = [ {
@@ -2224,8 +2844,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
 	    data = data.result;
-	    
-	    
+
 	    $rootScope.ship_from = [];
 	    $rootScope.ship_name = {};
 	    for (var i = 0; i < data.ship_from.length; i++) {
@@ -2265,7 +2884,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 
 	    }
-	    
+
 	    $rootScope.transacts = [];
 	    for (var i = 0; i < data.transacts.length; i++) {
 		$rootScope.transacts.push({
@@ -2274,13 +2893,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
-	    $rootScope.titles = [];
-	    for (var i = 0; i < data.titles.length; i++) {
-		$rootScope.titles.push({
-		    id : data.titles[i].TITLE,
-		    label : data.titles[i].TITLE
-		});
-	    }
 	    $rootScope.languages = [];
 	    for (var i = 0; i < data.languages.length; i++) {
 		$rootScope.languages.push({
@@ -2295,7 +2907,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.english[i].CODE + " - " + data.english[i].DESC
 		});
 	    }
-
+	    $rootScope.titles = [];
+	    for (var i = 0; i < data.titles.length; i++) {
+		$rootScope.titles.push({
+		    id : data.titles[i].TITLE,
+		    label : data.titles[i].TITLE
+		});
+	    }
 	    $rootScope.states = [];
 	    for (var i = 0; i < data.states.length; i++) {
 		$rootScope.states.push({
@@ -2683,15 +3301,53 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $rootScope.search_contact = $scope.contact;
 
     $scope.searchContacts = function() {
+	var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+
+	if ($contact.is_modified) {
+	    if (!confirm(unsavedMessage)) {
+		// $contact.is_modified = false;
+		// } else {
+		var obj = {
+		    pos : $(window).scrollTop()
+		};
+		TweenLite.to(obj, 0.3, {
+		    pos : ($('#contact_form').length < 1) ? 0 : ($('#contact_form').offset().top - 8),
+		    ease : Power4.easeOut,
+		    onUpdate : function() {
+			$(window).scrollTop(obj.pos);
+		    }
+		});
+		return;
+	    }
+	}
+	if ($rootScope.clearContact) {
+	    $rootScope.clearContact();
+	}
+	if ($rootScope.resetPageNumber) {
+	    $rootScope.resetPageNumber();
+	}
 	$rootScope.updateContactsTable();
     }
 
     $scope.$watch('contact', function(newValue, oldValue) {
+	return;
+
 	if (!angular.equals(newValue, oldValue)) {
 	    if (vm.updateTable) {
 		clearTimeout(vm.updateTable);
 	    }
 	    vm.updateTable = setTimeout(function() {
+
+		// $contact.init(); // sets is_saving and is_deleting to
+		// false.
+		// $scope.contact = $contact // copies in blank contact when
+		// changing search parameters
+
+		if ($rootScope.clearContact) {
+		    $rootScope.clearContact();
+		}
+
+		// rootscope contact
 		$rootScope.updateContactsTable();
 		// AutoUpdate
 
@@ -2752,7 +3408,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 			if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
 			    angular.forEach(value, function(innerValue, innerKey) {
-				if ($scope.search_templates[i].data[key][innerKey]) {
+				if ($scope.search_templates[i].data[key] && $scope.search_templates[i].data[key][innerKey]) {
 				    $scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
 
 				} else {
@@ -2897,7 +3553,656 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
     }
 
-}).controller('DpCodesSearch', function($scope, $rootScope, $sails) {
+}).controller('OrdersSearch', function($scope, $rootScope, $modal, $sails, $timeout) {
+    var vm = this;
+
+    var blankSearch = { // #ORDER_SEARCH_PARAMETER
+	id : '',
+	donor_search : null,
+	order_type : null,
+	DATE_MIN : null,
+	DATE_MAX : null,
+	HASSHIPDATE : null,
+	SHIPDATE_MIN : null,
+	SHIPDATE_MAX : null,
+	SHIPFROM : null
+    };
+
+    $scope.orders = angular.copy(blankSearch);
+
+    $scope.template = null;
+    $rootScope.newOrderTemplateModal = {
+	name : null
+    };
+
+    $rootScope.longSelectOptions = {
+	minimumInputLength : 2
+    };
+
+    // initialization routine.
+    (function() {
+
+	$rootScope.staticyesno = [ {
+	    id : 'Y',
+	    label : 'Yes'
+	}, {
+	    id : 'N',
+	    label : 'No'
+	} ];
+	$rootScope.order_types = [ {
+	    id : 1,
+	    label : 'Sale'
+	}, {
+	    id : 2,
+	    label : 'Free Gift'
+	} ];
+
+	$sails.get('/donortracker/getordersattributes').success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		location.reload(); // Will boot back to login screen
+	    }
+	    var data = data.result;
+
+	    $rootScope.litems = [];
+	    $rootScope.litemdetails = {};
+	    for (var i = 0; i < data.litems.length; i++) {
+		$rootScope.litems.push({
+		    id : data.litems[i].CODE,
+		    label : data.litems[i].CODE + " - " + data.litems[i].DESC
+		});
+		$rootScope.litemdetails[data.litems[i].CODE] = {
+		    description : data.litems[i].DESC,
+		    price : data.litems[i].OTHER
+		};
+	    }
+
+	    $rootScope.label_sols = {};
+	    $rootScope.sols = [];
+	    for (var i = 0; i < data.sols.length; i++) {
+		$rootScope.sols.push({
+		    id : data.sols[i].CODE,
+		    label : data.sols[i].CODE
+		});
+		$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
+	    }
+
+	    $rootScope.ship_from = [];
+	    $rootScope.ship_name = {};
+	    for (var i = 0; i < data.ship_from.length; i++) {
+		$rootScope.ship_from.push({
+		    id : data.ship_from[i].CODE,
+		    label : data.ship_from[i].CODE + " - " + data.ship_from[i].DESC
+		});
+		$scope.ship_name[data.ship_from[i].CODE] = data.ship_from[i].DESC;
+	    }
+
+	    $rootScope.exchange = angular.copy(data.exchange);
+
+	    $rootScope.titles = [];
+	    for (var i = 0; i < data.titles.length; i++) {
+		$rootScope.titles.push({
+		    id : data.titles[i].TITLE,
+		    label : data.titles[i].TITLE
+		});
+	    }
+	    $rootScope.states = [];
+	    for (var i = 0; i < data.states.length; i++) {
+		$rootScope.states.push({
+		    id : data.states[i].CODE,
+		    label : data.states[i].CODE
+		});
+	    }
+
+	    $rootScope.address_types = [];
+	    for (var i = 0; i < data.address_types.length; i++) {
+		$rootScope.address_types.push({
+		    id : data.address_types[i].CODE,
+		    label : data.address_types[i].CODE
+		});
+	    }
+	    $rootScope.countries = [];
+	    for (var i = 0; i < data.countries.length; i++) {
+		$rootScope.countries.push({
+		    id : data.countries[i].CODE,
+		    label : data.countries[i].CODE
+		});
+	    }
+	    $rootScope.county_rates = {};
+
+	    $rootScope.county_codes = [];
+	    for (var i = 0; i < data.county_codes.length; i++) {
+		$rootScope.county_codes.push({
+		    id : data.county_codes[i].CODE,
+		    label : data.county_codes[i].CODE
+		});
+		$rootScope.county_rates[data.county_codes[i].CODE] = data.county_codes[i].MCAT_LO;
+	    }
+	    $rootScope.phone_types = [];
+	    for (var i = 0; i < data.phone_types.length; i++) {
+		$rootScope.phone_types.push({
+		    id : data.phone_types[i].CODE,
+		    label : data.phone_types[i].CODE
+		});
+	    }
+
+	    $rootScope.currency_format = {};
+
+	    $rootScope.all_currencies = [];
+	    $rootScope.non_us_currencies = [];
+	    $rootScope.currencies = {};
+	    for (var i = 0; i < data.currencies.length; i++) {
+		$rootScope.currencies[data.currencies[i].id] = {
+		    name : data.currencies[i].name,
+		    code : data.currencies[i].code,
+		    symbol : data.currencies[i].symbol
+		}
+		$rootScope.currency_format[data.currencies[i].id] = {
+		    name : data.currencies[i].name,
+		    code : data.currencies[i].code
+		};
+		$rootScope.all_currencies.push({
+		    id : data.currencies[i].id,
+		    label : data.currencies[i].name
+		});
+		if (data.currencies[i].id == 'U') {
+		    continue;
+		}
+		$rootScope.non_us_currencies.push({
+		    id : data.currencies[i].id,
+		    selector_label : data.currencies[i].name + ' to United States Dollar',
+		    label : data.currencies[i].name
+		});
+
+	    }
+
+	});
+
+	$sails.get('/template/orders').success(function(data) {
+	    $scope.search_templates = [];
+	    for (var i = 0; i < data.length; i++) {
+		$scope.search_templates.push({
+		    id : data[i].id,
+		    label : data[i].name,
+		    data : data[i].data
+		});
+	    }
+
+	}).error(function(data) {
+	    alert('err!' + data.toString());
+	});
+    })();
+
+    $scope.searchOrders = function() {
+	$rootScope.updateOrdersDataTable();
+    }
+
+    $scope.$watch('template', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    for (var i = 0; i < $scope.search_templates.length; i++) {
+		if ($scope.search_templates[i].id == $scope.template) { // matching
+		    // one
+		    angular.forEach($scope.orders, function(value, key) {
+			if (key == 'somesubtables') {
+			    angular.forEach(value, function(innerValue, innerKey) {
+				if ($scope.search_templates[i].data[key] && $scope.search_templates[i].data[key][innerKey]) {
+				    $scope.orders[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
+
+				} else {
+				    $scope.orders[key][innerKey] = null;
+				}
+			    });
+			} else if ($scope.search_templates[i].data[key]) {
+			    $scope.orders[key] = $scope.search_templates[i].data[key];
+			} else {
+			    $scope.orders[key] = null;
+			}
+		    });
+
+		    $rootScope.search_orders = $scope.orders;// =
+		    // $scope.search_templates[i].data;
+		    // $rootScope.search_orders hopefully will stay tied..
+		    // $rootScope.newOrderTemplateModal.id =
+		    // $scope.search_templates[i].id;
+		    $rootScope.newOrderTemplateModal.name = $scope.search_templates[i].label;
+		    $rootScope.newOrderTemplateModal.id = $scope.search_templates[i].id;
+		}
+	    }
+	}
+    });
+
+    $scope.clearTemplates = function() {
+	$rootScope.newOrderTemplateModal.name = null;
+	$rootScope.newOrderTemplateModal.id = null;
+	$scope.template = null;
+	$rootScope.search_orders = $scope.orders = angular.copy(blankSearch); // clears
+	// the
+	// order
+	// search
+	// parameters
+    }
+
+    $scope.deleteTemplate = function() {
+	$rootScope.modalPopup({
+	    title : 'Confirm Delete',
+	    size : 'sm',
+	    message : 'Are you sure you want to delete the template: <b>' + $rootScope.newOrderTemplateModal.name + '</b>',
+	    buttons : [ {
+		name : 'Cancel',
+		class : 'btn-white',
+		dismiss : 'cancel'
+	    }, {
+		name : 'Delete',
+		class : 'btn-danger',
+		dismiss : 'delete'
+	    } ]
+	}, function(dismiss) {
+	    if (dismiss == 'delete') {
+		$sails.post('/template/destroy', {
+		    id : $rootScope.newOrderTemplateModal.id,
+		    location : 'orders'
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.template = null;
+			$rootScope.newOrderTemplateModal.id = null;
+			$rootScope.newOrderTemplateModal.name = null;
+			$rootScope.search_orders = $scope.orders = angular.copy(blankSearch);
+			$timeout(function() {
+			    $sails.get('/template/orders').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.search_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.search_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
+				    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    } else {
+	    }
+	});
+    }
+
+    $rootScope.saveOrderTemplate = function() {
+	$rootScope.newOrderTemplateModal.id = null;
+	for (var i = 0; i < $scope.search_templates.length; i++) {
+	    if ($scope.search_templates[i].label == $rootScope.newOrderTemplateModal.name) { // matching
+		// up
+		// against
+		// existing
+		// template
+		// name
+		$rootScope.newOrderTemplateModal.id = $scope.search_templates[i].id;
+	    }
+	}
+	if ($rootScope.newOrderTemplateModal.id == null) {
+	    $rootScope.currentModal.dismiss('save');
+	} else {
+	    $rootScope.modalPopup({
+		title : 'Confirm Overwrite',
+		size : 'sm',
+		message : 'Are you sure you want to save over the existing template: <b>' + $rootScope.newOrderTemplateModal.name + '</b>',
+		buttons : [ {
+		    name : 'Cancel',
+		    class : 'btn-white',
+		    dismiss : 'cancel'
+		}, {
+		    name : 'Save',
+		    class : 'btn-danger',
+		    dismiss : 'save'
+		} ]
+	    }, function(dismiss) {
+		if (dismiss == 'save') {
+		    $rootScope.currentModal.dismiss('save');
+		} else {
+		    // $rootScope.currentModal.dismiss();
+		}
+	    });
+	}
+    };
+
+    $scope.saveTemplateModal = function() {
+	// $rootScope.newOrderTemplateModal.name = null;
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'save-orders-template-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'save') {
+		$sails.post('/template/save', {
+		    id : $rootScope.newOrderTemplateModal.id,
+		    location : 'orders',
+		    name : $rootScope.newOrderTemplateModal.name,
+		    data : $scope.orders
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.template = data.template.id;
+			$timeout(function() {
+			    $sails.get('/template/orders').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.search_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.search_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
+				    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
+
+    $rootScope.orders = $scope.orders;
+
+    $scope.$watchCollection('orders', function() {
+	if (vm.updateTable) {
+	    clearTimeout(vm.updateTable);
+	}
+	vm.updateTable = setTimeout(function() {
+	    $rootScope.updateOrdersDataTable();
+	}, 300);
+    });
+
+}).controller(
+    'OrdersDatatable',
+    function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder, $sails, $modal) {
+
+	var vm = this;
+	$scope.selectedOrder = null;
+	$scope.orders = [];
+
+	vm.rowClicked = rowClicked;
+	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
+	    dataSrc : 'data',
+	    url : '/orders/ajax',
+	    type : 'POST'
+	})
+	// .withDataProp('data')
+	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	    aoData.orders = $rootScope.orders;
+	    $timeout(function() { // Whenever the table searches, it clears
+		// the selected
+		if ($rootScope.getOrderSelectedOrder()) { // passes through
+		    // the
+		    // selectedOrder..
+		    $scope.selectedOrder = angular.copy($rootScope.getOrderSelectedOrder());
+		    // $scope.selectedOrder = $scope.retrieveId;
+		    $scope.retrieveId = null;
+		} else {
+		    $scope.selectedOrder = null;
+		}
+	    }, 0);
+	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    $('td', nRow).unbind('click');
+	    $('td', nRow).bind('click', function() {
+		// $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		// });
+	    });
+	    if ($scope.selectedOrder != null && aData.id == $scope.selectedOrder.id) {
+		$(nRow).addClass('selected');
+	    }
+	    return nRow;
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('SHIPFROM').withTitle('Shipped From'), DTColumnBuilder.newColumn('SHIPDATE').withTitle(' Shipped Date'), DTColumnBuilder.newColumn('DATE').withTitle('Order Placed'),
+	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total') ];
+
+	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    $scope.tableId = data.id; // Record table ID, for refreshes
+	    // later.
+	});
+	$rootScope.updateOrdersDataTable = function(selectedOrder, event, args) {
+	    if ($scope.tableId) {
+		if ($rootScope.getOrderSelectedOrder) {
+		    $scope.selectedOrder = angular.copy($rootScope.getOrderSelectedOrder());
+		}
+		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
+		}, false);
+	    }
+	}
+
+	/*
+	 * $scope.$on('refreshContactsx', function(event, args){
+	 * //console.log('deb'); vm.contact = args;
+	 * $timeout(vm.dtOptions.reloadData,500); //(); });
+	 */
+
+	// $scope.newOrder = function() {
+	// $rootScope.$broadcast("getorder", {
+	// id : "new"
+	// });
+	// }
+	$scope.exportList = function() {
+	    // $rootScope.currentModal = $modal.open({
+	    // templateUrl : 'export-contacts-modal',
+	    // size : 'md',
+	    // backdrop : true
+	    // });
+	    // $rootScope.exporting_contacts = true;
+	    //
+	    // $sails.post('/contacts/export', {
+	    // contact : $rootScope.search_contact
+	    // }).success(function(response) {
+	    // if (response.error != undefined) { // USER NO LONGER
+	    // // LOGGEDIN!!!!!
+	    // location.reload(); // Will boot back to login screen
+	    // }
+	    // if (response.oversize) {
+	    // $rootScope.currentModal.dismiss('oversize');
+	    // return alert('Unable to export ' + response.recordsFiltered + '
+	    // records. The system can export a maximum of 100,000 records.');
+	    //
+	    // }
+	    // $timeout(function() {
+	    // // $rootScope.pdfurl = response.pdfurl;
+	    // $rootScope.contact_export_csvurl = response.csvurl;
+	    // $rootScope.contact_export_dbfurl = response.dbfurl;
+	    // delete $rootScope.exporting_contacts;
+	    // }, 0);
+	    // });
+	}
+
+	/*
+	 * $scope.$on('refreshContactsx', function(event, args){
+	 * //console.log('deb'); vm.contact = args;
+	 * $timeout(vm.dtOptions.reloadData,500); //(); });
+	 */
+
+	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	    var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+
+	    if ($contact.is_modified) {
+		if (!confirm(unsavedMessage)) {
+		    // $contact.is_modified = false;
+		    // } else {
+		    var obj = {
+			pos : $(window).scrollTop()
+		    };
+		    TweenLite.to(obj, 0.3, {
+			pos : ($('#order_form').length < 1) ? 0 : ($('#order_form').offset().top - 8),
+			ease : Power4.easeOut,
+			onUpdate : function() {
+			    $(window).scrollTop(obj.pos);
+			}
+		    });
+		    return;
+		}
+	    }
+	    $rootScope.$broadcast("getorder", {
+		id : aData.id
+	    });
+	    // if(aData.id == $contact.id){
+	    $('tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	    // }
+	    // console.log('here');
+	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
+	}
+
+	// function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	// $('tr').removeClass('selected');
+	// $(nRow).addClass('selected');
+	// $timeout(function() {
+	// $scope.selectedOrder = aData;
+	// }, 0);
+	// }
+
+	$scope.isDatatableEditDisabled = function() {
+	    return $scope.selectedOrder == null;
+	}
+
+	$scope.editDatatableRow = function(modal_id, modal_size, modal_backdrop) {
+	    $sails.post("/orders/getorder", {
+		id : $scope.selectedOrder.id
+	    }).success(function(data) {
+		if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		    location.reload(); // Will boot back to login screen
+		}
+		if (data.success) {
+		    // $rootScope.modalSelectedOrder =
+		    // angular.copy(data.dpcode);
+		    // $rootScope.currentModal = $modal.open({
+		    // templateUrl : modal_id,
+		    // size : modal_size,
+		    // backdrop : typeof modal_backdrop == 'undefined' ? true :
+		    // modal_backdrop
+		    // });
+		    // $rootScope.currentModal.result.then(function(selectedItem)
+		    // {
+		    // }, function(triggerElement) {
+		    // if (triggerElement == 'save') {
+		    // $sails.post('/dpcodes/save',
+		    // $rootScope.modalSelectedCode).success(function(data) {
+		    // if (data.error != undefined) { // USER NO
+		    // // LONGER LOGGED
+		    // // IN!!!!!
+		    // location.reload(); // Will boot back to
+		    // // login screen
+		    // }
+		    // if (data.success) {
+		    // $scope.retrieveId = $scope.selectedCode;
+		    // $rootScope.updateDpCodesDataTable();
+		    // }
+		    // }).error(function(data) {
+		    // alert('err!');
+		    // });
+		    // }
+		    // });
+		}
+	    }).error(function(data) {
+		alert('err!');
+	    });
+	};
+
+	$scope.deleteDatatableRow = function(modal_id, modal_size) {
+	    // $rootScope.currentModal = $modal.open({
+	    // templateUrl : modal_id,
+	    // size : modal_size,
+	    // backdrop : true
+	    // });
+	    // $rootScope.deleteModalText = $scope.selectedCode.id + ' ' +
+	    // $scope.selectedCode.FIELD + ' ' + $scope.selectedCode.CODE + ' '
+	    // + $scope.selectedCode.DESC;
+	    // $rootScope.currentModal.result.then(function(selectedItem) {
+	    // }, function(triggerElement) {
+	    // if (triggerElement == 'delete') {
+	    // $sails.post('/dpcodes/destroy',
+	    // $scope.selectedCode).success(function(data) {
+	    // if (data.error != undefined) { // USER NO LONGER LOGGED
+	    // // IN!!!!!
+	    // location.reload(); // Will boot back to login
+	    // // screen
+	    // }
+	    // if (data.success) {
+	    // // $scope.retrieveId = $scope.selectedCode;
+	    // $rootScope.updateDpCodesDataTable();
+	    // }
+	    // }).error(function(data) {
+	    // alert('err!');
+	    // });
+	    // }
+	    // });
+	}
+
+	$scope.addDatatableRow = function(modal_id, modal_size) {
+	    // $('#' +
+	    // $scope.tableId).find('tr.selected').removeClass('selected');
+	    // $scope.selectedCode = null;
+	    // $rootScope.modalSelectedCode = {
+	    // id : null,
+	    // FIELD : $rootScope.dpsearch.field,
+	    // CODE : null,
+	    // DESC : null,
+	    // CATEGORY : null
+	    // };
+	    // $rootScope.currentModal = $modal.open({
+	    // templateUrl : modal_id,
+	    // size : modal_size,
+	    // backdrop : typeof modal_backdrop == 'undefined' ? true :
+	    // modal_backdrop
+	    // });
+	    // $rootScope.currentModal.result.then(function(selectedItem) {
+	    // }, function(triggerElement) {
+	    // if (triggerElement == 'save') {
+	    // $sails.post('/dpcodes/save',
+	    // $rootScope.modalSelectedCode).success(function(data) {
+	    // if (data.error != undefined) { // USER NO LONGER LOGGED
+	    // // IN!!!!!
+	    // location.reload(); // Will boot back to login
+	    // // screen
+	    // }
+	    // if (data.success) {
+	    // // $scope.retrieveId = $scope.selectedCode;
+	    // $rootScope.updateDpCodesDataTable();
+	    // }
+	    // }).error(function(data) {
+	    // alert('err!');
+	    // });
+	    // }
+	    // });
+	}
+    }).controller('DpCodesSearch', function($scope, $rootScope, $sails) {
     var vm = this;
 
     $scope.dpsearch = {};
@@ -2935,7 +4240,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		id : 'N',
 		label : 'No'
 	    } ];
-
 
 	    $rootScope.dpcodefields = [];
 	    $rootScope.dpcodefields.push({
@@ -3044,7 +4348,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// t table
 	// i info
 	// p pagination
-	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'),
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First Name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last Name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'),
 	    DTColumnBuilder.newColumn('CITY').withTitle('City'), DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
 
 	$scope.$on('event:dataTableLoaded', function(event, data) {
@@ -3068,6 +4372,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $rootScope.modalDataSet.dplink.errors = {}; // empty errors
 	    $timeout(function() {
 		$rootScope.modalDataSet.dplink.ID2 = aData.id;
+		$rootScope.modalDataSet.dplink.NAME = aData.FNAME + ' ' + aData.LNAME;
 	    }, 0);
 
 	    // if(aData.id == $contact.id){
@@ -3081,6 +4386,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.exportDisabled = false;
 
 	var vm = this;
+	vm.pageReset = false;
+	vm.blockSearchingModal = false;
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	    dataSrc : 'data',
@@ -3114,6 +4421,20 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.exportDisabled = false;
 		}, 0);
 	    }
+	    if ($rootScope.searching_modal) {
+		$rootScope.searching_modal.dismiss();
+
+		var obj = {
+		    pos : $(window).scrollTop()
+		};
+		TweenLite.to(obj, .3, {
+		    pos : ($('.contacts-datatable-panel').length < 1) ? 0 : ($('.contacts-datatable-panel').offset().top - 8),
+		    ease : Power4.easeOut,
+		    onUpdate : function() {
+			$(window).scrollTop(obj.pos);
+		    }
+		});
+	    }
 	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
 	// l length
 	// r processing
@@ -3131,9 +4452,27 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
 	$rootScope.updateContactsTable = function(event, args) {
 	    if ($scope.tableId) {
+		if (vm.blockSearchingModal == false) {
+
+		    $rootScope.searching_modal = $modal.open({
+			templateUrl : 'is-searching-modal',
+			size : 'sm',
+			backdrop : false
+		    });
+		}
+		vm.blockSearchingModal = false;
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
-		}, false);
+		}, vm.pageReset);
+		vm.pageReset = false;
 	    }
+	}
+
+	$rootScope.blockSearchingModal = function() {
+	    vm.blockSearchingModal = true;
+	}
+
+	$rootScope.resetPageNumber = function() {
+	    vm.pageReset = true;
 	}
 
 	$scope.newContact = function() {

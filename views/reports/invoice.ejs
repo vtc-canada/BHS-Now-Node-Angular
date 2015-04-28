@@ -232,6 +232,15 @@ var n = this,
 					</div>-->
 					
 				</div>
+				<% if(order.VNOTE!=null&&order.VNOTE!=''){ %>
+				<div class="invoice-notes-heading">
+					Notes
+				</div>
+				<div class="invoice-notes-content">
+					<%=order.VNOTE %>
+				</div>
+				<% } %>
+				
 				
 			</section>
 		</div>

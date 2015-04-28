@@ -6,6 +6,22 @@
  */
 
 module.exports = {
+    
+    orders : function(req,res){
+	Database.knex('templates').select('*').where({
+	    userId : req.session.user.id,
+	    location : 'orders'
+	}).exec(function(err, results) {
+	    // cb(err,results);
+	    if (err)
+		return console.log('Error getting Templates');
+
+	    for (var i = 0; i < results.length; i++) {
+		results[i].data = JSON.parse(results[i].data);
+	    }
+	    res.json(results);
+	});
+    },
     contacts : function(req, res) {
 	// async.parallel({
 	// contacts : function(cb){

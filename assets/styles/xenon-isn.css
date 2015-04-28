@@ -26,6 +26,17 @@ a.panel-title-wrapper:hover, a.panel-title-wrapper:focus{
 	text-decoration:none;	
 }
 
+.invoice-notes-heading{
+	border-bottom: 2px solid #E2E2E2;
+	font-weight: bold;
+	margin-top:10px;
+	padding-bottom:5px;	
+}
+
+.invoice-notes-content{
+	margin-top: 10px;
+}
+
 abbr.isn-calendar-clear{
 	
   display: inline-block;

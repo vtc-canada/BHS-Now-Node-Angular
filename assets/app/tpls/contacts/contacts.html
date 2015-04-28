@@ -2,6 +2,18 @@
 
 
 
+<script type="text/ng-template" id="is-searching-modal">
+	<div class="modal-header">
+		<!--<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>-->
+		<h4 class="modal-title">Searching</h4>
+	</div>
+	<div class="modal-body form-horizontal" > Searching Donors <i class=""><span class="fa fa-spin fa-cog"></span></i></div>
+	<!-- <div class="modal-footer">
+		<div  class="btn btn-white" ng-click="currentModal.close();"  ng-class="{true: 'disabled', false: ''}[is_contact_deleting]">Cancel</div>
+		<div class="btn btn-danger" ng-click="doDeleteContact();">Delete<span ng-show="is_contact_deleting">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+	</div> -->
+</script>
+
 <script type="text/ng-template" id="delete-contact-modal">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
@@ -242,8 +254,8 @@
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="modal_sol">SOL Code:</label>
 						<div class="col-sm-8">
-							<!--<select2 class="form-control" id="modal_sol" name="modalDataSet.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="modalDataSet.dpgift.SOL"></select2>-->
-							<input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpgift.SOL" ng-model-options="" placeholder="">
+							<select2 class="form-control" options="longSelectOptions" id="modal_sol" name="modalDataSet.dpgift.SOL" ng-options="title.id as title.label for title in sols" ng-model="modalDataSet.dpgift.SOL"></select2>
+							<!-- <input type="text" class="form-control" id="modal_sol" ng-model="modalDataSet.dpgift.SOL" ng-model-options="" placeholder=""> -->
 						</div>
 					</div>
 					<div class="form-group">
@@ -285,7 +297,7 @@
 						<label class="col-sm-4 control-label" for="modal_list">List:</label>
 			
 						<div class="col-sm-8">
-							<select2 class="form-control" id="modal_label" name="modalDataSet.dpgift.LIST" ng-options="title.id as title.label for title in lists" ng-model="modalDataSet.dpgift.LIST"></select2>
+							<select2 class="form-control" options="longSelectOptions" id="modal_label" name="modalDataSet.dpgift.LIST" ng-options="title.id as title.label for title in lists" ng-model="modalDataSet.dpgift.LIST"></select2>
 						</div>
 					</div>
 					<div class="form-group">
@@ -317,10 +329,10 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-4 control-label" for="modal_curr">Currency:</label>
+						<label class="col-sm-4 control-label" for="modalDataSet.dpgift.CURR">Currency:</label>
 			
 						<div class="col-sm-8">
-							<select2 class="form-control" id="modal_curr" name="modalDataSet.dpgift.CURR" ng-options="title.id as title.label for title in currencies" ng-model="modalDataSet.dpgift.CURR"></select2>
+							<select2 class="form-control" id="modalDataSet.dpgift.CURR" name="modalDataSet.dpgift.CURR" ng-options="title.id as title.label for title in all_currencies" ng-model="modalDataSet.dpgift.CURR"></select2>
 						</div>
 					</div>
 				</div>
@@ -485,7 +497,7 @@
 				<label class="col-sm-4 control-label" for="modal_link">Relationship:</label>
 	
 				<div class="col-sm-8">
-					<select2 class="form-control" id="modal_requests" name="modal_link" ng-options="title.id as title.label for title in relationships" ng-model="modalDataSet.dplink.LINK"></select2>
+					<select2 class="form-control" id="modal_requests" name="modal_link" ng-options="title.id as title.label for title in relationships" ng-model="modalDataSet.dplink.LINK" ng-change="currentModal.linkRelationChanged(modalDataSet.dplink.LINK,modalDataSet.dplink.DESC)"></select2>
 					
 				</div>
 			</div>
@@ -716,13 +728,13 @@
 							<select2 class="form-control" id="modal_transact" name="modalDataSet.dpother.TRANSACT" ng-options="title.id as title.label for title in transacts" ng-model="modalDataSet.dpother.TRANSACT"></select2>
 						</div>
 					</div>
-					<div class="form-group">
+					<!-- <div class="form-group">
 						<label class="col-sm-4 control-label" for="modalDataSet.dpother.DESIGNATE">Designate:</label>
 						<div class="col-sm-8">
 							<div class="form-control">- Not In DP-Other - Discussion point</div>
-							<!--<select2 class="form-control" id="modalDataSet.dpother.DESIGNATE" name="modalDataSet.dpother.DESIGNATE" ng-options="title.id as title.label for title in designates" ng-model="modalDataSet.dpother.DESIGNATE"></select2>-->
+							<!--<select2 class="form-control" id="modalDataSet.dpother.DESIGNATE" name="modalDataSet.dpother.DESIGNATE" ng-options="title.id as title.label for title in designates" ng-model="modalDataSet.dpother.DESIGNATE"></select2>
 						</div>
-					</div>
+					</div> -->
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="modal_mode">Mode:</label>
 			
@@ -2333,7 +2345,7 @@
 	</div>
 </div>
 
-<div class="panel panel-default" ng-controller="ContactsDatatable as showCase">
+<div class="panel panel-default contacts-datatable-panel" ng-controller="ContactsDatatable as showCase">
 	<div class="panel-heading">
 		<h3 class="panel-title"><i class="fa-users"></i>&nbsp&nbspContacts</h3>
 		<div class="pull-right isn-panel-pull-right">
@@ -2587,7 +2599,7 @@
 													<td>{{row.MODE}}</td>
 													<td>{{row.ENVNO}}</td>
 													<td>{{row.AMT | number:2 }}</td>
-													<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{row.DATE | date : "yyyy-MM-dd" }}</td>
 												</tr>	
 											</tbody>
 										</table>
@@ -2624,7 +2636,7 @@
 													<td>{{pledge.MODE}}</td>
 													<td>{{pledge.ENVNO}}</td>
 													<td>{{pledge.AMT | number:2 }}</td>
-													<td>{{pledge.DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{pledge.DATE | date : "yyyy-MM-dd" }}</td>
 												</tr>	
 											</tbody>
 										</table>
@@ -2661,7 +2673,7 @@
 													<td>{{row.MODE}}</td>
 													<td>{{row.ENVNO}}</td>
 													<td>{{row.AMT | number:2 }}</td>
-													<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{row.DATE | date : "yyyy-MM-dd" }}</td>
 												</tr>	
 											</tbody>
 										</table>
@@ -2683,17 +2695,17 @@
 											<thead>
 												<tr>
 													<th >id</th>
-													<th >ID2</th>
-													<th >Link</th>
-													<th >TSDATE</th>
+													<th >Relative ID</th>
+													<th >Relative Name</th>
+													<th >Relationship</th>
 												</tr>
 											</thead>
 											<tbody>
 												<tr ng-repeat="link in contact.dplink" ng-class="{ 'is_deleted':link.is_deleted == true, 'focused' : isDatatableRowFocused('dplink',link)}" ng-click="selectDataTableRow('dplink',link)" >
 													<td>{{link.id}} | {{link.tempId}}</td>
 													<td>{{link.ID2}}</td>
-													<td>{{link.LINK}}</td>
-													<td>{{link.TSDATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{link.NAME}}</td>
+													<td>{{link.DESC}}</td>
 												</tr>	
 											</tbody>
 										</table>
@@ -2725,7 +2737,7 @@
 													<td>{{row.id}} | {{row.tempId}}</td>
 													<td>{{row.SOL}}</td>
 													<td>{{row.LIST}}</td>
-													<td>{{row.DROP_DATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{row.DROP_DATE | date : "yyyy-MM-dd" }}</td>
 													<td>{{row.DESC}}</td>
 													<td>{{row.DROP_CNT | number }}</td>
 												</tr>	
@@ -2764,7 +2776,7 @@
 													<td>{{getFullType(row.MTYPE)}}</td>
 													<td>{{row.MCOUNT}}</td>
 													<td>{{row.MAMT | number:2 }}</td>
-													<td>{{row.MDATE | date : "MM/dd/yyyy" }}</td>
+													<td>{{row.MDATE | date : "yyyy-MM-dd" }}</td>
 												</tr>	
 											</tbody>
 										</table>
@@ -2951,7 +2963,8 @@
 														<label class="col-sm-5 control-label" for="contact.TYPE">Type Of Donor:</label>
 								
 														<div class="col-sm-7">
-															<select2 class="form-control" id="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE"></select2>
+															<label class="control-label control-label-value ng-binding">{{contact.TYPE}}</label>
+															<!-- <select2 class="form-control" id="contact.TYPE" ng-options="title.id as title.label for title in types" ng-model="contact.TYPE"></select2> -->
 														</div>
 													</div>
 													
@@ -4151,7 +4164,7 @@
 
 			</tab>
 			<tab heading="Orders" enabled="true"  id="orders_tab">
-				<form role="form" id="orders"class="form-horizontal validate orders-form">
+				<form role="form" id="orders" class="form-horizontal validate orders-form">
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="pull-right">
@@ -4167,17 +4180,21 @@
 							<table id="{{'dpordersummary'}}_datatable" cellspacing="0" class="table-condensed focus-on table  table-bordered table-striped selectableisn">
 								<thead>
 									<tr>
-										<th >id</th>
-										<th >SOL</th>
-										<th >Date</th>
-										<th >Total</th>
+										<th >ID</th>
+										<th >Shipped From</th>
+										<th >Shipped Date</th>
+										<th >Order Placed</th>
+										<th >Order Type</th>
+										<th >Grand Total</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr ng-repeat="row in contact.dpordersummary" ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isOrderSummaryDatatableRowFocused(row)}" ng-click="selectOrderSummaryDataTableRow(row)" >
 										<td>{{row.id}} | {{row.tempId}}</td>
-										<td>{{row.SOL}}</td>
-										<td>{{row.DATE | date : "MM/dd/yyyy" }}</td>
+										<td>{{ getShipFromName(row.SHIPFROM) }}</td>
+										<td>{{row.SHIPDATE | date : "yyyy-MM-dd" }}</td>
+										<td>{{row.DATE | date : "yyyy-MM-dd" }}</td>
+										<td>{{(row.order_type == 1 ? 'Sale' : ( row.order_type == 2 ? 'Free Gift' : ''))}}</td>
 										<td>{{row.GTOTAL}}</td>
 									</tr>	
 								</tbody>
@@ -4200,7 +4217,7 @@
 											<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="selectedOrderSummary.order_type"></select2>
 										</div>
 										<div class="col-xs-6">
-											<div class="btn btn-white pull-right" ng-click="exportOrder();">Save</div>
+											<div class="btn btn-white pull-right" ng-click="exportOrder();">Export PDF</div>
 										</div>
 									</div>
 								</div>
@@ -4339,14 +4356,13 @@
 						
 					</div>
 					
-					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
-						<div class="panel-heading">
-							<h3 class="panel-title">Order Details</h3>
-						</div>
-						<div class="panel-body">
-							<div class="row">
-								<div class="col-md-6">
-									
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
+								<div class="panel-heading">
+									<h3 class="panel-title">Order Details</h3>
+								</div>
+								<div class="panel-body">
 									<div class="form-group">
 										<label class="col-sm-4 control-label" for="selectedOrderSummary.DATE">Invoice Paid:</label>
 										<div class="col-sm-8">
@@ -4359,6 +4375,17 @@
 										<div class="col-sm-8">
 											<div class="input-group">
 												<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="selectedOrderSummary.DATE" ng-model="selectedOrderSummary.DATE" >
+												<div class="input-group-addon">
+													<a href=""><i class="linecons-calendar"></i></a>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.SHIPDATE">Ship Date:</label>
+										<div class="col-sm-8">
+											<div class="input-group">
+												<input type="text" class="form-control datepicker modal-datepicker" data-format="yyyy-mm-dd" name="selectedOrderSummary.SHIPDATE" ng-model="selectedOrderSummary.SHIPDATE" >
 												<div class="input-group-addon">
 													<a href=""><i class="linecons-calendar"></i></a>
 												</div>
@@ -4393,15 +4420,13 @@
 								</div>
 							</div>
 						</div>
-					</div>
 					
-					<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
-						<div class="panel-heading">
-							<h3 class="panel-title">Pricing Details</h3>
-						</div>
-						<div class="panel-body">
-							<div class="row">
-								<div class="col-md-6">
+						<div class="col-md-6">
+							<div class="panel panel-default" ng-show="isOrderSummaryDatatableRowFocused(null)">
+								<div class="panel-heading">
+									<h3 class="panel-title">Pricing Details</h3>
+								</div>
+								<div class="panel-body">
 									<div class="form-group">
 										<label class="col-sm-4 control-label" for="selectedOrderSummary.FUNDS">Funds:</label>
 										<div class="col-sm-8">
@@ -4608,6 +4633,22 @@
 						</div>
 					</div>
 					
+					<div class="row" ng-show="selectedOrderSummary.id">
+						<div class="col-xs-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Notes</h3>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<textarea class="form-control" name="selectedOrderSummary.VNOTE" id="selectedOrderSummary.VNOTE" ng-model="selectedOrderSummary.VNOTE"></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 					
 				</form>
 

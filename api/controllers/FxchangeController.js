@@ -65,8 +65,9 @@ module.exports = {
 	});
     },
     ajax : function(req, res) {
-
-	var currency_from = req.body.fxsearch.currency_from;
+	var mysql = require('mysql');
+	
+	var currency_from = mysql.escape(req.body.fxsearch.currency_from);
 
 
 	// Select Data
@@ -74,7 +75,7 @@ module.exports = {
 	     +'FROM dpexchange '
 	     +'INNER JOIN dpcurrency AS curr_from ON (curr_from.id = dpexchange.currency_from) '
 	     +'INNER JOIN dpcurrency AS curr_to ON (curr_to.id = dpexchange.currency_to) '
-	     +"WHERE dpexchange.currency_from = '"+currency_from+"'").exec(function(err, response) {
+	     +"WHERE dpexchange.currency_from = "+currency_from).exec(function(err, response) {
 	    if (err)
 		return console.log(err.toString());
 
@@ -83,7 +84,7 @@ module.exports = {
 		     +'FROM dpexchange '
 		     +'INNER JOIN dpcurrency AS curr_from ON (curr_from.id = dpexchange.currency_from) '
 		     +'INNER JOIN dpcurrency AS curr_to ON (curr_to.id = dpexchange.currency_to) '
-		     +"WHERE dpexchange.currency_from = '"+currency_from+"'").exec(function(err, countresponse) {
+		     +"WHERE dpexchange.currency_from = "+currency_from).exec(function(err, countresponse) {
 		if (err)
 		    return console.log(err.toString());
 		// Select Total Count
