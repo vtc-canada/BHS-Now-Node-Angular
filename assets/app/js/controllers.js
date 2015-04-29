@@ -1131,6 +1131,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    }
 		}, 0);
 	    } else {
+		$rootScope.loading_modal = $modal.open({
+		    templateUrl : 'is-loading-modal',
+		    size : 'sm',
+		    backdrop : false
+		});
 		$sails.post("/contacts/getcontact", {
 		    id : message.id
 		}).success(function(data) {
@@ -1154,6 +1159,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			$timeout(function() {
 			    $contact.set(data.contact);
 			    resetContactForms();
+
+			    if ($rootScope.loading_modal) {
+				$rootScope.loading_modal.dismiss();
+			    }
 			    $timeout(function() {
 				$(window).scrollTop($('.nav-tabs').offset().top - 8);
 				for ( var key in $scope.selectedDataTableRow) { // iterate
@@ -1514,6 +1523,17 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.showPledgeBalance = function(donation) {
 	return (donation.PLEDSCHED == 2 || donation.PLEDSCHED == 3 || donation.PLEDSCHED == 4 || donation.PLEDSCHED == 5);
     }
+    
+    $rootScope.clearOrder = function() {
+	vm.watchEnabled = false;
+	$scope.selectedOrderSummary = null; // sets is_saving and is_deleting to
+	// false.
+	$contact.is_modified = false;
+	// $scope.contact = $contact; // copies in blank contact when changing
+	// search parameters
+
+	resetOrderForms();
+    }
 
     $scope.getDpOrderSummaryButtonText = function() {
 
@@ -1589,9 +1609,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	};
 
 	// $scope.tryDestroyDataTable('dpordersummary');
-	$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
+	//$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
 
-	$scope.selectedOrderSummary = $scope.contact.dpordersummary[$scope.contact.dpordersummary.length - 1];
+	$scope.selectedOrderSummary = newOrder;
 	// $scope.rebindOrderSummaryDataTable();
 
 	// "LASTPAGE":null,"PRINFLAG":1,"TSRECID":"C00012220","TSDATE":"20120626","TSTIME":"132058","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"KJ",
@@ -3553,7 +3573,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	});
     }
 
-}).controller('OrdersSearch', function($scope, $rootScope, $modal, $sails, $timeout) {
+}).controller('OrdersSearch', function($scope, $rootScope, $contact, $modal, $sails, $timeout) {
     var vm = this;
 
     var blankSearch = { // #ORDER_SEARCH_PARAMETER
@@ -3733,6 +3753,31 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     })();
 
     $scope.searchOrders = function() {
+	var unsavedMessage = 'You have unsaved changes pending.  Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+
+	if ($contact.is_modified) {
+	    if (!confirm(unsavedMessage)) {
+		// $contact.is_modified = false;
+		// } else {
+		var obj = {
+		    pos : $(window).scrollTop()
+		};
+		TweenLite.to(obj, 0.3, {
+		    pos : ($('#order_form').length < 1) ? 0 : ($('#order_form').offset().top - 8),
+		    ease : Power4.easeOut,
+		    onUpdate : function() {
+			$(window).scrollTop(obj.pos);
+		    }
+		});
+		return;
+	    }
+	}
+	if ($rootScope.clearOrder) {
+	    $rootScope.clearOrder();
+	}
+	if ($rootScope.resetOrdersPageNumber) {
+	    $rootScope.resetOrdersPageNumber();
+	}
 	$rootScope.updateOrdersDataTable();
     }
 
@@ -3930,6 +3975,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $rootScope.orders = $scope.orders;
 
     $scope.$watchCollection('orders', function() {
+	return;
 	if (vm.updateTable) {
 	    clearTimeout(vm.updateTable);
 	}
@@ -3943,6 +3989,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     function($scope, $rootScope, $timeout, $contact, DTOptionsBuilder, DTColumnBuilder, $sails, $modal) {
 
 	var vm = this;
+	vm.pageReset = false;
+	
 	$scope.selectedOrder = null;
 	$scope.orders = [];
 
@@ -3998,9 +4046,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.selectedOrder = angular.copy($rootScope.getOrderSelectedOrder());
 		}
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
-		}, false);
+		}, vm.pageReset);
+		vm.pageReset = false;
 	    }
 	}
+	
+	$rootScope.resetOrdersPageNumber = function() {
+	    vm.pageReset = true;
+	}
+
 
 	/*
 	 * $scope.$on('refreshContactsx', function(event, args){
@@ -4692,7 +4746,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    size : modal_size,
 	    backdrop : true
 	});
-	$rootScope.deleteModalText = $scope.selectedGroup.name; // $scope.selectedGroup.id + ' ' +
+	$rootScope.deleteModalText = $scope.selectedGroup.name; // $scope.selectedGroup.id
+								// + ' ' +
 	$rootScope.currentModal.result.then(function(selectedItem) {
 	}, function(triggerElement) {
 	    if (triggerElement == 'delete') {
@@ -4912,7 +4967,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		size : modal_size,
 		backdrop : true
 	    });
-	    $rootScope.deleteModalText = $scope.selectedUser.username; //$scope.selectedUser.id + ' ' +
+	    $rootScope.deleteModalText = $scope.selectedUser.username; // $scope.selectedUser.id
+									// + ' '
+									// +
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {
@@ -5152,7 +5209,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$timeout(function() {
 				    $rootScope.updateFxSuccess = false;
 				}, 3000);
-			    }else if(data.blocked){
+			    } else if (data.blocked) {
 				alert(data.blocked);
 			    }
 			}).error(function(data) {
@@ -5196,7 +5253,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$rootScope.updateFxSuccess = false;
 			    }, 3000);
 			}, 0);
-		    }else if(data.blocked){
+		    } else if (data.blocked) {
 			alert(data.blocked);
 		    }
 		}).error(function(data) {
@@ -5239,7 +5296,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$rootScope.updateFxSuccess = false;
 			    }, 3000);
 			}, 0);
-		    }else if(data.blocked){
+		    } else if (data.blocked) {
 			alert(data.blocked);
 		    }
 		}).error(function(data) {

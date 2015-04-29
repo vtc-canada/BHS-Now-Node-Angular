@@ -155,7 +155,7 @@
 	</div>
 </div>
 
-<div class="panel panel-default" ng-controller="OrdersDatatable as showCase">
+<div class="panel panel-default orders-datatable-panel" ng-controller="OrdersDatatable as showCase">
 	<div class="panel-heading">
 		<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspOrders</h3>
 		
@@ -228,7 +228,7 @@
 												<label class="col-sm-5 control-label" for="selectedOrderSummary.LNAME">Last Name:</label>
 						
 												<div class="col-sm-7">
-													<input type="text" class="form-control" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME"  data-message-required="This is a required field." placeholder="Required Field">
+													<input type="text" class="form-control" name="selectedOrderSummary.LNAME" id="selectedOrderSummary.LNAME" ng-model="selectedOrderSummary.LNAME"  data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
 												</div>
 											</div>
 											<div class="form-group">

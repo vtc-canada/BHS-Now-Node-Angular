@@ -54,6 +54,7 @@ angular.module("rt.select2", [])
 
                 var opts = angular.extend({}, defaultOptions, scope.$eval(attrs.options));
                 var isMultiple = angular.isDefined(attrs.multiple) || opts.multiple;
+                var matchAnywhere = angular.isDefined(attrs.matchanywhere);
 
                 opts.multiple = isMultiple;
 
@@ -143,13 +144,23 @@ angular.module("rt.select2", [])
 
                             var value = valueFn(scope, locals);
                             var label = displayFn(scope, locals) || "";
-
-                            if (label.toLowerCase().indexOf(query.term.toLowerCase()) > -1) {
-                                options.push({
-                                    id: value,
-                                    text: label,
-                                    obj: values[key]
-                                });
+                            
+                            if(matchAnywhere){
+                                if (label.toLowerCase().indexOf(query.term.toLowerCase()) > -1) { // matches anywhere
+                                    options.push({
+                                        id: value,
+                                        text: label,
+                                        obj: values[key]
+                                    });
+                                }
+                            }else{
+                                if (label.toLowerCase().indexOf(query.term.toLowerCase()) == 0) {  // just matches if it matches at the very beginning
+                                    options.push({
+                                        id: value,
+                                        text: label,
+                                        obj: values[key]
+                                    });
+                                }
                             }
                         }
 
