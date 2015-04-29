@@ -254,7 +254,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		DONOR : $contact.id,
 		SOL : null,
 		MODE : null,
-		database_origin : $contact.database_origin,
 		ENVNO : null,
 		AMT : null,
 		DATE : null,
@@ -291,8 +290,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		TSCHG : null,
 		TSBASE : null,
 		TSLOCAT : null,
-		TSIDCODE : null,
-		database_origin : $contact.database_origin
+		TSIDCODE : null
 	    };
 
 	} else if (table_name == 'dpother') {
@@ -302,7 +300,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		DONOR : $contact.id,
 		SOL : null,
 		MODE : null,
-		database_origin : $contact.database_origin,
 		ENVNO : null,
 		AMT : null,
 		DATE : null,
@@ -510,7 +507,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    PHONE : $scope.contact.PHONE,
 	    PHON2 : $scope.contact.PHON2,
 	    PHON3 : $scope.contact.PHON3,
-	    database_origin : $scope.contact.database_origin,
 	    dporderdetails : [],
 	    SURFCOST : 0,
 	    MBAGCOST : 0,
@@ -556,7 +552,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    LSTOC : null
 	});
 
-	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC","database_origin":1})
+	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC"})
 	// non-use columns
 	// ORDNUMD:null,"PAGED":"01","LINED":"01","DONORD":1000004,"SQTY":1,"BQTY":0,
 
@@ -1583,7 +1579,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    PHONE : $scope.contact.PHONE,
 	    PHON2 : $scope.contact.PHON2,
 	    PHON3 : $scope.contact.PHON3,
-	    database_origin : $scope.contact.database_origin,
 	    dporderdetails : [],
 	    SURFCOST : 0,
 	    MBAGCOST : 0,
@@ -1627,7 +1622,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    LSTOC : null
 	});
 
-	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC","database_origin":1})
+	// "TSRECID":"C00019635","TSDATE":"20041028","TSTIME":"134819","TSCHG":"A","TSBASE":"A","TSLOCAT":"C","TSIDCODE":"HMC"})
 	// non-use columns
 	// ORDNUMD:null,"PAGED":"01","LINED":"01","DONORD":1000004,"SQTY":1,"BQTY":0,
 

@@ -296,7 +296,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 		orders : []
 	    };
 
-	    this.database_origin = null;
+	    
 	    this.id = null;
 	    return this;
 	},

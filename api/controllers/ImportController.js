@@ -222,7 +222,7 @@ module.exports = {
 
     },
     languages : function(req, res) {
-	Database.knex('dp').select('id', 'LANGUAGE', 'ENGLISH', 'database_origin').exec(function(err, results) {
+	Database.knex('dp').select('id', 'LANGUAGE', 'ENGLISH').exec(function(err, results) {
 	    if (err) {
 		console.log('error' + err.toString());
 	    }
@@ -236,16 +236,14 @@ module.exports = {
 		}
 		Database.knex('dplang').insert({
 		    DONOR : row.id,
-		    LANGUAGE : row.LANGUAGE,
-		    database_origin : row.database_origin
+		    LANGUAGE : row.LANGUAGE
 		}).exec(function(err, pr) {
 		    if (err)
 			return cb(err);
 		    if (row.LANGUAGE != 'E' && row.ENGLISH == 'Y') {
 			Database.knex('dplang').insert({
 			    DONOR : row.id,
-			    LANGUAGE : 'E',
-			    database_origin : row.database_origin
+			    LANGUAGE : 'E'
 			}).exec(function(err, pr) {
 			    if (err)
 				return cb(err);

@@ -241,7 +241,7 @@ module.exports = {
 		});
 	    }, function(callback) {
 		if (dplang_modified) {
-		    updateMultiSelect('dplang', 'LANGUAGE', contactId, contact.database_origin, dplang, function(err, data) {
+		    updateMultiSelect('dplang', 'LANGUAGE', contactId, dplang, function(err, data) {
 			if (err)
 			    return callback(err);
 			callback(null);
@@ -251,7 +251,7 @@ module.exports = {
 		}
 	    }, function(callback) {
 		if (dptrans_modified) {
-		    updateMultiSelect('dptrans', 'LANGUAGE', contactId, contact.database_origin, dptrans, function(err, data) {
+		    updateMultiSelect('dptrans', 'LANGUAGE', contactId, dptrans, function(err, data) {
 			if (err)
 			    return callback(err);
 			callback(null);
@@ -286,7 +286,7 @@ module.exports = {
 	    });
 	}
 
-	function updateMultiSelect(table_name, field_name, contactId, database_origin, data, multiselectcallback) {
+	function updateMultiSelect(table_name, field_name, contactId, data, multiselectcallback) {
 
 	    Database.knex(table_name).where({
 		DONOR : contactId
@@ -296,8 +296,7 @@ module.exports = {
 
 		async.each(data, function(row, cb) {
 		    var insert_obj = {
-			DONOR : contactId,
-			database_origin : database_origin
+			DONOR : contactId
 		    }
 		    insert_obj[field_name] = row;
 		    Database.knex(table_name).insert(insert_obj).exec(function(err, response) {
@@ -360,7 +359,6 @@ module.exports = {
 		    delete row.id;
 		    delete row.tempId;
 		    delete row.is_modified;
-		    row.database_origin = 1;
 		    Database.knex('dplink').insert(row).exec(function(err, response) {
 			if (err)
 			    return cb(err);
@@ -1015,7 +1013,7 @@ module.exports = {
 		    dpordersummary : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`, `DONOR`,`SOL`,DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,`ORDNUM`,`SHIPFROM`,`OPER`,DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,DATE_FORMAT(`ORIGDATE`,"%Y-%m-%d") AS `ORIGDATE`,`ORIGENV`,`IPAID`,`SANDH`,`SANDHAMT`,`CREDITCD`,`CASHONLY`,`CASH`,`CREDIT`,`ETOTAL`,`ECONV`,`ESHIP`,`PSTCALC`,`GSTCALC`,`HSTCALC`,`NYTCALC`,`GTOTAL`,`VNOTE`,`BATCHED`,`PST`,`GST`,`HST`,`NYTAX`,`COUNTY`,`COUNTYNM`,`ENT_DT`,`FUNDS`,`GFUNDS`,`CURCONV`,`TITLE`,`FNAME`,`LNAME`,`SUFF`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`PHONE`,`PHON2`,`PHON3`,`LASTPAGE`,`PRINFLAG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`database_origin`,`SURFCOST`,`MBAGCOST`,`OTHCOST`,`MAILFLAG`,`PRINREM`,`RETURNED`, `order_type` FROM dpordersummary WHERE DONOR = '
+				'SELECT `id`, `DONOR`,`SOL`,DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,`ORDNUM`,`SHIPFROM`,`OPER`,DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,DATE_FORMAT(`ORIGDATE`,"%Y-%m-%d") AS `ORIGDATE`,`ORIGENV`,`IPAID`,`SANDH`,`SANDHAMT`,`CREDITCD`,`CASHONLY`,`CASH`,`CREDIT`,`ETOTAL`,`ECONV`,`ESHIP`,`PSTCALC`,`GSTCALC`,`HSTCALC`,`NYTCALC`,`GTOTAL`,`VNOTE`,`BATCHED`,`PST`,`GST`,`HST`,`NYTAX`,`COUNTY`,`COUNTYNM`,`ENT_DT`,`FUNDS`,`GFUNDS`,`CURCONV`,`TITLE`,`FNAME`,`LNAME`,`SUFF`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`PHONE`,`PHON2`,`PHON3`,`LASTPAGE`,`PRINFLAG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`SURFCOST`,`MBAGCOST`,`OTHCOST`,`MAILFLAG`,`PRINREM`,`RETURNED`, `order_type` FROM dpordersummary WHERE DONOR = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
@@ -1041,7 +1039,7 @@ module.exports = {
 		    contact : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`database_origin`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
+				'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
@@ -1057,15 +1055,15 @@ module.exports = {
 		    },
 		    dtmail : function(callback) {
 			Database.knex.raw(
-			    "SELECT dtmail.*, dpcodes.DESC, maildrop.DROP_DATE, maildrop.DROP_CNT  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL AND dtmail.database_origin = dpcodes.database_origin)"
-				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST) AND maildrop.database_origin = dtmail.database_origin ) WHERE DONOR = " + contactId).exec(function(err, data) {
+			    "SELECT dtmail.*, dpcodes.DESC, maildrop.DROP_DATE, maildrop.DROP_CNT  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL )"
+				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST)  ) WHERE DONOR = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
 			});
 		    },
 		    dpgift : function(callback) {
-			Database.knex.raw("SELECT dpgift.*, dpcodes.DESC FROM   dpgift LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpgift.SOL AND dpgift.database_origin = dpcodes.database_origin ) WHERE  DONOR = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dpgift.*, dpcodes.DESC FROM   dpgift LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpgift.SOL  ) WHERE  DONOR = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
@@ -1074,7 +1072,7 @@ module.exports = {
 		    dpmisc : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `dpmisc`.`id`,`dpmisc`.`DONOR`,`dpmisc`.`SOL`, DATE_FORMAT(`MDATE`,"%Y-%m-%d") AS `MDATE`, `dpmisc`.`MTYPE`,`dpmisc`.`MYEAR`,`dpmisc`.`MCOUNT`,`dpmisc`.`MAMT`,`dpmisc`.`MNOTES`,`dpmisc`.`TSRECID`,`dpmisc`.`TSDATE`,`dpmisc`.`TSTIME`,`dpmisc`.`TSCHG`,`dpmisc`.`TSBASE`,`dpmisc`.`TSLOCAT`,`dpmisc`.`TSIDCODE`,`dpmisc`.`database_origin`, dpcodes.DESC FROM   dpmisc LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpmisc.SOL AND dpcodes.database_origin = dpmisc.database_origin ) WHERE  DONOR = '
+				'SELECT `dpmisc`.`id`,`dpmisc`.`DONOR`,`dpmisc`.`SOL`, DATE_FORMAT(`MDATE`,"%Y-%m-%d") AS `MDATE`, `dpmisc`.`MTYPE`,`dpmisc`.`MYEAR`,`dpmisc`.`MCOUNT`,`dpmisc`.`MAMT`,`dpmisc`.`MNOTES`,`dpmisc`.`TSRECID`,`dpmisc`.`TSDATE`,`dpmisc`.`TSTIME`,`dpmisc`.`TSCHG`,`dpmisc`.`TSBASE`,`dpmisc`.`TSLOCAT`,`dpmisc`.`TSIDCODE`, dpcodes.DESC FROM   dpmisc LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpmisc.SOL  ) WHERE  DONOR = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
@@ -1082,28 +1080,28 @@ module.exports = {
 			    });
 		    },
 		    dpother : function(callback) {
-			Database.knex.raw('SELECT `dpother`.`id`,`dpother`.`DONOR`,DATE_FORMAT(`dpother`.`DATE`,"%Y-%m-%d") AS `DATE` ,`dpother`.`SURVEY`,`dpother`.`SURV_ANS`,`dpother`.`TRANSACT`,`dpother`.`ENVNO`,`dpother`.`LIST`,`dpother`.`NARRA`,`dpother`.`AMT`,`dpother`.`CURR`,`dpother`.`SOL`,`dpother`.`CASH`,`dpother`.`DEMAND`,`dpother`.`LABEL`,`dpother`.`MODE`,`dpother`.`GL`,`dpother`.`WEB`,`dpother`.`CAMP_TYPE`,`dpother`.`REQUESTS`,`dpother`.`TBAREQS`,`dpother`.`TSRECID`,`dpother`.`TSDATE`,`dpother`.`TSTIME`,`dpother`.`TSCHG`,`dpother`.`TSBASE`,`dpother`.`TSLOCAT`,`dpother`.`TSIDCODE`,`dpother`.`database_origin`, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpother.SOL AND dpother.database_origin = dpcodes.database_origin ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
+			Database.knex.raw('SELECT `dpother`.`id`,`dpother`.`DONOR`,DATE_FORMAT(`dpother`.`DATE`,"%Y-%m-%d") AS `DATE` ,`dpother`.`SURVEY`,`dpother`.`SURV_ANS`,`dpother`.`TRANSACT`,`dpother`.`ENVNO`,`dpother`.`LIST`,`dpother`.`NARRA`,`dpother`.`AMT`,`dpother`.`CURR`,`dpother`.`SOL`,`dpother`.`CASH`,`dpother`.`DEMAND`,`dpother`.`LABEL`,`dpother`.`MODE`,`dpother`.`GL`,`dpother`.`WEB`,`dpother`.`CAMP_TYPE`,`dpother`.`REQUESTS`,`dpother`.`TBAREQS`,`dpother`.`TSRECID`,`dpother`.`TSDATE`,`dpother`.`TSTIME`,`dpother`.`TSCHG`,`dpother`.`TSBASE`,`dpother`.`TSLOCAT`,`dpother`.`TSIDCODE`, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpother.SOL ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
 			});
 		    },
 		    dpplg : function(callback) {
-			Database.knex.raw("SELECT dpplg.*, dpcodes.DESC FROM   dpplg LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpplg.SOL AND dpplg.database_origin = dpcodes.database_origin ) WHERE  DONOR = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dpplg.*, dpcodes.DESC FROM   dpplg LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpplg.SOL  ) WHERE  DONOR = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
 			});
 		    },
 		    dplink : function(callback) {
-			Database.knex.raw("SELECT dplink.id, dplink.ID1, dplink.ID2, dplink.LINK, CONCAT ( dp.FNAME , ' ' , dp.LNAME ) as 'NAME', dpcodes.DESC FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK AND dplink.database_origin = dpcodes.database_origin ) INNER JOIN dp ON (dplink.ID2 = dp.id) WHERE ID1 = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dplink.id, dplink.ID1, dplink.ID2, dplink.LINK, CONCAT ( dp.FNAME , ' ' , dp.LNAME ) as 'NAME', dpcodes.DESC FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK ) INNER JOIN dp ON (dplink.ID2 = dp.id) WHERE ID1 = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
 			});
 		    },
 		    dplang : function(callback) {
-			Database.knex.raw("SELECT dplang.LANGUAGE FROM dplang LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dplang.LANGUAGE AND dplang.database_origin = dpcodes.database_origin ) WHERE DONOR = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dplang.LANGUAGE FROM dplang LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dplang.LANGUAGE ) WHERE DONOR = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err);
 
@@ -1115,7 +1113,7 @@ module.exports = {
 			});
 		    },
 		    dptrans : function(callback) {
-			Database.knex.raw("SELECT dptrans.LANGUAGE FROM dptrans LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dptrans.LANGUAGE AND dptrans.database_origin = dpcodes.database_origin ) WHERE DONOR = " + contactId).exec(function(err, data) {
+			Database.knex.raw("SELECT dptrans.LANGUAGE FROM dptrans LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dptrans.LANGUAGE ) WHERE DONOR = " + contactId).exec(function(err, data) {
 			    if (err)
 				return callback(err);
 			    var dptrans = [];
@@ -1137,7 +1135,7 @@ module.exports = {
 		    dtvols1 : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`, `DONOR`, `VORIGIN`, DATE_FORMAT(`VSDATE`,"%Y-%m-%d") AS `VSDATE`, `VCATEG`, `VGRADE01`, `VGRADE02`, `VGRADE03`, `VGRADE04`, `VGRADE05`, `VGRADE06`, `VGRADE07`, `VGRADE08`, `VGRADE09`, `VGRADE10`, `VGRADE11`, `VGRADE12`, `VGRADE13`, `VGRADE14`, `VGRADE15`, `VGRADE16`, `VGRADE17`, `VGRADE18`, `VGRADE19`, `VGRADE20`, `VGRADE21`, `VGRADE22`, `VGRADE23`, `VLANOTH`, `VSPECTAL`, `VNOTES`, `database_origin`, `TSRECID`, `TSDATE`, `TSTIME`, `TSCHG`, `TSBASE`, `TSLOCAT`, `TSIDCODE` FROM `dtvols1` WHERE `DONOR` = '
+				'SELECT `id`, `DONOR`, `VORIGIN`, DATE_FORMAT(`VSDATE`,"%Y-%m-%d") AS `VSDATE`, `VCATEG`, `VGRADE01`, `VGRADE02`, `VGRADE03`, `VGRADE04`, `VGRADE05`, `VGRADE06`, `VGRADE07`, `VGRADE08`, `VGRADE09`, `VGRADE10`, `VGRADE11`, `VGRADE12`, `VGRADE13`, `VGRADE14`, `VGRADE15`, `VGRADE16`, `VGRADE17`, `VGRADE18`, `VGRADE19`, `VGRADE20`, `VGRADE21`, `VGRADE22`, `VGRADE23`, `VLANOTH`, `VSPECTAL`, `VNOTES`, `TSRECID`, `TSDATE`, `TSTIME`, `TSCHG`, `TSBASE`, `TSLOCAT`, `TSIDCODE` FROM `dtvols1` WHERE `DONOR` = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
@@ -1153,7 +1151,7 @@ module.exports = {
 		    dtbishop : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`,`DONOR`,`CONTPERS`,`FOLLOWUP`,`BISHPRES`,DATE_FORMAT(`LETTER1`,"%Y-%m-%d") AS `LETTER1`,DATE_FORMAT(`PHONEC1`,"%Y-%m-%d") AS `PHONEC1`,DATE_FORMAT(`LETTER2`,"%Y-%m-%d") AS `LETTER2`,DATE_FORMAT(`VISREF`,"%Y-%m-%d") AS `VISREF`,DATE_FORMAT(`VISITD`,"%Y-%m-%d") AS `VISITD`,`PERSONV1`,`PERSONV2`,`PERSONV3`,`PERSONV4`,DATE_FORMAT(`FOLUPLET`,"%Y-%m-%d") AS `FOLUPLET`,DATE_FORMAT(`FOLUPVIS`,"%Y-%m-%d") AS `FOLUPVIS`,`REPFILED`,`RESPONSE`,`BISNOTES`,`FILEDYN`,`database_origin` FROM `dtbishop` WHERE `DONOR` = '
+				'SELECT `id`,`DONOR`,`CONTPERS`,`FOLLOWUP`,`BISHPRES`,DATE_FORMAT(`LETTER1`,"%Y-%m-%d") AS `LETTER1`,DATE_FORMAT(`PHONEC1`,"%Y-%m-%d") AS `PHONEC1`,DATE_FORMAT(`LETTER2`,"%Y-%m-%d") AS `LETTER2`,DATE_FORMAT(`VISREF`,"%Y-%m-%d") AS `VISREF`,DATE_FORMAT(`VISITD`,"%Y-%m-%d") AS `VISITD`,`PERSONV1`,`PERSONV2`,`PERSONV3`,`PERSONV4`,DATE_FORMAT(`FOLUPLET`,"%Y-%m-%d") AS `FOLUPLET`,DATE_FORMAT(`FOLUPVIS`,"%Y-%m-%d") AS `FOLUPVIS`,`REPFILED`,`RESPONSE`,`BISNOTES`,`FILEDYN` FROM `dtbishop` WHERE `DONOR` = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)

@@ -52,7 +52,7 @@ SELECT SOL as 'Code',
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then 1 else 0 END as 'Counts', # Total number of donors, sales, and nil contacts
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then AMT*exchange_rate else 0 END as 'Totals' # Total amount of donations and sales
 	FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE)) AND database_origin = 1) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -81,8 +81,7 @@ SELECT SOL as 'Code',
 		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` 
 					from dpcodes 
 					where FIELD = 'SOL' 
-						and (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))
-						AND database_origin = 1) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
+						and (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
 	WHERE dpother.`DATE` >= startDate
@@ -108,7 +107,7 @@ SELECT SOL as 'Code',
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then 1 else 0 END as 'Counts', # Total number of donors, sales, and nil contacts
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then AMT*exchange_rate else 0 END as 'Totals' # Total amount of donations and sales
 	FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE)) AND database_origin = 1) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -138,7 +137,7 @@ SELECT SOL as 'Code',
 					from dpcodes 
 					where FIELD = 'SOL' 
 						and (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))
-						AND database_origin = 1) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
+						) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
 	WHERE dpother.`DATE` >= startDate
@@ -172,7 +171,7 @@ FROM
 	COUNT(*) as 'Count',
 	ROUND(SUM(AMT*exchange_rate),2) as 'AMT'
 FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))  AND database_origin = 1) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -186,7 +185,7 @@ SELECT Case When dpother.TRANSACT IN ('SE','SF','SS') then 'Donations + Sales + 
 	COUNT(*),
 	ROUND(SUM(AMT*exchange_rate),2)
 FROM dpother
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE)) AND database_origin = 1) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
 			dpother.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
@@ -277,7 +276,7 @@ FROM
 	MONTH(`DATE`) as 'MONTH',
 	1 as 'Count'
 FROM dpother
-	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE)) AND database_origin = 1) As dpcodelist on dpother.SOL = dpcodelist.CODE
+	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on dpother.SOL = dpcodelist.CODE
 	INNER JOIN dp on dp.id = dpother.DONOR
 	WHERE dpother.`DATE` >= StartDate
 		AND dpother.`DATE` <= EndDate
@@ -289,7 +288,7 @@ SELECT Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') OR dpgi
 	MONTH(`DATE`) as 'MONTH',
 	1 as 'Count'
 FROM dpgift
-	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE)) AND database_origin = 1) As dpcodelist on dpgift.SOL = dpcodelist.CODE
+	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on dpgift.SOL = dpcodelist.CODE
 	INNER JOIN dp on dp.id = dpgift.DONOR
 	WHERE dpgift.`DATE` >= StartDate
 		AND dpgift.`DATE` <= EndDate
@@ -318,7 +317,7 @@ SELECT GIFT.ENVNO as 'Envelope #',
 	CONCAT(IFNULL(CONTACT.`ADD`,'') ,  IF(CONTACT.`ADD` IS NOT NULL, ', ', '') 
 	,IFNULL(CONTACT.`CITY`, '') , IF(CONTACT.`CITY` IS NOT NULL , ', ', '')
 	,IFNULL(CONTACT.`ST`,''), IF(CONTACT.`ST` IS NOT NULL , ', ', '')
-	,IFNULL(CONTACT.`ZIP`,''), IF(CONTACT.`ZIP` IS NOT NULL , ', ', '')
+	,IFNULL(CONTACT.`ZIP`,'')
 ) as 'Address',
 	CONTACT.COUNTRY as 'Country',
 	GIFT.SOL as 'Provcode',
@@ -466,61 +465,13 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE DEFINER=`root`@`%` PROCEDURE `reports_DonorHistoryReport`(
-		IN `includecountry` VARCHAR(255),
-		IN `excludecountry` VARCHAR(255)
-)
-BEGIN
-
-SELECT
-	`month` as 'Date',
-	SUM(CASE WHEN dpdonorstatushistory2.`status` = 'ACTIVE' then 1 else 0 END) as 'Active',
-	SUM(CASE WHEN dpdonorstatushistory2.`status` = 'INACTIVE' then 1 else 0 END) as 'Inactive',
-	SUM(CASE WHEN dpdonorstatushistory2.`status` = 'NEW' then 1 else 0 END) as 'New',
-	SUM(CASE WHEN dpdonorstatushistory2.`status` IN ('NEW','ACTIVE','INACTIVE') then 1 else 0 END) as 'Total',
-	0 as 'Inactive to Lapsed',
-	0 as 'Lapsed to Active',
-	0 as 'Reinstated',
-	0 as 'Removed',
-	0 as 'Active to Inactive',
-	0 as 'Inactive to Active'
-FROM dpdonorstatushistory2
-	JOIN dp on dp.id = dpdonorstatushistory2.DONOR
-WHERE
-	(includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
-	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
-UNION ALL
-SELECT
-	`month` as 'Date',
-	0 as 'Active',
-	0 as 'Inactive',
-	0 as 'New',
-	0 as 'Total',
-	SUM(CASE WHEN `last_status` = 'INACTIVE' AND (`status` = 'ACTIVE_LAPSED' OR `status` = 'INACTIVE_LAPSED') then 1 else 0 END) as 'Inactive to Lapsed',
-	SUM(CASE WHEN (`last_status` = 'INACTIVE_LAPSED' OR `status` = 'ACTIVE_LAPSED') AND `status` = 'ACTIVE' then 1 else 0 END) as 'Lapsed to Active',
-	SUM(CASE WHEN `last_status` = 'REMOVED' AND `status` != 'REMOVED' then 1 else 0 END) as 'Reinstated',
-	SUM(CASE WHEN `last_status` != 'REMOVED' AND `status` = 'REMOVED' then 1 else 0 END) as 'Removed',
-	SUM(CASE WHEN `last_status` = 'ACTIVE' AND `status` = 'INACTIVE' then 1 else 0 END) as 'Active to Inactive',
-	SUM(CASE WHEN `last_status` = 'INACTIVE' AND `status` = 'ACTIVE' then 1 else 0 END) as 'Inactive to Active'
-FROM dpdonorstatushistory2
-	JOIN dp on dp.id = dpdonorstatushistory2.DONOR
-WHERE
-	(includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
-	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
-GROUP BY `month`
-ORDER BY `month` DESC;
-
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_DonorHistoryReport2`(
 	IN `includecountry` VARCHAR(255),
 	IN `excludecountry` VARCHAR(255)
 )
 BEGIN
 SELECT * FROM (
 	SELECT
-		`month` as 'Date',
+		DATE_FORMAT(`month`,"%Y-%m-%d")  as 'Date',
 		dpdonorstatushistory.`status` as 'Donor Status',
 		Count(dpdonorstatushistory.`status`) as 'Count'
 	FROM dpdonorstatushistory
@@ -534,7 +485,7 @@ SELECT * FROM (
 	UNION ALL
 
 	SELECT
-		`month` as 'Date',
+		DATE_FORMAT(`month`,"%Y-%m-%d")  as 'Date',
 		'TOTAL' as 'Donor Status',
 		Count(dpdonorstatushistory.`status`) as 'Count'
 	FROM dpdonorstatushistory
@@ -548,7 +499,7 @@ SELECT * FROM (
 	UNION ALL
 
 	SELECT
-		`month` as 'Date',
+		DATE_FORMAT(`month`,"%Y-%m-%d")  as 'Date',
 		`status_change` as 'Donor Status',
 		Count(dpdonorstatushistory.`status`) as 'Count'
 	FROM dpdonorstatushistory
@@ -599,6 +550,33 @@ WHERE CLASS IN ('IA','IB','IC','ID','IE','IF','IG','IH','II','IJ','IK')
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
 	AND LASTDON IS NOT NULL
 GROUP BY `Year`;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `reports_MailDropReport`(IN `startDate` DATETIME, 
+			IN `endDate` DATETIME
+		)
+BEGIN
+	SELECT PROVCODE as 'Sol+List/GL',
+	TITLE as 'Description',
+	CONCAT(IFNULL(ITEM1,'') ,  IF(ITEM2 IS NOT NULL, ', ', '') 
+		,IFNULL(ITEM2, '') , IF(ITEM3 IS NOT NULL , ', ', '')
+		,IFNULL(ITEM3,'') ,  IF(ITEM4 IS NOT NULL, ', ', '')
+		,IFNULL(ITEM4,'') ,  IF(ITEM5 IS NOT NULL, ', ', '')
+		,IFNULL(ITEM5,'')) as 'Package Items',
+	DATE_FORMAT(DROP_DATE,"%Y-%m-%d") as 'Date',
+	SHIPFROM as 'Ship From',
+	DROP_CNT as 'Count',
+	POSTCOST as 'Postage',
+	PACKCOST as 'Package',
+	LABCOST as 'Labour'
+FROM
+	maildrop
+WHERE
+	startDate IS NULL OR endDate IS NULL OR maildrop.DROP_DATE BETWEEN startDate AND endDate
+ORDER BY
+	`Sol+List/GL` ASC;
 END$$
 DELIMITER ;
 
@@ -731,6 +709,120 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `reports_OrderItemDistributionReport`(IN `startOrderDate` DATETIME,
+		IN `endOrderDate` DATETIME, 
+		IN `startShipDate` DATETIME, 
+		IN `endShipDate` DATETIME,
+		IN `shipFromCodes` VARCHAR(255),
+		IN `includecountry` VARCHAR(255),
+		IN `excludecountry` VARCHAR(255))
+BEGIN
+
+SELECT CONCAT(dporderdetails.LITEMP, ' - ', dporderdetails.LITEMD) as 'Item # - Description',
+	'Donated Qty' as 'Column',
+	SUM(dporderdetails.LQTY) as 'Value'
+FROM dpordersummary
+	JOIN dporderdetails on dpordersummary.id = dporderdetails.ORDNUMD
+WHERE (LPRICE = 0
+	OR LDISC = 100
+	OR LPRICE IS NULL)
+	AND (shipFromCodes IS NULL OR FIND_IN_SET(dpordersummary.SHIPFROM, shipFromCodes))
+	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
+	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
+GROUP BY `Item # - Description`  ##dporderdetails.LITEMP
+
+UNION ALL
+
+SELECT CONCAT(dporderdetails.LITEMP, ' - ', dporderdetails.LITEMD) as 'Item # - Description',
+	'Donated Orders' as 'Column',
+	COUNT(dpordersummary.id) as 'Value'
+FROM dpordersummary
+	JOIN dporderdetails on dpordersummary.id = dporderdetails.ORDNUMD
+WHERE (LPRICE = 0
+	OR LDISC = 100
+	OR LPRICE IS NULL)
+	AND (shipFromCodes IS NULL OR FIND_IN_SET(dpordersummary.SHIPFROM, shipFromCodes))
+	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
+	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
+GROUP BY `Item # - Description` ##dporderdetails.LITEMP
+
+UNION ALL
+
+SELECT CONCAT(dporderdetails.LITEMP, ' - ', dporderdetails.LITEMD) as 'Item # - Description',
+	'Sales Qty' as 'Column',
+	SUM(dporderdetails.LQTY) as 'Value'
+FROM dpordersummary
+	JOIN dporderdetails on dpordersummary.id = dporderdetails.ORDNUMD
+WHERE (LPRICE != 0
+	AND LDISC < 100
+	AND LPRICE IS NOT NULL)
+	AND (shipFromCodes IS NULL OR FIND_IN_SET(dpordersummary.SHIPFROM, shipFromCodes))
+	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
+	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
+GROUP BY `Item # - Description` ##dporderdetails.LITEMP
+
+UNION ALL
+
+SELECT CONCAT(dporderdetails.LITEMP, ' - ', dporderdetails.LITEMD) as 'Item # - Description',
+	'Sales Orders' as 'Column',
+	COUNT(dpordersummary.id) as 'Value'
+FROM dpordersummary
+	JOIN dporderdetails on dpordersummary.id = dporderdetails.ORDNUMD
+WHERE (LPRICE != 0
+	AND LDISC < 100
+	AND LPRICE IS NOT NULL)
+	AND (shipFromCodes IS NULL OR FIND_IN_SET(dpordersummary.SHIPFROM, shipFromCodes))
+	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
+	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
+GROUP BY `Item # - Description`
+ORDER BY `Item # - Description`, `Column`; ##dporderdetails.LITEMP;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `reports_PledgeDelinquentReport`(
+		IN `includecountry` VARCHAR(255),
+		IN `excludecountry` VARCHAR(255)
+)
+BEGIN
+SELECT `Donor Number`,
+	`Name`,
+	`Address`,
+	DATE_FORMAT(`Last Pledge Payment`,"%Y-%m-%d") AS `Last Pledge Payment`
+FROM (
+	SELECT CONTACT.id as 'Donor Number',
+		CONCAT(IFNULL(CONTACT.TITLE,'') , ' ' , IFNULL(CONTACT.FNAME,'') , ' ' , IFNULL(CONTACT.LNAME,'') , ' ' , IFNULL(CONTACT.SUFF,'')) as 'Name',
+		CONCAT(IFNULL(CONTACT.`ADD`,'') ,  IF(CONTACT.`ADD` IS NOT NULL, ', ', '') 
+		,IFNULL(CONTACT.`CITY`, '') , IF(CONTACT.`CITY` IS NOT NULL , ', ', '')
+		,IFNULL(CONTACT.`ST`,''), IF(CONTACT.`ST` IS NOT NULL , ', ', '')
+		,IFNULL(CONTACT.`ZIP`,''), IF(CONTACT.`ZIP` IS NOT NULL , ', ', '')
+		,IFNULL(CONTACT.`COUNTRY`,'')
+		) as 'Address',
+		PLEDGOR,
+		PLEDGE,
+		MAX(dpgift.`DATE`) as 'Last Pledge Payment'
+	FROM dp CONTACT
+		LEFT JOIN dpgift on CONTACT.id = dpgift.DONOR
+	WHERE CONTACT.PLEDGOR = 'Y'
+		AND (dpgift.PLEDGE = 'Y' OR dpgift.PLEDGE IS NULL)
+		AND (dpgift.SOL LIKE 'PP%' OR dpgift.SOL IS NULL)
+		AND (includecountry IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
+		AND (excludecountry IS NULL OR NOT FIND_IN_SET(CONTACT.COUNTRY, excludecountry))
+	GROUP BY CONTACT.id
+) t
+WHERE (t.`Last Pledge Payment` <= DATE_SUB(NOW(), INTERVAL 30 DAY) OR t.`Last Pledge Payment` IS NULL);
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`%` PROCEDURE `reports_VolunteerInventoryReport`(IN `startOrderDate` DATETIME,
 		IN `endOrderDate` DATETIME, 
 		IN `startShipDate` DATETIME, 
@@ -751,8 +843,8 @@ WHERE
 	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
 	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
 	AND LITEMP IS NOT NULL
-	AND (includecountry IS NULL OR FIND_IN_SET(COUNTRY, includecountry))
-	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
 GROUP BY
 	LITEMP
 UNION ALL
@@ -768,8 +860,8 @@ WHERE
 	AND (startOrderDate IS NULL OR endOrderDate IS NULL OR dpordersummary.`DATE` BETWEEN startOrderDate AND endOrderDate)
 	AND (startShipDate IS NULL OR endShipDate IS NULL OR dpordersummary.SHIPDATE BETWEEN startShipDate AND endShipDate)
 	AND LITEMP IS NOT NULL
-	AND (includecountry IS NULL OR FIND_IN_SET(COUNTRY, includecountry))
-	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(dpordersummary.COUNTRY, includecountry))
+	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dpordersummary.COUNTRY, excludecountry))
 GROUP BY
 	`Item #`
 ORDER BY
