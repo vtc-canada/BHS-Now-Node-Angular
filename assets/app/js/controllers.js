@@ -1353,26 +1353,26 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$rootScope.relationship_name[data.relationships[i].CODE] = data.relationships[i].DESC;
 	    }
 
-	    $rootScope.transaction_type = 'dpplg';
+	    $rootScope.transaction_type = 'dpgift';
 
 	    $rootScope.transaction_types = [ {
 		id : 'dpgift',
 		label : 'Gift'
 	    }, {
+		id : 'dplink',
+		label : 'Links'
+	    }, {
 		id : 'dtmail',
 		label : 'Mail'
 	    }, {
-		id : 'dpplg',
-		label : 'Pledge'
+		id : 'dpmisc',
+		label : 'Misc'
 	    }, {
 		id : 'dpother',
 		label : 'Other'
 	    }, {
-		id : 'dplink',
-		label : 'Links'
-	    }, {
-		id : 'dpmisc',
-		label : 'Misc'
+		id : 'dpplg',
+		label : 'Pledge'
 	    } ];
 
 	    /*
@@ -5157,6 +5157,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$timeout(function() {
 				    $rootScope.updateFxSuccess = false;
 				}, 3000);
+			    }else if(data.blocked){
+				alert(data.blocked);
 			    }
 			}).error(function(data) {
 			    alert('err!');
@@ -5199,6 +5201,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$rootScope.updateFxSuccess = false;
 			    }, 3000);
 			}, 0);
+		    }else if(data.blocked){
+			alert(data.blocked);
 		    }
 		}).error(function(data) {
 		    alert('err!');
@@ -5240,6 +5244,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				$rootScope.updateFxSuccess = false;
 			    }, 3000);
 			}, 0);
+		    }else if(data.blocked){
+			alert(data.blocked);
 		    }
 		}).error(function(data) {
 		    alert('err!');
