@@ -19,7 +19,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	'dplink' : null,
 	'dpmisc' : null
     };
-
+    $rootScope.shortSelectOptions = {
+	minimumInputLength : 1
+    };
     $rootScope.longSelectOptions = {
 	minimumInputLength : 2
     };
@@ -269,7 +271,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		PLEDGE : null,
 		RECEIPT : null,
 		REF : null,
-		TBAREQS : null
+		TBAREQS : null,
+		GIFTMEMO : null
 	    };
 
 	} else if (table_name == 'dpmisc') {
@@ -313,7 +316,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		GL : null,
 		SURVEY : null,
 		SURV_ANS : null,
-		TBAREQS : null
+		TBAREQS : null,
+		NARRA : null
 	    };
 
 	} else if (table_name == 'dpplg') {
@@ -570,7 +574,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
-	if (!angular.equals(newValue, oldValue)) {
+	if ((!angular.equals(newValue, oldValue)) && vm.blockOrderSelectedModified == false) {   //selectedOrderSummary.dporderdetails
 	    angular.forEach(newValue, function(row) {
 		// Update descriptions
 		if (typeof ($rootScope.litemdetails) != 'undefined' && typeof ($rootScope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($rootScope.litemdetails[row.LITEMP].description)) {
@@ -1131,11 +1135,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    }
 		}, 0);
 	    } else {
-		$rootScope.loading_modal = $modal.open({
-		    templateUrl : 'is-loading-modal',
-		    size : 'sm',
-		    backdrop : false
-		});
+		$timeout(function() {
+		    $rootScope.loading_modal = $modal.open({
+			templateUrl : 'is-loading-modal',
+			size : 'sm',
+			backdrop : false
+		    });
+		}, 0);
 		$sails.post("/contacts/getcontact", {
 		    id : message.id
 		}).success(function(data) {
@@ -1160,7 +1166,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    $contact.set(data.contact);
 			    resetContactForms();
 
-			    if ($rootScope.loading_modal) {
+			    if ($rootScope.loading_modal) { // BUG HERE
 				$rootScope.loading_modal.dismiss();
 			    }
 			    $timeout(function() {
@@ -1434,13 +1440,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.groups[i].CODE + " - " + data.groups[i].DESC
 		});
 	    }
-	    $rootScope.pledgors = [];
-	    for (var i = 0; i < data.pledgors.length; i++) {
-		$rootScope.pledgors.push({
-		    id : data.pledgors[i].CODE,
-		    label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
-		});
-	    }
 	    $rootScope.types = [];
 	    for (var i = 0; i < data.types.length; i++) {
 		$rootScope.types.push({
@@ -1523,7 +1522,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $scope.showPledgeBalance = function(donation) {
 	return (donation.PLEDSCHED == 2 || donation.PLEDSCHED == 3 || donation.PLEDSCHED == 4 || donation.PLEDSCHED == 5);
     }
-    
+
     $rootScope.clearOrder = function() {
 	vm.watchEnabled = false;
 	$scope.selectedOrderSummary = null; // sets is_saving and is_deleting to
@@ -2548,7 +2547,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 }).controller('ContactsSearch', function($scope, $rootScope, $sails, $modal, $timeout, $contact) {
     var vm = this;
 
-    $scope.longSelectOptions = {
+    $rootScope.shortSelectOptions = {
+	minimumInputLength : 1
+    };
+    $rootScope.longSelectOptions = {
 	minimumInputLength : 2
     };
 
@@ -2576,6 +2578,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	DIOCESE : null,
 	GROUP : null,
 
+	FLAGS : [],
+	LANGUAGE : null,
+	
 	// Ecclesiastical -
 	ecc_enabled : null,
 	RELIGIOUS : null,
@@ -2612,6 +2617,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	CONSECRATE_MIN : null,
 	CONSECRATE_MAX : null,
 	EP020 : null,
+	notes : {
+	    text : null
+	},
 
 	// DPOTHER
 	dpother : {
@@ -2626,7 +2634,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    MODE : null,
 	    GL : null,
 	    REQUESTS : null,
-	    TBAREQS : null
+	    TBAREQS : null,
+	    NARRA : null
 	//	    
 	//	    
 	//	    
@@ -2656,14 +2665,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    MODE : null,
 	    REQUESTS : null,
 	    TBAREQS : null,
-	    CAMP_TYPE : null
+	    CAMP_TYPE : null,
+	    GIFTMEMO : null
 	// ms
 	},
 	dtmail : {
 	    SOL : null
 	},
 	dpplg : {
-	    PLEDGOR : 'ANY',
 	    MADE_DT_MIN : null,
 	    MADE_DT_MAX : null,
 	    START_DT_MIN : null,
@@ -2690,10 +2699,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    MAMT_MIN : null,
 	    MAMT_MAX : null,
 	    MYEAR_MIN : null,
-	    MYEAR_MAX : null
+	    MYEAR_MAX : null,
+	    MNOTES : null
 	},
+	VOLUNTEER : null,
 	dtvols1 : {
-	    VOLUNTEER : null,
 
 	    VORIGIN : null,
 	    VSDATE_MIN : null,
@@ -2859,6 +2869,30 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
 	    data = data.result;
+
+	    $rootScope.volunteers = [];
+	    for (var i = 0; i < data.volunteers.length; i++) {
+		$rootScope.volunteers.push({
+		    id : data.volunteers[i].CODE,
+		    label : data.volunteers[i].CODE + " - " + data.volunteers[i].DESC
+		});
+	    }
+	    $rootScope.flags = [];
+	    for (var i = 0; i < data.flags.length; i++) {
+		$rootScope.flags.push({
+		    id : data.flags[i].CODE,
+		    label : data.flags[i].CODE + " - " + data.flags[i].DESC
+		});
+	    }
+
+	    $rootScope.pledgors = [];
+	    for (var i = 0; i < data.pledgors.length; i++) {
+		$rootScope.pledgors.push({
+		    id : data.pledgors[i].CODE,
+		    label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
+		});
+	    }
+	    
 
 	    $rootScope.ship_from = [];
 	    $rootScope.ship_name = {};
@@ -3424,7 +3458,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 			angular.forEach($scope.contact, function(value, key) {
 
-			    if (key == 'dpother' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
+			    if (key == 'dpother' || key == 'notes' || key == 'dpgift' || key == 'dpplg' || key == 'dtvols1' || key == 'dpmisc' || key == 'dtmail' || key == 'dpothadd' || key == 'dpordersummary' || key == 'dplang' || key == 'dptrans' || key == 'dtmajor' || key == 'dtbishop') {
 				angular.forEach(value, function(innerValue, innerKey) {
 				    if ($scope.search_templates[i].data[key] && $scope.search_templates[i].data[key][innerKey]) {
 					$scope.contact[key][innerKey] = $scope.search_templates[i].data[key][innerKey];
@@ -3594,7 +3628,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $rootScope.newOrderTemplateModal = {
 	name : null
     };
-
+    $rootScope.shortSelectOptions = {
+	minimumInputLength : 1
+    };
     $rootScope.longSelectOptions = {
 	minimumInputLength : 2
     };
@@ -3990,7 +4026,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	var vm = this;
 	vm.pageReset = false;
-	
+
 	$scope.selectedOrder = null;
 	$scope.orders = [];
 
@@ -4050,11 +4086,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		vm.pageReset = false;
 	    }
 	}
-	
+
 	$rootScope.resetOrdersPageNumber = function() {
 	    vm.pageReset = true;
 	}
-
 
 	/*
 	 * $scope.$on('refreshContactsx', function(event, args){
@@ -4747,7 +4782,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    backdrop : true
 	});
 	$rootScope.deleteModalText = $scope.selectedGroup.name; // $scope.selectedGroup.id
-								// + ' ' +
+	// + ' ' +
 	$rootScope.currentModal.result.then(function(selectedItem) {
 	}, function(triggerElement) {
 	    if (triggerElement == 'delete') {
@@ -4968,8 +5003,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		backdrop : true
 	    });
 	    $rootScope.deleteModalText = $scope.selectedUser.username; // $scope.selectedUser.id
-									// + ' '
-									// +
+	    // + ' '
+	    // +
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'delete') {

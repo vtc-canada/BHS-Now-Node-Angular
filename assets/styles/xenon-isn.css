@@ -56,6 +56,14 @@ abbr.isn-calendar-clear{
   cursor: pointer;
   outline: 0;
 }
+
+textarea.isn-textarea-col-4{
+	height:86px;
+}
+
+textarea.isn-textarea-col-8{
+	height:158px;
+}
 	
 	
 .isn-button-seperator{

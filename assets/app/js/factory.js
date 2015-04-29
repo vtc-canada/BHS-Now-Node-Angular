@@ -179,6 +179,8 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
     var obj = {
 
 	init : function() {  
+	    
+	    this.VOLUNTEER = null;
 	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
 	    this.dtbishop = initDtBishop;
 
@@ -227,7 +229,7 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    this.CFNID = null;
 	    this.PLEDGOR = null;
 	    this.AR = null;
-	    this.SOLS = null;
+	    //this.SOLS = null;
 	    this.LANGUAGE = null;
 	    this.ENGLISH = null;
 

@@ -147,6 +147,14 @@ module.exports = {
 	delete contact.dtvols1;
 	delete contact.dtbishop;
 	delete contact.notes;
+	
+	
+	if(contact.FLAGS != null){
+	    contact.FLAGS = contact.FLAGS.join();
+//	    for(var i=0;i<contact.FLAGS.length; i++){
+//		
+//	    }
+	}
 
 	if (contactId == 'new') { // New Contact.
 
@@ -1043,6 +1051,14 @@ module.exports = {
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
+				    
+				if(data[0][0].FLAGS != null){
+				    data[0][0].FLAGS = data[0][0].FLAGS.split(",");
+				    for(var i=0;i < data[0][0].FLAGS.length; i++ ){
+					data[0][0].FLAGS[i] = data[0][0].FLAGS[i].trim();
+				    }
+				}
+				    
 				return callback(null, data[0][0]);
 			    });
 		    },
@@ -1055,8 +1071,8 @@ module.exports = {
 		    },
 		    dtmail : function(callback) {
 			Database.knex.raw(
-			    "SELECT dtmail.*, dpcodes.DESC, maildrop.DROP_DATE, maildrop.DROP_CNT  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL )"
-				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST)  ) WHERE DONOR = " + contactId).exec(function(err, data) {
+			    "SELECT dtmail.*, dpcodes.DESC,  DATE_FORMAT(MAX(maildrop.DROP_DATE),'%Y-%m-%d')  AS `DROP_DATE`, SUM(maildrop.DROP_CNT) AS `DROP_CNT`  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL )"
+				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST)  ) WHERE DONOR = " + contactId + " GROUP BY dtmail.id" ).exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
@@ -1352,6 +1368,7 @@ module.exports = {
 	var dpplg = req.body.contact.dpplg;
 	var dpmisc = req.body.contact.dpmisc;
 	var dtvols1 = req.body.contact.dtvols1;
+	var notes = req.body.contact.notes;
 
 	
 
@@ -1368,6 +1385,7 @@ module.exports = {
 	delete req.body.contact.dpplg;
 	delete req.body.contact.dpmisc;
 	delete req.body.contact.dtvols1;
+	delete req.body.contact.notes;
 
 	var dpothaddFlag = false;
 	var dpordersummaryFlag = false;
@@ -1382,6 +1400,7 @@ module.exports = {
 	var dpplgFlag = false;
 	var dpmiscFlag = false;
 	var dtvols1Flag = false;
+	var notesFlag = false;
 
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
@@ -1402,6 +1421,7 @@ module.exports = {
 	var dpPlgWheres = '';
 	var dpMiscWheres = '';
 	var dtVols1Wheres = '';
+	var notesWheres = '';
 
 	determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
 	// dpGiftWheres, dpother flag, dpOtherWheres
@@ -1459,6 +1479,9 @@ module.exports = {
 		if (dtbishopFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtbishop` ON `dp`.`id` = `dtbishop`.`DONOR` ' + dtbishopWheres + (joinCount > 1 ? ')' : '');
 		}
+		if (notesFlag) {
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `notes` ON `dp`.`id` = `notes`.`DONOR` ' + notesWheres + (joinCount > 1 ? ')' : '');
+		}
 		
 		
 	    } else if (mode == 'and') {
@@ -1499,6 +1522,9 @@ module.exports = {
 		}
 		if (dtbishopFlag) {
 		    innerSelect = innerSelect + ' INNER JOIN `dtbishop` ON `dp`.`id` =  `dtbishop`.`DONOR`' + (dtbishopWheres == '' ? '' : ' AND ') + dtbishopWheres;
+		}
+		if (notesFlag) {
+		    innerSelect = innerSelect + ' INNER JOIN `notes` ON `dp`.`id` =  `notes`.`DONOR`' + (notesWheres == '' ? '' : ' AND ') + notesWheres;
 		}
 	    }
 	}
@@ -1600,6 +1626,19 @@ module.exports = {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
 		    return;
 		}
+		if(key == 'FLAGS' && val != null && val != ''){
+		    
+		    var littleWheres = '';
+		    for(i =0; i< val.length; i++){
+			littleWheres = littleWheres + (littleWheres == '' ? '' : ' OR ') + 'dp.FLAGS LIKE ' + wrapPercents(mysql.escape(val[i]));
+			
+		    }
+		    if(littleWheres!= ''){
+			littleWheres = '(' + littleWheres + ')';
+			dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + littleWheres ;
+		    }
+		    return;
+		}
 
 		if(key == 'ZIP'&&val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP LIKE ' +  wrapPercents(mysql.escape(val)) ;
@@ -1646,6 +1685,32 @@ module.exports = {
 	}
 
 	function determineJoinsAndWheres() {
+	    if (notes) {
+		Object.keys(notes).forEach(function(key) {
+		    var val = notes[key];
+
+		    if (val != null && val != '') {
+			if (!notesFlag) {
+			    joinCount++;
+			}
+
+			notesFlag = true;
+
+			if (key == 'text') {
+			    notesWheres = notesWheres + (notesWheres == '' ? '' : ' AND ') + 'notes.text LIKE ' + wrapPercents(mysql.escape(val));
+			    return;
+			}
+			
+			notesWheres = notesWheres + (notesWheres == '' ? '' : ' AND ') + 'notes.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
+		    }
+		});
+		if (dpWheres != '') {
+		    notesWheres = dpWheres + (notesWheres == '' ? '' : ' AND ') + notesWheres;
+		} else if (notesWheres != '') {
+		    notesWheres = (mode == 'or' ? 'WHERE ' : '') + notesWheres;
+		}
+	    }
+	    
 	    if (dpother) {
 		Object.keys(dpother).forEach(function(key) {
 		    var val = dpother[key];
@@ -1671,6 +1736,11 @@ module.exports = {
 			}
 			if (key == 'DATE_MAX') {
 			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.DATE <= ' + mysql.escape(val);
+			    return;
+			}
+
+			if (key == 'NARRA') {
+			    dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.NARRA LIKE ' + wrapPercents(mysql.escape(val));
 			    return;
 			}
 			dpOtherWheres = dpOtherWheres + (dpOtherWheres == '' ? '' : ' AND ') + 'dpother.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
@@ -1708,6 +1778,10 @@ module.exports = {
 			}
 			if (key == 'DATE_MAX') {
 			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.DATE <= ' + mysql.escape(val);
+			    return;
+			}
+			if (key == 'GIFTMEMO') {
+			    dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.GIFTMEMO LIKE ' + wrapPercents(mysql.escape(val));
 			    return;
 			}
 			dpGiftWheres = dpGiftWheres + (dpGiftWheres == '' ? '' : ' AND ') + 'dpgift.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
@@ -1852,6 +1926,11 @@ module.exports = {
 			}
 			if (key == 'MYEAR_MAX') {
 			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MYEAR <= ' + mysql.escape(val);
+			    return;
+			}
+
+			if (key == 'MNOTES') {
+			    dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.MNOTES LIKE ' + wrapPercents(mysql.escape(val));
 			    return;
 			}
 			dpMiscWheres = dpMiscWheres + (dpMiscWheres == '' ? '' : ' AND ') + 'dpmisc.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));

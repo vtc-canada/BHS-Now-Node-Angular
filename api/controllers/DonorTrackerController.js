@@ -222,6 +222,33 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
+	    flags : function(callback){
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'FLAGS'
+		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
+	    pledgors : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'PLEDGOR'
+		}).orderBy('CODE','ASC').exec(function(err, types) {
+		    if (err)
+			return callback(err);
+		    callback(null, types);
+		});
+	    },
+	    volunteers : function(callback){
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'VOLUNTEER'
+		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		    if (err)
+			return callback(err);
+		    callback(null, titles);
+		});
+	    },
 	    ship_from : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SHIPFROM'
@@ -229,7 +256,7 @@ module.exports = {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
-		})
+		});
 	    },
 	    currencies : function(callback) {
 		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
@@ -538,15 +565,7 @@ module.exports = {
 		    callback(null, types);
 		});
 	    },
-	    pledgors : function(callback) {
-		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-		    FIELD : 'PLEDGOR'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
-		    if (err)
-			return callback(err);
-		    callback(null, types);
-		});
-	    },
+	    
 	    accounts_received : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'AR'
