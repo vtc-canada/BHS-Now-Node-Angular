@@ -574,7 +574,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
-	if ((!angular.equals(newValue, oldValue)) && vm.blockOrderSelectedModified == false) {   //selectedOrderSummary.dporderdetails
+	if ((!angular.equals(newValue, oldValue)) && vm.blockOrderSelectedModified == false) { //selectedOrderSummary.dporderdetails
 	    angular.forEach(newValue, function(row) {
 		// Update descriptions
 		if (typeof ($rootScope.litemdetails) != 'undefined' && typeof ($rootScope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($rootScope.litemdetails[row.LITEMP].description)) {
@@ -1141,48 +1141,55 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			size : 'sm',
 			backdrop : false
 		    });
-		}, 0);
-		$sails.post("/contacts/getcontact", {
-		    id : message.id
-		}).success(function(data) {
 
-		    if (data.error != undefined) { // USER NO LONGER LOGGED
-			// IN!!!!!
-			location.reload(); // Will boot back to login
-			// screen
-		    }
-		    $scope.selectedTransaction = null; // wipes
-		    // out
-		    // selected
-		    // Transaction
-		    if (data.success) {
-			for ( var key in $scope.selectedDataTableRow) { // iterate
-			    // destroying
-			    // datatables!
-			    $scope.tryDestroyDataTable(key);
+		    $sails.post("/contacts/getcontact", {
+			id : message.id
+		    }).success(function(data) {
+
+			if (data.error != undefined) { // USER NO LONGER LOGGED
+			    // IN!!!!!
+			    location.reload(); // Will boot back to login
+			    // screen
 			}
-			// $scope.tryDestroyDataTable('dpordersummary');
-			$timeout(function() {
-			    $contact.set(data.contact);
-			    resetContactForms();
-
-			    if ($rootScope.loading_modal) { // BUG HERE
-				$rootScope.loading_modal.dismiss();
+			$scope.selectedTransaction = null; // wipes
+			// out
+			// selected
+			// Transaction
+			if (data.success) {
+			    for ( var key in $scope.selectedDataTableRow) { // iterate
+				// destroying
+				// datatables!
+				$scope.tryDestroyDataTable(key);
 			    }
+			    // $scope.tryDestroyDataTable('dpordersummary');
 			    $timeout(function() {
-				$(window).scrollTop($('.nav-tabs').offset().top - 8);
-				for ( var key in $scope.selectedDataTableRow) { // iterate
-				    // destroying
-				    // datatables!
-				    $scope.rebindDataTable(key);
+				$contact.set(data.contact);
+				resetContactForms();
+				if ($rootScope.loading_modal) { // BUG HERE
+				    console.log('dismissing modal');
+				    $rootScope.loading_modal.dismiss('somevalue');
+				    $timeout(function(){
+					if ($rootScope.loading_modal) {
+					    console.log('dismissing modal a second time after 1000ms!!!!!!!!!!!!!!!!!!!!!!!');
+					    $rootScope.loading_modal.dismiss('somevalue2');
+					}
+				    },1000);
 				}
-				// $scope.rebindOrderSummaryDataTable();
+				$timeout(function() {
+				    $(window).scrollTop($('.nav-tabs').offset().top - 8);
+				    for ( var key in $scope.selectedDataTableRow) { // iterate
+					// destroying
+					// datatables!
+					$scope.rebindDataTable(key);
+				    }
+				    // $scope.rebindOrderSummaryDataTable();
+				}, 0);
 			    }, 0);
-			}, 0);
-		    }
-		}).error(function(data) {
-		    alert('err!');
-		});
+			}
+		    }).error(function(data) {
+			alert('err!');
+		    });
+		}, 0);
 	    }
 	});
     });
@@ -1286,8 +1293,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $timeout(function() {
 			$rootScope.validator[tabval].resetForm();
 			$('form#' + tabval + ' .validate-has-error').removeClass('validate-has-error');
-
-		    }, 10);
+		    }, 0);
 		}
 	    });
 
@@ -2580,7 +2586,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	FLAGS : [],
 	LANGUAGE : null,
-	
+
 	// Ecclesiastical -
 	ecc_enabled : null,
 	RELIGIOUS : null,
@@ -2892,7 +2898,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.pledgors[i].CODE + " - " + data.pledgors[i].DESC
 		});
 	    }
-	    
 
 	    $rootScope.ship_from = [];
 	    $rootScope.ship_name = {};

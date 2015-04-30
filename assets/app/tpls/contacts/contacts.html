@@ -1672,7 +1672,7 @@
 								<div class="form-group">
 									<label class="col-sm-4 control-label" for="contact.dpmisc.MTYPE">Transaction Type:</label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" id="contact.dpmisc.MTYPE" ng-model="contact.dpmisc.MTYPE" ng-model-options="" placeholder="">
+										<select2 class="form-control" id="modalDataSet.dpmisc.MTYPE" name="modalDataSet.dpmisc.MTYPE" ng-options="title.id as title.label for title in mtypes" ng-model="modalDataSet.dpmisc.MTYPE" multiple></select2>
 									</div>
 								</div>
 							</div>
@@ -2519,7 +2519,7 @@
 	
 	<div ng-if="contact.id" class="col-md-12">
 		<tabset class="nav-tabs">
-			<tab heading="Layman" enabled="true" id="layman_tab">
+			<tab heading="Layman"  id="layman_tab">
 				<form role="form" id="layman" class="form-horizontal validate">
 					<div class="row">
 						<div class="col-xs-12">
@@ -4303,7 +4303,7 @@
 
 
 			</tab>
-			<tab heading="Orders" enabled="true"  id="orders_tab">
+			<tab heading="Orders"  id="orders_tab">
 				<form role="form" id="orders" class="form-horizontal validate orders-form">
 					<div class="row">
 						<div class="col-xs-12">

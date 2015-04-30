@@ -152,6 +152,32 @@ table.dataTable tbody tr{
 	padding: 5px;
 }
 
+.nav.nav-tabs>li.enabled a{
+    /* background: rgb(104, 184, 40); */
+	
+    /* color: white; */
+}
+.nav.nav-tabs>li.enabled.active a{
+    background: white;
+	
+    color: #555;
+}
+
+.nav.nav-tabs>li.enabled{
+    background: rgb(104, 184, 40);
+	
+}
+
+.nav.nav-tabs>li.enabled.active{
+	
+}
+.nav.nav-tabs>li{
+	max-width:24%;
+}
+
+.nav.nav-tabs>li>a {
+	margin-left:5px;
+}
 
 .panel{
 	padding: 8px 12px;
