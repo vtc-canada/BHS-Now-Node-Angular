@@ -2258,8 +2258,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $scope.reportselects.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$scope.reportselects.countries.push({
-		    id : data.countries[i].COUNTRY,
-		    label : data.countries[i].COUNTRY
+		    id : data.countries[i].CODE,
+		    label : data.countries[i].CODE
 		});
 	    }
 

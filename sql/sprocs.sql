@@ -178,7 +178,7 @@ FROM dpgift
 	WHERE dpgift.`DATE` >= startDate
 		AND dpgift.`DATE` <= endDate
 		AND dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY')
-		AND (country IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
+		AND (includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
 		AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
 UNION ALL
 SELECT Case When dpother.TRANSACT IN ('SE','SF','SS') then 'Donations + Sales + Pledges + M&T' else 'Masses' END as `Type`,
@@ -237,7 +237,7 @@ WHERE dpgift.`DATE` >= startDate
 	AND dpgift.`DATE` <= endDate
 	AND dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY')
 	AND (solCodes IS NULL OR MATCH (dpgift.`SOL`) AGAINST (solCodes IN BOOLEAN MODE))
-	AND (country IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
 GROUP BY dp.COUNTRY, `MONTH`
 ORDER BY dp.COUNTRY DESC) t
@@ -293,7 +293,7 @@ FROM dpgift
 	WHERE dpgift.`DATE` >= StartDate
 		AND dpgift.`DATE` <= EndDate
 		AND dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY')
-		AND (country IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
+		AND (includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
 		AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
 ) t
 GROUP BY CountType
@@ -386,7 +386,7 @@ FROM dpgift GIFT
 	INNER JOIN dpexchange_history on dpexchange_history.`date` = GIFT.`DATE` AND GIFT.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 WHERE GIFT.`DATE` >= startDate
 	AND GIFT.`DATE` <= endDate
-	AND (country IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(CONTACT.COUNTRY, excludecountry))
 UNION ALL
 # Sales
@@ -400,7 +400,7 @@ FROM dpother OTHER
 	INNER JOIN dpexchange_history on dpexchange_history.`date` = OTHER.`DATE` AND OTHER.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 WHERE OTHER.`DATE` >= startDate
 	AND OTHER.`DATE` <= endDate
-	AND (country IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(CONTACT.COUNTRY, excludecountry))
 UNION ALL
 # Masses
@@ -414,7 +414,7 @@ FROM dpother OTHER
 	INNER JOIN dpexchange_history on dpexchange_history.`date` = OTHER.`DATE` AND OTHER.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 WHERE OTHER.`DATE` >= startDate
 	AND OTHER.`DATE` <= endDate
-	AND (country IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(CONTACT.COUNTRY, excludecountry))
 UNION ALL
 # Pledges
@@ -428,7 +428,7 @@ FROM dpgift GIFT
 	INNER JOIN dpexchange_history on dpexchange_history.`date` = GIFT.`DATE` AND GIFT.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 WHERE GIFT.`DATE` >= startDate
 	AND GIFT.`DATE` <= endDate
-	AND (country IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
+	AND (includecountry IS NULL OR FIND_IN_SET(CONTACT.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(CONTACT.COUNTRY, excludecountry));
 END$$
 DELIMITER ;
