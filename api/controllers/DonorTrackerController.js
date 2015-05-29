@@ -37,7 +37,7 @@ module.exports = {
 	    countries : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -53,7 +53,7 @@ module.exports = {
 	    ship_from : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SHIPFROM'
-		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		}).orderBy('CODE', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -72,7 +72,7 @@ module.exports = {
 
 	async.parallel({
 	    dpcodefields : function(callback) {
-		Database.knex('dpcodes').distinct('FIELD').select().orderBy('CODE','ASC').exec(function(err, titles) {
+		Database.knex('dpcodes').distinct('FIELD').select().orderBy('FIELD', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -92,7 +92,7 @@ module.exports = {
 	    sols : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SOL'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -101,7 +101,7 @@ module.exports = {
 	    ship_from : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SHIPFROM'
-		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		}).orderBy('CODE', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -117,7 +117,7 @@ module.exports = {
 	    address_types : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ADDTYPE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -126,7 +126,7 @@ module.exports = {
 	    states : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ST'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -135,7 +135,7 @@ module.exports = {
 	    sols : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SOL'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -160,7 +160,7 @@ module.exports = {
 	    countries : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -169,7 +169,7 @@ module.exports = {
 	    county_codes : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC', 'MCAT_LO').where({
 		    FIELD : 'COUNTY'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -178,7 +178,7 @@ module.exports = {
 	    phone_types : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PHTYPE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -194,7 +194,7 @@ module.exports = {
 	    litems : function(callback) {
 		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -216,16 +216,23 @@ module.exports = {
 	    english : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ENGLISH'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
-	    flags : function(callback){
+	    donor_classes : function(callback) {
+		Database.knex.raw("select distinct `CODE` ,  `DESC` from `dpcodes` where `FIELD` = 'CLASS' order by IF(SUBSTRING(`CODE`, 1,1) = 'U','0',SUBSTRING(`CODE`, 1,1)) DESC, IF(SUBSTRING(`CODE`, 2,length(`CODE`)-1) REGEXP '[0-9]+', CONCAT('Z',SUBSTRING(`CODE`, 2,length(`CODE`)-1)), SUBSTRING(`CODE`, 2,length(`CODE`)-1) ) DESC").exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results[0]);
+		});
+	    },
+	    flags : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'FLAGS'
-		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		}).orderBy('CODE', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -234,16 +241,16 @@ module.exports = {
 	    pledgors : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PLEDGOR'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
-	    volunteers : function(callback){
+	    volunteers : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'VOLUNTEER'
-		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		}).orderBy('CODE', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -252,7 +259,7 @@ module.exports = {
 	    ship_from : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SHIPFROM'
-		}).orderBy('CODE','ASC').exec(function(err, titles) {
+		}).orderBy('CODE', 'ASC').exec(function(err, titles) {
 		    if (err)
 			return callback(err);
 		    callback(null, titles);
@@ -268,7 +275,7 @@ module.exports = {
 	    languages : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -284,7 +291,7 @@ module.exports = {
 	    address_types : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ADDTYPE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -293,7 +300,7 @@ module.exports = {
 	    states : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ST'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -329,7 +336,7 @@ module.exports = {
 	    lists : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LIST'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -338,7 +345,7 @@ module.exports = {
 	    decision : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DECIS'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -347,7 +354,7 @@ module.exports = {
 	    willsaymass : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SAYMASS'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -356,7 +363,7 @@ module.exports = {
 	    mass_said : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'Q17'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -365,7 +372,7 @@ module.exports = {
 	    values_traditional : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'Q18'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -374,7 +381,7 @@ module.exports = {
 	    billing_schedules : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'MQA'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -383,7 +390,7 @@ module.exports = {
 	    origins : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'ORIGIN'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -392,7 +399,7 @@ module.exports = {
 	    sols : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'SOL'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -401,7 +408,7 @@ module.exports = {
 	    demands : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DEMAND'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -410,7 +417,7 @@ module.exports = {
 	    modes : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'MODE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -419,7 +426,7 @@ module.exports = {
 	    tba_requests : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TBAREQS'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -428,7 +435,7 @@ module.exports = {
 	    requests_plural : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'REQUESTS'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -437,7 +444,7 @@ module.exports = {
 	    pledgegroups : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'GL'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -446,7 +453,7 @@ module.exports = {
 	    transacts : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TRANSACT'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -469,7 +476,7 @@ module.exports = {
 	    mtypes : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'MTYPE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -478,7 +485,7 @@ module.exports = {
 	    litems : function(callback) {
 		Database.knex('dpcodes').select('DESC', 'OTHER').distinct('CODE').where({
 		    FIELD : 'LITEMP'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -487,7 +494,7 @@ module.exports = {
 	    sources : function(callback) {
 		Database.knex('dpcodes').select('DESC').distinct('CODE').where({
 		    FIELD : 'SOURCE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -513,7 +520,7 @@ module.exports = {
 	    relationships : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LINK'
-		}).orderBy('CODE','ASC').exec(function(err, sols) {
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
 		    if (err)
 			return callback(err);
 		    callback(null, sols);
@@ -523,7 +530,7 @@ module.exports = {
 	    reasons : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'NM_REASON'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -532,7 +539,7 @@ module.exports = {
 	    cfns : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'CFN'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -541,7 +548,7 @@ module.exports = {
 	    genders : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'GENDER'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -550,7 +557,7 @@ module.exports = {
 	    dioceses : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DIOCESE'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -559,17 +566,17 @@ module.exports = {
 	    groups : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'GROUP'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
 		});
 	    },
-	    
+
 	    accounts_received : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'AR'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -578,7 +585,7 @@ module.exports = {
 	    types : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'TYPE'
-		}).orderBy('CODE','ASC').exec(function(err, types) {
+		}).orderBy('CODE', 'ASC').exec(function(err, types) {
 		    if (err)
 			return callback(err);
 		    callback(null, types);
@@ -588,7 +595,7 @@ module.exports = {
 	    countries : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'COUNTRY'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -597,7 +604,7 @@ module.exports = {
 	    county_codes : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC', 'MCAT_LO').where({
 		    FIELD : 'COUNTY'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -606,7 +613,7 @@ module.exports = {
 	    phone_types : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'PHTYPE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -616,7 +623,7 @@ module.exports = {
 	    languages : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'LANGUAGE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
@@ -626,19 +633,12 @@ module.exports = {
 	    designates : function(callback) {
 		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
 		    FIELD : 'DESIGNATE'
-		}).orderBy('CODE','ASC').exec(function(err, results) {
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
 		    if (err)
 			return callback(err);
 		    callback(null, results);
 		});
 	    },
-
-	    /*
-	     * , donor_classes : function(callback){
-	     * Database.knex('dpcodes').distinct('CODE').select('DESC').where({
-	     * FIELD : 'CLASS' }).exec(function(err, results) { if (err) return
-	     * callback(err); callback(null, results); }); }
-	     */
 
 	    dtvols1 : function(callback) {
 		async.parallel({

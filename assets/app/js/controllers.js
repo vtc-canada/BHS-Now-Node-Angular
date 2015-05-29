@@ -1168,12 +1168,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 				if ($rootScope.loading_modal) { // BUG HERE
 				    console.log('dismissing modal');
 				    $rootScope.loading_modal.dismiss('somevalue');
-				    $timeout(function(){
+				    $timeout(function() {
 					if ($rootScope.loading_modal) {
 					    console.log('dismissing modal a second time after 1000ms!!!!!!!!!!!!!!!!!!!!!!!');
 					    $rootScope.loading_modal.dismiss('somevalue2');
 					}
-				    },1000);
+				    }, 1000);
 				}
 				$timeout(function() {
 				    $(window).scrollTop($('.nav-tabs').offset().top - 8);
@@ -1392,12 +1392,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'Pledge'
 	    } ];
 
-	    /*
-	     * for (var i = 0; i < data.donor_classes.length; i++) {
-	     * $scope.donor_classes.push({ id : data.donor_classes[i].CODE,
-	     * label : data.donor_classes[i].CODE + " - " +
-	     * data.donor_classes[i].DESC }); }
-	     */
+	    
 
 	    /*
 	     * angular.forEach(data.result,function(atts,key){ $scope[key]=[];
@@ -2300,244 +2295,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
      * 'No' } ];
      */
-    $scope.donor_classes = [ {
-	id : "AA",
-	label : "AA - Prospect-88"
-    }, {
-	id : "AB",
-	label : "AB - Prospect-89"
-    }, {
-	"id" : "AC",
-	"label" : "AC - Prospect-90"
-    }, {
-	"id" : "AD",
-	"label" : "AD - Prospect-91"
-    }, {
-	"id" : "AE",
-	"label" : "AE - Prospect-92"
-    }, {
-	"id" : "AF",
-	"label" : "AF - Prospect-93"
-    }, {
-	"id" : "AG",
-	"label" : "AG - Prospect-94"
-    }, {
-	"id" : "CA",
-	"label" : "CA - Referrals-88"
-    }, {
-	"id" : "CB",
-	"label" : "CB - Referrals-89"
-    }, {
-	"id" : "CC",
-	"label" : "CC - Referrals-90"
-    }, {
-	"id" : "CD",
-	"label" : "CD - Referrals-91"
-    }, {
-	"id" : "CE",
-	"label" : "CE - Referrals-92"
-    }, {
-	"id" : "CF",
-	"label" : "CF - Referrals-93"
-    }, {
-	"id" : "CG",
-	"label" : "CG - Referrals-94"
-    }, {
-	"id" : "EA",
-	"label" : "EA - Contacts-88"
-    }, {
-	"id" : "EB",
-	"label" : "EB - Contacts-89"
-    }, {
-	"id" : "EC",
-	"label" : "EC - Contacts-90"
-    }, {
-	"id" : "ED",
-	"label" : "ED - Contacts-91"
-    }, {
-	"id" : "EE",
-	"label" : "EE - Contacts-92"
-    }, {
-	"id" : "EF",
-	"label" : "EF - Contacts-93"
-    }, {
-	"id" : "EG",
-	"label" : "EG - Contacts-94"
-    }, {
-	"id" : "GA",
-	"label" : "GA - Buyers-88"
-    }, {
-	"id" : "GB",
-	"label" : "GB - Buyers-89"
-    }, {
-	"id" : "GC",
-	"label" : "GC - Buyers-90"
-    }, {
-	"id" : "GD",
-	"label" : "GD - Buyers-91"
-    }, {
-	"id" : "GE",
-	"label" : "GE - Buyers-92"
-    }, {
-	"id" : "GF",
-	"label" : "GF - Buyers-93"
-    }, {
-	"id" : "GG",
-	"label" : "GG - Buyers-94"
-    }, {
-	"id" : "IA",
-	"label" : "IA - Donor - 0.01+"
-    }, {
-	"id" : "IB",
-	"label" : "IB - Donor - 5+"
-    }, {
-	"id" : "IC",
-	"label" : "IC - Donor - 10+"
-    }, {
-	"id" : "ID",
-	"label" : "ID - Donor - 25+"
-    }, {
-	"id" : "IE",
-	"label" : "IE - Donor - 50+"
-    }, {
-	"id" : "IF",
-	"label" : "IF - Donor - 75+"
-    }, {
-	"id" : "IG",
-	"label" : "IG - Donor - 100+"
-    }, {
-	"id" : "IH",
-	"label" : "IH - Donor - 250+"
-    }, {
-	"id" : "II",
-	"label" : "II - Donor - 500+"
-    }, {
-	"id" : "IJ",
-	"label" : "IJ - Donor - 1000+"
-    }, {
-	"id" : "IK",
-	"label" : "IK - Donor - 5000+"
-    }, {
-	"id" : "AH",
-	"label" : "AH - Prospect-95"
-    }, {
-	"id" : "CH",
-	"label" : "CH - Referrals-95"
-    }, {
-	"id" : "GH",
-	"label" : "GH - Buyers-95"
-    }, {
-	"id" : "EH",
-	"label" : "EH - Contacts-95"
-    }, {
-	"id" : "AI",
-	"label" : "AI - Prospect-96"
-    }, {
-	"id" : "AJ",
-	"label" : "AJ - Prospect-97"
-    }, {
-	"id" : "AK",
-	"label" : "AK - Prospect-98"
-    }, {
-	"id" : "AL",
-	"label" : "AL - Prospect-99"
-    }, {
-	"id" : "AM",
-	"label" : "AM - Prospect-00"
-    }, {
-	"id" : "AN",
-	"label" : "AN - Prospect-01"
-    }, {
-	"id" : "EI",
-	"label" : "EI - Contacts-96"
-    }, {
-	"id" : "EJ",
-	"label" : "EJ - Contacts-97"
-    }, {
-	"id" : "EK",
-	"label" : "EK - Contacts-98"
-    }, {
-	"id" : "EL",
-	"label" : "EL - Contacts-99"
-    }, {
-	"id" : "EM",
-	"label" : "EM - Contacts-00"
-    }, {
-	"id" : "EN",
-	"label" : "EN - Contacts-01"
-    }, {
-	"id" : "CI",
-	"label" : "CI - Referrals-96"
-    }, {
-	"id" : "CJ",
-	"label" : "CJ - Referrals-97"
-    }, {
-	"id" : "CK",
-	"label" : "CK - Referrals-98"
-    }, {
-	"id" : "CL",
-	"label" : "CL - Referrals-99"
-    }, {
-	"id" : "CM",
-	"label" : "CM - Referrals-00"
-    }, {
-	"id" : "CN",
-	"label" : "CN - Referrals-01"
-    }, {
-	"id" : "GI",
-	"label" : "GI - Buyers-96"
-    }, {
-	"id" : "GJ",
-	"label" : "GJ - Buyers-97"
-    }, {
-	"id" : "GK",
-	"label" : "GK - Buyers-98"
-    }, {
-	"id" : "GL",
-	"label" : "GL - Buyers-99"
-    }, {
-	"id" : "GM",
-	"label" : "GM - Buyers-00"
-    }, {
-	"id" : "GN",
-	"label" : "GN - Buyers-01"
-    }, {
-	"id" : "AO",
-	"label" : "AO - Prospect-02"
-    }, {
-	"id" : "CO",
-	"label" : "CO - Referrals-02"
-    }, {
-	"id" : "EO",
-	"label" : "EO - Contacts-02"
-    }, {
-	"id" : "GO",
-	"label" : "GO - Buyers-02"
-    }, {
-	"id" : "AP",
-	"label" : "AP - Prospect-03"
-    }, {
-	"id" : "CP",
-	"label" : "CP - Referrals-03"
-    }, {
-	"id" : "EP",
-	"label" : "EP - Contacts-03"
-    }, {
-	"id" : "GP",
-	"label" : "GP - Buyers-03"
-    }, {
-	"id" : "UN",
-	"label" : "UN - Unknown"
-    }, {
-	"id" : "EH",
-	"label" : "EH - Contact-95"
-    }, {
-	"id" : "CN",
-	"label" : "CN - Refferal 2001"
-    }, {
-	"id" : "AO",
-	"label" : "AO - Tour"
-    } ];
+    
 
     $rootScope.search_link_contact = $scope.link_contact;
 
@@ -2875,6 +2633,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$sails.get('/donortracker/getsearchattributes').success(function(data) {
 
 	    data = data.result;
+	    $rootScope.donor_classes = [];
+	    for (var i = 0; i < data.donor_classes.length; i++) {
+		$scope.donor_classes.push({
+		    id : data.donor_classes[i].CODE,
+		    label : data.donor_classes[i].CODE + " - " + data.donor_classes[i].DESC
+		});
+	    }
+	    
 
 	    $rootScope.volunteers = [];
 	    for (var i = 0; i < data.volunteers.length; i++) {
@@ -3113,244 +2879,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
      * 'No' } ];
      */
-    $scope.donor_classes = [ {
-	id : "AA",
-	label : "AA - Prospect-88"
-    }, {
-	id : "AB",
-	label : "AB - Prospect-89"
-    }, {
-	"id" : "AC",
-	"label" : "AC - Prospect-90"
-    }, {
-	"id" : "AD",
-	"label" : "AD - Prospect-91"
-    }, {
-	"id" : "AE",
-	"label" : "AE - Prospect-92"
-    }, {
-	"id" : "AF",
-	"label" : "AF - Prospect-93"
-    }, {
-	"id" : "AG",
-	"label" : "AG - Prospect-94"
-    }, {
-	"id" : "CA",
-	"label" : "CA - Referrals-88"
-    }, {
-	"id" : "CB",
-	"label" : "CB - Referrals-89"
-    }, {
-	"id" : "CC",
-	"label" : "CC - Referrals-90"
-    }, {
-	"id" : "CD",
-	"label" : "CD - Referrals-91"
-    }, {
-	"id" : "CE",
-	"label" : "CE - Referrals-92"
-    }, {
-	"id" : "CF",
-	"label" : "CF - Referrals-93"
-    }, {
-	"id" : "CG",
-	"label" : "CG - Referrals-94"
-    }, {
-	"id" : "EA",
-	"label" : "EA - Contacts-88"
-    }, {
-	"id" : "EB",
-	"label" : "EB - Contacts-89"
-    }, {
-	"id" : "EC",
-	"label" : "EC - Contacts-90"
-    }, {
-	"id" : "ED",
-	"label" : "ED - Contacts-91"
-    }, {
-	"id" : "EE",
-	"label" : "EE - Contacts-92"
-    }, {
-	"id" : "EF",
-	"label" : "EF - Contacts-93"
-    }, {
-	"id" : "EG",
-	"label" : "EG - Contacts-94"
-    }, {
-	"id" : "GA",
-	"label" : "GA - Buyers-88"
-    }, {
-	"id" : "GB",
-	"label" : "GB - Buyers-89"
-    }, {
-	"id" : "GC",
-	"label" : "GC - Buyers-90"
-    }, {
-	"id" : "GD",
-	"label" : "GD - Buyers-91"
-    }, {
-	"id" : "GE",
-	"label" : "GE - Buyers-92"
-    }, {
-	"id" : "GF",
-	"label" : "GF - Buyers-93"
-    }, {
-	"id" : "GG",
-	"label" : "GG - Buyers-94"
-    }, {
-	"id" : "IA",
-	"label" : "IA - Donor - 0.01+"
-    }, {
-	"id" : "IB",
-	"label" : "IB - Donor - 5+"
-    }, {
-	"id" : "IC",
-	"label" : "IC - Donor - 10+"
-    }, {
-	"id" : "ID",
-	"label" : "ID - Donor - 25+"
-    }, {
-	"id" : "IE",
-	"label" : "IE - Donor - 50+"
-    }, {
-	"id" : "IF",
-	"label" : "IF - Donor - 75+"
-    }, {
-	"id" : "IG",
-	"label" : "IG - Donor - 100+"
-    }, {
-	"id" : "IH",
-	"label" : "IH - Donor - 250+"
-    }, {
-	"id" : "II",
-	"label" : "II - Donor - 500+"
-    }, {
-	"id" : "IJ",
-	"label" : "IJ - Donor - 1000+"
-    }, {
-	"id" : "IK",
-	"label" : "IK - Donor - 5000+"
-    }, {
-	"id" : "AH",
-	"label" : "AH - Prospect-95"
-    }, {
-	"id" : "CH",
-	"label" : "CH - Referrals-95"
-    }, {
-	"id" : "GH",
-	"label" : "GH - Buyers-95"
-    }, {
-	"id" : "EH",
-	"label" : "EH - Contacts-95"
-    }, {
-	"id" : "AI",
-	"label" : "AI - Prospect-96"
-    }, {
-	"id" : "AJ",
-	"label" : "AJ - Prospect-97"
-    }, {
-	"id" : "AK",
-	"label" : "AK - Prospect-98"
-    }, {
-	"id" : "AL",
-	"label" : "AL - Prospect-99"
-    }, {
-	"id" : "AM",
-	"label" : "AM - Prospect-00"
-    }, {
-	"id" : "AN",
-	"label" : "AN - Prospect-01"
-    }, {
-	"id" : "EI",
-	"label" : "EI - Contacts-96"
-    }, {
-	"id" : "EJ",
-	"label" : "EJ - Contacts-97"
-    }, {
-	"id" : "EK",
-	"label" : "EK - Contacts-98"
-    }, {
-	"id" : "EL",
-	"label" : "EL - Contacts-99"
-    }, {
-	"id" : "EM",
-	"label" : "EM - Contacts-00"
-    }, {
-	"id" : "EN",
-	"label" : "EN - Contacts-01"
-    }, {
-	"id" : "CI",
-	"label" : "CI - Referrals-96"
-    }, {
-	"id" : "CJ",
-	"label" : "CJ - Referrals-97"
-    }, {
-	"id" : "CK",
-	"label" : "CK - Referrals-98"
-    }, {
-	"id" : "CL",
-	"label" : "CL - Referrals-99"
-    }, {
-	"id" : "CM",
-	"label" : "CM - Referrals-00"
-    }, {
-	"id" : "CN",
-	"label" : "CN - Referrals-01"
-    }, {
-	"id" : "GI",
-	"label" : "GI - Buyers-96"
-    }, {
-	"id" : "GJ",
-	"label" : "GJ - Buyers-97"
-    }, {
-	"id" : "GK",
-	"label" : "GK - Buyers-98"
-    }, {
-	"id" : "GL",
-	"label" : "GL - Buyers-99"
-    }, {
-	"id" : "GM",
-	"label" : "GM - Buyers-00"
-    }, {
-	"id" : "GN",
-	"label" : "GN - Buyers-01"
-    }, {
-	"id" : "AO",
-	"label" : "AO - Prospect-02"
-    }, {
-	"id" : "CO",
-	"label" : "CO - Referrals-02"
-    }, {
-	"id" : "EO",
-	"label" : "EO - Contacts-02"
-    }, {
-	"id" : "GO",
-	"label" : "GO - Buyers-02"
-    }, {
-	"id" : "AP",
-	"label" : "AP - Prospect-03"
-    }, {
-	"id" : "CP",
-	"label" : "CP - Referrals-03"
-    }, {
-	"id" : "EP",
-	"label" : "EP - Contacts-03"
-    }, {
-	"id" : "GP",
-	"label" : "GP - Buyers-03"
-    }, {
-	"id" : "UN",
-	"label" : "UN - Unknown"
-    }, {
-	"id" : "EH",
-	"label" : "EH - Contact-95"
-    }, {
-	"id" : "CN",
-	"label" : "CN - Refferal 2001"
-    }, {
-	"id" : "AO",
-	"label" : "AO - Tour"
-    } ];
+    
 
     $rootScope.search_contact = $scope.contact;
 
@@ -4325,7 +3854,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }, {
 		id : '3',
 		label : 'Negative'
-	    } ]
+	    } ];
 
 	    $rootScope.staticyesno = [ {
 		id : 'Y',
@@ -4336,10 +3865,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    } ];
 
 	    $rootScope.dpcodefields = [];
-	    $rootScope.dpcodefields.push({
-		id : null,
-		label : 'All'
-	    });
 	    for (var i = 0; i < data.dpcodefields.length; i++) {
 		if (data.dpcodefields[i].FIELD == null) {
 		    continue;
