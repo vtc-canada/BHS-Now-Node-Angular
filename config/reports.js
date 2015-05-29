@@ -1399,19 +1399,13 @@ module.exports.views = {
 			startrow : true,
 			endrow : true,
 			tableclass : 'wide',
-			groupheading : {
-			    spantype : 'col-xs-12',
-			    grid : [ [ {
-				val : 'ToDo some headings',
-				bold : true
-			    } ] ]
-			},
 			table : {
 			    searchenabled : true,
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {

@@ -229,20 +229,24 @@ function toClientDateTimeString(date){
                                     data[i].header[k].lastrowvalue =0;
                                     data[i].header[k].rowcount = 0;
                                 }
-                                data[i].header[k].lastrowvalue += parseFloat(data[i].data[j][k].val);
-                                data[i].header[k].rowcount++;
+                                if(typeof(data[i].data[j][k].val)!='undefined'&&data[i].data[j][k].val!=null&&data[i].data[j][k].val!=''){
+                                	data[i].header[k].lastrowvalue += parseFloat(data[i].data[j][k].val);
+	                                data[i].header[k].rowcount++;
+                                }
                             }
                             else if( data[i].header[k].lastrow.type == 'sum' ){
                                 if(typeof(data[i].header[k].lastrowvalue)=='undefined'){   //Blank out values on first run.
                                     data[i].header[k].lastrowvalue =0;
                                 }
-                                data[i].header[k].lastrowvalue += parseFloat(data[i].data[j][k].val);
+                                if(typeof(data[i].data[j][k].val)!='undefined'&&data[i].data[j][k].val!=null&&data[i].data[j][k].val!=''){
+                                	data[i].header[k].lastrowvalue += parseFloat(data[i].data[j][k].val);
+                                }
                             }
                             else if( data[i].header[k].lastrow.type == 'max' ){
                                 if(typeof(data[i].header[k].lastrowvalue)=='undefined'){   //Blank out values on first run.
                                     data[i].header[k].lastrowvalue =0;
                                 }
-                                if(parseFloat(data[i].data[j][k].val) > data[i].header[k].lastrowvalue)
+                                if(typeof(data[i].data[j][k].val)!='undefined'&&data[i].data[j][k].val!=null&&data[i].data[j][k].val!=''&&parseFloat(data[i].data[j][k].val) > data[i].header[k].lastrowvalue)
                                 {
                                     data[i].header[k].lastrowvalue = parseFloat(data[i].data[j][k].val);
                                 }
