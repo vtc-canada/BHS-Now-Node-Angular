@@ -3591,7 +3591,7 @@
 							
 							
 						</div>
-						<div class="col-lg-6" ng-class="{true: 'row-disabled', false: ''}[contact.ecc_enabled == false || contact.dtbishop.enabled == false]">
+						<div class="col-lg-6" ng-class="{true: 'row-disabled', false: ''}[contact.ecc_enabled == false]">
 
 							<div class="panel panel-default">
 								<div class="panel-heading">
@@ -3600,7 +3600,7 @@
 										<input type="checkbox" ng-disabled="contact.ecc_enabled == false" class="form-control iswitch-primary" name="contact.dtbishop.enabled" ng-checked="contact.dtbishop.enabled" ng-model="contact.dtbishop.enabled">
 									</div>
 								</div>
-								<div class="panel-body">
+								<div class="panel-body" ng-class="{true: 'row-disabled', false: ''}[contact.dtbishop.enabled == false]">
 									<div class="row">
 										<div class="col-sm-6">
 											<div class="form-group">
