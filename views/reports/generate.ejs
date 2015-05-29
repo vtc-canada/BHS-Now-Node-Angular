@@ -133,11 +133,11 @@ function toClientDateTimeString(date){
 
     <!-- DataSection   -->
     <% if(typeof(data[i].data)!= 'undefined'){ %>
-    <div class="report-data-wrapper <%= data[i].data.spantype %> <% if(typeof(data[i].data.pagination)!='undefined'&&data[i].data.pagination){ %>paginate<% } %>" style="<% if(data[i].data.topborder){ %>border-top:2px solid #000000;<% } %><% if(data[i].data.bottomborder){ %>border-bottom:2px solid #000000;<% } %>">
+    <div class="report-data-wrapper <%= data[i].table.spantype %> <% if(typeof(data[i].data.pagination)!='undefined'&&data[i].data.pagination){ %>paginate<% } %>" style="<% if(data[i].table.topborder){ %>border-top:2px solid #000000;<% } %><% if(data[i].table.bottomborder){ %>border-bottom:2px solid #000000;<% } %>">
         <!-- Iterate the rows -->
 
 
-        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'&&(data[i]['tableclass']!='wide'||(typeof(phantom)=='undefined'||phantom==false))){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].data.sorting)!='undefined'&&data[i].data.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].data.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
+        <table style="width:100%" class="<% if(typeof(data[i]['gridlines'])!='undefined'){ %>gridlines<% } %><% if(typeof(data[i]['tableclass'])!='undefined'&&(data[i]['tableclass']!='wide'||(typeof(phantom)=='undefined'||phantom==false))){ %> <%=data[i]['tableclass']%><% } %>" <% if(typeof(data[i].table.sorting)!='undefined'&&data[i].table.sorting==false){ %>sorting="false"<% }else{%>sorting="true"<% } %>  <% if(data[i].table.searchenabled){ %>sDOM="ft"<% }else{%>sDOM="t"<% } %>>
 
         <% var j = 0 ; %>
 

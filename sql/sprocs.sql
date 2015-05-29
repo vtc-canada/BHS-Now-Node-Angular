@@ -1,5 +1,5 @@
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `filldates_dpexchange_history`(dateStart DATE, dateEnd DATE, currfrom varchar(45), currto varchar(45))
+CREATE PROCEDURE `filldates_dpexchange_history`(dateStart DATE, dateEnd DATE, currfrom varchar(45), currto varchar(45))
 BEGIN
   WHILE dateStart <= dateEnd DO
     INSERT INTO dpexchange_history (`date`, currency_from, currency_to) VALUES (dateStart, currfrom, currto);
@@ -9,7 +9,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_CategoryReport`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_CategoryReport`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` VARCHAR(255), 
 		IN `solCodes` VARCHAR(255), 
@@ -155,7 +155,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_CategoryReportGT`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_CategoryReportGT`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` varchar(255), 
 		IN `solCodes` varchar(255), 
@@ -203,7 +203,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_CategoryReportSummary`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_CategoryReportSummary`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` varchar(255), 
 		IN `solCodes` varchar(255), 
@@ -248,7 +248,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_CategoryReportSummaryNil`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_CategoryReportSummaryNil`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` varchar(255), 
 		IN `solCodes` varchar(255), 
@@ -303,7 +303,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_DailyMailComputerReport`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_DailyMailComputerReport`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` VARCHAR(255), 
 		IN `includecountry` VARCHAR(255),
@@ -368,7 +368,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_DailyMailComputerReportSummary`(IN `startDate` DATETIME,
+CREATE PROCEDURE `reports_DailyMailComputerReportSummary`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` VARCHAR(255), 
 		IN `includecountry` VARCHAR(255),
@@ -434,7 +434,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_DonorClassReport`(IN `includeclass` VARCHAR(255), 
+CREATE PROCEDURE `reports_DonorClassReport`(IN `includeclass` VARCHAR(255), 
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255)
 )
@@ -450,6 +450,7 @@ WHERE (includecountry IS NULL OR FIND_IN_SET(COUNTRY, includecountry))
 GROUP BY CLASS, `STATUS`
 UNION ALL
 SELECT CLASS,
+
 	'Total' as 'Status',
 	COUNT(id) as 'Count'
 FROM dp
@@ -459,12 +460,12 @@ WHERE CLASS IS NOT NULL
 	AND CLASS LIKE CONCAT(includeclass, '%')
 	AND `STATUS` IS NOT NULL
 GROUP BY CLASS
-ORDER BY CLASS DESC;
+ORDER BY IF(SUBSTRING(CLASS, 2,length(CLASS)-1) REGEXP '[0-9]+', CONCAT('Z',SUBSTRING(CLASS, 2,length(CLASS)-1)), SUBSTRING(CLASS, 2,length(CLASS)-1) ) DESC;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_DonorHistoryReport`(
+CREATE PROCEDURE `reports_DonorHistoryReport`(
 	IN `includecountry` VARCHAR(255),
 	IN `excludecountry` VARCHAR(255)
 )
@@ -523,7 +524,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_LapsedDonorReport`(
+CREATE PROCEDURE `reports_LapsedDonorReport`(
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255),
 		IN `contactstatus` VARCHAR(255)
@@ -554,7 +555,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_MailDropReport`(IN `startDate` DATETIME, 
+CREATE PROCEDURE `reports_MailDropReport`(IN `startDate` DATETIME, 
 			IN `endDate` DATETIME
 		)
 BEGIN
@@ -581,7 +582,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_MailoutReportActiveInactive`(IN `includecountry` VARCHAR(255),
+CREATE PROCEDURE `reports_MailoutReportActiveInactive`(IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255)
 )
 BEGIN
@@ -619,7 +620,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_MailoutReportLapsed`(
+CREATE PROCEDURE `reports_MailoutReportLapsed`(
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255)
 )
@@ -679,7 +680,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_MailoutReportOther`(
+CREATE PROCEDURE `reports_MailoutReportOther`(
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255),
 		IN `includeclass` VARCHAR(255)
@@ -709,7 +710,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_OrderItemDistributionReport`(IN `startOrderDate` DATETIME,
+CREATE PROCEDURE `reports_OrderItemDistributionReport`(IN `startOrderDate` DATETIME,
 		IN `endOrderDate` DATETIME, 
 		IN `startShipDate` DATETIME, 
 		IN `endShipDate` DATETIME,
@@ -788,7 +789,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_PledgeDelinquentReport`(
+CREATE PROCEDURE `reports_PledgeDelinquentReport`(
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255)
 )
@@ -823,7 +824,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `reports_VolunteerInventoryReport`(IN `startOrderDate` DATETIME,
+CREATE PROCEDURE `reports_VolunteerInventoryReport`(IN `startOrderDate` DATETIME,
 		IN `endOrderDate` DATETIME, 
 		IN `startShipDate` DATETIME, 
 		IN `endShipDate` DATETIME,
@@ -871,7 +872,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `select_MaxMinTransactionDates`()
+CREATE PROCEDURE `select_MaxMinTransactionDates`()
 BEGIN
 
 SELECT DONOR as 'Donor',
@@ -903,7 +904,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `update_ContactStatus`()
+CREATE PROCEDURE `update_ContactStatus`()
 sproc_task:BEGIN
 DECLARE dateback1month DATE;
 DECLARE dateback2years DATE;
@@ -1107,7 +1108,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `update_DonorStatusHistory`(IN now DATE )
+CREATE PROCEDURE `update_DonorStatusHistory`(IN now DATE )
 BEGIN
 
 DECLARE dateback1month DATE;
@@ -1317,7 +1318,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `update_DonorStatusHistoryChanges`(IN now DATE)
+CREATE PROCEDURE `update_DonorStatusHistoryChanges`(IN now DATE)
 BEGIN
 
 DECLARE dateback1month DATE;
@@ -1401,7 +1402,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`%` PROCEDURE `update_dpexchange_history`()
+CREATE PROCEDURE `update_dpexchange_history`()
 BEGIN
 
 	DECLARE currfrom varchar(45);

@@ -695,7 +695,8 @@ module.exports.views = {
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {
@@ -833,7 +834,8 @@ module.exports.views = {
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {
@@ -971,7 +973,8 @@ module.exports.views = {
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {
@@ -1109,7 +1112,8 @@ module.exports.views = {
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {
@@ -1247,7 +1251,8 @@ module.exports.views = {
 			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    columns : [ {
