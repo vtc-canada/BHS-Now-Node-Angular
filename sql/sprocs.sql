@@ -52,7 +52,7 @@ SELECT SOL as 'Code',
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then 1 else 0 END as 'Counts', # Total number of donors, sales, and nil contacts
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then AMT*exchange_rate else 0 END as 'Totals' # Total amount of donations and sales
 	FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -81,7 +81,7 @@ SELECT SOL as 'Code',
 		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` 
 					from dpcodes 
 					where FIELD = 'SOL' 
-						and (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
+						and (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
 	WHERE dpother.`DATE` >= startDate
@@ -107,7 +107,7 @@ SELECT SOL as 'Code',
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then 1 else 0 END as 'Counts', # Total number of donors, sales, and nil contacts
 		Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') then AMT*exchange_rate else 0 END as 'Totals' # Total amount of donations and sales
 	FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -136,7 +136,7 @@ SELECT SOL as 'Code',
 		INNER JOIN (select distinct `CODE`, FIELD, `DESC`, `CATEGORY` 
 					from dpcodes 
 					where FIELD = 'SOL' 
-						and (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))
+						and (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))
 						) As dpcodelist on (dpother.SOL = dpcodelist.CODE)
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
@@ -171,7 +171,7 @@ FROM
 	COUNT(*) as 'Count',
 	ROUND(SUM(AMT*exchange_rate),2) as 'AMT'
 FROM dpgift
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on 
 			dpgift.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpgift.`DATE` AND dpgift.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpgift.DONOR
@@ -185,7 +185,7 @@ SELECT Case When dpother.TRANSACT IN ('SE','SF','SS') then 'Donations + Sales + 
 	COUNT(*),
 	ROUND(SUM(AMT*exchange_rate),2)
 FROM dpother
-		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on 
+		INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on 
 			dpother.SOL = dpcodelist.CODE
 		INNER JOIN dpexchange_history on dpexchange_history.`date` = dpother.`DATE` AND dpother.CURR = dpexchange_history.currency_from AND dpexchange_history.currency_to = currency
 		INNER JOIN dp on dp.id = dpother.DONOR
@@ -236,7 +236,7 @@ FROM dp FORCE INDEX (ix_id_country)
 WHERE dpgift.`DATE` >= startDate
 	AND dpgift.`DATE` <= endDate
 	AND dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY')
-	AND (solCodes IS NULL OR MATCH (dpgift.`SOL`) AGAINST (solCodes IN BOOLEAN MODE))
+	AND (solCodes IS NULL OR FIND_IN_SET(dpgift.`SOL`, solCodes))
 	AND (includecountry IS NULL OR FIND_IN_SET(dp.COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(dp.COUNTRY, excludecountry))
 GROUP BY dp.COUNTRY, `MONTH`
@@ -276,7 +276,7 @@ FROM
 	MONTH(`DATE`) as 'MONTH',
 	1 as 'Count'
 FROM dpother
-	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on dpother.SOL = dpcodelist.CODE
+	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on dpother.SOL = dpcodelist.CODE
 	INNER JOIN dp on dp.id = dpother.DONOR
 	WHERE dpother.`DATE` >= StartDate
 		AND dpother.`DATE` <= EndDate
@@ -288,7 +288,7 @@ SELECT Case When dpgift.TRANSACT IN ('DD','DF','DN','DY','SD','SN','SY') OR dpgi
 	MONTH(`DATE`) as 'MONTH',
 	1 as 'Count'
 FROM dpgift
-	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR MATCH (`FIELD`, `CODE`, `DESC`, `CATEGORY`) AGAINST (solCodes IN BOOLEAN MODE))) As dpcodelist on dpgift.SOL = dpcodelist.CODE
+	INNER JOIN (select distinct `CODE`, FIELD, `DESC` from dpcodes where FIELD = 'SOL' AND (solCodes IS NULL OR FIND_IN_SET(`CODE`, solCodes))) As dpcodelist on dpgift.SOL = dpcodelist.CODE
 	INNER JOIN dp on dp.id = dpgift.DONOR
 	WHERE dpgift.`DATE` >= StartDate
 		AND dpgift.`DATE` <= EndDate

@@ -619,10 +619,11 @@ module.exports.views = {
 		    },
 		    'solcodes' : {
 			order : 3,
-			type : 'text',
-			prepfulltext : true,
+			type : 'multiselect',
+			source : 'sols',
+			multi_min_length : 2,
 			locale_label : {
-			    en : 'Solicitation Codes'
+			    en : 'SOL Codes'
 			}
 		    },
 		    'includecountries' : {

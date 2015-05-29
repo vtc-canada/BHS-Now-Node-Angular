@@ -81,7 +81,7 @@ var n = this,
 				<li class="upper">Order #: <strong>#<%=order.id%></strong></li>
 				<li>Donor #: <strong><%=order.DONOR%></strong></li>
 				<li>Date: <strong><%=order.DATE%></strong></li>
-				<li>Ship From: <strong><%=order.SHIPFROM%></strong></li>
+				<% if(typeof(order.SHIPFROM)!='undefined'){ %><li>Ship From: <strong><%=order.SHIPFROM%></strong></li><% } %>
 				<!--<li>Prishtinë, Kosovo</li>-->
 			</ul>
        </div>

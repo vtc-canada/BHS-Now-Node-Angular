@@ -493,6 +493,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    NYTAX : 0,
 	    COUNTY : null,
 	    COUNTYNM : null,
+	    
+	    FUNDS : 'U',
 	    // "ENT_DT":"1993-12-22T00:00:00.000Z", // TODO- currency conversion
 	    // "FUNDS":"U","GFUNDS":"U.S. Dollars","CURCONV":1.5,
 	    TITLE : $scope.contact.TITLE,
@@ -959,6 +961,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	vm.blockOrderSelectedModified = true; // blocks change event on
 	// selectedOrderSummary watcher
 	// once.
+	if(row.FUNDS==null){
+	    row.FUNDS = 'U';
+	}
 	$scope.selectedOrderSummary = row;
     }
 
@@ -2097,6 +2102,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     var vm = this;
     vm.$scope = $scope;
     $scope.reportselects = {};
+    
+
+    $scope.longSelectOptionsLen = function(length){
+	return {
+	    minimumInputLength : length
+	}
+    };
 
     $scope.reports = $reports;
     $scope.report = $reports[0];
@@ -2255,6 +2267,25 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 	    }
 
+	    $scope.reportselects.sols = [];
+//	    for (var i = 0; i < data.sols.length; i++) {
+//		$scope.reportselects.sols.push({
+//		    id : data.currencies[i].id,
+//		    label : data.currencies[i].name,
+//		    code : data.currencies[i].code
+//		});
+//	    }
+	    //$rootScope.label_sols = {};
+	    //$rootScope.sols = [];
+	    for (var i = 0; i < data.sols.length; i++) {
+		$scope.reportselects.sols.push({
+		    id : data.sols[i].CODE,
+		    label : data.sols[i].CODE
+		});
+		//$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
+	    }
+	    
+	    
 	    $scope.reportselects.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$scope.reportselects.countries.push({

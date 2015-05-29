@@ -54,7 +54,10 @@
 								</div>
 							</div>
 						</div>
-						<div ng-if="parameter.type == 'multiselect'" class="col-sm-5 ">
+						<div ng-if="parameter.type == 'multiselect' && parameter.multi_min_length!=undefined" class="col-sm-5 ">
+							<select2 class="form-control" options="longSelectOptionsLen(parameter.multi_min_length)" ng-disabled="false" name="report.multiselect" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value" multiple ></select2>
+						</div>
+						<div ng-if="parameter.type == 'multiselect' && parameter.multi_min_length==undefined" class="col-sm-5 ">
 							<select2 class="form-control" ng-disabled="false" name="report.multiselect" ng-options="title.id as title.label for title in selectArray(parameter)" ng-model="parameter.value" multiple ></select2>
 						</div>
 						<div ng-if="parameter.type == 'select'" class="col-sm-5 ">

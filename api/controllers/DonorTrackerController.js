@@ -43,6 +43,15 @@ module.exports = {
 		    callback(null, results);
 		});
 	    },
+	    sols : function(callback) {
+		Database.knex('dpcodes').distinct('CODE').select('DESC').where({
+		    FIELD : 'SOL'
+		}).orderBy('CODE', 'ASC').exec(function(err, sols) {
+		    if (err)
+			return callback(err);
+		    callback(null, sols);
+		});
+	    },
 	    currencies : function(callback) {
 		Database.knex('dpcurrency').select('id', 'name', 'code', 'symbol').orderBy('order', 'asc').exec(function(err, titles) {
 		    if (err)
