@@ -5056,7 +5056,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		FIELD : $rootScope.dpsearch.field,
 		CODE : null,
 		DESC : null,
-		CATEGORY : null
+		CATEGORY : null,
+		OTHER : 0,
+		MCAT_LO : 0
 	    };
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : modal_id,

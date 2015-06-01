@@ -46,6 +46,9 @@ module.exports.policies = {
     },
     'orders':{
         '*':'RoutePolicy',
+    },
+    'datamaintenance':{
+	'*':true
     }
     
     
