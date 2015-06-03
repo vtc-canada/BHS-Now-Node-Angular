@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "connect-mongo": "~0.4.1",
+    "dbf": "^0.1.1",
     "deep-equal": "^1.0.0",
     "ejs": "~0.8.4",
     "grunt": "0.4.2",

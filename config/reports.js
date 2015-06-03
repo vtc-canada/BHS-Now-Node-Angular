@@ -1443,6 +1443,7 @@ module.exports.views = {
 			locale : {
 			    en : "Name"
 			},
+			phantom_white_space:'normal',
 			lastrow : {
 			    type : 'custom',
 			    value : '',
@@ -1453,6 +1454,7 @@ module.exports.views = {
 			locale : {
 			    en : "Address"
 			},
+			phantom_white_space:'normal',
 			lastrow : {
 			    type : 'custom',
 			    value : '',

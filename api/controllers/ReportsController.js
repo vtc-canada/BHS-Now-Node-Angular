@@ -318,6 +318,7 @@ function buildReportData(report, phantom_bool, cb) {
 		    data[table.order].header[i].hidden = table.columns[i].hidden;
 		    data[table.order].header[i].align = table.columns[i].align;
 		    data[table.order].header[i].titlealign = table.columns[i].titlealign;
+		    data[table.order].header[i].phantom_white_space = table.columns[i].phantom_white_space;
 		}
 	    }
 
