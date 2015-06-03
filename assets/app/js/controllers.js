@@ -2146,11 +2146,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		clearTimeout(vm.updateTable(newValue));
 	    }
 	    vm.updateTable = function(event) {
-		setTimeout(function() {
+		$timeout(function() {
 		    // $rootScope.updateContactsTable();
 		    // alert('searchReports');
 		    $scope.reporthtml = null;
-		}, 10);
+		}, 0);
 	    }
 	}
     }, true);

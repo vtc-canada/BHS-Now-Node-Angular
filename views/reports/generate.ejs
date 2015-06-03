@@ -219,9 +219,18 @@ function toClientDateTimeString(date){
                     	<% if(typeof(data[i].data[j][k])=='undefined'){ %>
                     	<td></td>
                     	<% continue; } %>
-                        <td class="report-data-item<% if(data[i].header[k].hidden){ %> column-hidden<% } %>" style="<% if(data[i].header[k].align){ %> text-align:<%=data[i].header[k].align%>;<% } %>  height:20px;<% if(data[i].data[j][k].bordertop){ %>border-top:2px solid #000000;<% } %><% if(data[i].data[j][k].bold){ %>font-weight:bold;<% } %>"><%= data[i].data[j][k].val==null?'':data[i].data[j][k].val %></td>
-
-
+                        <td class="report-data-item<% if(data[i].header[k].hidden){ %> column-hidden<% } %>" style="<% if(data[i].header[k].align){ %> text-align:<%=data[i].header[k].align%>;<% } %>  height:20px;<% if(data[i].data[j][k].bordertop){ %>border-top:2px solid #000000;<% } %><% if(data[i].data[j][k].bold){ %>font-weight:bold;<% } %>">
+                        
+                        <% 
+                        var decimalplaces = null;
+                        if(typeof(data[i].header[k].decimalplaces)!='undefined'&&data[i].header[k].decimalplaces!=''&&data[i].header[k].decimalplaces!=null){
+                        	decimalplaces = data[i].header[k].decimalplaces;
+                        }else if(typeof(data[i].header[k].lastrow)!='undefined'&&typeof(data[i].header[k].lastrow.decimalplaces)!='undefined'&&data[i].header[k].lastrow.decimalplaces!=''&&data[i].header[k].lastrow.decimalplaces!=null){
+                        	decimalplaces = data[i].header[k].lastrow.decimalplaces;
+                        }%>
+                        <%= data[i].data[j][k].val==null?'': (decimalplaces==null?data[i].data[j][k].val:Number(data[i].data[j][k].val).toFixed(decimalplaces)) %>
+                        
+                        </td>
                         <%
                         if(typeof(data[i].header[k].lastrow)!='undefined') {    //LAST ROW LOGIC
                             if( data[i].header[k].lastrow.type == 'average' ){    //IF IT's AN AVERAGE
