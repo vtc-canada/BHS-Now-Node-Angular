@@ -8,7 +8,7 @@
 module.exports = {
 
     promptsave : function(req, res) {
-	
+
 	var report = req.body.report;
 	var phantom = require('node-phantom');
 	var fs = require("fs");
@@ -160,28 +160,58 @@ module.exports = {
 		return;
 	    }
 	    if (data.length == 0) {
-		res.view('reports/noresults.ejs', {
-		    phantom : phantom_bool,
-		    locale : report.locale,
-		    layout : false,
-		    noresults : 'noresults',
-		    title : 'No Results',
-		    data : data
-		});
+		if (phantom_bool) {
+		    res.view('reports/noresults.ejs', {
+			phantom : phantom_bool,
+			locale : report.locale,
+			layout : false,
+			noresults : 'noresults',
+			title : 'No Results',
+			data : data
+		    });
+		} else {
+		    sails.hooks.views.render("reports/noresults", {
+			phantom : phantom_bool,
+			locale : report.locale,
+			layout : false,
+			noresults : 'noresults',
+			title : 'No Results',
+			data : data
+		    }, function(err, html) {
+			if (err)
+			    return console.log(err);
+			res.json(html);
+		    });
+		}
 	    } else {
-		res.view('reports/generate.ejs', {
-		    phantom : phantom_bool,
-		    layout : false,
-		    title : '',
-		    data : data
-		});
+		if (phantom_bool) {
+		    res.view('reports/generate.ejs', {
+			phantom : phantom_bool,
+			layout : false,
+			title : '',
+			data : data
+		    });
+		} else {
+		    sails.hooks.views.render("reports/generate", {
+			phantom : phantom_bool,
+			layout : false,
+			title : '',
+			data : data
+		    }, function(err, html) {
+			if (err)
+			    return console.log(err);
+
+			res.json(html);
+		    });
+
+		}
 	    }
 	});
     }
 };
 
 function buildReportData(report, phantom_bool, cb) {
-    
+
     // Generating report stuff
     // safety checks
     var startTime = true;
@@ -270,7 +300,7 @@ function buildReportData(report, phantom_bool, cb) {
 	    } else if (typeof (report.parameters[table.parameters[i]].type) != 'undefined' && report.parameters[table.parameters[i]].type == 'multiselect') {
 		parameters.push((report.parameters[table.parameters[i]].value == null) ? null : ((report.parameters[table.parameters[i]].value == '') ? null : report.parameters[table.parameters[i]].value.toString()));
 	    } else {
-		parameters.push(report.parameters[table.parameters[i]].value == '' ? null :  report.parameters[table.parameters[i]].value);
+		parameters.push(report.parameters[table.parameters[i]].value == '' ? null : report.parameters[table.parameters[i]].value);
 	    }
 	}
 

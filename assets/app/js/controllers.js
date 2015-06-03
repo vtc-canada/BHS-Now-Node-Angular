@@ -2233,7 +2233,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.report.timezoneoffset = new Date().getTimezoneOffset();
 	$scope.report.cacheId = Math.floor((Math.random() * 1000000000) + 1);
 	$scope.loading = true;
-	$http.post('/reports/view', {
+	
+	$sails.post('/reports/view',{
 	    report : $scope.report
 	}).success(function(html) {
 	    if (html.error != undefined) { // USER NO
@@ -2248,7 +2249,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		delete $scope.loading;
 		$scope.reporthtml = $sce.trustAsHtml(html);
 	    }, 0);
+	}).error(function(data) {
+	    alert('err!');
 	});
+	
     };
 
     (function() {
