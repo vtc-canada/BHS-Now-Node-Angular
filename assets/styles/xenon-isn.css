@@ -470,3 +470,7 @@ div.datepicker {
 	z-index: 2000 !important;
 }
 
+#report_html table.dataTable tbody tr {
+  cursor: default;
+}
+

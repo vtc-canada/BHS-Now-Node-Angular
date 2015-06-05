@@ -26,6 +26,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	minimumInputLength : 2
     };
 
+    $scope.lineitem = {
+	id : null
+    };
+
+    $rootScope.newLineItemTemplateModal = {
+	name : null
+    };
+
     $rootScope.modalDataSet = angular.copy($scope.selectedDataTableRow);
 
     vm.watchEnabled = false;
@@ -493,7 +501,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    NYTAX : 0,
 	    COUNTY : null,
 	    COUNTYNM : null,
-	    
+
 	    FUNDS : 'U',
 	    // "ENT_DT":"1993-12-22T00:00:00.000Z", // TODO- currency conversion
 	    // "FUNDS":"U","GFUNDS":"U.S. Dollars","CURCONV":1.5,
@@ -651,45 +659,46 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS;
 
 		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
-			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
+			if (!detail.is_deleted) {
+			    var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
 
-			etotal += itemp; // sums up item price
+			    etotal += itemp; // sums up item price
 
-			var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
-			var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
-			var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
-			if (detail.LITEMP != null && detail.LITEMP.indexOf('B') === 0) {
-			    hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.05 : 0; // GST
-			    // portion
-			    // (8%)
-			    // reduced
-			    // off,
-			    // leaving
-			    // it
-			    // 5%
-			    // as
-			    // before.
-			    gstrate = 0; // GST not counted on books
-			    pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.05 : 0; // PST
-			    // used
-			    // to
-			    // be
-			    // reduced
-			    // to
-			    // .05
-			    // i
-			    // believe
-			    // for
-			    // books
+			    var hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.13 : 0;
+			    var gstrate = $scope.selectedOrderSummary.GST == 'Y' ? 0.08 : 0;
+			    var pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.07 : 0;
+			    if (detail.LITEMP != null && detail.LITEMP.indexOf('B') === 0) {
+				hstrate = $scope.selectedOrderSummary.HST == 'Y' ? 0.05 : 0; // GST
+				// portion
+				// (8%)
+				// reduced
+				// off,
+				// leaving
+				// it
+				// 5%
+				// as
+				// before.
+				gstrate = 0; // GST not counted on books
+				pstrate = $scope.selectedOrderSummary.PST == 'Y' ? 0.05 : 0; // PST
+				// used
+				// to
+				// be
+				// reduced
+				// to
+				// .05
+				// i
+				// believe
+				// for
+				// books
+			    }
+
+			    hstcalc += (itemp / exchangerate) * hstrate; // sums
+			    // up
+			    // item
+			    // taxes
+			    gstcalc += (itemp / exchangerate) * gstrate;
+			    pstcalc += (itemp / exchangerate) * pstrate;
 			}
-
-			hstcalc += (itemp / exchangerate) * hstrate; // sums
-			// up
-			// item
-			// taxes
-			gstcalc += (itemp / exchangerate) * gstrate;
-			pstcalc += (itemp / exchangerate) * pstrate;
-
 		    });
 
 		    $scope.selectedOrderSummary.ETOTAL = etotal;
@@ -961,9 +970,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	vm.blockOrderSelectedModified = true; // blocks change event on
 	// selectedOrderSummary watcher
 	// once.
-	if(row.FUNDS==null){
-	    row.FUNDS = 'U';
-	}
+	//if (row.FUNDS == null) {
+	//    row.FUNDS = 'U';
+	//}
 	$scope.selectedOrderSummary = row;
     }
 
@@ -1118,7 +1127,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     // $scope.$watchCollection('otherAddresses', $scope.tryModified);
     $scope.$watch('contact', $scope.tryModified, true);
 
-    $rootScope.$on("getcontact", function(args, message) {
+    if($rootScope.gotContactCaller){
+	$rootScope.gotContactCaller();
+    }
+    $rootScope.gotContactCaller = $rootScope.$on("getcontact", function(args, message) {
+	console.log('gotcontact');
 	$timeout(function() {
 	    vm.watchEnabled = false;
 	    if (message.id == 'new') {
@@ -1138,6 +1151,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			// datatables!
 			$scope.rebindDataTable(key);
 		    }
+		    $scope.lineitem.id = null;
 		}, 0);
 	    } else {
 		$timeout(function() {
@@ -1156,6 +1170,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    location.reload(); // Will boot back to login
 			    // screen
 			}
+			$scope.lineitem.id = null;
 			$scope.selectedTransaction = null; // wipes
 			// out
 			// selected
@@ -1170,15 +1185,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    $timeout(function() {
 				$contact.set(data.contact);
 				resetContactForms();
-				if ($rootScope.loading_modal) { // BUG HERE
-				    console.log('dismissing modal');
+				if ($rootScope.loading_modal) { 
 				    $rootScope.loading_modal.dismiss('somevalue');
-				    $timeout(function() {
-					if ($rootScope.loading_modal) {
-					    console.log('dismissing modal a second time after 1000ms!!!!!!!!!!!!!!!!!!!!!!!');
-					    $rootScope.loading_modal.dismiss('somevalue2');
-					}
-				    }, 1000);
+				   
 				}
 				$timeout(function() {
 				    $(window).scrollTop($('.nav-tabs').offset().top - 8);
@@ -1397,8 +1406,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		label : 'Pledge'
 	    } ];
 
-	    
-
 	    /*
 	     * angular.forEach(data.result,function(atts,key){ $scope[key]=[];
 	     * for(var i=0;i<atts.length;i++){ $scope[key].push({ id : atts[i].
@@ -1502,7 +1509,248 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    alert('err!');
 	});
 
+	$sails.get('/template/lineitems').success(function(data) {
+	    $scope.lineitem_templates = [];
+	    for (var i = 0; i < data.length; i++) {
+		$scope.lineitem_templates.push({
+		    id : data[i].id,
+		    label : data[i].name,
+		    data : data[i].data
+		});
+	    }
+	}).error(function(data) {
+	    alert('err!' + data.toString());
+	});
+
     })();
+
+    $scope.$watch('lineitem.id', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    $timeout(function() {
+
+		for (var i = 0; i < $scope.lineitem_templates.length; i++) {
+		    if ($scope.lineitem_templates[i].id == $scope.lineitem.id) { // matching
+			// one
+
+			var storedDetails = [];
+			angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail, key) {
+			    if (detail.id != null) {
+				detail.is_deleted = true;
+				storedDetails.push(detail);
+			    }
+			});
+			$scope.selectedOrderSummary.dporderdetails = storedDetails;
+			angular.forEach($scope.lineitem_templates[i].data, function(lineitem, key) {
+			    $scope.selectedOrderSummary.dporderdetails.push({
+				id : null,
+				LQTY : lineitem.LQTY,
+				LITEMP : lineitem.LITEMP,
+				LITEMD : null,
+				LPRICE : lineitem.LPRICE,
+				LDISC : lineitem.LDISC,
+				LCURR : null,
+				LEXT : 0,
+				LSTOC : null
+			    });
+			});
+
+			//$rootScope.search_orders = $scope.orders;
+
+			$rootScope.newLineItemTemplateModal.name = $scope.lineitem_templates[i].label;
+			$rootScope.newLineItemTemplateModal.id = $scope.lineitem_templates[i].id;
+
+			return;
+		    }
+		}
+		if ($scope.lineitem.id == null) {
+
+		    var storedDetails = [];
+		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail, key) {
+			if (detail.id != null) {
+			    detail.is_deleted = true;
+			    storedDetails.push(detail);
+			}
+		    });
+		    $scope.selectedOrderSummary.dporderdetails = storedDetails;
+		}
+
+	    }, 0);
+	}
+    }, true);
+
+    $scope.clearLineItemTemplates = function() {
+	$rootScope.newLineItemTemplateModal.name = null;
+	$rootScope.newLineItemTemplateModal.id = null;
+	$scope.lineitem.id = null;
+	$scope.selectedOrderSummary.dporderdetails = [];
+
+	//$rootScope.search_orders = $scope.orders = angular.copy(blankSearch); // clears
+	// the
+	// order
+	// search
+	// parameters
+    }
+
+    $scope.deleteLineItemTemplate = function() {
+	$rootScope.modalPopup({
+	    title : 'Confirm Delete',
+	    size : 'sm',
+	    message : 'Are you sure you want to delete the template: <b>' + $rootScope.newLineItemTemplateModal.name + '</b>',
+	    buttons : [ {
+		name : 'Cancel',
+		class : 'btn-white',
+		dismiss : 'cancel'
+	    }, {
+		name : 'Delete',
+		class : 'btn-danger',
+		dismiss : 'delete'
+	    } ]
+	}, function(dismiss) {
+	    if (dismiss == 'delete') {
+		$sails.post('/template/destroy', {
+		    id : $rootScope.newLineItemTemplateModal.id,
+		    location : 'orders'
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.lineitem.id = null;
+			$rootScope.newLineItemTemplateModal.id = null;
+			$rootScope.newLineItemTemplateModal.name = null;
+
+			//			$rootScope.search_orders = $scope.orders = angular.copy(blankSearch);
+			$timeout(function() {
+			    $sails.get('/template/lineitems').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.lineitem_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.lineitem_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
+				    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    } else {
+	    }
+	});
+    }
+
+    $rootScope.saveLineItemsTemplate = function() {
+	$rootScope.newLineItemTemplateModal.id = null;
+	for (var i = 0; i < $scope.lineitem_templates.length; i++) {
+	    if ($scope.lineitem_templates[i].label == $rootScope.newLineItemTemplateModal.name) {
+		// matching up against existing template name
+		$rootScope.newLineItemTemplateModal.id = $scope.lineitem_templates[i].id;
+	    }
+	}
+	if ($rootScope.newLineItemTemplateModal.id == null) {
+	    $rootScope.currentModal.dismiss('save');
+	} else {
+	    $rootScope.modalPopup({
+		title : 'Confirm Overwrite',
+		size : 'sm',
+		message : 'Are you sure you want to save over the existing template: <b>' + $rootScope.newLineItemTemplateModal.name + '</b>',
+		buttons : [ {
+		    name : 'Cancel',
+		    class : 'btn-white',
+		    dismiss : 'cancel'
+		}, {
+		    name : 'Save',
+		    class : 'btn-danger',
+		    dismiss : 'save'
+		} ]
+	    }, function(dismiss) {
+		if (dismiss == 'save') {
+		    $rootScope.currentModal.dismiss('save');
+		} else {
+		    // $rootScope.currentModal.dismiss();
+		}
+	    });
+	}
+    }
+
+    $scope.saveLineItemTemplateModal = function() {
+	// $rootScope.newTemplateModal.name = null;
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'save-lineitem-template-modal',
+	    size : 'md',
+	    backdrop : true
+	});
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'save') {
+
+		var datatemp = [];
+		angular.forEach($scope.selectedOrderSummary.dporderdetails, function(value, key) {
+		    if (!($scope.selectedOrderSummary.dporderdetails[key].is_deleted)) {
+			datatemp.push({
+			    id : null,
+			    LQTY : $scope.selectedOrderSummary.dporderdetails[key].LQTY,
+			    LITEMP : $scope.selectedOrderSummary.dporderdetails[key].LITEMP,
+			    LITEMD : null,
+			    LPRICE : $scope.selectedOrderSummary.dporderdetails[key].LPRICE,
+			    LDISC : $scope.selectedOrderSummary.dporderdetails[key].LDISC,
+			    LCURR : null,
+			    LEXT : 0,
+			    LSTOC : null
+			});
+		    }
+		});
+
+		$sails.post('/template/save', {
+		    id : $rootScope.newLineItemTemplateModal.id,
+		    location : 'lineitems',
+		    name : $rootScope.newLineItemTemplateModal.name,
+		    data : datatemp
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			// IN!!!!!
+			location.reload(); // Will boot back to login
+			// screen
+		    }
+		    if (data.success) {
+			$scope.template = data.template.id;
+			$timeout(function() {
+			    $sails.get('/template/lineitems').success(function(data) {
+				if (data.error != undefined) { // USER NO
+				    // LONGER LOGGED
+				    // IN!!!!!
+				    location.reload(); // Will boot back to
+				    // login
+				    // screen
+				}
+				$scope.lineitem_templates = [];
+				for (var i = 0; i < data.length; i++) {
+				    $scope.lineitem_templates.push({
+					id : data[i].id,
+					label : data[i].name,
+					data : data[i].data
+				    });
+				}
+			    });
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+	    }
+	});
+    }
 
     $rootScope.clearContact = function() {
 	vm.watchEnabled = false;
@@ -1740,6 +1988,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    $scope.lastOrderFunds = $scope.selectedOrderSummary.FUNDS;
 
 		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
+
 			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
 
 			etotal += itemp; // sums up item price
@@ -1964,7 +2213,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    // resetOrderForms();
 			    $timeout(function() {
 				$(window).scrollTop($('.order-form').offset().top - 8);
-			    }, 0);
+			    }, 100);
 			}, 0);
 		    }
 		}).error(function(data) {
@@ -2012,10 +2261,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    // Order it, so we check the tabs in a sensible manner.
 
 	    var founderrors = false;
-	    $('#' + "orders").valid(); // this was blocked at some
+	    $('#' + "fullorders").valid(); // this was blocked at some
 	    // point for some reason..
 	    // }
-	    if ($rootScope.validator["orders"].numberOfInvalids() > 0) { // error
+	    if ($rootScope.validator["fullorders"].numberOfInvalids() > 0) { // error
 		founderrors = true;
 		// error'd tab
 	    }
@@ -2079,9 +2328,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// $scope.otherAddresses = $contact.otherAddresses;
 	// if (vm.screenLoaded) {
 	// angular.forEach(vm.tabs, function(tabval) {
-	if ($rootScope.validator && $rootScope.validator["orders"]) {
-	    $rootScope.validator["orders"].resetForm();
-	    $('form#' + "orders" + ' .validate-has-error').removeClass('validate-has-error');
+	if ($('form#' + "fullorders").length>0&&$rootScope.validator && $rootScope.validator["fullorders"]) {
+	    $rootScope.validator["fullorders"].resetForm();
+	    $('form#' + "fullorders" + ' .validate-has-error').removeClass('validate-has-error');
 	}
 	// });
 
@@ -2102,9 +2351,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     var vm = this;
     vm.$scope = $scope;
     $scope.reportselects = {};
-    
 
-    $scope.longSelectOptionsLen = function(length){
+    $scope.longSelectOptionsLen = function(length) {
 	return {
 	    minimumInputLength : length
 	}
@@ -2233,8 +2481,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.report.timezoneoffset = new Date().getTimezoneOffset();
 	$scope.report.cacheId = Math.floor((Math.random() * 1000000000) + 1);
 	$scope.loading = true;
-	
-	$sails.post('/reports/view',{
+
+	$sails.post('/reports/view', {
 	    report : $scope.report
 	}).success(function(html) {
 	    if (html.error != undefined) { // USER NO
@@ -2252,7 +2500,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	}).error(function(data) {
 	    alert('err!');
 	});
-	
+
     };
 
     (function() {
@@ -2272,13 +2520,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 
 	    $scope.reportselects.sols = [];
-//	    for (var i = 0; i < data.sols.length; i++) {
-//		$scope.reportselects.sols.push({
-//		    id : data.currencies[i].id,
-//		    label : data.currencies[i].name,
-//		    code : data.currencies[i].code
-//		});
-//	    }
+	    //	    for (var i = 0; i < data.sols.length; i++) {
+	    //		$scope.reportselects.sols.push({
+	    //		    id : data.currencies[i].id,
+	    //		    label : data.currencies[i].name,
+	    //		    code : data.currencies[i].code
+	    //		});
+	    //	    }
 	    //$rootScope.label_sols = {};
 	    //$rootScope.sols = [];
 	    for (var i = 0; i < data.sols.length; i++) {
@@ -2288,8 +2536,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		});
 		//$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
 	    }
-	    
-	    
+
 	    $scope.reportselects.countries = [];
 	    for (var i = 0; i < data.countries.length; i++) {
 		$scope.reportselects.countries.push({
@@ -2330,7 +2577,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
      * 'No' } ];
      */
-    
 
     $rootScope.search_link_contact = $scope.link_contact;
 
@@ -2675,7 +2921,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		    label : data.donor_classes[i].CODE + " - " + data.donor_classes[i].DESC
 		});
 	    }
-	    
 
 	    $rootScope.volunteers = [];
 	    for (var i = 0; i < data.volunteers.length; i++) {
@@ -2914,7 +3159,6 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
      * $scope.staticyesno = [ { id : 'Y', label : 'Yes' }, { id : 'N', label :
      * 'No' } ];
      */
-    
 
     $rootScope.search_contact = $scope.contact;
 
