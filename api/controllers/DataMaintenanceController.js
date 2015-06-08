@@ -9,8 +9,13 @@ var varStartYear = 2014;
 var varStartMonth = 0; // 0 to 11
 
 module.exports = {
+    
+    UpdateDonorClass : function(req,res){
+	
+	
+    },
 
-    UpdateDonorClass : function(req, res) { // checks for and does monthly maintenance
+    UpdateDonorStatus : function(req, res) { // checks for and does monthly maintenance
 	//Database.knex.raw('call update_ContactStatus(null)').exec(function(err,results){
 	//    if (err)
 	//	return console.log(err);

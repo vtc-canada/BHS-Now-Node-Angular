@@ -150,7 +150,7 @@ module.exports = {
 	    phantom_bool = false;
 	}
 	if(!phantom_bool){
-	    res.json({emit:true});
+	    //res.json({emit:true});
 	}
 
 	buildReportData(report, phantom_bool, function(data) {
@@ -183,8 +183,8 @@ module.exports = {
 		    }, function(err, html) {
 			if (err)
 			    return console.log(err);
-			sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
-			//res.json(html);  
+			//sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
+			res.json(html);  
 		    });
 		}
 	    } else {
@@ -208,8 +208,8 @@ module.exports = {
 			if (err)
 			    return console.log(err);
 
-			sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
-			//res.json(html);
+			//sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
+			res.json(html);
 		    });
 
 		}
