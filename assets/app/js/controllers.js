@@ -660,7 +660,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
 			if (!detail.is_deleted) {
-			    var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
+			    var itemp = parseInt(detail.LQTY) * parseFloat(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
 
 			    etotal += itemp; // sums up item price
 
@@ -1127,7 +1127,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     // $scope.$watchCollection('otherAddresses', $scope.tryModified);
     $scope.$watch('contact', $scope.tryModified, true);
 
-    if($rootScope.gotContactCaller){
+    if ($rootScope.gotContactCaller) {
 	$rootScope.gotContactCaller();
     }
     $rootScope.gotContactCaller = $rootScope.$on("getcontact", function(args, message) {
@@ -1185,9 +1185,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    $timeout(function() {
 				$contact.set(data.contact);
 				resetContactForms();
-				if ($rootScope.loading_modal) { 
+				if ($rootScope.loading_modal) {
 				    $rootScope.loading_modal.dismiss('somevalue');
-				   
+
 				}
 				$timeout(function() {
 				    $(window).scrollTop($('.nav-tabs').offset().top - 8);
@@ -1989,7 +1989,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 		    angular.forEach($scope.selectedOrderSummary.dporderdetails, function(detail) {
 
-			var itemp = parseInt(detail.LQTY) * parseInt(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
+			var itemp = parseInt(detail.LQTY) * parseFloat(detail.LPRICE) * (1 - (parseInt(detail.LDISC) / 100));
 
 			etotal += itemp; // sums up item price
 
@@ -2328,7 +2328,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// $scope.otherAddresses = $contact.otherAddresses;
 	// if (vm.screenLoaded) {
 	// angular.forEach(vm.tabs, function(tabval) {
-	if ($('form#' + "fullorders").length>0&&$rootScope.validator && $rootScope.validator["fullorders"]) {
+	if ($('form#' + "fullorders").length > 0 && $rootScope.validator && $rootScope.validator["fullorders"]) {
 	    $rootScope.validator["fullorders"].resetForm();
 	    $('form#' + "fullorders" + ' .validate-has-error').removeClass('validate-has-error');
 	}
@@ -2493,6 +2493,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// login
 		// screen
 	    }
+	    if(html.emit){
+		return;
+	    }
 	    $timeout(function() {
 		delete $scope.loading;
 		$scope.reporthtml = $sce.trustAsHtml(html);
@@ -2501,6 +2504,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    alert('err!');
 	});
 
+    };
+
+    $rootScope.reportHandler = function(html) {
+	$timeout(function() {
+	    delete $scope.loading;
+	    $scope.reporthtml = $sce.trustAsHtml(html);
+	}, 0);
     };
 
     (function() {

@@ -149,6 +149,9 @@ module.exports = {
 	    }
 	    phantom_bool = false;
 	}
+	if(!phantom_bool){
+	    res.json({emit:true});
+	}
 
 	buildReportData(report, phantom_bool, function(data) {
 	    if (typeof (data) == 'undefined' || data == null) {
@@ -180,7 +183,8 @@ module.exports = {
 		    }, function(err, html) {
 			if (err)
 			    return console.log(err);
-			res.json(html);
+			sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
+			//res.json(html);  
 		    });
 		}
 	    } else {
@@ -192,6 +196,9 @@ module.exports = {
 			data : data
 		    });
 		} else {
+
+			
+			
 		    sails.hooks.views.render("reports/generate", {
 			phantom : phantom_bool,
 			layout : false,
@@ -201,7 +208,8 @@ module.exports = {
 			if (err)
 			    return console.log(err);
 
-			res.json(html);
+			sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
+			//res.json(html);
 		    });
 
 		}

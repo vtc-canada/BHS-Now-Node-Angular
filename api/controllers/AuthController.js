@@ -23,7 +23,7 @@ module.exports = {
 	res.redirect('/auth');
     },
     joinrooms : function(req, res) {
-	req.socket.join('onlinestatus');
+	//req.socket.join('onlinestatus');
 	req.socket.join(req.session.user.id);
     },
     togglelocale : function(req, res) {

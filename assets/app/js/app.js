@@ -39,6 +39,9 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 	if (message.verb === "reload") {
 	    location.reload();
 	}
+	if(message.verb === "report"&&$rootScope.reportHandler){
+	    $rootScope.reportHandler(message.html);
+	}
     });
     
     
