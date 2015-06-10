@@ -273,7 +273,8 @@ module.exports = {
 	// Select Data
 	Database.knex
 	    .raw(
-		'SELECT dpordersummary.id, dpcodes.DESC AS `SHIPFROM` ,  DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,  DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`, IF (dpordersummary.order_type = 1,"Sale",IF(dpordersummary.order_type = 2,"Free Gift",dpordersummary.order_type)) AS `order_type`, dpordersummary.GTOTAL '
+		'SELECT dpordersummary.id, dpordersummary.FUNDS, dpcodes.DESC AS `SHIPFROM` ,  DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,  DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`,'
+	        + 'IF (dpordersummary.order_type = 1,"Sale",IF(dpordersummary.order_type = 2,"Free Gift",dpordersummary.order_type)) AS `order_type`, FORMAT(dpordersummary.GTOTAL,2) AS "GTOTAL" '
 		    + 'FROM ( SELECT dpordersummary.id FROM dpordersummary '
 		    + dpWheres
 		    + innerOrderOffsetLimit

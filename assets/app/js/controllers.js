@@ -3893,7 +3893,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// i info
 	// p pagination
 	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('SHIPFROM').withTitle('Shipped From'), DTColumnBuilder.newColumn('SHIPDATE').withTitle(' Shipped Date'), DTColumnBuilder.newColumn('DATE').withTitle('Order Placed'),
-	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total') ];
+	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), 	    
+	    DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total').renderWith(function(data, type, full, meta) {
+	    	 		if ($scope.currencies != null) {	    	 			
+	    	 			return $rootScope.currencies[full.FUNDS].symbol + data;
+	    		    }else{
+	    		    	return  data;
+	    		    }
+	    	})];
 
 	$scope.$on('event:dataTableLoaded', function(event, data) {
 	    $scope.tableId = data.id; // Record table ID, for refreshes
