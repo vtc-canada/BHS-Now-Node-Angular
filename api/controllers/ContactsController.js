@@ -147,13 +147,12 @@ module.exports = {
 	delete contact.dtvols1;
 	delete contact.dtbishop;
 	delete contact.notes;
-	
-	
-	if(contact.FLAGS != null){
+
+	if (contact.FLAGS != null) {
 	    contact.FLAGS = contact.FLAGS.join();
-//	    for(var i=0;i<contact.FLAGS.length; i++){
-//		
-//	    }
+	    // for(var i=0;i<contact.FLAGS.length; i++){
+	    //		
+	    // }
 	}
 
 	if (contactId == 'new') { // New Contact.
@@ -288,9 +287,19 @@ module.exports = {
 	    }, ], function(err, result) {
 		if (err)
 		    return res.json(err, 500);
-		req.body.id = contactId;
-		sails.controllers.contacts.getcontact(req, res);
+		updateDonorTotals(contactId, function(err, result) {
+		    if (err)
+			return res.json(err, 500);
+		    req.body.id = contactId;
+		    sails.controllers.contacts.getcontact(req, res);
+		});
 
+	    });
+	}
+	
+	function updateDonorTotals(contactId,callback){
+	    Database.knex.raw('call update_DonationTotals('+contactId+')').exec(function(err,result){
+		callback(err,result);
 	    });
 	}
 
@@ -1047,18 +1056,18 @@ module.exports = {
 		    contact : function(callback) {
 			Database.knex
 			    .raw(
-				'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS` FROM dp WHERE id = '
+				'SELECT `id`,`IDNUMB1`,`DONOR2`,`FNAME`,`LNAME`,`SUFF`,`TITLE`,`SAL`,`PTITLE`,`SECLN`,`ADD`,`CITY`,`ST`,`ZIP`,`COUNTRY`,`COUNTY`,`NOMAIL`,`TYPE`,`FLAGS`,`SOURCE`,`NARR`,`PHONE`,`PHON2`,`PHON3`,`PHTYPE1`,`PHTYPE2`,`PHTYPE3`,`IN_DT`,`LS_DT`,`LS_AMT`,`YTD`,`LY_YTD`,`LY2_YTD`,`LY3_YTD`,`LY4_YTD`,`GTOT`,`GIFTS`,`ENT_DT`,`UP_DT`,`MAX_DT`,`MAX_AMT`,`SIZE`,`GIVINTS`,`GIFTTYPES`,`INCLEV`,`PG_AMT`,`ACTIVE`,`LANGUAGE`,`CLASS`,`CALL`,`NM_REASON`,`PLEDGOR`,`AR`,`CFN`,`ARCDATE`,`ACDON`,`ADDON`,`AADON`,`ALDON`,`ALDDON`,`ACSALES`,`ADSALES`,`ACMASS`,`ADMASS`,`ACCONT`,`AFTRAN`,`ENGLISH`,`USER_ID`,`LAPSED`,`OCCUPATION`,`VOLUNTEER`,`DON250`,`MAILZONE`,`SLUSH`,`BUSINESS`,`CFNID`,`PUBSIG`,`TSRECID`,`TSDATE`,`TSTIME`,`TSCHG`,`TSBASE`,`TSLOCAT`,`TSIDCODE`,`TESTFLG1`,`TESTFLG2`,`TESTFLG3`,`TESTFLG4`,`TESTFLG5`,`GIFTCNT`,`OTHRCNT`,`PLEDCNT`,`LINKCNT`,`MAILCNT`,`MISCCNT`,`LASTDON`,`LARDONDT`,`LARDONAM`,`LASTSALE`, DATE_FORMAT(LASTCONT,"%Y-%m-%d") AS LASTCONT,`LASTREF`,`PETSIGN`,`ecc_enabled`,`GENDER`,`RELIGIOUS`,`DIOCESE`,`GROUP`,`Q01`,`Q02`,`Q03`,`Q04`,`Q05`,`Q06`,`Q07`,`Q08`,`Q09`,`Q10`,`Q11`,`Q12`,`Q13`,`Q14`,`Q15`,`Q16`,`Q17`,`Q18`,`Q19`,`Q20`,`Q21`,`Q22`,`Q23`,DATE_FORMAT(BIRTHDATE,"%Y-%m-%d") AS BIRTHDATE,DATE_FORMAT(`ORDINATION`,"%Y-%m-%d") AS `ORDINATION`,`SAYMASS`,`DECIS`,`VOL_TRADE`,`PPRIEST`,`EP020`,DATE_FORMAT(`CONSECRATE`,"%Y-%m-%d") AS `CONSECRATE`,`SOLS`,`PERM_SOLS`,`total_donation_amount`,`total_donation_records` FROM dp WHERE id = '
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
-				    
-				if(data[0][0].FLAGS != null){
+
+				if (data[0][0].FLAGS != null) {
 				    data[0][0].FLAGS = data[0][0].FLAGS.split(",");
-				    for(var i=0;i < data[0][0].FLAGS.length; i++ ){
+				    for (var i = 0; i < data[0][0].FLAGS.length; i++) {
 					data[0][0].FLAGS[i] = data[0][0].FLAGS[i].trim();
 				    }
 				}
-				    
+
 				return callback(null, data[0][0]);
 			    });
 		    },
@@ -1072,7 +1081,7 @@ module.exports = {
 		    dtmail : function(callback) {
 			Database.knex.raw(
 			    "SELECT dtmail.*, dpcodes.DESC,  DATE_FORMAT(MAX(maildrop.DROP_DATE),'%Y-%m-%d')  AS `DROP_DATE`, SUM(maildrop.DROP_CNT) AS `DROP_CNT`  FROM dtmail LEFT JOIN dpcodes ON (dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dtmail.SOL )"
-				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST)  ) WHERE DONOR = " + contactId + " GROUP BY dtmail.id" ).exec(function(err, data) {
+				+ " LEFT JOIN maildrop ON (maildrop.PROVCODE = CONCAT(dtmail.SOL,dtmail.LIST)  ) WHERE DONOR = " + contactId + " GROUP BY dtmail.id").exec(function(err, data) {
 			    if (err)
 				return callback(err)
 			    return callback(null, data[0]);
@@ -1096,11 +1105,14 @@ module.exports = {
 			    });
 		    },
 		    dpother : function(callback) {
-			Database.knex.raw('SELECT `dpother`.`id`,`dpother`.`DONOR`,DATE_FORMAT(`dpother`.`DATE`,"%Y-%m-%d") AS `DATE` ,`dpother`.`SURVEY`,`dpother`.`SURV_ANS`,`dpother`.`TRANSACT`,`dpother`.`ENVNO`,`dpother`.`LIST`,`dpother`.`NARRA`,`dpother`.`AMT`,`dpother`.`CURR`,`dpother`.`SOL`,`dpother`.`CASH`,`dpother`.`DEMAND`,`dpother`.`LABEL`,`dpother`.`MODE`,`dpother`.`GL`,`dpother`.`WEB`,`dpother`.`CAMP_TYPE`,`dpother`.`REQUESTS`,`dpother`.`TBAREQS`,`dpother`.`TSRECID`,`dpother`.`TSDATE`,`dpother`.`TSTIME`,`dpother`.`TSCHG`,`dpother`.`TSBASE`,`dpother`.`TSLOCAT`,`dpother`.`TSIDCODE`, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpother.SOL ) WHERE  DONOR = ' + contactId).exec(function(err, data) {
-			    if (err)
-				return callback(err)
-			    return callback(null, data[0]);
-			});
+			Database.knex
+			    .raw(
+				'SELECT `dpother`.`id`,`dpother`.`DONOR`,DATE_FORMAT(`dpother`.`DATE`,"%Y-%m-%d") AS `DATE` ,`dpother`.`SURVEY`,`dpother`.`SURV_ANS`,`dpother`.`TRANSACT`,`dpother`.`ENVNO`,`dpother`.`LIST`,`dpother`.`NARRA`,`dpother`.`AMT`,`dpother`.`CURR`,`dpother`.`SOL`,`dpother`.`CASH`,`dpother`.`DEMAND`,`dpother`.`LABEL`,`dpother`.`MODE`,`dpother`.`GL`,`dpother`.`WEB`,`dpother`.`CAMP_TYPE`,`dpother`.`REQUESTS`,`dpother`.`TBAREQS`,`dpother`.`TSRECID`,`dpother`.`TSDATE`,`dpother`.`TSTIME`,`dpother`.`TSCHG`,`dpother`.`TSBASE`,`dpother`.`TSLOCAT`,`dpother`.`TSIDCODE`, dpcodes.DESC FROM   dpother LEFT JOIN dpcodes ON ( dpcodes.FIELD = "SOL" AND dpcodes.CODE = dpother.SOL ) WHERE  DONOR = '
+				    + contactId).exec(function(err, data) {
+				if (err)
+				    return callback(err)
+				return callback(null, data[0]);
+			    });
 		    },
 		    dpplg : function(callback) {
 			Database.knex.raw("SELECT dpplg.*, dpcodes.DESC FROM   dpplg LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'SOL' AND dpcodes.CODE = dpplg.SOL  ) WHERE  DONOR = " + contactId).exec(function(err, data) {
@@ -1110,11 +1122,14 @@ module.exports = {
 			});
 		    },
 		    dplink : function(callback) {
-			Database.knex.raw("SELECT dplink.id, dplink.ID1, dplink.ID2, dplink.LINK, CONCAT ( dp.FNAME , ' ' , dp.LNAME ) as 'NAME', dpcodes.DESC FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK ) INNER JOIN dp ON (dplink.ID2 = dp.id) WHERE ID1 = " + contactId).exec(function(err, data) {
-			    if (err)
-				return callback(err)
-			    return callback(null, data[0]);
-			});
+			Database.knex
+			    .raw(
+				"SELECT dplink.id, dplink.ID1, dplink.ID2, dplink.LINK, CONCAT ( dp.FNAME , ' ' , dp.LNAME ) as 'NAME', dpcodes.DESC FROM dplink LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LINK' AND dpcodes.CODE = dplink.LINK ) INNER JOIN dp ON (dplink.ID2 = dp.id) WHERE ID1 = "
+				    + contactId).exec(function(err, data) {
+				if (err)
+				    return callback(err)
+				return callback(null, data[0]);
+			    });
 		    },
 		    dplang : function(callback) {
 			Database.knex.raw("SELECT dplang.LANGUAGE FROM dplang LEFT JOIN dpcodes ON ( dpcodes.FIELD = 'LANGUAGE' AND dpcodes.CODE = dplang.LANGUAGE ) WHERE DONOR = " + contactId).exec(function(err, data) {
@@ -1351,7 +1366,7 @@ module.exports = {
     },
     querycontacts : function(req, res, contactsCallback) {
 	var mysql = require('mysql');
-	
+
 	var searchmode = (req.body.columns && req.body.order);
 
 	var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
@@ -1370,15 +1385,13 @@ module.exports = {
 	var dtvols1 = req.body.contact.dtvols1;
 	var notes = req.body.contact.notes;
 
-	
-
 	delete req.body.contact.dpothadd;
 	delete req.body.contact.dpordersummary;
 	delete req.body.contact.dplang;
 	delete req.body.contact.dptrans;
 	delete req.body.contact.dtmajor;
 	delete req.body.contact.dtbishop;
-	
+
 	delete req.body.contact.dpgift;
 	delete req.body.contact.dpother;
 	delete req.body.contact.dtmail;
@@ -1393,7 +1406,7 @@ module.exports = {
 	var dptransFlag = false;
 	var dtmajorFlag = false;
 	var dtbishopFlag = false;
-	
+
 	var dpgiftFlag = false; // Flag for dpgift join
 	var dpotherFlag = false; // Flag for dpother join
 	var dtmailFlag = false;
@@ -1405,16 +1418,14 @@ module.exports = {
 	var joinCount = 0; // Pre-Count of total number of innerSelect Joins
 	var dpWheres = '';
 	addDpWheres();
-	
-	
-	
+
 	var dpothaddWheres = '';
 	var dpordersummaryWheres = '';
 	var dplangWheres = '';
 	var dptransWheres = '';
 	var dtmajorWheres = '';
 	var dtbishopWheres = '';
-	
+
 	var dpGiftWheres = '';
 	var dpOtherWheres = '';
 	var dtMailWheres = '';
@@ -1465,7 +1476,8 @@ module.exports = {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpothadd` ON `dp`.`id` = `dpothadd`.`DONOR` ' + dpothaddWheres + (joinCount > 1 ? ')' : '');
 		}
 		if (dpordersummaryFlag) {
-		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpordersummary` ON `dp`.`id` = `dpordersummary`.`DONOR` ' + dpordersummaryWheres + (joinCount > 1 ? ')' : '');
+		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpordersummary` ON `dp`.`id` = `dpordersummary`.`DONOR` ' + dpordersummaryWheres
+			+ (joinCount > 1 ? ')' : '');
 		}
 		if (dplangFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dplang` ON `dp`.`id` = `dplang`.`DONOR` ' + dplangWheres + (joinCount > 1 ? ')' : '');
@@ -1482,8 +1494,7 @@ module.exports = {
 		if (notesFlag) {
 		    innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `notes` ON `dp`.`id` = `notes`.`DONOR` ' + notesWheres + (joinCount > 1 ? ')' : '');
 		}
-		
-		
+
 	    } else if (mode == 'and') {
 		innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
 
@@ -1611,7 +1622,7 @@ module.exports = {
 		if (key == 'id' || key == 'mode') { // Skip these guys
 		    return;
 		}
-		if(key == 'PHONE' && val != null && val != ''){
+		if (key == 'PHONE' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + '( dp.PHONE LIKE ' + wrapPercents(mysql.escape(val)) + ' OR ' + 'dp.PHON2 LIKE ' + wrapPercents(mysql.escape(val)) + ' OR ' + 'dp.PHON3 LIKE ' + wrapPercents(mysql.escape(val)) + ')';
 		    return;
 		}
@@ -1626,55 +1637,63 @@ module.exports = {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp.CLASS IN (" + passtring + ")";
 		    return;
 		}
-		if(key == 'FLAGS' && val != null && val != ''){
-		    
+		if (key == 'FLAGS' && val != null && val != '') {
+
 		    var littleWheres = '';
-		    for(i =0; i< val.length; i++){
+		    for (i = 0; i < val.length; i++) {
 			littleWheres = littleWheres + (littleWheres == '' ? '' : ' OR ') + 'dp.FLAGS LIKE ' + wrapPercents(mysql.escape(val[i]));
-			
+
 		    }
-		    if(littleWheres!= ''){
+		    if (littleWheres != '') {
 			littleWheres = '(' + littleWheres + ')';
-			dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + littleWheres ;
+			dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + littleWheres;
 		    }
 		    return;
 		}
 
-		if(key == 'ZIP'&&val != null && val != '') {
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP LIKE ' +  wrapPercents(mysql.escape(val)) ;
+		if (key == 'total_donation_amount_MIN'&& val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.total_donation_amount >= ' + val;
 		    return;
 		}
-		if(key == 'CFNID'&&val != null && val != '') {
+		if (key == 'total_donation_amount_MAX'&& val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.total_donation_amount <= ' + val;
+		    return;
+		}
+		if (key == 'ZIP' && val != null && val != '') {
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ZIP LIKE ' + wrapPercents(mysql.escape(val));
+		    return;
+		}
+		if (key == 'CFNID' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CFNID LIKE ' + wrapPercents(mysql.escape(val));
 		    return;
 		}
-		if (key == 'BIRTHDATE_MIN'&&val != null && val != '') {
+		if (key == 'BIRTHDATE_MIN' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.BIRTHDATE >= ' + mysql.escape(val);
 		    return;
 		}
-		if (key == 'BIRTHDATE_MAX'&&val != null && val != '') {
+		if (key == 'BIRTHDATE_MAX' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.BIRTHDATE <= ' + mysql.escape(val);
 		    return;
 		}
-		if (key == 'ORDINATION_MIN'&&val != null && val != '') {
+		if (key == 'ORDINATION_MIN' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ORDINATION >= ' + mysql.escape(val);
 		    return;
 		}
-		if (key == 'ORDINATION_MAX'&&val != null && val != '') {
+		if (key == 'ORDINATION_MAX' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.ORDINATION <= ' + mysql.escape(val);
 		    return;
 		}
-		if (key == 'CONSECRATE_MIN'&&val != null && val != '') {
+		if (key == 'CONSECRATE_MIN' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CONSECRATE >= ' + mysql.escape(val);
 		    return;
 		}
-		if (key == 'CONSECRATE_MAX'&&val != null && val != '') {
+		if (key == 'CONSECRATE_MAX' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.CONSECRATE <= ' + mysql.escape(val);
 		    return;
 		}
 
 		if (val != null && val != '') {
-		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp." + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val) );
+		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + "dp." + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		}
 	    });
 
@@ -1700,7 +1719,7 @@ module.exports = {
 			    notesWheres = notesWheres + (notesWheres == '' ? '' : ' AND ') + 'notes.text LIKE ' + wrapPercents(mysql.escape(val));
 			    return;
 			}
-			
+
 			notesWheres = notesWheres + (notesWheres == '' ? '' : ' AND ') + 'notes.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
@@ -1710,7 +1729,7 @@ module.exports = {
 		    notesWheres = (mode == 'or' ? 'WHERE ' : '') + notesWheres;
 		}
 	    }
-	    
+
 	    if (dpother) {
 		Object.keys(dpother).forEach(function(key) {
 		    var val = dpother[key];
@@ -1972,7 +1991,7 @@ module.exports = {
 		    dtVols1Wheres = (mode == 'or' ? 'WHERE ' : '') + dtVols1Wheres;
 		}
 	    }
-	    
+
 	    if (dpothadd) {
 		Object.keys(dpothadd).forEach(function(key) {
 		    var val = dpothadd[key];
@@ -1990,7 +2009,7 @@ module.exports = {
 		    dpothaddWheres = (mode == 'or' ? 'WHERE ' : '') + dpothaddWheres;
 		}
 	    }
-	    
+
 	    if (dpordersummary) {
 		Object.keys(dpordersummary).forEach(function(key) {
 		    var val = dpordersummary[key];
@@ -2017,7 +2036,7 @@ module.exports = {
 			}
 
 			if (key == 'CASH_MIN') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CASH >= ' +  val;
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CASH >= ' + val;
 			    return;
 			}
 			if (key == 'CASH_MAX') {
@@ -2025,22 +2044,22 @@ module.exports = {
 			    return;
 			}
 			if (key == 'CREDIT_MIN') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT >= ' + val ;
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT >= ' + val;
 			    return;
 			}
 			if (key == 'CREDIT_MAX') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT <= ' + val ;
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.CREDIT <= ' + val;
 			    return;
 			}
 			if (key == 'GTOTAL_MIN') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL >= ' + val ;
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL >= ' + val;
 			    return;
 			}
 			if (key == 'GTOTAL_MAX') {
-			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL <= ' + val ;
+			    dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.GTOTAL <= ' + val;
 			    return;
 			}
-			
+
 			dpordersummaryWheres = dpordersummaryWheres + (dpordersummaryWheres == '' ? '' : ' AND ') + 'dpordersummary.' + key + (val.constructor === Array ? " IN ('" + val.join("','") + "')" : " = " + mysql.escape(val));
 		    }
 		});
@@ -2050,7 +2069,7 @@ module.exports = {
 		    dpordersummaryWheres = (mode == 'or' ? 'WHERE ' : '') + dpordersummaryWheres;
 		}
 	    }
-	    
+
 	    if (dplang) {
 		Object.keys(dplang).forEach(function(key) {
 		    var val = dplang[key];
@@ -2068,7 +2087,7 @@ module.exports = {
 		    dplangWheres = (mode == 'or' ? 'WHERE ' : '') + dplangWheres;
 		}
 	    }
-	    
+
 	    if (dptrans) {
 		Object.keys(dptrans).forEach(function(key) {
 		    var val = dptrans[key];
@@ -2086,11 +2105,11 @@ module.exports = {
 		    dptransWheres = (mode == 'or' ? 'WHERE ' : '') + dptransWheres;
 		}
 	    }
-	    
+
 	    if (dtmajor) {
 		Object.keys(dtmajor).forEach(function(key) {
 		    var val = dtmajor[key];
-		    if (val != null && val != ''&& (key != 'FORCEJOIN' || val == 'Y')) {
+		    if (val != null && val != '' && (key != 'FORCEJOIN' || val == 'Y')) {
 			if (!dtmajorFlag) {
 			    joinCount++;
 			}
@@ -2105,7 +2124,7 @@ module.exports = {
 			    return;
 			}
 			if (key == 'ASKAMT_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.ASKAMT <= '  + val ;
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.ASKAMT <= ' + val;
 			    return;
 			}
 			if (key == 'PLEDAMT_MIN') {
@@ -2122,7 +2141,7 @@ module.exports = {
 			    return;
 			}
 			if (key == 'PAIDAMT_MAX') {
-			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PAIDAMT <= '  + val ;
+			    dtmajorWheres = dtmajorWheres + (dtmajorWheres == '' ? '' : ' AND ') + 'dtmajor.PAIDAMT <= ' + val;
 			    return;
 			}
 
@@ -2167,11 +2186,11 @@ module.exports = {
 		    dtmajorWheres = (mode == 'or' ? 'WHERE ' : '') + dtmajorWheres;
 		}
 	    }
-	    
+
 	    if (dtbishop) {
 		Object.keys(dtbishop).forEach(function(key) {
 		    var val = dtbishop[key];
-		    if (val != null && val != ''&& (key != 'FORCEJOIN' || val == 'Y')) {
+		    if (val != null && val != '' && (key != 'FORCEJOIN' || val == 'Y')) {
 			if (!dtbishopFlag) {
 			    joinCount++;
 			}
@@ -2209,6 +2228,6 @@ function padLeft(nr, n, str) {
     return Array(n - String(nr).length + 1).join(str || '0') + nr;
 }
 
-function wrapPercents(str){
-    return str.substr(0,1) + '%' + str.substring(1,str.length-1) + '%' + str.substr(str.length-1,1)
+function wrapPercents(str) {
+    return str.substr(0, 1) + '%' + str.substring(1, str.length - 1) + '%' + str.substr(str.length - 1, 1)
 }

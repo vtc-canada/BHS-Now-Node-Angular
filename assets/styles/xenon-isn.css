@@ -474,3 +474,7 @@ div.datepicker {
   cursor: default;
 }
 
+.contactcheckbox{
+	cursor:pointer;
+}
+

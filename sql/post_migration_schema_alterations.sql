@@ -1280,3 +1280,11 @@ INSERT INTO `dpcodes` (`FIELD`, `CODE`, `DESC`, `MCAT_HI`, `MCAT_LO`, `AMR_DROP`
 INSERT INTO `dpcodes` (`FIELD`, `CODE`, `DESC`, `MCAT_HI`, `MCAT_LO`, `AMR_DROP`, `CDN_DROP`, `PRINTING`, `OTHER`, `MAILED`, `PLAYED`, `database_origin`) VALUES ('CLASS', 'G0', 'Buyers-14', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '1');
 INSERT INTO `dpcodes` (`FIELD`, `CODE`, `DESC`, `MCAT_HI`, `MCAT_LO`, `AMR_DROP`, `CDN_DROP`, `PRINTING`, `OTHER`, `MAILED`, `PLAYED`, `database_origin`) VALUES ('CLASS', 'G1', 'Buyers-15', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '1');
 
+#Adding total_donation_amount and total_donation_records columns  ~800 Seconds
+ALTER TABLE `dp` 
+ADD COLUMN `total_donation_amount` FLOAT(8,2) NOT NULL AFTER `PERM_SOLS`,
+ADD COLUMN `total_donation_records` INT(11) NOT NULL AFTER `total_donation_amount`;
+
+# Call sproc to update all the donations
+call update_DonationTotals(NULL);
+

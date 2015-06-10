@@ -3209,6 +3209,101 @@ module.exports.views = {
 		parameters : {
 		    
 		}
+	    },
+	    {
+		id : 12,
+		name : {
+		    locale_label : {
+			en : 'PopeName'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		orientation : 'portrait',
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_DuplicateContactReport',
+		    parameters : [],
+		    section : {
+			startrow : true,
+			endrow : true,
+			table : {
+			    searchenabled : true,
+			    toprowtableheader : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true
+			}
+		    },
+		    columns : [ {
+			locale : {
+			    en : "First Name"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Last Name"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Address"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "City"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "ZIP"
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    }, {
+			locale : {
+			    en : "Count"
+			},
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    } ]
+		}],
+		parameters : {
+		    
+		}
 	    }]
 	}
     }

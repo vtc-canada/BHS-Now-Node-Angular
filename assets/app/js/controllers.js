@@ -584,7 +584,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     }
 
     $scope.$watch('selectedOrderSummary.dporderdetails', function(newValue, oldValue) {
-	if ((!angular.equals(newValue, oldValue)) && vm.blockOrderSelectedModified == false) { //selectedOrderSummary.dporderdetails
+	if ((!angular.equals(newValue, oldValue)) && vm.blockOrderSelectedModified == false) { // selectedOrderSummary.dporderdetails
 	    angular.forEach(newValue, function(row) {
 		// Update descriptions
 		if (typeof ($rootScope.litemdetails) != 'undefined' && typeof ($rootScope.litemdetails[row.LITEMP]) != 'undefined' && angular.lowercase(row.LITEMD) != angular.lowercase($rootScope.litemdetails[row.LITEMP].description)) {
@@ -970,9 +970,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	vm.blockOrderSelectedModified = true; // blocks change event on
 	// selectedOrderSummary watcher
 	// once.
-	//if (row.FUNDS == null) {
-	//    row.FUNDS = 'U';
-	//}
+	// if (row.FUNDS == null) {
+	// row.FUNDS = 'U';
+	// }
 	$scope.selectedOrderSummary = row;
     }
 
@@ -1131,7 +1131,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$rootScope.gotContactCaller();
     }
     $rootScope.gotContactCaller = $rootScope.$on("getcontact", function(args, message) {
-	console.log('gotcontact');
+	// console.log('gotcontact');
 	$timeout(function() {
 	    vm.watchEnabled = false;
 	    if (message.id == 'new') {
@@ -1554,7 +1554,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    });
 			});
 
-			//$rootScope.search_orders = $scope.orders;
+			// $rootScope.search_orders = $scope.orders;
 
 			$rootScope.newLineItemTemplateModal.name = $scope.lineitem_templates[i].label;
 			$rootScope.newLineItemTemplateModal.id = $scope.lineitem_templates[i].id;
@@ -1584,7 +1584,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.lineitem.id = null;
 	$scope.selectedOrderSummary.dporderdetails = [];
 
-	//$rootScope.search_orders = $scope.orders = angular.copy(blankSearch); // clears
+	// $rootScope.search_orders = $scope.orders = angular.copy(blankSearch);
+	// // clears
 	// the
 	// order
 	// search
@@ -1621,7 +1622,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			$rootScope.newLineItemTemplateModal.id = null;
 			$rootScope.newLineItemTemplateModal.name = null;
 
-			//			$rootScope.search_orders = $scope.orders = angular.copy(blankSearch);
+			// $rootScope.search_orders = $scope.orders =
+			// angular.copy(blankSearch);
 			$timeout(function() {
 			    $sails.get('/template/lineitems').success(function(data) {
 				if (data.error != undefined) { // USER NO
@@ -1862,7 +1864,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	};
 
 	// $scope.tryDestroyDataTable('dpordersummary');
-	//$scope.contact.dpordersummary.push(newOrder);// $scope.selectedOrderSummary);
+	// $scope.contact.dpordersummary.push(newOrder);//
+	// $scope.selectedOrderSummary);
 
 	$scope.selectedOrderSummary = newOrder;
 	// $scope.rebindOrderSummaryDataTable();
@@ -2493,7 +2496,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// login
 		// screen
 	    }
-	    if(html.emit){
+	    if (html.emit) {
 		return;
 	    }
 	    $timeout(function() {
@@ -2530,21 +2533,22 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 
 	    $scope.reportselects.sols = [];
-	    //	    for (var i = 0; i < data.sols.length; i++) {
-	    //		$scope.reportselects.sols.push({
-	    //		    id : data.currencies[i].id,
-	    //		    label : data.currencies[i].name,
-	    //		    code : data.currencies[i].code
-	    //		});
-	    //	    }
-	    //$rootScope.label_sols = {};
-	    //$rootScope.sols = [];
+	    // for (var i = 0; i < data.sols.length; i++) {
+	    // $scope.reportselects.sols.push({
+	    // id : data.currencies[i].id,
+	    // label : data.currencies[i].name,
+	    // code : data.currencies[i].code
+	    // });
+	    // }
+	    // $rootScope.label_sols = {};
+	    // $rootScope.sols = [];
 	    for (var i = 0; i < data.sols.length; i++) {
 		$scope.reportselects.sols.push({
 		    id : data.sols[i].CODE,
 		    label : data.sols[i].CODE
 		});
-		//$rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE + ' - ' + data.sols[i].DESC;
+		// $rootScope.label_sols[data.sols[i].CODE] = data.sols[i].CODE
+		// + ' - ' + data.sols[i].DESC;
 	    }
 
 	    $scope.reportselects.countries = [];
@@ -2611,6 +2615,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
     var blankSearch = { // #CONTACT_SEARCH_PARAMETER
 	id : '',
+	total_donation_amount_MIN : null,
+	total_donation_amount_MAX : null,
 	PHONE : null,
 	mode : false,
 	ADD : null,
@@ -4301,6 +4307,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	$scope.exportDisabled = false;
 
 	var vm = this;
+	$scope.selectedUsers = {};
+	
 	vm.pageReset = false;
 	vm.blockSearchingModal = false;
 	vm.rowClicked = rowClicked;
@@ -4317,9 +4325,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    aoData.contact = searcht;
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
-	    $('td', nRow).bind('click', function() {
+	    $('td', nRow).bind('click', function(event) {
 		// $scope.$apply(function() {
-		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		if ($(event.target).hasClass('contactcheckbox')){//} || $(event.target).children('.contactcheckbox').length > 0) {
+		    vm.toggleSelectedUser(aData.id)
+		} else {
+		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		}
 		// });
 	    });
 	    if (aData.id == $contact.id) {
@@ -4357,9 +4369,16 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// t table
 	// i info
 	// p pagination
-	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'),
-	    DTColumnBuilder.newColumn('CITY').withTitle('City'), DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'), DTColumnBuilder.newColumn('CITY').withTitle('City'),
+	    DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
 
+//	 DTColumnBuilder.newColumn('id').withTitle('').notSortable().renderWith(function(data, type, full, meta) {
+//		    if($scope.selectedUsers[full.id]){
+//			    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox" checked="checked">';
+//		    }
+//		    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox">';
+//		}),
+	
 	$scope.$on('event:dataTableLoaded', function(event, data) {
 	    $scope.tableId = data.id; // Record table ID, for refreshes
 	    // later.
@@ -4380,6 +4399,27 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}, vm.pageReset);
 		vm.pageReset = false;
 	    }
+	}
+	
+	$scope.mergeContactsDisabled = function() {
+	    if (Object.keys($scope.selectedUsers).length == 2) {
+		return false;
+	    }
+	    return true;
+	}
+	$scope.MergeContacts = function(){
+	    
+	}
+	
+	
+	vm.toggleSelectedUser = function(contactId) {
+	    $timeout(function() {
+		if ($scope.selectedUsers[contactId]) {
+		    delete $scope.selectedUsers[contactId];
+		} else {
+		    $scope.selectedUsers[contactId] = true;
+		}
+	    }, 0);
 	}
 
 	$rootScope.blockSearchingModal = function() {

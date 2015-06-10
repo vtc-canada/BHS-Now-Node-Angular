@@ -215,6 +215,8 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    
 	    // Quick Info
 	    
+	    this.total_donation_amount = null;
+	    this.total_donation_records = null;
 	    this.MAX_AMT = null;
 	    this.MAX_DT = null;
 

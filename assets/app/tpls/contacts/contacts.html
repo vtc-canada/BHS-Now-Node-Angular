@@ -951,6 +951,13 @@
 				<form role="form" class="form-horizontal">
 					<div class="col-md-6">
 						<div class="form-group">
+							<label class="col-sm-4 control-label" for="contact_total_donation_amount">Total Donated:</label>
+	
+							<div class="col-sm-8">
+								<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="10000" ng-model-min="contact.total_donation_amount_MIN" ng-model-max="contact.total_donation_amount_MAX" data-min-val="0" data-max-val="10000"  data-step="10"></div>
+							</div>
+						</div>
+						<div class="form-group">
 							<label class="col-sm-4 control-label" for="contact_phone">Phone:</label>
 	
 							<div class="col-sm-8">
@@ -2515,12 +2522,19 @@
 		<div class="pull-right pull-right-stack isn-panel-pull-right">
 			<div class="btn btn-secondary" ng-class="" ng-disabled="exportDisabled" ng-click="exportList();">Export</div>
 		</div>
+		<!--<div class="pull-right pull-right-stack isn-panel-pull-right">
+											
+											
+			<div class="btn btn-info" ng-class="" ng-disabled="mergeContactsDisabled()" ng-click="MergeContacts();">Merge Contacts</div>
+		</div>-->
+		
 	</div>
 	{{message}}
 	<div class="panel-body">
 		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 	        <thead>
 	        	<tr>
+	        		<th></th>
 					<th>id</th>
 					<th>firstName</th>
 					<th>lastName</th>
@@ -2676,6 +2690,14 @@
 													<div class="form-group">
 														<label class="col-sm-7 control-label" for="">More Info:</label>
 														<label class="col-sm-5 control-label control-label-value">{{contact.MAX_DT |  date:'medium'}}</label>
+													</div>	
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Total Donation Amount:</label>
+														<label class="col-sm-5 control-label control-label-value">${{contact.total_donation_amount |  number:2}}</label>
+													</div>	
+													<div class="form-group">
+														<label class="col-sm-7 control-label" for="">Total Donation Records:</label>
+														<label class="col-sm-5 control-label control-label-value">{{contact.total_donation_records |  number:0}}</label>
 													</div>		
 												</div>
 											</div>
