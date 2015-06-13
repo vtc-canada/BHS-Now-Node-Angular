@@ -214,7 +214,7 @@ function toClientDateTimeString(date){
         <% }else{ %>
 
             <% for (j;j<data[i].data.length;j++){ %>   <!-- ITERATING EACH ROW -->
-                <tr class="row report-data-row <% if(data[i].data[j][0].bordertop){ %> report-data-last-row<% } %>">
+                <tr class="row report-data-row <% if(data[i].data[j][0].bordertop){ %> report-data-last-row<% } %> <% if(data[i].data[j][0].grouprow){ %> group-row<% } %>">
                     <% for (var k=0;k<data[i].data[j].length;k++){ %>   <!-- ITERATING EACH COLUMN -->
                     	<% if(typeof(data[i].data[j][k])=='undefined'){ %>
                     	<td></td>
@@ -263,6 +263,11 @@ function toClientDateTimeString(date){
                                 {
                                     data[i].header[k].lastrowvalue = parseFloat(data[i].data[j][k].val);
                                 }
+                            }else if( data[i].header[k].lastrow.type == 'count' ){
+                                if(typeof(data[i].header[k].lastrowvalue)=='undefined'){   //Blank out values on first run.
+                                    data[i].header[k].lastrowvalue =0;
+                                }
+                                data[i].header[k].lastrowvalue++;
                             }
                         }
                         %>
@@ -279,7 +284,7 @@ function toClientDateTimeString(date){
                             <% for (var k=0;k<data[i].header.length;k++){ %>   <!-- ITERATING EACH COLUMN -->
                                 <% if( data[i].header[k].lastrow.type == 'average' ){  %> <!-- IF IT's AN AVERAGE -->
                                     <td class="report-data-item<% if(data[i].header[k].hidden){ %> column-hidden<% } %>" style="height:20px;<% if(data[i].header[k].lastrow.bordertop){ %>border-top:2px solid #000000;<% } %><% if(data[i].header[k].lastrow.bold){ %>font-weight:bold;<% } %>"><%= typeof(data[i].header[k].lastrowvalue)=='undefined'||data[i].header[k].rowcount==0?'':(data[i].header[k].lastrowvalue/data[i].header[k].rowcount).toFixed(parseInt(data[i].header[k].lastrow.decimalplaces)) %></td>
-                                <% }else if( data[i].header[k].lastrow.type == 'sum'||data[i].header[k].lastrow.type == 'max'){  %> <!-- IF IT's AN AVERAGE -->
+                                <% }else if( data[i].header[k].lastrow.type == 'sum'||data[i].header[k].lastrow.type == 'max' ||data[i].header[k].lastrow.type == 'count' ){  %> <!-- IF IT's AN AVERAGE -->
                                     <td class="report-data-item<% if(data[i].header[k].hidden){ %> column-hidden<% } %>" style="height:20px;<% if(data[i].header[k].lastrow.bordertop){ %>border-top:2px solid #000000;<% } %><% if(data[i].header[k].lastrow.bold){ %>font-weight:bold;<% } %>"><%= typeof(data[i].header[k].lastrowvalue)=='undefined'?'':(data[i].header[k].lastrowvalue).toFixed(parseInt(data[i].header[k].lastrow.decimalplaces)) %></td>
                                 <% }else if( data[i].header[k].lastrow.type == 'custom'){  %> <!-- IF IT's CUSTOM -->
                                     <td class="report-data-item<% if(data[i].header[k].hidden){ %> column-hidden<% } %>" style="height:20px;<% if(data[i].header[k].lastrow.bordertop){ %>border-top:2px solid #000000;<% } %><% if(data[i].header[k].lastrow.bold){ %>font-weight:bold;<% } %>"><%= data[i].header[k].lastrow.value %></td>

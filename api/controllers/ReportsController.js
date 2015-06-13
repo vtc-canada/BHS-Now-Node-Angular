@@ -543,13 +543,11 @@ function addSectionData(section, adddata, timezoneoffset, jsonData) {
 				section.data[i + groupcount][fc].bold = false;
 				section.data[i + groupcount][fc].bordertop = false;
 				section.data[i + groupcount][fc].grouprow = true;
-				
-				if(jsonData.grouping[g].footer.columns[fc].type == 'count' || jsonData.grouping[g].footer.columns[fc].type == 'sum' ){
-				    jsonData.grouping[g].footer.columns[fc].value = 0; // resets
-					    
+
+				if (jsonData.grouping[g].footer.columns[fc].type == 'count' || jsonData.grouping[g].footer.columns[fc].type == 'sum') {
+				    jsonData.grouping[g].footer.columns[fc].value = 0; // resets the value!
+
 				}
-				// the
-				// value!
 			    }
 			}
 			groupcount++;
@@ -622,7 +620,7 @@ function addSectionData(section, adddata, timezoneoffset, jsonData) {
 
     // these steps do a final run on the groupcounts after the last data row. - Not testing for changes!
     if (typeof (jsonData.grouping) != 'undefined') {
-	
+
 	for (var g = jsonData.grouping.length - 1; g >= 0; g--) {
 
 	    if (jsonData.grouping[g].footer) {
@@ -643,7 +641,7 @@ function addSectionData(section, adddata, timezoneoffset, jsonData) {
 			section.data[i + groupcount][fc].bold = false;
 			section.data[i + groupcount][fc].bordertop = false;
 			section.data[i + groupcount][fc].grouprow = true;
-			
+
 		    }
 		}
 		groupcount++;

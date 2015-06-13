@@ -3213,7 +3213,8 @@ module.exports.views = {
 			    searchenabled : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
-			    topborder : true
+			    topborder : true,
+			    sorting : false
 			}
 		    },
 		    grouping : [ {
@@ -3244,7 +3245,67 @@ module.exports.views = {
 				type : 'sum',
 				column : 'MCOUNT'
 			    } ]
-			//
+			}
+		    },{
+			column : 'MYEAR',
+			footer : {
+			    columns : [ {
+				type : 'column',
+				column : 'MTYPE'
+			    },
+			    {
+				type : 'column',
+				column : 'MYEAR'
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'count'
+			    }, {
+				type : 'sum',
+				column : 'MCOUNT'
+			    } ]
+			}
+		    },{
+			column : 'SOL',
+			footer : {
+			    columns : [ {
+				type : 'column',
+				column : 'MTYPE'
+			    }, // will
+			    // use
+			    // cached
+			    // 'value'
+			    {
+				type : 'column',
+				column : 'MYEAR'
+			    }, {
+				type : 'column',
+				column : 'SOL'
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'column',
+				column : 'SOL'
+				    
+				//type : 'custom',
+				//value : ''
+				//type : 'column',
+				//column : 'SOLDESC'
+			    }, {
+				type : 'count'
+			    }, {
+				type : 'sum',
+				column : 'MCOUNT'
+			    } ]
 			}
 		    } ],
 		    columns : {
@@ -3308,7 +3369,7 @@ module.exports.views = {
 				en : "Donor Count"
 			    },
 			    lastrow : {
-				type : 'sum',
+				type : 'count',
 				decimalplaces : 0,
 				bold : true,
 				bordertop : true

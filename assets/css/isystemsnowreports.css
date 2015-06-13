@@ -825,11 +825,11 @@ tr.bagsearch-tr.searchview div.security-left-pdf{
 
     }
 
+}
 
 
 
-
-
-
-
+table > tbody > tr.group-row{
+	background: #D7DDE9 !important;
+	border: 1px solid #B8B5B5 !important;
 }
