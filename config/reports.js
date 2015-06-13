@@ -3205,7 +3205,7 @@ module.exports.views = {
 		tables : [ {
 		    order : 0,
 		    sproc : 'reports_PopeName',
-		    parameters : [],
+		    parameters : ['start_time','end_time','type_code', 'sol_code'],
 		    section : {
 			startrow : true,
 			endrow : true,
@@ -3401,6 +3401,20 @@ module.exports.views = {
 			type : 'datetime',
 			locale_label : {
 			    en : 'End Time'
+			}
+		    },
+		    'type_code' : {
+			order : 2,
+			type : 'text',
+			locale_label : {
+			    en : 'Type Code'
+			}
+		    },
+		    'sol_code' : {
+			order : 3,
+			type : 'text',
+			locale_label : {
+			    en : 'SOL Code'
 			}
 		    }
 		}
