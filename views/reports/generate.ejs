@@ -232,6 +232,10 @@ function toClientDateTimeString(date){
                         
                         </td>
                         <%
+                        if(data[i].data[j][k].grouprow){
+                        	continue;
+                        }
+                        
                         if(typeof(data[i].header[k].lastrow)!='undefined') {    //LAST ROW LOGIC
                             if( data[i].header[k].lastrow.type == 'average' ){    //IF IT's AN AVERAGE
                                 if(typeof(data[i].header[k].lastrowvalue)=='undefined'){   //Blank out values on first run.

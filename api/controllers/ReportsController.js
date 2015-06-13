@@ -149,8 +149,8 @@ module.exports = {
 	    }
 	    phantom_bool = false;
 	}
-	if(!phantom_bool){
-	    //res.json({emit:true});
+	if (!phantom_bool) {
+	    // res.json({emit:true});
 	}
 
 	buildReportData(report, phantom_bool, function(data) {
@@ -183,8 +183,9 @@ module.exports = {
 		    }, function(err, html) {
 			if (err)
 			    return console.log(err);
-			//sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
-			res.json(html);  
+			// sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report',
+			// html : html});
+			res.json(html);
 		    });
 		}
 	    } else {
@@ -197,8 +198,6 @@ module.exports = {
 		    });
 		} else {
 
-			
-			
 		    sails.hooks.views.render("reports/generate", {
 			phantom : phantom_bool,
 			layout : false,
@@ -208,7 +207,8 @@ module.exports = {
 			if (err)
 			    return console.log(err);
 
-			//sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report', html : html});
+			// sails.io.sockets.emit('user_'+req.session.user.id,{verb:'report',
+			// html : html});
 			res.json(html);
 		    });
 
@@ -346,17 +346,28 @@ function buildReportData(report, phantom_bool, cb) {
 		data[table.order].header = new Array();
 
 		// Makes Headings
-		for (var i = 0; i < table.columns.length; i++) {
+		var i = 0;
+		for ( var key in result[0]) {
+		    // for (var i = 0; i < table.columns.length; i++) {
+		    var jsonk = i;
+		    if (!(table.columns instanceof Array)) {
+			jsonk = key;
+		    }
+		    if (typeof (table.columns[jsonk]) == 'undefined') {
+			continue;
+		    }
+
 		    data[table.order].header[i] = new Object();
-		    data[table.order].header[i].val = table.columns[i].locale[report.locale];
+		    data[table.order].header[i].val = table.columns[jsonk].locale[report.locale];
 		    data[table.order].header[i].bold = true;
 		    data[table.order].header[i].bordertop = false;
-		    data[table.order].header[i].width = table.columns[i].width;
-		    data[table.order].header[i].lastrow = table.columns[i].lastrow;
-		    data[table.order].header[i].hidden = table.columns[i].hidden;
-		    data[table.order].header[i].align = table.columns[i].align;
-		    data[table.order].header[i].titlealign = table.columns[i].titlealign;
-		    data[table.order].header[i].phantom_white_space = table.columns[i].phantom_white_space;
+		    data[table.order].header[i].width = table.columns[jsonk].width;
+		    data[table.order].header[i].lastrow = table.columns[jsonk].lastrow;
+		    data[table.order].header[i].hidden = table.columns[jsonk].hidden;
+		    data[table.order].header[i].align = table.columns[jsonk].align;
+		    data[table.order].header[i].titlealign = table.columns[jsonk].titlealign;
+		    data[table.order].header[i].phantom_white_space = table.columns[jsonk].phantom_white_space;
+		    i++;
 		}
 	    }
 
@@ -503,29 +514,143 @@ function addPivotData(section, adddata, timezoneoffset, table) {
 }
 
 function addSectionData(section, adddata, timezoneoffset, jsonData) {
-    for (var i = 0; i < adddata.length; i++) {
-	section.data[i] = new Array();
+    var groupcount = 0; // used for row offsetting output
+    var i = 0;
+    for (true; i < adddata.length; i++) {
+
+	if (typeof (jsonData.grouping) != 'undefined') {
+
+	    for (var g = jsonData.grouping.length - 1; g >= 0; g--) {
+
+		// detect if the grouping value changed
+		if (typeof (jsonData.grouping[g].value) != 'undefined' && jsonData.grouping[g].value != adddata[i][jsonData.grouping[g].column]) {
+
+		    if (jsonData.grouping[g].footer) {
+			section.data[i + groupcount] = new Array(); // new array
+			// of data -
+			// adds new
+			// row
+
+			// iterate footer columns
+			for (var fc = 0; fc < jsonData.grouping[g].footer.columns.length; fc++) {
+			    // If - detect type column when there's group data -
+			    // and the
+			    // column changed!
+			    if (typeof (jsonData.grouping[g].footer.columns[fc].value) != 'undefined') {
+
+				section.data[i + groupcount][fc] = new Object();
+				section.data[i + groupcount][fc].val = jsonData.grouping[g].footer.columns[fc].value;
+				section.data[i + groupcount][fc].bold = false;
+				section.data[i + groupcount][fc].bordertop = false;
+				section.data[i + groupcount][fc].grouprow = true;
+				
+				if(jsonData.grouping[g].footer.columns[fc].type == 'count' || jsonData.grouping[g].footer.columns[fc].type == 'sum' ){
+				    jsonData.grouping[g].footer.columns[fc].value = 0; // resets
+					    
+				}
+				// the
+				// value!
+			    }
+			}
+			groupcount++;
+		    }
+		}
+	    }
+	}
+
+	section.data[i + groupcount] = new Array();
 	var k = 0;
 	for ( var key in adddata[i]) {
 	    if (adddata[i].hasOwnProperty(key)) {
-		section.data[i][k] = new Object();
-		if (typeof (jsonData.columns[k].modifier) != 'undefined') {
-		    if (jsonData.columns[k].modifier == "localdatetime") {
-			section.data[i][k].val = toClientDateTimeString(adddata[i][key], timezoneoffset);
-		    } else if (jsonData.columns[k].modifier == "secondsString") {
-			section.data[i][k].val = secondsToString(adddata[i][key]);
-		    } else if (jsonData.columns[k].modifier == "norepeat") {
-			section.data[i][k].val = (i == 0 || adddata[i][key] != adddata[i - 1][key]) ? adddata[i][key] : '';
+		var jsonk = k;
+		if (!(jsonData.columns instanceof Array)) {
+		    jsonk = key;
+		}
+		if (typeof (jsonData.columns[jsonk]) == 'undefined') {
+		    continue;
+		}
+		section.data[i + groupcount][k] = new Object();
+		if (typeof (jsonData.columns[jsonk].modifier) != 'undefined') {
+		    if (jsonData.columns[jsonk].modifier == "localdatetime") {
+			section.data[i + groupcount][k].val = toClientDateTimeString(adddata[i][key], timezoneoffset);
+		    } else if (jsonData.columns[jsonk].modifier == "secondsString") {
+			section.data[i + groupcount][k].val = secondsToString(adddata[i][key]);
+		    } else if (jsonData.columns[jsonk].modifier == "norepeat") {
+			section.data[i + groupcount][k].val = (i == 0 || adddata[i][key] != adddata[i - 1][key]) ? adddata[i][key] : '';
 		    }
 		} else {
-		    section.data[i][k].val = adddata[i][key];
+		    section.data[i + groupcount][k].val = adddata[i][key];
 		}
-		section.data[i][k].bold = false;
-		section.data[i][k].bordertop = false;
+		section.data[i + groupcount][k].bold = false;
+		section.data[i + groupcount][k].bordertop = false;
 		k++;
+
+	    }
+	}// end of key/adddata loop (row)
+
+	// GROUPING MAINTENANCE
+	if (typeof (jsonData.grouping) != 'undefined') { // store/track
+	    // any grouping
+	    // data
+	    for (var g = 0; g < jsonData.grouping.length; g++) {
+		// if (jsonData.grouping[g].column == key) { // one column at a
+		// time
+		if (jsonData.grouping[g].footer) {
+		    // iterates through the footer columns themselves and
+		    // records/increments values to be available for
+		    // grouping changes
+		    for (var fc = 0; fc < jsonData.grouping[g].footer.columns.length; fc++) {
+			if (jsonData.grouping[g].footer.columns[fc].type == 'column') {
+			    jsonData.grouping[g].footer.columns[fc].value = adddata[i][jsonData.grouping[g].footer.columns[fc].column];
+			} else if (jsonData.grouping[g].footer.columns[fc].type == 'count') {
+			    if (typeof (jsonData.grouping[g].footer.columns[fc].value) == 'undefined') {
+				jsonData.grouping[g].footer.columns[fc].value = 0;
+			    }
+			    jsonData.grouping[g].footer.columns[fc].value++;
+			} else if (jsonData.grouping[g].footer.columns[fc].type == 'sum') {
+			    if (typeof (jsonData.grouping[g].footer.columns[fc].value) == 'undefined') {
+				jsonData.grouping[g].footer.columns[fc].value = 0;
+			    }
+			    jsonData.grouping[g].footer.columns[fc].value += adddata[i][jsonData.grouping[g].footer.columns[fc].column];
+			}
+		    }
+		    jsonData.grouping[g].value = adddata[i][jsonData.grouping[g].column];
+		}
 	    }
 	}
     }
+
+    // these steps do a final run on the groupcounts after the last data row. - Not testing for changes!
+    if (typeof (jsonData.grouping) != 'undefined') {
+	
+	for (var g = jsonData.grouping.length - 1; g >= 0; g--) {
+
+	    if (jsonData.grouping[g].footer) {
+		section.data[i + groupcount] = new Array(); // new array
+		// of data -
+		// adds new
+		// row
+
+		// iterate footer columns
+		for (var fc = 0; fc < jsonData.grouping[g].footer.columns.length; fc++) {
+		    // If - detect type column when there's group data -
+		    // and the
+		    // column changed!
+		    if (typeof (jsonData.grouping[g].footer.columns[fc].value) != 'undefined') {
+
+			section.data[i + groupcount][fc] = new Object();
+			section.data[i + groupcount][fc].val = jsonData.grouping[g].footer.columns[fc].value;
+			section.data[i + groupcount][fc].bold = false;
+			section.data[i + groupcount][fc].bordertop = false;
+			section.data[i + groupcount][fc].grouprow = true;
+			
+		    }
+		}
+		groupcount++;
+	    }
+	}
+    }
+
 }
 
 function secondsToString(seconds) {

@@ -50,7 +50,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -235,7 +234,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -391,7 +389,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -554,7 +551,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : false,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-6',
 			    bottomborder : true,
 			    topborder : true
@@ -693,7 +689,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -832,7 +827,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -971,7 +965,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -1110,7 +1103,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -1249,7 +1241,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -1402,7 +1393,6 @@ module.exports.views = {
 			tableclass : 'wide',
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -1443,7 +1433,7 @@ module.exports.views = {
 			locale : {
 			    en : "Name"
 			},
-			phantom_white_space:'normal',
+			phantom_white_space : 'normal',
 			lastrow : {
 			    type : 'custom',
 			    value : '',
@@ -1454,7 +1444,7 @@ module.exports.views = {
 			locale : {
 			    en : "Address"
 			},
-			phantom_white_space:'normal',
+			phantom_white_space : 'normal',
 			lastrow : {
 			    type : 'custom',
 			    value : '',
@@ -1651,7 +1641,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -1838,7 +1827,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -2055,7 +2043,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -2252,7 +2239,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true,
@@ -2446,7 +2432,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -2594,7 +2579,6 @@ module.exports.views = {
 			},
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -2766,7 +2750,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -2849,7 +2832,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -2998,7 +2980,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -3114,8 +3095,7 @@ module.exports.views = {
 			}
 		    }
 		}
-	    },
-	    {
+	    }, {
 		id : 11,
 		name : {
 		    locale_label : {
@@ -3138,7 +3118,6 @@ module.exports.views = {
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
@@ -3205,12 +3184,11 @@ module.exports.views = {
 			    bordertop : true
 			}
 		    } ]
-		}],
+		} ],
 		parameters : {
-		    
+
 		}
-	    },
-	    {
+	    }, {
 		id : 12,
 		name : {
 		    locale_label : {
@@ -3223,88 +3201,149 @@ module.exports.views = {
 		footer : {
 		    logo : 'default.png'
 		},
-		orientation : 'portrait',
+		orientation : 'landscape',
 		tables : [ {
 		    order : 0,
-		    sproc : 'reports_DuplicateContactReport',
+		    sproc : 'reports_PopeName',
 		    parameters : [],
 		    section : {
 			startrow : true,
 			endrow : true,
 			table : {
 			    searchenabled : true,
-			    toprowtableheader : true,
 			    spantype : 'col-xs-12',
 			    bottomborder : true,
 			    topborder : true
 			}
 		    },
-		    columns : [ {
-			locale : {
-			    en : "First Name"
-			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
+		    grouping : [ {
+			column : 'MTYPE',
+			footer : {
+			    columns : [ {
+				type : 'column',
+				column : 'MTYPE'
+			    }, // will
+			    // use
+			    // cached
+			    // 'value'
+			    {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'column',
+				column : 'DESC'
+			    }, {
+				type : 'count'
+			    }, {
+				type : 'sum',
+				column : 'MCOUNT'
+			    } ]
+			//
 			}
-		    }, {
-			locale : {
-			    en : "Last Name"
+		    } ],
+		    columns : {
+			MTYPE : {
+			    locale : {
+				en : "TYPE"
+			    },
+			    lastrow : {
+				type : 'custom',
+				value : 'Totals',
+				bold : true,
+				bordertop : true
+			    }
 			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "Address"
+			MYEAR : {
+			    locale : {
+				en : "YEAR"
+			    },
+			    lastrow : {
+				type : 'custom',
+				value : '',
+				bold : true,
+				bordertop : true
+			    }
 			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "City"
+			SOL : {
+			    locale : {
+				en : "SOL"
+			    },
+			    lastrow : {
+				type : 'custom',
+				value : '',
+				bold : true,
+				bordertop : true
+			    }
 			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "ZIP"
+			DONOR : {
+			    locale : {
+				en : "Donor"
+			    },
+			    lastrow : {
+				type : 'custom',
+				value : '',
+				bold : true,
+				bordertop : true
+			    }
 			},
-			lastrow : {
-			    type : 'custom',
-			    value : '',
-			    bold : true,
-			    bordertop : true
-			}
-		    }, {
-			locale : {
-			    en : "Count"
+			FULLNAME : {
+			    locale : {
+				en : "Full Name"
+			    },
+			    lastrow : {
+				type : 'custom',
+				value : '',
+				bold : true,
+				bordertop : true
+			    }
 			},
-			lastrow : {
-			    type : 'sum',
-			    decimalplaces : 0,
-			    bold : true,
-			    bordertop : true
+			DCOUNT : {
+			    locale : {
+				en : "Donor Count"
+			    },
+			    lastrow : {
+				type : 'sum',
+				decimalplaces : 0,
+				bold : true,
+				bordertop : true
+			    }
+			},
+			MCOUNT : {
+			    locale : {
+				en : "Misc Count"
+			    },
+			    lastrow : {
+				type : 'sum',
+				decimalplaces : 0,
+				bold : true,
+				bordertop : true
+			    }
 			}
-		    } ]
-		}],
+		    }
+		} ],
 		parameters : {
-		    
+		    'start_time' : {
+			order : 0,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Time'
+			}
+		    },
+		    'end_time' : {
+			order : 1,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Time'
+			}
+		    }
 		}
-	    }]
+	    } ]
 	}
     }
 };
