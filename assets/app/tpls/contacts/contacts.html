@@ -1,6 +1,44 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Contacts" description=""></page-title>
 
 
+
+<script type="text/ng-template" id="merge-contacts-modal">
+	<div class="modal-header">
+		<!--<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>-->
+		<h4 class="modal-title">Select Master Contact </h4>
+	</div>
+	<div class="modal-body form-horizontal" >
+		<div class="form-group modal-datatables-wrapper" ng-controller="MergeContactDatatable as showCase">
+				<table id="mergetable" datatable="" dt-options="showCase.dtOptions"  class="table-condensed full-width focus-on row-border hover table table-striped table-bordered">
+			        <thead>
+			        	<tr>
+							<th>id</th>
+							<th>firstName</th>
+							<th>lastName</th>
+						</tr>
+			        </thead>
+			        <tbody>
+			        	<tr id="{{mergeContact1.id}}">
+			        		<td>{{mergeContact1.id}}</td>
+			        		<td>{{mergeContact1.FNAME}}</td>
+			        		<td>{{mergeContact1.LNAME}}</td>
+			        	</tr>	
+			        	<tr id="{{mergeContact2.id}}">
+			        		<td>{{mergeContact2.id}}</td>
+			        		<td>{{mergeContact2.FNAME}}</td>
+			        		<td>{{mergeContact2.LNAME}}</td>
+			        	</tr>
+			        </tbody>
+			    </table>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+		<button type="button" class="btn btn-primary" ng-disabled="isMergeDisabled()" ng-click="currentModal.dismiss('save');">Merge</button>
+	</div>
+</script>
+
 <script type="text/ng-template" id="is-loading-modal">
 	<div class="modal-header">
 		<!--<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>-->
@@ -2522,11 +2560,11 @@
 		<div class="pull-right pull-right-stack isn-panel-pull-right">
 			<div class="btn btn-secondary" ng-class="" ng-disabled="exportDisabled" ng-click="exportList();">Export</div>
 		</div>
-		<!--<div class="pull-right pull-right-stack isn-panel-pull-right">
+		<div class="pull-right pull-right-stack isn-panel-pull-right">
 											
 											
 			<div class="btn btn-info" ng-class="" ng-disabled="mergeContactsDisabled()" ng-click="MergeContacts();">Merge Contacts</div>
-		</div>-->
+		</div>
 		
 	</div>
 	{{message}}
@@ -2534,7 +2572,7 @@
 		<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 	        <thead>
 	        	<tr>
-	        		<!--<th></th>-->
+	        		<th></th>
 					<th>id</th>
 					<th>firstName</th>
 					<th>lastName</th>

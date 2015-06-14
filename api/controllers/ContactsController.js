@@ -6,7 +6,208 @@
  */
 
 module.exports = {
+    mergeContacts : function(req, res) {
+	console.log(req.body.master);
+	console.log(req.body.slave);
 
+	async.parallel({
+	    slave : function(cb) {
+		var reqslave = req;
+		reqslave.body.id = req.body.slave;
+		sails.controllers.contacts.doGetContact(reqslave, res, function(err, results) {
+		    cb(err, results['contact']);
+		});
+	    },
+	    master : function(cb) {
+		var reqmaster = req;
+		reqmaster.body.id = req.body.master;
+		sails.controllers.contacts.doGetContact(req, res, function(err, results) {
+		    cb(err, results['contact']);
+		});
+	    }
+
+	}, function(err, results) {
+	    if (err) {
+		console.log(err.toString());
+		return res.json(err.toString());
+	    }
+	    var slavecontact = results.slave;
+	    var slaveId = slavecontact.id;
+	    delete slavecontact.id;
+
+	    var mastercontact = results.master;
+	    var contactId = mastercontact.id;
+	    delete mastercontact.id;
+
+	    // var otherAddresses = mastercontact.otherAddresses;
+	    // var dtmail = mastercontact.dtmail;
+	    // var dpgift = mastercontact.dpgift;
+	    // var dpmisc = mastercontact.dpmisc;
+	    // var dpordersummary = mastercontact.dpordersummary;
+	    // var dpplg = mastercontact.dpplg;
+	    // var dplink = mastercontact.dplink;
+	    // var dplang = mastercontact.dplang;
+	    // var dplang_modified = mastercontact.dplang_modified;
+	    // var dptrans = mastercontact.dptrans;
+	    // var dptrans_modified = mastercontact.dptrans_modified;
+	    // var dpother = mastercontact.dpother;
+	    // var dtmajor = mastercontact.dtmajor;
+	    var dtvols1 = mastercontact.dtvols1;
+	    var dtbishop = mastercontact.dtbishop;
+	    // var notes =
+	    // mastercontact.notes.layman.concat(mastercontact.notes.ecclesiastical).concat(mastercontact.notes.volunteer).concat(mastercontact.notes.orders);
+	    delete mastercontact.otherAddresses;
+	    delete mastercontact.dtmail;
+	    delete mastercontact.dpgift;
+	    delete mastercontact.dpmisc;
+	    delete mastercontact.dpordersummary;
+	    delete mastercontact.dpplg;
+	    delete mastercontact.dplink;
+	    delete mastercontact.dplang;
+	    delete mastercontact.dplang_modified;
+	    delete mastercontact.dptrans;
+	    delete mastercontact.dptrans_modified;
+	    delete mastercontact.dpother;
+	    delete mastercontact.dtmajor;
+	    delete mastercontact.dtvols1;
+	    delete mastercontact.dtbishop;
+	    delete mastercontact.notes;
+
+	    for ( var key in mastercontact) {
+		if (mastercontact.hasOwnProperty(key)) {
+		    if ((mastercontact[key] == '' || mastercontact[key] == null) && (slavecontact[key] != null && slavecontact[key] != '')) { // case
+			// to
+			// overwrite!
+			mastercontact[key] = slavecontact[key];
+		    }
+		}
+	    }
+	    Database.knex('dp').where({
+		id : contactId
+	    }).update(mastercontact).exec(function(err, response) {
+		if (err)
+		    return res.json(err, 500);
+
+		async.parallel([ function(callback) {
+		    Database.knex.raw('UPDATE dpothadd SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dtmajor SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dtmail SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dporderdetails SET DONORD = ' + contactId + ' WHERE DONORD = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dpordersummary SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dpgift SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dpmisc SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dpother SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dpplg SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dplink SET ID1 = ' + contactId + ' WHERE ID1 = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dplink SET ID2 = ' + contactId + ' WHERE ID2 = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dplang SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    Database.knex.raw('UPDATE dptrans SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}, function(callback) {
+		    if (dtvols1 != null) { // good dtvols1 record, delete slave
+			// record
+			Database.knex.raw('DELETE FROM dtvols1 WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			    callback(err, result);
+			})
+		    } else if (slavecontact.dtvols1 != null) {
+
+			Database.knex.raw('UPDATE dtvols1 SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			    callback(err, result);
+			});
+		    }else{
+			callback(null);
+		    }
+		}, function(callback) {
+
+		    if (dtbishop != null) { // good dtvols1 record, delete slave
+			// record
+			Database.knex.raw('DELETE FROM dtbishop WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			    callback(err, result);
+			})
+		    } else if (slavecontact.dtbishop != null) {
+
+			Database.knex.raw('UPDATE dtbishop SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			    callback(err, result);
+			});
+		    }else{
+			callback(null);
+		    }
+		}, function(callback) {
+		    Database.knex.raw('UPDATE notes SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
+			callback(err, result);
+		    });
+		}], function(err, result) {
+		    if (err)
+			return res.json(err, 500);
+
+		    Database.knex.raw('DELETE FROM dp WHERE id = ' + slaveId).exec(function(err, response) { // clean out slave record
+			if (err)
+			    return res.json(err, 500);
+			Database.knex.raw('call update_DonationTotals(' + contactId + ')').exec(function(err, result) {
+			    if (err)
+				return res.json(err, 500);
+
+			    console.log('completed merge!');
+			    res.json({
+				success : true
+			    });
+
+			});
+		    });
+
+		});
+	    });
+	});
+
+    },
+    mergerows : function(req, res) {
+	var mergers = req.body.mergers;
+	Database.knex('dp').select('id', 'FNAME', 'LNAME').whereIn('id', Object.keys(req.body.mergers)).exec(function(err, response) {
+	    if (err) {
+		return console.log(err.toString());
+	    }
+	    res.json(response);
+	});
+
+    },
     export_order : function(req, res) {
 	var order = req.body.order;
 	var phantom = require('node-phantom');
@@ -296,10 +497,10 @@ module.exports = {
 
 	    });
 	}
-	
-	function updateDonorTotals(contactId,callback){
-	    Database.knex.raw('call update_DonationTotals('+contactId+')').exec(function(err,result){
-		callback(err,result);
+
+	function updateDonorTotals(contactId, callback) {
+	    Database.knex.raw('call update_DonationTotals(' + contactId + ')').exec(function(err, result) {
+		callback(err, result);
 	    });
 	}
 
@@ -1651,11 +1852,11 @@ module.exports = {
 		    return;
 		}
 
-		if (key == 'total_donation_amount_MIN'&& val != null && val != '') {
+		if (key == 'total_donation_amount_MIN' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.total_donation_amount >= ' + val;
 		    return;
 		}
-		if (key == 'total_donation_amount_MAX'&& val != null && val != '') {
+		if (key == 'total_donation_amount_MAX' && val != null && val != '') {
 		    dpWheres = dpWheres + (dpWheres == '' ? '' : ' AND ') + 'dp.total_donation_amount <= ' + val;
 		    return;
 		}

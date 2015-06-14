@@ -4294,14 +4294,76 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $(nRow).addClass('selected');
 	}
 
-    }).controller(
+    }).controller('MergeContactDatatable', function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder) {
+    var vm = this;
+    vm.rowClicked = rowClicked;
+    vm.dtOptions = DTOptionsBuilder.newOptions().withOption('responsive').withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	$('td', nRow).unbind('click');
+	$('td', nRow).bind('click', function() {
+	    $scope.$apply(function() {
+		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+	    });
+	});
+
+	return nRow;
+    }).withDOM('t');
+    // l length
+    // r processing
+    // f filtering
+    // t table
+    // i info
+    // p pagination
+    // vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'),
+    // DTColumnBuilder.newColumn('FNAME').withTitle('First Name'),
+    // DTColumnBuilder.newColumn('LNAME').withTitle('Last Name'),
+    // DTColumnBuilder.newColumn('ADD').withTitle('Address'),
+    // DTColumnBuilder.newColumn('CITY').withTitle('City'),
+    // DTColumnBuilder.newColumn('ST').withTitle('State'),
+    // DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'),
+    // DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
+    //
+    // $scope.$on('event:dataTableLoaded', function(event, data) {
+    // $scope.tableId = data.id; // Record table ID, for refreshes
+    // // later.
+    // });
+    //
+    // $rootScope.updateLinkContactsTable = function(event, args) {
+    // if ($scope.tableId) {
+    // $('#' + $scope.tableId).DataTable().ajax.reload(function() {
+    // }, false);
+    // $rootScope.modalDataSet['dplink'].errors = {}; // empties
+    // // errors
+    // }
+    // }
+    //
+    function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+	$timeout(function() {
+
+	    $('#mergetable > tbody > tr').removeClass('selected');
+	    $(nRow).addClass('selected');
+	    $rootScope.selectedMergeMaster = parseInt($(nRow).attr('id'));// aData.id;
+	}, 0);
+    }
+    ;
+    // $rootScope.modalDataSet.dplink.errors = {}; // empty errors
+    // $timeout(function() {
+    // $rootScope.modalDataSet.dplink.ID2 = aData.id;
+    // $rootScope.modalDataSet.dplink.NAME = aData.FNAME + ' ' + aData.LNAME;
+    // }, 0);
+    //
+    // // if(aData.id == $contact.id){
+    // $('tr').removeClass('selected');
+    // $(nRow).addClass('selected');
+    // }
+
+}).controller(
     'ContactsDatatable',
     function($scope, $rootScope, $timeout, $sails, $modal, $contact, DTOptionsBuilder, DTColumnBuilder) {
 	$scope.exportDisabled = false;
 
 	var vm = this;
 	$scope.selectedUsers = {};
-	
+
 	vm.pageReset = false;
 	vm.blockSearchingModal = false;
 	vm.rowClicked = rowClicked;
@@ -4320,9 +4382,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    $('td', nRow).unbind('click');
 	    $('td', nRow).bind('click', function(event) {
 		// $scope.$apply(function() {
-		if ($(event.target).hasClass('contactcheckbox')){//} || $(event.target).children('.contactcheckbox').length > 0) {
+		if ($(event.target).hasClass('contactcheckbox')) {// } ||
+		    // $(event.target).children('.contactcheckbox').length
+		    // > 0) {
 		    vm.toggleSelectedUser(aData.id)
-		} else {
+		} else if ($(event.target).children('.contactcheckbox').length == 0) {
 		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
 		}
 		// });
@@ -4362,16 +4426,14 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// t table
 	// i info
 	// p pagination
-	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'), DTColumnBuilder.newColumn('CITY').withTitle('City'),
+	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('').notSortable().renderWith(function(data, type, full, meta) {
+	    if ($scope.selectedUsers[full.id]) {
+		return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox" checked="checked">';
+	    }
+	    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox">';
+	}), DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'), DTColumnBuilder.newColumn('CITY').withTitle('City'),
 	    DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
 
-//	 DTColumnBuilder.newColumn('id').withTitle('').notSortable().renderWith(function(data, type, full, meta) {
-//		    if($scope.selectedUsers[full.id]){
-//			    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox" checked="checked">';
-//		    }
-//		    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox">';
-//		}),
-	
 	$scope.$on('event:dataTableLoaded', function(event, data) {
 	    $scope.tableId = data.id; // Record table ID, for refreshes
 	    // later.
@@ -4393,18 +4455,80 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		vm.pageReset = false;
 	    }
 	}
-	
+
 	$scope.mergeContactsDisabled = function() {
 	    if (Object.keys($scope.selectedUsers).length == 2) {
 		return false;
 	    }
 	    return true;
 	}
-	$scope.MergeContacts = function(){
-	    
+	$rootScope.isMergeDisabled = function(){
+	    if(typeof($rootScope.selectedMergeMaster)!='undefined'&&$rootScope.selectedMergeMaster!=null){
+		return false;
+	    }
+	    return true;
 	}
-	
-	
+	$scope.MergeContacts = function() {
+
+	    $sails.post('/contacts/mergerows', {
+		mergers : $scope.selectedUsers
+		
+		
+	    }).success(function(response) {
+		$rootScope.selectedMergeMaster = null;
+		
+		$rootScope.mergeContact1 = response[0];
+		$rootScope.mergeContact2 = response[1];
+		$rootScope.currentModal = $modal.open({
+		    templateUrl : 'merge-contacts-modal',
+		    size : 'md',
+		    backdrop : true
+		});
+		// $rootScope.deleteModalText = $scope.selectedGroup.name; //
+		// $scope.selectedGroup.id
+		// + ' ' +
+		$rootScope.currentModal.result.then(function(selectedItem) {
+		}, function(triggerElement) {
+		    if(triggerElement == 'save'){
+			
+			var slaveContact = null; // assigning slave
+			if($rootScope.mergeContact1.id != $rootScope.selectedMergeMaster){
+			    slaveContact = $rootScope.mergeContact1.id;
+			}else{
+			    slaveContact = $rootScope.mergeContact2.id;
+			}
+			 
+			$sails.post('/contacts/mergeContacts',{master : $rootScope.selectedMergeMaster, slave : slaveContact}).success(function(data){
+			    //alert('after merge');
+			    $rootScope.updateContactsTable();
+			});
+		    }
+		    // if (triggerElement == 'delete') {
+		    // $sails.post('/securitygroups/destroy', {
+		    // id : $scope.selectedGroup.id
+		    // }).success(function(data) {
+		    // if (data.error != undefined) { // USER NO LONGER LOGGED
+		    // // IN!!!!!
+		    // location.reload(); // Will boot back to login
+		    // // screen
+		    // }
+		    // if (data.success) {
+		    // $timeout(function() {
+		    // $scope.selectedGroup = null;
+		    // $rootScope.group_modified = false;
+		    // $('#' +
+		    // $scope.tableId).DataTable().ajax.reload(function() {
+		    // }, false);
+		    // }, 0);
+		    // }
+		    // }).error(function(data) {
+		    // alert('err!');
+		    // });
+		    // }
+		});
+	    });
+	}
+
 	vm.toggleSelectedUser = function(contactId) {
 	    $timeout(function() {
 		if ($scope.selectedUsers[contactId]) {
