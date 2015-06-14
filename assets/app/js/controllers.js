@@ -4498,6 +4498,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}, function(triggerElement) {
 		    if(triggerElement == 'save'){
 			
+			
 			var slaveContact = null; // assigning slave
 			if($rootScope.mergeContact1.id != $rootScope.selectedMergeMaster){
 			    slaveContact = $rootScope.mergeContact1.id;
@@ -4505,9 +4506,15 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    slaveContact = $rootScope.mergeContact2.id;
 			}
 			 
+			if(slaveContact == $contact.id || $rootScope.selectedMergeMaster == $contact.id){
+				$rootScope.clearContact();
+		    	}
 			$sails.post('/contacts/mergeContacts',{master : $rootScope.selectedMergeMaster, slave : slaveContact}).success(function(data){
 			    //alert('after merge');
+			    $scope.selectedUsers = {};
+			    $scope.selectedUsers[$rootScope.selectedMergeMaster] = true;
 			    $rootScope.updateContactsTable();
+			    
 			});
 		    }
 		    // if (triggerElement == 'delete') {
