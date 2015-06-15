@@ -1288,3 +1288,88 @@ ADD COLUMN `total_donation_records` INT(11) NOT NULL AFTER `total_donation_amoun
 # Call sproc to update all the donations
 call update_DonationTotals(NULL);
 
+
+# CAMPAIGN
+# Clean duplications from campaign - databases
+CREATE TABLE campaign2 LIKE campaign;
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT CAMPSOL,CAMPTYPE,database_origin
+FROM campaign where database_origin = 1;
+
+/*SELECT DISTINCT campaign.CAMPSOL,campaign.CAMPTYPE,2
+FROM campaign left join campaign2 on campaign.CAMPSOL = campaign2.CAMPSOL AND campaign.CAMPTYPE = campaign2.CAMPTYPE
+where campaign.database_origin = 2 and codeIDs.CAMPSOL is null
+LIMIT 100000*/
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,2
+FROM campaign where database_origin = 2 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,3
+FROM campaign where database_origin = 3 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,4
+FROM campaign where database_origin = 4 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,5
+FROM campaign where database_origin = 5 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,6
+FROM campaign where database_origin = 6 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,7
+FROM campaign where database_origin = 7 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,8
+FROM campaign where database_origin = 8 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,9
+FROM campaign where database_origin = 9 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,10
+FROM campaign where database_origin = 10 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,11
+FROM campaign where database_origin = 11 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+INSERT INTO campaign2 (CAMPSOL,CAMPTYPE,database_origin)
+SELECT DISTINCT CAMPSOL,CAMPTYPE,12
+FROM campaign where database_origin = 12 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
+
+/* 800 seconds */
+UPDATE campaign2 
+INNER JOIN campaign ON campaign2.CAMPSOL = campaign.CAMPSOL AND campaign2.CAMPTYPE = campaign.CAMPTYPE AND campaign2.database_origin = campaign.database_origin
+SET campaign2.`CAMPDESC` = campaign.`CAMPDESC`;
+
+DROP TABLE campaign;
+
+RENAME TABLE campaign2 to campaign;
+
+
+#CAMPAIGN
+# Add column to dpcodes
+ALTER TABLE `dpcodes` 
+ADD COLUMN `CAMPTYPE` VARCHAR(255) NULL DEFAULT NULL AFTER `ACTNUMB`;
+
+
+#CAMPAIGN - prep with index
+ALTER TABLE `campaign` 
+ADD INDEX `ix_CAMPSOL` (`CAMPSOL` ASC);
+
+#CAMPAIGN
+# CAMPAIGN - Copy over from campaign import
+UPDATE dpcodes
+INNER JOIN campaign ON 
+(dpcodes.FIELD = 'SOL' AND dpcodes.CODE  = campaign.CAMPSOL)
+SET dpcodes.CAMPTYPE = campaign.CAMPTYPE;
+

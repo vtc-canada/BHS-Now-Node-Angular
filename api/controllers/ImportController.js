@@ -4,7 +4,12 @@
  * @description :: Server-side logic for managing imports
  * @help :: See http://links.sailsjs.org/docs/controllers
  */
-var databases = [ {
+var databases = [ 
+//{name:'fatima_american_campaign',
+//  database_origin : 1,
+//  database_offset : 1000000
+//}           
+ {
     name : 'fatima_american',
     database_origin : 1,
     database_offset : 1000000
@@ -53,11 +58,15 @@ var databases = [ {
     database_origin : 12,
     database_offset : 13000000
 }
-// ,{name:'fatima_foreign'}
+
 
 ];
 
 var tables = [ {
+    name : 'campaign',
+    columns : {}
+}
+,{
     name : 'dp',
     columns : {}
 }, {
@@ -117,7 +126,9 @@ var tables = [ {
 }, {
     name : 'dpmyst',
     columns : {}
-} ];
+} 
+
+];
 
 var insertTables = [];
 
