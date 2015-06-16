@@ -67,6 +67,16 @@
 				<input type="number" class="form-control" id="modal_MCAT_LO" ng-model="modalSelectedCode.MCAT_LO"  ng-model-options="" placeholder="">
 			</div>
 		</div>
+		<div class="form-group" ng-if="modalSelectedCode.FIELD == 'SOL' ">
+			<label class="col-sm-4 control-label" for="modal_CAMPTYPE">Campaign:</label>
+
+			<div class="col-sm-8">
+				<select2 class="form-control" ng-options="report.id as report.label for report in campaign_types" ng-model="modalSelectedCode.CAMPTYPE" placeholder=""></select2>
+	
+			</div>
+		</div>
+		
+		
 	</div>
 	
 	<div class="modal-footer">

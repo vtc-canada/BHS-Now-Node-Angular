@@ -1373,3 +1373,11 @@ INNER JOIN campaign ON
 (dpcodes.FIELD = 'SOL' AND dpcodes.CODE  = campaign.CAMPSOL)
 SET dpcodes.CAMPTYPE = campaign.CAMPTYPE;
 
+# Add CAMPTYPES to dpcodes
+INSERT INTO `dpcodes`
+(
+`FIELD`,
+`CODE`,
+`DESC`)
+SELECT 'CAMPTYPE',  CAMPTYPE, CAMPDESC FROM fatima_center_donor_tracker_v2.campaign GROUP BY CAMPTYPE;
+

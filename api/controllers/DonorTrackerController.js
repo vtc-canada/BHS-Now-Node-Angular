@@ -14,6 +14,26 @@ module.exports = {
 	    }
 	});
     },
+    getdpupdateattributes : function(req,res){
+	async.parallel({
+	    campaign_types : function(callback) {
+		Database.knex('dpcodes').select('CODE','DESC').where({
+		    FIELD : 'CAMPTYPE'
+		}).orderBy('CODE', 'ASC').exec(function(err, results) {
+		    if (err)
+			return callback(err);
+		    callback(null, results);
+		});
+	    }
+	}, function(err, result) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : result
+	    });
+	});
+    },
     getfxechangeattributes : function(req, res) {
 	async.parallel({
 	    currencies : function(callback) {

@@ -5398,6 +5398,20 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
 		}, false);
 	    }
+	    $sails.get('/donortracker/getdpupdateattributes').success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+			location.reload(); // Will boot back to login screen
+		    }
+		    var data = data.result;
+
+		    $rootScope.campaign_types = [];
+		    for (var i = 0; i < data.campaign_types.length; i++) {
+			$rootScope.campaign_types.push({
+			    id : data.campaign_types[i].CODE,
+			    label : data.campaign_types[i].CODE + (data.campaign_types[i].DESC==null?'':(" - " + data.campaign_types[i].DESC))
+			});
+		    }
+	    });
 	}
 
 	/*
@@ -5494,7 +5508,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		DESC : null,
 		CATEGORY : null,
 		OTHER : 0,
-		MCAT_LO : 0
+		MCAT_LO : 0,
+		CAMPTYPE : null
 	    };
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : modal_id,
