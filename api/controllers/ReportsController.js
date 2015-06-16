@@ -345,32 +345,47 @@ function buildReportData(report, phantom_bool, cb) {
 		data[table.order].data = new Array();
 		data[table.order].header = new Array();
 
-		// Makes Headings
-		var i = 0;
-		for ( var key in result[0]) {
-		    // for (var i = 0; i < table.columns.length; i++) {
-		    var jsonk = i;
-		    if (!(table.columns instanceof Array)) {
-			jsonk = key;
+		if (table.pivot) {
+		    for (var i = 0; i < table.columns.length; i++) {
+			data[table.order].header[i] = new Object();
+			data[table.order].header[i].val = table.columns[i].locale[report.locale];
+			data[table.order].header[i].bold = true;
+			data[table.order].header[i].bordertop = false;
+			data[table.order].header[i].width = table.columns[i].width;
+			data[table.order].header[i].lastrow = table.columns[i].lastrow;
+			data[table.order].header[i].hidden = table.columns[i].hidden;
+			data[table.order].header[i].align = table.columns[i].align;
+			data[table.order].header[i].titlealign = table.columns[i].titlealign;
+			data[table.order].header[i].phantom_white_space = table.columns[i].phantom_white_space;
 		    }
-		    if (typeof (table.columns[jsonk]) == 'undefined') {
-			continue;
-		    }
+		} else {
 
-		    data[table.order].header[i] = new Object();
-		    data[table.order].header[i].val = table.columns[jsonk].locale[report.locale];
-		    data[table.order].header[i].bold = true;
-		    data[table.order].header[i].bordertop = false;
-		    data[table.order].header[i].width = table.columns[jsonk].width;
-		    data[table.order].header[i].lastrow = table.columns[jsonk].lastrow;
-		    data[table.order].header[i].hidden = table.columns[jsonk].hidden;
-		    data[table.order].header[i].align = table.columns[jsonk].align;
-		    data[table.order].header[i].titlealign = table.columns[jsonk].titlealign;
-		    data[table.order].header[i].phantom_white_space = table.columns[jsonk].phantom_white_space;
-		    i++;
+		    // Makes Headings
+		    var i = 0;
+		    for ( var key in result[0]) {
+			// for (var i = 0; i < table.columns.length; i++) {
+			var jsonk = i;
+			if (!(table.columns instanceof Array)) {
+			    jsonk = key;
+			}
+			if (typeof (table.columns[jsonk]) == 'undefined') {
+			    continue;
+			}
+
+			data[table.order].header[i] = new Object();
+			data[table.order].header[i].val = table.columns[jsonk].locale[report.locale];
+			data[table.order].header[i].bold = true;
+			data[table.order].header[i].bordertop = false;
+			data[table.order].header[i].width = table.columns[jsonk].width;
+			data[table.order].header[i].lastrow = table.columns[jsonk].lastrow;
+			data[table.order].header[i].hidden = table.columns[jsonk].hidden;
+			data[table.order].header[i].align = table.columns[jsonk].align;
+			data[table.order].header[i].titlealign = table.columns[jsonk].titlealign;
+			data[table.order].header[i].phantom_white_space = table.columns[jsonk].phantom_white_space;
+			i++;
+		    }
 		}
 	    }
-
 	    // Fills Data
 	    if (table.pivot) {
 		addPivotData(data[table.order], result, report.timezoneoffset, table);

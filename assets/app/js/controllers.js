@@ -3903,7 +3903,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// p pagination
 	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('SHIPFROM').withTitle('Shipped From'), DTColumnBuilder.newColumn('SHIPDATE').withTitle(' Shipped Date'), DTColumnBuilder.newColumn('DATE').withTitle('Order Placed'),
 	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total').renderWith(function(data, type, full, meta) {
-		if ($scope.currencies != null) {
+		if ($scope.currencies != null && $rootScope.currencies[full.FUNDS]) {
 		    return $rootScope.currencies[full.FUNDS].symbol + data;
 		} else {
 		    return data;
