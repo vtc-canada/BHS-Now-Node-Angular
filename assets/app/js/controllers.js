@@ -1186,6 +1186,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 			    }
 			    // $scope.tryDestroyDataTable('dpordersummary');
 			    $timeout(function() {
+				$scope.selectedOrderSummary = null;
 				$contact.set(data.contact);
 				resetContactForms();
 				if ($rootScope.loading_modal) {
