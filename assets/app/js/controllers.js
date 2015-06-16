@@ -786,6 +786,9 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $rootScope.doDeleteContact = function() {
 	delete $scope.contact.is_saving;
 	delete $rootScope.is_contact_deleting;
+
+	$rootScope.clearSelectedUser($scope.contact.id);
+	
 	$sails.post("/contacts/destroy", $scope.contact).success(function(data) {
 	    if (data.error != undefined) { // USER NO LONGER LOGGED
 		// IN!!!!!
@@ -3899,14 +3902,13 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	// i info
 	// p pagination
 	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('SHIPFROM').withTitle('Shipped From'), DTColumnBuilder.newColumn('SHIPDATE').withTitle(' Shipped Date'), DTColumnBuilder.newColumn('DATE').withTitle('Order Placed'),
-	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), 	    
-	    DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total').renderWith(function(data, type, full, meta) {
-	    	 		if ($scope.currencies != null) {	    	 			
-	    	 			return $rootScope.currencies[full.FUNDS].symbol + data;
-	    		    }else{
-	    		    	return  data;
-	    		    }
-	    	})];
+	    DTColumnBuilder.newColumn('order_type').withTitle('Order Type'), DTColumnBuilder.newColumn('GTOTAL').withTitle('Grand Total').renderWith(function(data, type, full, meta) {
+		if ($scope.currencies != null) {
+		    return $rootScope.currencies[full.FUNDS].symbol + data;
+		} else {
+		    return data;
+		}
+	    }) ];
 
 	$scope.$on('event:dataTableLoaded', function(event, data) {
 	    $scope.tableId = data.id; // Record table ID, for refreshes
@@ -4370,6 +4372,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	var vm = this;
 	$scope.selectedUsers = {};
+	
+	
 
 	vm.pageReset = false;
 	vm.blockSearchingModal = false;
@@ -4438,7 +4442,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox" checked="checked">';
 	    }
 	    return '<input class="contactcheckbox" id="contactcheckbox_' + full.id + '" type="checkbox">';
-	}), DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'), DTColumnBuilder.newColumn('CITY').withTitle('City'),
+	}), DTColumnBuilder.newColumn('id').withTitle('Donor #'), DTColumnBuilder.newColumn('FNAME').withTitle('First name'), DTColumnBuilder.newColumn('LNAME').withTitle('Last name'), DTColumnBuilder.newColumn('ADD').withTitle('Address'), DTColumnBuilder.newColumn('CITY').withTitle('City'),
 	    DTColumnBuilder.newColumn('ST').withTitle('State'), DTColumnBuilder.newColumn('COUNTRY').withTitle('Country'), DTColumnBuilder.newColumn('ZIP').withTitle('Zip') ];
 
 	$scope.$on('event:dataTableLoaded', function(event, data) {
@@ -4462,6 +4466,12 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		vm.pageReset = false;
 	    }
 	}
+	
+	$rootScope.clearSelectedUser = function(contactID){
+	    if($scope.selectedUsers[contactID]){
+		delete $scope.selectedUsers[contactID];
+	    }
+	}
 
 	$scope.mergeContactsDisabled = function() {
 	    if (Object.keys($scope.selectedUsers).length == 2) {
@@ -4469,8 +4479,8 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 	    }
 	    return true;
 	}
-	$rootScope.isMergeDisabled = function(){
-	    if(typeof($rootScope.selectedMergeMaster)!='undefined'&&$rootScope.selectedMergeMaster!=null){
+	$rootScope.isMergeDisabled = function() {
+	    if (typeof ($rootScope.selectedMergeMaster) != 'undefined' && $rootScope.selectedMergeMaster != null) {
 		return false;
 	    }
 	    return true;
@@ -4479,11 +4489,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 	    $sails.post('/contacts/mergerows', {
 		mergers : $scope.selectedUsers
-		
-		
+
 	    }).success(function(response) {
 		$rootScope.selectedMergeMaster = null;
-		
+
 		$rootScope.mergeContact1 = response[0];
 		$rootScope.mergeContact2 = response[1];
 		$rootScope.currentModal = $modal.open({
@@ -4496,25 +4505,37 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		// + ' ' +
 		$rootScope.currentModal.result.then(function(selectedItem) {
 		}, function(triggerElement) {
-		    if(triggerElement == 'save'){
-			
-			
+		    if (triggerElement == 'save') {
+
+			$rootScope.loading_modal = $modal.open({
+			    templateUrl : 'is-loading-modal',
+			    size : 'sm',
+			    backdrop : false
+			});
+
 			var slaveContact = null; // assigning slave
-			if($rootScope.mergeContact1.id != $rootScope.selectedMergeMaster){
+			if ($rootScope.mergeContact1.id != $rootScope.selectedMergeMaster) {
 			    slaveContact = $rootScope.mergeContact1.id;
-			}else{
+			} else {
 			    slaveContact = $rootScope.mergeContact2.id;
 			}
-			 
-			if(slaveContact == $contact.id || $rootScope.selectedMergeMaster == $contact.id){
-				$rootScope.clearContact();
-		    	}
-			$sails.post('/contacts/mergeContacts',{master : $rootScope.selectedMergeMaster, slave : slaveContact}).success(function(data){
+
+			if (slaveContact == $contact.id || $rootScope.selectedMergeMaster == $contact.id) {
+			    $rootScope.clearContact();
+			}
+			$sails.post('/contacts/mergeContacts', {
+			    master : $rootScope.selectedMergeMaster,
+			    slave : slaveContact
+			}).success(function(data) {
 			    //alert('after merge');
+			    if ($rootScope.loading_modal) {
+				$rootScope.loading_modal.dismiss('somevalue');
+
+			    }
 			    $scope.selectedUsers = {};
 			    $scope.selectedUsers[$rootScope.selectedMergeMaster] = true;
 			    $rootScope.updateContactsTable();
-			    
+
 			});
 		    }
 		    // if (triggerElement == 'delete') {
@@ -5399,18 +5420,18 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		}, false);
 	    }
 	    $sails.get('/donortracker/getdpupdateattributes').success(function(data) {
-		    if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
-			location.reload(); // Will boot back to login screen
-		    }
-		    var data = data.result;
+		if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
+		    location.reload(); // Will boot back to login screen
+		}
+		var data = data.result;
 
-		    $rootScope.campaign_types = [];
-		    for (var i = 0; i < data.campaign_types.length; i++) {
-			$rootScope.campaign_types.push({
-			    id : data.campaign_types[i].CODE,
-			    label : data.campaign_types[i].CODE + (data.campaign_types[i].DESC==null?'':(" - " + data.campaign_types[i].DESC))
-			});
-		    }
+		$rootScope.campaign_types = [];
+		for (var i = 0; i < data.campaign_types.length; i++) {
+		    $rootScope.campaign_types.push({
+			id : data.campaign_types[i].CODE,
+			label : data.campaign_types[i].CODE + (data.campaign_types[i].DESC == null ? '' : (" - " + data.campaign_types[i].DESC))
+		    });
+		}
 	    });
 	}
 
