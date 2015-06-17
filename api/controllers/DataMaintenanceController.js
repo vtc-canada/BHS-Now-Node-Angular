@@ -11,10 +11,21 @@ var varStartMonth = 0; // 0 to 11
 module.exports = {
     
     UpdateDonorClass : function(req,res){
+	// For now, only runs and keeps donor classes "up to date" and there's no historical table of donor class. This is totally doable- as well as making the sproc
+	// take time bounds. (firstly to speed up sproc calls (if called once a month, only need to look back one month- 1370 seconds for forever). Sproc attached to contact 'save'
+	// no longer need to ever run this - unless 3rd part changes are made not through this controllers 'save' function.
 	
+	Database.knex.raw("call update_DonorClass").exec(function(err, result) {
+	    if(err){
+		console.log(err.toString());
+	    }
+	    console.log(JSON.stringify({complete:result}));
+	});
+	res.json({processing : '...'});
+    },
+    UpdatePledgeMonitor : function(req,res){
 	
     },
-
     UpdateDonorStatus : function(req, res) { // checks for and does monthly maintenance
 	//Database.knex.raw('call update_ContactStatus(null)').exec(function(err,results){
 	//    if (err)

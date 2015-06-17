@@ -524,6 +524,40 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `reports_DuplicateContactReport`()
+BEGIN
+SELECT `First Name`,
+	   `Last Name`,
+	   `Address`,
+	   `City`,
+	   `ZIP`,
+	   `Count`
+FROM
+(
+	SELECT 
+	dp.FNAME AS 'First Name',
+	dp.LNAME AS 'Last Name',
+	dp.ADD AS 'Address',
+	dp.CITY AS 'City',
+	dp.ZIP AS 'ZIP',
+	CONCAT(Replace(UCASE(dp.FNAME), ' ',''),
+		   Replace(UCASE(dp.LNAME), ' ',''),
+		   Replace(UCASE(dp.ADD), ' ',''),
+		   Replace(UCASE(dp.CITY), ' ',''),
+		   Replace(UCASE(dp.ZIP), ' ','')
+	) AS 'Full Address',
+	COUNT(id) AS 'Count'
+	FROM dp
+	WHERE TRIM(dp.LNAME) != 'Anonymous'
+	GROUP BY `Full Address`
+) dup
+WHERE dup.`Count` > 1 
+AND `Full Address` IS NOT NULL
+LIMIT 1000;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `reports_LapsedDonorReport`(
 		IN `includecountry` VARCHAR(255),
 		IN `excludecountry` VARCHAR(255),
@@ -550,7 +584,8 @@ WHERE CLASS IN ('IA','IB','IC','ID','IE','IF','IG','IH','II','IJ','IK')
 	AND (includecountry IS NULL OR FIND_IN_SET(COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
 	AND LASTDON IS NOT NULL
-GROUP BY `Year`;
+GROUP BY `Year`
+ORDER BY `Year` DESC;
 END$$
 DELIMITER ;
 
@@ -615,7 +650,8 @@ WHERE (includecountry IS NULL OR FIND_IN_SET(COUNTRY, includecountry))
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
 	AND CLASS LIKE 'I%'
 	AND `status` IN ('ACTIVE','INACTIVE')
-GROUP BY CLASS;
+GROUP BY CLASS
+ORDER BY IF(SUBSTRING(CLASS, 2,length(CLASS)-1) REGEXP '[0-9]+', CONCAT('Z',SUBSTRING(CLASS, 2,length(CLASS)-1)), SUBSTRING(CLASS, 2,length(CLASS)-1) ) DESC;
 END$$
 DELIMITER ;
 
@@ -675,7 +711,8 @@ WHERE CLASS LIKE 'I%'
 	AND (excludecountry IS NULL OR NOT FIND_IN_SET(COUNTRY, excludecountry))
 	AND NM_REASON IN ('CE','CO','XS','XY')
 	AND LASTDON IS NOT NULL
-GROUP BY `Year`, NM_REASON;
+GROUP BY `Year`, NM_REASON
+ORDER BY `Year` DESC;
 END$$
 DELIMITER ;
 
@@ -824,6 +861,43 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `reports_PopeName`(IN `startDate` DATETIME, 
+			IN `endDate` DATETIME, IN `type_code` VARCHAR(15), IN `sol_code` VARCHAR(15))
+BEGIN
+SELECt
+dpmisc.`MTYPE`,
+dpmisc.`MYEAR`,
+dpmisc.`SOL`,
+dpmisc.`DONOR`,
+CONCAT(dp.FNAME , ' ' , dp.LNAME ) AS `FULLNAME`,
+'' AS `DCOUNT`,
+dpmisc.`MCOUNT`,
+typecodes.DESC,
+#solcodes.DESC AS `SOLDESC`,
+dpmisc.`id`,
+dpmisc.`MDATE`,
+dpmisc.`MAMT`,
+dpmisc.`MNOTES`,
+dpmisc.`TSRECID`,
+dpmisc.`TSDATE`,
+dpmisc.`TSTIME`,
+dpmisc.`TSCHG`,
+dpmisc.`TSBASE`,
+dpmisc.`TSLOCAT`,
+dpmisc.`TSIDCODE`,
+dpmisc.`database_origin` FROM dpmisc
+INNER JOIN dp ON dp.id = dpmisc.DONOR
+INNER JOIN dpcodes AS typecodes ON (typecodes.FIELD = 'MTYPE' AND dpmisc.MTYPE = typecodes.CODE)
+#INNER JOIN dpcodes AS solcodes ON (solcodes.FIELD = 'SOL' AND dpmisc.SOL = solcodes.CODE)
+WHERE dpmisc.MTYPE IS NOT null
+AND (startDate IS NULL OR endDate IS NULL OR dpmisc.MDATE BETWEEN startDate AND endDate)
+AND (`type_code` IS NULL OR dpmisc.MTYPE LIKE CONCAT(`type_code`,'%'))
+AND (`sol_code` IS NULL OR dpmisc.SOL LIKE CONCAT(`sol_code`,'%'))
+ORDER BY dpmisc.MTYPE, dpmisc.MYEAR,dpmisc.SOL,dpmisc.DONOR LIMIT 1000;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `reports_VolunteerInventoryReport`(IN `startOrderDate` DATETIME,
 		IN `endOrderDate` DATETIME, 
 		IN `startShipDate` DATETIME, 
@@ -904,7 +978,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `update_ContactStatus`()
+CREATE PROCEDURE `update_ContactStatus`(IN donor_ID INT(11))
 sproc_task:BEGIN
 DECLARE dateback1month DATE;
 DECLARE dateback2years DATE;
@@ -929,6 +1003,7 @@ FROM (
 			MIN(`DATE`) as 'Other Date Min',
 			MAX(`DATE`) as 'Other Date Max'
 			FROM dpother FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 	UNION ALL
 	SELECT DONOR as 'Donor',
@@ -937,6 +1012,7 @@ FROM (
 			null as 'Other Date Min',
 			null as 'Other Date Max'
 			FROM dpgift FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 ) t
 WHERE t.DONOR IS NOT NULL
@@ -967,6 +1043,7 @@ FROM (
 			MIN(`DATE`) as 'Other Date Min',
 			MAX(`DATE`) as 'Other Date Max'
 			FROM dpother FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 	UNION ALL
 	SELECT DONOR as 'Donor',
@@ -975,6 +1052,7 @@ FROM (
 			null as 'Other Date Min',
 			null as 'Other Date Max'
 			FROM dpgift FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 ) t
 WHERE t.DONOR IS NOT NULL
@@ -1002,6 +1080,7 @@ FROM (
 			MIN(`DATE`) as 'Other Date Min',
 			MAX(`DATE`) as 'Other Date Max'
 			FROM dpother FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 	UNION ALL
 	SELECT DONOR as 'Donor',
@@ -1010,6 +1089,7 @@ FROM (
 			null as 'Other Date Min',
 			null as 'Other Date Max'
 			FROM dpgift FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 ) t
 WHERE t.DONOR IS NOT NULL
@@ -1038,6 +1118,7 @@ FROM (
 			MIN(`DATE`) as 'Other Date Min',
 			MAX(`DATE`) as 'Other Date Max'
 			FROM dpother FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 	UNION ALL
 	SELECT DONOR as 'Donor',
@@ -1046,6 +1127,7 @@ FROM (
 			null as 'Other Date Min',
 			null as 'Other Date Max'
 			FROM dpgift FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 ) t
 WHERE t.DONOR IS NOT NULL
@@ -1077,6 +1159,7 @@ FROM (
 			MIN(`DATE`) as 'Other Date Min',
 			MAX(`DATE`) as 'Other Date Max'
 			FROM dpother FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 	UNION ALL
 	SELECT DONOR as 'Donor',
@@ -1085,6 +1168,7 @@ FROM (
 			null as 'Other Date Min',
 			null as 'Other Date Max'
 			FROM dpgift FORCE INDEX (ix_donor_date_amt)
+			WHERE donor_ID IS NULL OR DONOR = donor_ID
 			group by DONOR
 ) t
 WHERE t.DONOR IS NOT NULL
@@ -1098,12 +1182,356 @@ AND (dp.NM_REASON IS NULL or dp.NM_REASON NOT IN ('RR', 'RL', 'RD', 'XR', 'XL', 
 
 UPDATE dp
 SET status = 'LIMBO'
-WHERE dp.NM_REASON IN ('RR', 'RL', 'RD');
+WHERE (donor_ID IS NULL OR dp.id = donor_ID) 
+AND dp.NM_REASON IN ('RR', 'RL', 'RD');
 
 UPDATE dp
 SET status = 'REMOVED'
-WHERE dp.NM_REASON IN ('XR', 'XL', 'XD');
+WHERE (donor_ID IS NULL OR dp.id = donor_ID) 
+AND dp.NM_REASON IN ('XR', 'XL', 'XD');
 
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `update_DonationTotals`(IN donorID INT(11))
+BEGIN
+DROP TABLE IF EXISTS temptabletotals;
+
+CREATE TEMPORARY TABLE temptabletotals
+SELECT id, COUNT(id) AS `count`, SUM(`AMT`) AS `amount`
+FROM(
+SELECT dp.id, dpexchange_history.exchange_rate*dpgift.AMT AS `AMT`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id
+INNER JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR dp.id = donorID
+union ALL
+SELECT dp.id, dpexchange_history.exchange_rate*dpother.AMT
+FROM dp
+	INNER JOIN dpother ON dpother.DONOR = dp.id
+INNER JOIN dpexchange_history ON dpexchange_history.currency_from = dpother.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpother.DATE
+WHERE donorID IS NULL OR dp.id = donorID
+) AS `JOINSELECT` GROUP BY `JOINSELECT`.id;
+
+ALTER TABLE `temptabletotals` ADD INDEX `id_totals_id` (`id` ASC);
+
+UPDATE dp
+INNER JOIN temptabletotals ON temptabletotals.id = dp.id
+SET total_donation_amount = temptabletotals.amount, total_donation_records = temptabletotals.count;
+DROP TABLE temptabletotals;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `update_DonorClass`(IN donorID INT(11))
+BEGIN
+# Historical Class codes would be possible
+# Can be made further generalized to be called by bounded time period, iteratively //,IN `startDate` DATETIME, IN `endDate` DATETIME
+# Records should not overlap/overwrite in section classification 
+
+# Entire script tested 1370 seconds - no time bounding
+
+DECLARE donorID INT DEFAULT NULL;
+
+DROP TABLE IF EXISTS temptableclasscodes;
+CREATE TEMPORARY TABLE temptableclasscodes
+SELECT class, year
+FROM
+(
+SELECT 'A' AS class , 1988 AS `year`
+UNION ALL SELECT 'B', 1999
+UNION ALL SELECT 'C', 1990
+UNION ALL SELECT 'D', 1991
+UNION ALL SELECT 'E', 1992
+UNION ALL SELECT 'F', 1993
+UNION ALL SELECT 'G', 1994
+UNION ALL SELECT 'H', 1995
+UNION ALL SELECT 'I', 1996
+UNION ALL SELECT 'J', 1997
+UNION ALL SELECT 'K', 1998
+UNION ALL SELECT 'L', 1999
+UNION ALL SELECT 'M', 2000
+UNION ALL SELECT 'N', 2001
+UNION ALL SELECT 'O', 2002
+UNION ALL SELECT 'P', 2003
+UNION ALL SELECT 'Q', 2004
+UNION ALL SELECT 'R', 2005
+UNION ALL SELECT 'S', 2006
+UNION ALL SELECT 'T', 2007
+UNION ALL SELECT 'U', 2008
+UNION ALL SELECT 'V', 2009
+UNION ALL SELECT 'W', 2010
+UNION ALL SELECT 'X', 2011
+UNION ALL SELECT 'Y', 2012
+UNION ALL SELECT 'Z', 2013
+UNION ALL SELECT '0', 2014
+UNION ALL SELECT '1', 2015
+UNION ALL SELECT '2', 2016
+UNION ALL SELECT '3', 2017
+UNION ALL SELECT '4', 2018
+UNION ALL SELECT '5', 2019
+UNION ALL SELECT '6', 2020
+UNION ALL SELECT '7', 2021
+UNION ALL SELECT '8', 2022
+UNION ALL SELECT '9', 2023
+  -- etc.
+) AS statictable;
+
+ALTER TABLE `temptableclasscodes` ADD INDEX `ix_classcodes_year` (`year` ASC);
+
+
+
+# UPDATES Referrals (Class 'A')  12 seconds Modified 1540/3742
+UPDATE dp
+        INNER JOIN
+    (SELECT 
+        dp.id,
+            MAX(dpother.DATE) AS dpotherDate,
+            dpgift.id AS dpgiftId,
+			dpotheramounts.id AS dpotheramountsId
+    FROM
+        dp
+    INNER JOIN dpother ON dpother.DONOR = dp.id
+        AND TRANSACT = 'CA' # Must have a transact CA
+		AND  (`LIST` = 'UN' OR `LIST` IS NULL)
+		AND DEMAND IS NULL
+        AND AMT = 0
+    LEFT JOIN dpgift ON dpgift.DONOR = dp.id  # No gifts
+	LEFT JOIN dpother AS dpotheramounts ON dpotheramounts.DONOR = dp.id AND dpotheramounts.AMT > 0 #Removes Contacts with Non-Zero Other amounts
+	WHERE dp.CLASS NOT LIKE ('I%') AND  dp.CLASS NOT LIKE ('G%') AND  dp.CLASS NOT LIKE ('E%') AND  dp.CLASS NOT LIKE ('C%') # Blocks out Higher Contacts
+	AND donorID IS NULL OR donorID = dp.id
+    GROUP BY dp.id) AS dpbuyers ON dpbuyers.id = dp.id
+        AND dpbuyers.dpgiftId IS NULL
+		AND dpbuyers.dpotheramountsId IS NULL
+        INNER JOIN
+    temptableclasscodes ON temptableclasscodes.year = YEAR(dpbuyers.dpotherDate) 
+SET 
+    dp.CLASS = CONCAT('A', temptableclasscodes.class);
+
+
+# UPDATES Referrals (Class 'C')   14 sec  Modified 3451/78152
+UPDATE dp
+        INNER JOIN
+    (SELECT 
+        dp.id,
+            MAX(dpother.DATE) AS dpotherDate,
+            dpgift.id AS dpgiftId,
+			dpotheramounts.id AS dpotheramountsId
+    FROM
+        dp
+    INNER JOIN dpother ON dpother.DONOR = dp.id
+        AND TRANSACT = 'CA' # Must have a transact CA
+		AND `LIST` = 'ZZ'
+		AND DEMAND = 'ZZ'
+        AND AMT = 0
+    LEFT JOIN dpgift ON dpgift.DONOR = dp.id  # No gifts
+	LEFT JOIN dpother AS dpotheramounts ON dpotheramounts.DONOR = dp.id AND dpotheramounts.AMT > 0 #Removes Contacts with Non-Zero Other amounts
+	WHERE dp.CLASS NOT LIKE ('I%') AND  dp.CLASS NOT LIKE ('G%')AND  dp.CLASS NOT LIKE ('E%') # Blocks out Higher Contacts
+	AND donorID IS NULL OR donorID = dp.id
+    GROUP BY dp.id) AS dpbuyers ON dpbuyers.id = dp.id
+        AND dpbuyers.dpgiftId IS NULL
+		AND dpbuyers.dpotheramountsId IS NULL
+        INNER JOIN
+    temptableclasscodes ON temptableclasscodes.year = YEAR(dpbuyers.dpotherDate) 
+SET 
+    dp.CLASS = CONCAT('C', temptableclasscodes.class);
+
+
+# UPDATES Contacts (Class 'E')  200 sec  Modified 213121 / 565914
+UPDATE dp
+        INNER JOIN
+    (SELECT 
+        dp.id,
+            MAX(dpother.DATE) AS dpotherDate,
+            dpgift.id AS dpgiftId,
+			dpotheramounts.id AS dpotheramountsId
+    FROM
+        dp
+    INNER JOIN dpother ON dpother.DONOR = dp.id
+        AND TRANSACT IN ('CA' , 'PD')  # Must have a transact CA, or PD of amount 0
+        AND AMT = 0
+    LEFT JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0  # No Non-Zero gift amount
+	LEFT JOIN dpother AS dpotheramounts ON dpotheramounts.DONOR = dp.id AND dpotheramounts.AMT > 0 #Removes Contacts with Non-Zero Other amounts
+	WHERE dp.CLASS NOT LIKE ('I%') AND  dp.CLASS NOT LIKE ('G%') # Blocks out Higher Contacts
+	AND donorID IS NULL OR donorID = dp.id
+    GROUP BY dp.id) AS dpbuyers ON dpbuyers.id = dp.id
+        AND dpbuyers.dpgiftId IS NULL
+		AND dpbuyers.dpotheramountsId IS NULL
+        INNER JOIN
+    temptableclasscodes ON temptableclasscodes.year = YEAR(dpbuyers.dpotherDate) 
+SET 
+    dp.CLASS = CONCAT('E', temptableclasscodes.class);
+
+
+# UPDATES Buyers (Class 'G') 2 sec  Modified 1014 / 16707
+
+#SELECT dp.id, temptableclasscodes.class#, YEAR(dpbuyers.dpotherDate)
+#FROM dp
+UPDATE dp
+        INNER JOIN
+    (SELECT 
+        dp.id,
+            MAX(dpother.DATE) AS dpotherDate,
+            dpgift.id AS dpgiftId
+    FROM
+        dp
+    INNER JOIN dpother ON dpother.DONOR = dp.id
+        AND TRANSACT IN ('SE' , 'SF', 'SS')  
+        AND AMT > 0
+    LEFT JOIN dpgift ON dpgift.DONOR = dp.id  #No gifts period-.. possibly should be no gifts with any non-zero amount  ->  AND dpgift.AMT > 0 
+	WHERE dp.CLASS NOT LIKE ('I%') # Blocks out High Donors
+	AND donorID IS NULL OR donorID = dp.id
+    GROUP BY dpother.DONOR) AS dpbuyers ON dpbuyers.id = dp.id
+        AND dpbuyers.dpgiftId IS NULL
+        INNER JOIN
+    temptableclasscodes ON temptableclasscodes.year = YEAR(dpbuyers.dpotherDate) 
+SET 
+    dp.CLASS = CONCAT('G', temptableclasscodes.class);
+
+
+DROP TABLE temptableclasscodes;
+
+
+# UPDATES High Value Donors (Class 'I') 
+# CLASS 'IA' 102 seconds  735 / 19690
+UPDATE dp SET CLASS = 'IA' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX > 0 AND `giftMax`.MAX < 5);
+
+# CLASS 'IB' 103 seconds 7540 / 41482 Changed
+UPDATE dp SET CLASS = 'IB' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 5 AND `giftMax`.MAX < 10);
+
+# CLASS 'IC' 108 seconds 12175 / 107026 Changed
+UPDATE dp SET CLASS = 'IC' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 10 AND `giftMax`.MAX < 25);
+
+# CLASS 'ID' 104 seconds 7615 / 55880 Changed
+UPDATE dp SET CLASS = 'ID' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 25 AND `giftMax`.MAX < 50);
+
+
+# CLASS 'IE' 100 seconds 3573 / 22754 Changed
+UPDATE dp SET CLASS = 'IE' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 50 AND `giftMax`.MAX < 75);
+
+# CLASS 'IF' 100 seconds 2204 / 3747 Changed
+UPDATE dp SET CLASS = 'IF' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 75 AND `giftMax`.MAX < 100);
+
+# CLASS 'IG' 100 seconds 1438 / 21176 Changed
+UPDATE dp SET CLASS = 'IG' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 100 AND `giftMax`.MAX < 250);
+
+# CLASS 'IH' 100 seconds 728 / 3518 Changed
+UPDATE dp SET CLASS = 'IH' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 250 AND `giftMax`.MAX < 500);
+
+# CLASS 'II' 100 seconds 506 / 2668 Changed
+UPDATE dp SET CLASS = 'II' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 500 AND `giftMax`.MAX < 1000);
+
+# CLASS 'IJ' 100 seconds 108 / 2619 Changed
+UPDATE dp SET CLASS = 'IJ' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 1000 AND `giftMax`.MAX < 5000);
+
+# CLASS 'IK' 130 seconds 12 / 501 Changed
+UPDATE dp SET CLASS = 'IK' WHERE id IN
+(SELECT id FROM (SELECT dp.id, MAX(dpexchange_history.exchange_rate*dpgift.AMT) AS `MAX`
+FROM dp
+	INNER JOIN dpgift ON dpgift.DONOR = dp.id AND dpgift.AMT > 0 
+LEFT JOIN dpexchange_history ON dpexchange_history.currency_from = dpgift.CURR AND dpexchange_history.currency_to = 'U' AND dpexchange_history.date = dpgift.DATE
+WHERE donorID IS NULL OR donorID = dp.id
+GROUP BY dp.id) `giftMax`
+WHERE `giftMax`.MAX >= 5000 );
+
+
+
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `update_DonorClassCursor`()
+BEGIN
+
+DECLARE v_classcode varchar(255) DEFAULT "";
+ 
+ -- declare cursor for employee email
+SET v_classcode = (SELECT class FROM 
+(
+SELECT '1' AS class , 2015 AS `year`
+UNION ALL SELECT '2', 2016
+UNION ALL SELECT '3', 2017
+UNION ALL SELECT '4', 2018
+UNION ALL SELECT '5', 2019
+  -- etc.
+) AS statictable WHERE statictable.year = 2018);
+ 
+
+
+
+SELECT v_classcode;
 END$$
 DELIMITER ;
 

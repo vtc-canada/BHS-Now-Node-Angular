@@ -397,17 +397,27 @@ ADD CONSTRAINT `fk_dpothadd_dp`
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
   
+#clean dpplg2 - 1 row
+
+DELETE b FROM dpplg b 
+  LEFT JOIN dp f ON f.id = b.DONOR 
+      WHERE f.id IS NULL;
 
 #dpplg
 ALTER TABLE `dpplg` 
-ADD INDEX `fk_dpplg_dp_idx` (`DONOR` ASC);
+ADD INDEX `ix_dpplg_dp_idx` (`DONOR` ASC);
 ALTER TABLE `dpplg` 
-ADD CONSTRAINT `fk_dpplg_dp`
+ADD CONSTRAINT `ix_dpplg_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-
+  
+#clean dpplg2 - 1 row
+DELETE b FROM dpplg2 b 
+  LEFT JOIN dp f ON f.id = b.DONOR 
+      WHERE f.id IS NULL;
+      
 #dpplg2
 ALTER TABLE `dpplg2` 
 ADD INDEX `fk_dpplg2_dp_idx` (`DONOR` ASC);
@@ -418,7 +428,6 @@ ADD CONSTRAINT `fk_dpplg2_dp`
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
 
-  
 	  
 #dtbishop
 ALTER TABLE `dtbishop` 
@@ -1380,4 +1389,35 @@ INSERT INTO `dpcodes`
 `CODE`,
 `DESC`)
 SELECT 'CAMPTYPE',  CAMPTYPE, CAMPDESC FROM fatima_center_donor_tracker_v2.campaign GROUP BY CAMPTYPE;
+
+
+
+
+
+
+#PledgeMon Report
+
+# Create database table that will store pledges  -wrong
+
+CREATE TABLE `dpplg_pledmonhistory` (
+  `id` INT NULL AUTO_INCREMENT,
+  `DONOR` INT NOT NULL,
+  `month` DATE NOT NULL,
+  
+  // WRONG BELOW
+  `prev_pledger` TINYINT(1) NOT NULL,
+  `new` TINYINT(1) NOT NULL,
+  `cancelled` TINYINT(1) NOT NULL,
+  `renewed` TINYINT(1) NOT NULL,
+  `is_pledger` TINYINT(1) NOT NULL,
+  `deliquent` TINYINT(1) NOT NULL,
+  `pledge_count` INT(11) NOT NULL,
+  `pledge_amount` FLOAT(8,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC));
+
+
+
+
+
 

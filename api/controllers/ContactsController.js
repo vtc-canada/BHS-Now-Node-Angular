@@ -152,7 +152,7 @@ module.exports = {
 			Database.knex.raw('UPDATE dtvols1 SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
 			    callback(err, result);
 			});
-		    }else{
+		    } else {
 			callback(null);
 		    }
 		}, function(callback) {
@@ -167,18 +167,21 @@ module.exports = {
 			Database.knex.raw('UPDATE dtbishop SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
 			    callback(err, result);
 			});
-		    }else{
+		    } else {
 			callback(null);
 		    }
 		}, function(callback) {
 		    Database.knex.raw('UPDATE notes SET DONOR = ' + contactId + ' WHERE DONOR = ' + slaveId).exec(function(err, result) {
 			callback(err, result);
 		    });
-		}], function(err, result) {
+		} ], function(err, result) {
 		    if (err)
 			return res.json(err, 500);
 
-		    Database.knex.raw('DELETE FROM dp WHERE id = ' + slaveId).exec(function(err, response) { // clean out slave record
+		    Database.knex.raw('DELETE FROM dp WHERE id = ' + slaveId).exec(function(err, response) { // clean
+														// out
+														// slave
+														// record
 			if (err)
 			    return res.json(err, 500);
 			Database.knex.raw('call update_DonationTotals(' + contactId + ')').exec(function(err, result) {
@@ -488,11 +491,15 @@ module.exports = {
 	    }, ], function(err, result) {
 		if (err)
 		    return res.json(err, 500);
-		updateDonorTotals(contactId, function(err, result) {
+		updateDonorClass(contactId, function(err, result) {
 		    if (err)
 			return res.json(err, 500);
-		    req.body.id = contactId;
-		    sails.controllers.contacts.getcontact(req, res);
+		    updateDonorTotals(contactId, function(err, result) {
+			if (err)
+			    return res.json(err, 500);
+			req.body.id = contactId;
+			sails.controllers.contacts.getcontact(req, res);
+		    });
 		});
 
 	    });
@@ -500,6 +507,11 @@ module.exports = {
 
 	function updateDonorTotals(contactId, callback) {
 	    Database.knex.raw('call update_DonationTotals(' + contactId + ')').exec(function(err, result) {
+		callback(err, result);
+	    });
+	}
+	function updateDonorClass(contactId, callback) {
+	    Database.knex.raw('call updateDonorClass(' + contactId + ')').exec(function(err, result) {
 		callback(err, result);
 	    });
 	}
