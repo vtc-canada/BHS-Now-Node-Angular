@@ -1400,6 +1400,28 @@ SELECT 'CAMPTYPE',  CAMPTYPE, CAMPDESC FROM fatima_center_donor_tracker_v2.campa
 # Create database table that will store pledges  -wrong
 
 CREATE TABLE `dpplg_pledmonhistory` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `DONOR` INT(11) NOT NULL,
+  `group` VARCHAR(255) NOT NULL,
+  `month` DATE NOT NULL,
+  `status` VARCHAR(255) NOT NULL,
+  `value` FLOAT(8,2) NOT NULL,
+  PRIMARY KEY (`id`));
+
+
+ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory` 
+ADD INDEX `fk_dpplg_pledmonhistory_idx` (`DONOR` ASC);
+ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory` 
+ADD CONSTRAINT `fk_dpplg_pledmonhistory`
+  FOREIGN KEY (`DONOR`)
+  REFERENCES `fatima_center_donor_tracker_v2`.`dp` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
+
+
+CREATE TABLE `dpplg_pledmonhistory` (
   `id` INT NULL AUTO_INCREMENT,
   `DONOR` INT NOT NULL,
   `month` DATE NOT NULL,

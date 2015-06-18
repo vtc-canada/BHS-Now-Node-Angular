@@ -9,6 +9,13 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `report_PledMonReport`()
+BEGIN
+ SELECT 1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `reports_CategoryReport`(IN `startDate` DATETIME,
 		IN `endDate` DATETIME, 
 		IN `currency` VARCHAR(255), 
@@ -1512,26 +1519,114 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `update_DonorClassCursor`()
-BEGIN
+CREATE PROCEDURE `update_DonorPledmonHistory`(IN now DATE, IN lastPledgeRun DATE, IN pledgeClub VARCHAR(255))
+proc_label:BEGIN
 
-DECLARE v_classcode varchar(255) DEFAULT "";
- 
- -- declare cursor for employee email
-SET v_classcode = (SELECT class FROM 
-(
-SELECT '1' AS class , 2015 AS `year`
-UNION ALL SELECT '2', 2016
-UNION ALL SELECT '3', 2017
-UNION ALL SELECT '4', 2018
-UNION ALL SELECT '5', 2019
-  -- etc.
-) AS statictable WHERE statictable.year = 2018);
- 
+TRUNCATE dpplg_pledmonhistory;
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpplg.GL, now , 'PLEDGOR', 1
+FROM dp
+INNER JOIN dpplg ON (dpplg.DONOR = dp.id 
+AND dp.PLEDGOR = 'Y' 
+AND dpplg.BILL > 0 
+AND dpplg.MQA IN ( 'M', 'Q', 'A', 'S', 'U', 'P') 
+AND dpplg.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018')
+AND (pledgeClub IS NULL OR dpplg.GL IN (pledgeClub))
+AND dpplg.START_DT < lastPledgeRun)
+WHERE (dp.id NOT IN (SELECT DISTINCT DTMail.DONOR FROM DTMail WHERE dtmail.SOL IN ('PA006','PA007','PA008')))
+GROUP BY dp.id, dpplg.GL;
 
 
 
-SELECT v_classcode;
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT Results.id, Results.GL, now , 'RENEWED', 1 FROM(
+SELECT dp.id
+,COUNT(*) as 'OCCURENCES'
+,dpplg.GL
+,MAX(dpplg.START_DT) AS 'START_DT'
+,MIN(dpplg.BALANCE) AS 'BALANCE'
+,MIN(dpplg.DELINQ) AS 'DELINQ'
+FROM dp
+INNER JOIN dpplg ON (dpplg.DONOR = dp.id 
+AND dp.PLEDGOR = 'Y' 
+AND dpplg.MQA IN ( 'P')
+AND dpplg.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018' ))
+AND (pledgeClub IS NULL OR dpplg.GL IN (pledgeClub))
+#WHERE dp.id IN (1015799, 1036318, 1242580) Testing Purposes only - there are id's that have renewed
+GROUP BY id, SOL, GL
+) AS Results
+WHERE OCCURENCES > 1 AND START_DT > lastPledgeRun AND BALANCE = 0 AND DELINQ = 0
+GROUP BY Results.id, Results.GL;
+
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpplg.GL, now , 'CANCELLED', 1
+FROM dp
+INNER JOIN dpplg ON (dpplg.DONOR = dp.id 
+AND dp.PLEDGOR IN ('C','E') 
+AND dpplg.BALANCE = 0
+AND dpplg.DELINQ = 0 
+AND dpplg.START_DT > lastPledgeRun
+AND (pledgeClub IS NULL OR dpplg.GL IN (pledgeClub)))
+GROUP BY dp.id, dpplg.GL;
+
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpplg.GL, now , 'NEW', 1
+FROM dp
+INNER JOIN dpplg ON (dpplg.DONOR = dp.id 
+AND dp.PLEDGOR  = 'Y' 
+AND dpplg.BILL > 0
+AND dpplg.MQA IN ( 'M', 'Q', 'A', 'S', 'U', 'P' ) 
+AND dpplg.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018' )
+AND dpplg.START_DT = now)
+GROUP BY dp.id, dpplg.GL;
+
+
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpplg.GL, now , 'DELINQUENT', 1
+FROM dp
+INNER JOIN dpplg ON (dpplg.DONOR = dp.id 
+AND dp.PLEDGOR = 'Y' 
+AND dpplg.BILL > 0 
+AND dpplg.MQA IN ( 'M', 'Q', 'A', 'S', 'U', 'P') 
+AND dpplg.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018')
+AND (pledgeClub IS NULL OR dpplg.GL IN (pledgeClub))
+AND dpplg.START_DT < lastPledgeRun)
+WHERE (dp.id IN (SELECT DISTINCT DTMail.DONOR FROM DTMail WHERE dtmail.SOL IN ('PA006','PA007','PA008')))
+GROUP BY dp.id, dpplg.GL;
+
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpgift.GL, now , 'COUNT', COUNT(*)
+FROM dp
+INNER JOIN dpgift ON (dpgift.DONOR = dp.id 
+AND dp.PLEDGOR  = 'Y'
+#AND dpplg.BILL > 0
+#AND dpplg.MQA IN ( 'M', 'Q', 'A', 'S', 'U', 'P' ) 
+AND dpgift.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018' )
+AND dpgift.GL IS NOT NULL # dpgift records must be missing a GL code- fixable via joining dpplg first too
+AND (pledgeClub IS NULL OR dpgift.GL IN (pledgeClub))
+AND dpgift.DATE > lastPledgeRun)
+GROUP BY dp.id, dpgift.GL;
+
+INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
+SELECT dp.id, dpgift.GL, now , 'AMOUNT', SUM(dpgift.AMT)
+FROM dp
+INNER JOIN dpgift ON (dpgift.DONOR = dp.id 
+AND dp.PLEDGOR  = 'Y'
+#AND dpplg.BILL > 0
+#AND dpplg.MQA IN ( 'M', 'Q', 'A', 'S', 'U', 'P' ) 
+AND dpgift.SOL IN ( 'PP001', 'PP002', 'PP003', 'PP011', 'PM013', 'PP014', 'PP018' )
+AND dpgift.GL IS NOT NULL # dpgift records must be missing a GL code- fixable via joining dpplg first too
+AND (pledgeClub IS NULL OR dpgift.GL IN (pledgeClub))
+AND dpgift.DATE > lastPledgeRun)
+GROUP BY dp.id, dpgift.GL;
+
+leave proc_label;
+
 END$$
 DELIMITER ;
 
