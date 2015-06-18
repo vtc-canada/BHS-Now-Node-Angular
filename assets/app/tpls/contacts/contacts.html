@@ -4421,23 +4421,10 @@
 							</div>
 						</div>
 					</div>
-					<div class="row" ng-show="isOrderSummaryDatatableRowFocused(null)">
-						<div class="col-xs-12">
-							<div class="panel panel-default">
-								<div class="panel-body">
-									<div class="form-group">
-										<label class="col-xs-3 control-label" for="selectedOrderSummary.order_type">Order Type:</label>
-										<div class="col-xs-3">
-											<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="selectedOrderSummary.order_type"></select2>
-										</div>
-										<div class="col-xs-6">
-											<div class="btn btn-white pull-right" ng-click="exportOrder();">Export PDF</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							
-						</div>
+					<div class="row" ng-show="isOrderSummaryDatatableRowFocused(null)">						
+						<div class="pull-right ">
+							<div class="btn btn-white pull-right" ng-click="exportOrder();">Export PDF</div>
+						</div>						
 					</div>
 					
 					<div class="row" ng-show="isOrderSummaryDatatableRowFocused(null)">
@@ -4577,6 +4564,12 @@
 									<h3 class="panel-title">Order Details</h3>
 								</div>
 								<div class="panel-body">
+									<div class="form-group">
+										<label class="col-sm-4 control-label" for="selectedOrderSummary.order_type">Order Type:</label>
+										<div class="col-sm-8">
+											<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="selectedOrderSummary.order_type"></select2>
+										</div>
+									</div>								
 									<div class="form-group">
 										<label class="col-sm-4 control-label" for="selectedOrderSummary.DATE">Invoice Paid:</label>
 										<div class="col-sm-8">
