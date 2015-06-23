@@ -11,7 +11,8 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `report_PledMonReport`()
 BEGIN
- SELECT 1;
+ SELECT * FROM dpplg_pledmonhistory
+GROUP BY `group`,`month`;
 END$$
 DELIMITER ;
 
@@ -868,6 +869,17 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `reports_PledMon`(IN startDate DATETIME, IN endDate DATETIME)
+BEGIN
+SELECT `group`, `month`, `status`, SUM(`value`) AS `value` FROM dpplg_pledmonhistory 
+WHERE (startDate IS NULL OR `month` > startDate)
+AND (endDate IS NULL OR `month` < endDate)
+GROUP BY `group`, `month`, `status`;
+# INNER JOIN dp ON dp.id = dpplg_pledmonhistory.DONOR WHERE 
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `reports_PopeName`(IN `startDate` DATETIME, 
 			IN `endDate` DATETIME, IN `type_code` VARCHAR(15), IN `sol_code` VARCHAR(15))
 BEGIN
@@ -1522,7 +1534,7 @@ DELIMITER $$
 CREATE PROCEDURE `update_DonorPledmonHistory`(IN now DATE, IN lastPledgeRun DATE, IN pledgeClub VARCHAR(255))
 proc_label:BEGIN
 
-TRUNCATE dpplg_pledmonhistory;
+#TRUNCATE dpplg_pledmonhistory;
 
 INSERT INTO dpplg_pledmonhistory (`DONOR`, `group`, `month`, `status`, `value`)
 SELECT dp.id, dpplg.GL, now , 'PLEDGOR', 1

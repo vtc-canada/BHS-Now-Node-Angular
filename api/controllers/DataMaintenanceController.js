@@ -24,7 +24,95 @@ module.exports = {
 	res.json({processing : '...'});
     },
     UpdatePledgeMonitor : function(req,res){
+	var dataYear;
+	var dataMonth;
+
+	var dateObj = new Date();
+	var nowYear = dateObj.getFullYear();
+	var nowMonth = dateObj.getMonth();
+
+	//var runmonths = [];
+	// while()
+
+	//var startMonthDate = new Date(dateObj.getFullYear() + '-' + padLeft(dateObj.getMonth()+1 ,2) + '-' + padLeft(dateObj.getDate(),2));
+
+	Database.knex.raw("SELECT MAX(month) AS 'month' FROM dpplg_pledmonhistory").exec(function(err, result) {
+	    if (err)
+		return console.log(err);
+
+	    var doStatusChanges = false;
+	    if (result[0].length == 0 || typeof(result[0][0])=='undefined'||result[0][0].month==null) {
+		dataYear = varStartYear;
+		dataMonth = varStartMonth;
+	    } else {
+		dataYear = result[0][0].month.getUTCFullYear();
+		dataMonth = result[0][0].month.getUTCMonth();
+		if (dataMonth < 11) {
+		    dataMonth++;
+		} else {
+		    dataYear++;
+		    dataMonth = 0;
+		}
+		console.log('last history : ' + result[0][0].month);
+		doStatusChanges = true;
+	    }
+	    var monthJobs = [];
+	    while (dataYear < nowYear || dataMonth <= nowMonth) {
+		
+		var prevYear = dataYear;
+		var prevMonth = dataMonth-1;
+		if(prevMonth<0){
+		    prevMonth = 11;
+		    prevYear --;
+		}
+		
+		monthJobs.push({
+		    year : dataYear,
+		    month : dataMonth,
+		    prevyear : prevYear,
+		    prevmonth : prevMonth,
+		    doStatusChanges : doStatusChanges
+		});
+		doStatusChanges = true;
+		if (dataMonth < 11) {
+		    dataMonth++;
+		} else {
+		    dataYear++;
+		    dataMonth = 0;
+		}
+	    }
+
+	    // monthJobs prepared - with doStatusChanges
+
+	    async.eachSeries(monthJobs, function(monthJob, callback) {
+		Database.knex.raw("call update_DonorPledmonHistory('" + monthJob.year + "-" + padLeft(monthJob.month+1, 2) + "-01','"+ monthJob.prevyear + "-" + padLeft(monthJob.prevmonth + 1, 2) + "-01',NULL)").exec(function(err, result) {
+		    if (err)
+			callback(err);
+		    callback(null);
+		});
+	    }, function(err, results) {
+		if (err) {
+		    return console.log(err.toString());
+		}
+		console.log('completed');
+	    });
+	    res.json({'Working Jobs' : monthJobs});
+		
+		
+	});
 	
+	
+	
+	
+	
+	//
+//	Database.knex.raw("call update_DonorPledmonHistory").exec(function(err, result) {
+//	    if(err){
+//		console.log(err.toString());
+//	    }
+//	    console.log(JSON.stringify({complete:result}));
+//	});
+//	res.json({processing : '...'});
     },
     UpdateDonorStatus : function(req, res) { // checks for and does monthly maintenance
 	//Database.knex.raw('call update_ContactStatus(null)').exec(function(err,results){
@@ -48,7 +136,7 @@ module.exports = {
 		return console.log(err);
 
 	    var doStatusChanges = false;
-	    if (result[0].length == 0) {
+	    if (result[0].length == 0 || typeof(result[0][0])=='undefined'||result[0][0].month==null) {
 		dataYear = varStartYear;
 		dataMonth = varStartMonth;
 	    } else {

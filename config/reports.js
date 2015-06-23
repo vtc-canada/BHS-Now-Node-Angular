@@ -3418,6 +3418,296 @@ module.exports.views = {
 			}
 		    }
 		}
+	    }, {
+		id : 13,
+		name : {
+		    locale_label : {
+			en : 'PledMon Report'
+		    }
+		},
+		title : {
+		    logo : 'Fatima-Center-Logo.png'
+		},
+		footer : {
+		    logo : 'default.png'
+		},
+		tables : [ {
+		    order : 0,
+		    sproc : 'reports_PledMon',
+		    parameters : [ 'start_time', 'end_time' ],
+		    
+		    pivot : {
+			id : ['group','month'],
+			name : 'status',
+			value : 'value'
+		    },
+		    grouping : [ {
+			column : 'group',
+			footer : {
+			    columns : [ {
+				type : 'column',
+				column : 'group'
+			    },
+			    {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'sum',
+				column : 'RENEWED'
+			    }, {
+				type : 'sum',
+				column : 'CANCELLED'
+			    },{
+				type : 'sum',
+				column : 'NEW'
+			    },{
+				type : 'custom',
+				value : ''
+			    },{
+				type : 'custom',
+				value : ''
+			    }, {
+				type : 'sum',
+				column : 'COUNT'
+			    }, {
+				type : 'sum',
+				column : 'AMOUNT'
+			    }, {
+				type : 'custom',
+				value : ''
+			    } ]
+			}
+		    }
+		    ],
+		    section : {
+			startrow : true,
+			endrow : true,
+			unbreakable : true,
+			groupheading : {
+			    spantype : 'col-xs-12',
+			    grid : [ [ {
+				val : 'Pledges by Group',
+				bold : true
+			    } ] ]
+			},
+			table : {
+			    searchenabled : true,
+			    spantype : 'col-xs-12',
+			    bottomborder : true,
+			    topborder : true,
+			    sorting : false
+			}
+		    },
+		    columns : { 
+			group: {
+			locale : {
+			    en : "Campaign Type"
+			},
+			order : 0,
+			type : 'column',
+			column : 'group',
+			lastrow : {
+			    type : 'custom',
+			    value : 'Total',
+			    bold : true,
+			    bordertop : true
+			}
+		    },month: {
+			locale : {
+			    en : "Date"
+			},
+			order : 1,
+			type : 'column',
+			column : 'month',
+			modifier : 'UTCDate',
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    bold : true,
+			    bordertop : true
+			}
+		    },PLEDGOR: {
+			locale : {
+			    en : "Start of Period"
+			},
+			order : 2,
+			type:'pivot',
+			column : 'PLEDGOR',
+			value : '0',
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },NEW: {
+			locale : {
+			    en : "New"
+			},
+			order : 5,
+			value : '0',
+			type:'pivot',
+			column : 'NEW',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },CANCELLED: {
+			locale : {
+			    en : "Canc & Non-Ren"
+			},
+			order : 4,
+			value : '0',
+			type:'pivot',
+			column : 'CANCELLED',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    }, 
+		    RENEWED:{
+			locale : {
+			    en : "Renews"
+			},
+			order : 3,
+			value : '0',
+			type:'pivot',
+			column : 'RENEWED',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },ENDOFPERIOD: {
+			locale : {
+			    en : "End of Period"
+			},
+			order : 6,
+			value : '0',
+			type:'method',
+			parameters : ['PLEDGOR','NEW','CANCELLED','RENEWED'],
+			method : function(args){//start, newval, cancelled, renews){
+			    return parseInt(args[0]) + parseInt(args[1]) - parseInt(args[2]) + parseInt(args[3]);
+			},
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },DELINQUENT: {
+			locale : {
+			    en : "Current Delinq"
+			},
+			order : 7,
+			value : '0',
+			type:'pivot',
+			column : 'DELINQUENT',
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },COUNT: {
+			locale : {
+			    en : "Count"
+			},
+			order : 8,
+			value : '0',
+			type:'pivot',
+			column : 'COUNT',
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 0,
+			    bold : true,
+			    bordertop : true
+			}
+		    },AMOUNT: {
+			locale : {
+			    en : "Amount"
+			},
+			order : 9,
+			value : '0',
+			type:'pivot',
+			column : 'AMOUNT',
+			decimalplaces : 2,
+			lastrow : {
+			    type : 'sum',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    },AVERAGE: {
+			locale : {
+			    en : "Average"
+			},
+			order : 10,
+			value : '',
+			type:'method',
+			parameters : ['COUNT','AMOUNT'],
+			method : function(args){//start, newval, cancelled, renews){
+			    if(args[0]==0){
+				return '0.00';
+			    }
+			    return parseFloat(args[1]) /parseInt(args[0]);
+			},
+			decimalplaces : 2,
+			lastrow : {
+			    type : 'custom',
+			    value : '',
+			    decimalplaces : 2,
+			    bold : true,
+			    bordertop : true
+			}
+		    }}
+		} ],
+		parameters : {
+//
+//		    'includecountry' : {
+//			order : 0,
+//			type : 'multiselect',
+//			source : 'countries',
+//			value : null,
+//			locale_label : {
+//			    en : 'Include Country'
+//			}
+//		    },
+//		    'excludecountry' : {
+//			order : 1,
+//			type : 'multiselect',
+//			source : 'countries',
+//			value : null,
+//			locale_label : {
+//			    en : 'Exclude Country'
+//			}
+//		    },
+		    'start_time' : {
+			order : 0,
+			type : 'datetime',
+			locale_label : {
+			    en : 'Start Time'
+			}
+		    },
+		    'end_time' : {
+			order : 1,
+			type : 'datetime',
+			locale_label : {
+			    en : 'End Time'
+			}
+		    }
+		}
 	    } ]
 	}
     }

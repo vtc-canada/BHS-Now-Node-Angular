@@ -220,6 +220,14 @@ module.exports = {
 
 function buildReportData(report, phantom_bool, cb) {
 
+    var reportCfg = null;
+    for (var tempr = 0; tempr < sails.config.views.locals.reports['/reports'].length; tempr++) {
+	if (sails.config.views.locals.reports['/reports'][tempr].id == report.id) {
+	    reportCfg = sails.config.views.locals.reports['/reports'][tempr];
+	    break;
+	}
+    }
+
     // Generating report stuff
     // safety checks
     var startTime = true;
@@ -346,18 +354,37 @@ function buildReportData(report, phantom_bool, cb) {
 		data[table.order].header = new Array();
 
 		if (table.pivot) {
-		    for (var i = 0; i < table.columns.length; i++) {
-			data[table.order].header[i] = new Object();
-			data[table.order].header[i].val = table.columns[i].locale[report.locale];
-			data[table.order].header[i].bold = true;
-			data[table.order].header[i].bordertop = false;
-			data[table.order].header[i].width = table.columns[i].width;
-			data[table.order].header[i].lastrow = table.columns[i].lastrow;
-			data[table.order].header[i].hidden = table.columns[i].hidden;
-			data[table.order].header[i].align = table.columns[i].align;
-			data[table.order].header[i].titlealign = table.columns[i].titlealign;
-			data[table.order].header[i].phantom_white_space = table.columns[i].phantom_white_space;
+
+		    if (table.columns instanceof Array) {
+			for (var i = 0; i < table.columns.length; i++) {
+
+			    data[table.order].header[i] = new Object();
+			    data[table.order].header[i].val = table.columns[i].locale[report.locale];
+			    data[table.order].header[i].bold = true;
+			    data[table.order].header[i].bordertop = false;
+			    data[table.order].header[i].width = table.columns[i].width;
+			    data[table.order].header[i].lastrow = table.columns[i].lastrow;
+			    data[table.order].header[i].hidden = table.columns[i].hidden;
+			    data[table.order].header[i].align = table.columns[i].align;
+			    data[table.order].header[i].titlealign = table.columns[i].titlealign;
+			    data[table.order].header[i].phantom_white_space = table.columns[i].phantom_white_space;
+			}
+		    } else {
+			for ( var key in table.columns) {
+
+			    data[table.order].header[table.columns[key].order] = new Object();
+			    data[table.order].header[table.columns[key].order].val = table.columns[key].locale[report.locale];
+			    data[table.order].header[table.columns[key].order].bold = true;
+			    data[table.order].header[table.columns[key].order].bordertop = false;
+			    data[table.order].header[table.columns[key].order].width = table.columns[key].width;
+			    data[table.order].header[table.columns[key].order].lastrow = table.columns[key].lastrow;
+			    data[table.order].header[table.columns[key].order].hidden = table.columns[key].hidden;
+			    data[table.order].header[table.columns[key].order].align = table.columns[key].align;
+			    data[table.order].header[table.columns[key].order].titlealign = table.columns[key].titlealign;
+			    data[table.order].header[table.columns[key].order].phantom_white_space = table.columns[key].phantom_white_space;
+			}
 		    }
+
 		} else {
 
 		    // Makes Headings
@@ -387,8 +414,12 @@ function buildReportData(report, phantom_bool, cb) {
 		}
 	    }
 	    // Fills Data
-	    if (table.pivot) {
+	    if (table.pivot && table.pivot.columns) { //old pivot
 		addPivotData(data[table.order], result, report.timezoneoffset, table);
+	    } else if (table.pivot) { //new pivot
+		addPivotDataNew(data[table.order], result, report.timezoneoffset, table);
+		addCalculatedValues(reportCfg, data[table.order], table);
+		addGrouping(data[table.order], result, report.timezoneoffset, table);
 	    } else {
 		addSectionData(data[table.order], result, report.timezoneoffset, table);
 	    }
@@ -434,6 +465,268 @@ function getCacheOrSproc(sproc, parameters, cacheId, key, cb) {
     }
 }
 
+function addCalculatedValues(report, section, table) {
+    for (var row = 0; row < section.data.length; row++) {
+
+	for ( var key in table.columns) {
+	    if (table.columns[key].type == 'method') {
+		var args = [];
+		for (var argi = 0; argi < table.columns[key].parameters.length; argi++) {
+		    args.push(section.data[row][table.columns[table.columns[key].parameters[argi]].order].val);
+		}
+		for (var gettablei = 0; gettablei < report.tables.length; gettablei++) {
+		    if (report.tables[gettablei].order == table.order) {
+			section.data[row][table.columns[key].order].val = report.tables[gettablei].columns[key].method(args);
+		    }
+		}
+	    }
+	}
+    }
+}
+
+function addGrouping(section, adddata, timezoneoffset, table) {
+
+    if (typeof (table.grouping) != 'undefined') {
+	var groupcount = 0;
+	var row = 0;
+	for (true; row + groupcount < section.data.length; row++) {
+	    // Add groupings!
+	    //    for(var groupindex = 0; groupindex < section.data.length; groupindex++){
+
+	    for (var g = table.grouping.length - 1; g >= 0; g--) {
+
+		// detect if the grouping value changed
+		if (typeof (table.grouping[g].value) != 'undefined' && table.grouping[g].value != section.data[row + groupcount][table.columns[table.grouping[g].column].order].val) {
+
+		    if (table.grouping[g].footer) {
+
+			section.data.splice(row + groupcount, 0, new Array());
+			//section.data[row + groupcount] = new Array(); // new array
+			// of data -
+			// adds new
+			// row
+
+			// iterate footer columns
+			for (var fc = 0; fc < table.grouping[g].footer.columns.length; fc++) {
+			    // If - detect type column when there's group data -
+			    // and the
+			    // column changed!
+			    if (typeof (table.grouping[g].footer.columns[fc].value) != 'undefined') {
+
+				section.data[row + groupcount][fc] = new Object();
+				section.data[row + groupcount][fc].val = table.grouping[g].footer.columns[fc].value;
+				section.data[row + groupcount][fc].bold = false;
+				section.data[row + groupcount][fc].bordertop = false;
+				section.data[row + groupcount][fc].grouprow = true;
+
+				if (table.grouping[g].footer.columns[fc].type == 'count' || table.grouping[g].footer.columns[fc].type == 'sum') {
+				    table.grouping[g].footer.columns[fc].value = 0; // resets
+				    // the
+				    // value!
+
+				}
+			    }
+			}
+			groupcount++;
+		    }
+		}
+	    }
+
+	    // GROUPING MAINTENANCE
+	    // any grouping
+	    // data
+	    for (var g = 0; g < table.grouping.length; g++) {
+		// if (table.grouping[g].column == key) { // one column at a
+		// time
+		if (table.grouping[g].footer) {
+		    // iterates through the footer columns themselves and
+		    // records/increments values to be available for
+		    // grouping changes
+		    for (var fc = 0; fc < table.grouping[g].footer.columns.length; fc++) {
+			if (table.grouping[g].footer.columns[fc].type == 'column') {
+			    table.grouping[g].footer.columns[fc].value = section.data[row + groupcount][table.columns[table.grouping[g].footer.columns[fc].column].order].val;
+			} else if (table.grouping[g].footer.columns[fc].type == 'count') {
+			    if (typeof (table.grouping[g].footer.columns[fc].value) == 'undefined') {
+				table.grouping[g].footer.columns[fc].value = 0;
+			    }
+			    table.grouping[g].footer.columns[fc].value++;
+			} else if (table.grouping[g].footer.columns[fc].type == 'sum') {
+			    if (typeof (table.grouping[g].footer.columns[fc].value) == 'undefined') {
+				table.grouping[g].footer.columns[fc].value = 0;
+			    }
+			    table.grouping[g].footer.columns[fc].value += parseFloat(section.data[row + groupcount][table.columns[table.grouping[g].footer.columns[fc].column].order].val);
+			}
+		    }
+		    table.grouping[g].value = section.data[row + groupcount][table.columns[table.grouping[g].column].order].val;
+		}
+	    }
+
+	    //    }
+	}
+
+	for (var g = table.grouping.length - 1; g >= 0; g--) {
+
+	    // detect if the grouping value changed
+	    if (typeof (table.grouping[g].value) != 'undefined') {//} && table.grouping[g].value != section.data[row + groupcount][table.columns[table.grouping[g].column].order].val) {
+
+		if (table.grouping[g].footer) {
+
+		    section.data.splice(row + groupcount, 0, new Array());
+		    //section.data[row + groupcount] = new Array(); // new array
+		    // of data -
+		    // adds new
+		    // row
+
+		    // iterate footer columns
+		    for (var fc = 0; fc < table.grouping[g].footer.columns.length; fc++) {
+			// If - detect type column when there's group data -
+			// and the
+			// column changed!
+			if (typeof (table.grouping[g].footer.columns[fc].value) != 'undefined') {
+
+			    section.data[row + groupcount][fc] = new Object();
+			    section.data[row + groupcount][fc].val = table.grouping[g].footer.columns[fc].value;
+			    section.data[row + groupcount][fc].bold = false;
+			    section.data[row + groupcount][fc].bordertop = false;
+			    section.data[row + groupcount][fc].grouprow = true;
+
+			    if (table.grouping[g].footer.columns[fc].type == 'count' || table.grouping[g].footer.columns[fc].type == 'sum') {
+				table.grouping[g].footer.columns[fc].value = 0; // resets
+				// the
+				// value!
+
+			    }
+			}
+		    }
+		    groupcount++;
+		}
+	    }
+	}
+    }
+}
+
+function addPivotDataNew(section, adddata, timezoneoffset, table) {
+    var row = null;
+    var groupcount = 0;
+
+    var groupstate = null; // used to detect row increment
+
+    for (var i = 0; i < adddata.length; i++) {
+
+	if (isNewRow(table.pivot.id, adddata[i])) { // something
+	    // varied in the
+	    // index
+	    // column[s] -
+	    // requiring new
+	    // row /
+	    // initializations
+	    if (row == null) {
+		row = 0;
+	    } else {
+		row++;
+	    }
+
+	    section.data[row + groupcount] = new Array();
+	    var size = 0, key;
+	    for (key in table.columns) {
+		if (table.columns.hasOwnProperty(key))
+		    size++;
+	    }
+	    section.data[row + groupcount][size - 1] = undefined; // initializes
+	    // empty
+	    // array
+
+	    // Applies initial values as well as columns with type == 'column'
+	    // row initialization
+	    for ( var key in table.columns) {
+
+		// Applies
+		// any
+		// 'value'
+		// fields-
+		// initialization
+		// -
+		// can
+		// overwrite
+		// these.
+		if (typeof (table.columns[key].value) != 'undefined') {// } &&
+		    // initcol
+		    // !=
+		    // table.columns['id']
+		    // &&
+		    // initcol
+		    // !=
+		    // table.pivot.columns[adddata[i][table.pivot.name]])
+		    // {
+		    section.data[row + groupcount][table.columns[key].order] = new Object();
+		    section.data[row + groupcount][table.columns[key].order].val = table.columns[key].value;
+		    section.data[row + groupcount][table.columns[key].order].bold = false;
+		    section.data[row + groupcount][table.columns[key].order].bordertop = false;
+		}
+		if (typeof (table.columns[key].type) != 'undefined' && table.columns[key].type == 'column') { // column
+		    // values-
+		    // (id
+		    // columns
+		    // /
+		    // groupings)
+		    section.data[row + groupcount][table.columns[key].order] = new Object();
+		    if (typeof (table.columns[key].modifier) != 'undefined') {
+			if (table.columns[key].modifier == "localdatetime") {
+			    section.data[row + groupcount][table.columns[key].order].val = toClientDateTimeString(adddata[i][table.columns[key].column], timezoneoffset);
+			} else if (table.columns[key].modifier == "UTCDate") {
+			    section.data[row + groupcount][table.columns[key].order].val = toUTCDateString(adddata[i][table.columns[key].column], timezoneoffset);
+			} else if (table.columns[key].modifier == "secondsString") {
+			    section.data[row + groupcount][table.columns[key].order].val = secondsToString(adddata[i][table.columns[key].column]);
+			}
+		    } else {
+			section.data[row + groupcount][table.columns[key].order].val = adddata[i][table.columns[key].column];
+		    }
+		    section.data[row + groupcount][table.columns[key].order].bold = false;
+		    section.data[row + groupcount][table.columns[key].order].bordertop = false;
+		}
+	    }
+	}// End of New row initialization
+
+	// Creates row
+	section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order] = new Object();
+	if (typeof (table.columns[adddata[i][table.pivot.name]].modifier) != 'undefined') {
+	    if (table.columns[adddata[i][table.pivot.name]].modifier == "localdatetime") {
+		section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order].val = toClientDateTimeString(adddata[i][table.pivot.value], timezoneoffset);
+	    } else if (table.columns[adddata[i][table.pivot.name]].modifier == "UTCDate") {
+		section.data[row + groupcount][table.columns[key].order].val = toUTCDateString(adddata[i][table.columns[adddata[i][table.pivot.name]].column], timezoneoffset);
+	    } else if (table.columns[table.columns[adddata[i][table.pivot.name]].order].modifier == "secondsString") {
+		section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order].val = secondsToString(adddata[i][table.pivot.value]);
+	    }
+	} else {
+	    section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order].val = adddata[i][table.pivot.value];
+	}
+	section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order].bold = false;
+	section.data[row + groupcount][table.columns[adddata[i][table.pivot.name]].order].bordertop = false;
+
+    }
+
+    function isNewRow(id, adddata, callback) {
+	var changed = false;
+	if (groupstate == null && id instanceof Array) {
+	    groupstate = {};
+	}
+	if (id instanceof Array) {
+	    for (var idi = 0; idi < id.length; idi++) {
+		if (typeof (groupstate[id[idi]]) == 'undefined' || groupstate[id[idi]] != adddata[id[idi]]) {
+		    changed = true;
+		    groupstate[id[idi]] = adddata[id[idi]].toString();
+		}
+	    }
+	} else {
+	    if (groupstate != adddata[id[idi]]) {
+		changed = true;
+		groupstate[id[idi]] = adddata[id[idi]];
+	    }
+	}
+	return changed;
+    }
+}
+
 function addPivotData(section, adddata, timezoneoffset, table) {
 
     var pivotindex = {};
@@ -442,9 +735,7 @@ function addPivotData(section, adddata, timezoneoffset, table) {
 
 	if (pivotindex[adddata[i][table.pivot.id]] == undefined) { // new
 	    // pivotindex
-	    // for(var sc = 0; sc < section.data.length; sc++){
 
-	    // }
 	    pivotindex[adddata[i][table.pivot.id]] = section.data.length;
 	    section.data[pivotindex[adddata[i][table.pivot.id]]] = new Array();
 	    section.data[pivotindex[adddata[i][table.pivot.id]]][table.columns.length - 1] = undefined; // initializes
@@ -560,7 +851,9 @@ function addSectionData(section, adddata, timezoneoffset, jsonData) {
 				section.data[i + groupcount][fc].grouprow = true;
 
 				if (jsonData.grouping[g].footer.columns[fc].type == 'count' || jsonData.grouping[g].footer.columns[fc].type == 'sum') {
-				    jsonData.grouping[g].footer.columns[fc].value = 0; // resets the value!
+				    jsonData.grouping[g].footer.columns[fc].value = 0; // resets
+				    // the
+				    // value!
 
 				}
 			    }
@@ -633,7 +926,8 @@ function addSectionData(section, adddata, timezoneoffset, jsonData) {
 	}
     }
 
-    // these steps do a final run on the groupcounts after the last data row. - Not testing for changes!
+    // these steps do a final run on the groupcounts after the last data row. -
+    // Not testing for changes!
     if (typeof (jsonData.grouping) != 'undefined') {
 
 	for (var g = jsonData.grouping.length - 1; g >= 0; g--) {
@@ -692,6 +986,12 @@ function padLeft(nr, n, str) {
 }
 function toLocaleDateTimeString(date) {
     return date.getFullYear() + '-' + padLeft((date.getMonth() + 1).toString(), 2) + '-' + padLeft(date.getDate(), 2) + ' ' + padLeft(date.getHours(), 2) + ':' + padLeft(date.getMinutes(), 2) + ':' + padLeft(date.getSeconds(), 2);
+}
+
+function toUTCDateString(date) {
+    var tdate = new Date(date.getTime());
+    //tdate = new Date(tdate.setMinutes(tdate.getMinutes() - tdate.getTimezoneOffset())); // SHIFTING HERE!!!
+    return tdate.getUTCFullYear() + '-' + padLeft((tdate.getUTCMonth() + 1).toString(), 2) + '-' + padLeft(tdate.getUTCDate(), 2);
 }
 
 function toUTCDateTimeString(date) {

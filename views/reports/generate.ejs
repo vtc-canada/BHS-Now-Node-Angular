@@ -212,7 +212,6 @@ function toClientDateTimeString(date){
                 </tr>
             <% } %>
         <% }else{ %>
-
             <% for (j;j<data[i].data.length;j++){ %>   <!-- ITERATING EACH ROW -->
                 <tr class="row report-data-row <% if(data[i].data[j][0].bordertop){ %> report-data-last-row<% } %> <% if(data[i].data[j][0].grouprow){ %> group-row<% } %>">
                     <% for (var k=0;k<data[i].data[j].length;k++){ %>   <!-- ITERATING EACH COLUMN -->
@@ -228,7 +227,7 @@ function toClientDateTimeString(date){
                         }else if(typeof(data[i].header[k].lastrow)!='undefined'&&typeof(data[i].header[k].lastrow.decimalplaces)!='undefined'&&data[i].header[k].lastrow.decimalplaces!=''&&data[i].header[k].lastrow.decimalplaces!=null){
                         	decimalplaces = data[i].header[k].lastrow.decimalplaces;
                         }%>
-                        <%= data[i].data[j][k].val==null?'': (decimalplaces==null?data[i].data[j][k].val:Number(data[i].data[j][k].val).toFixed(decimalplaces)) %>
+                        <%= (data[i].data[j][k].val==null||data[i].data[j][k].val=='')?'': (decimalplaces==null?data[i].data[j][k].val:((isNaN(Number(data[i].data[j][k].val)))?data[i].data[j][k].val:Number(data[i].data[j][k].val).toFixed(decimalplaces))) %>
                         
                         </td>
                         <%
@@ -251,7 +250,7 @@ function toClientDateTimeString(date){
                                 if(typeof(data[i].header[k].lastrowvalue)=='undefined'){   //Blank out values on first run.
                                     data[i].header[k].lastrowvalue =0;
                                 }
-                                if(typeof(data[i].data[j][k].val)!='undefined'&&data[i].data[j][k].val!=null&&data[i].data[j][k].val!=''){
+                                if(typeof(data[i].data[j][k].val)!='undefined'&&data[i].data[j][k].val!=null&&data[i].data[j][k].val!=''&&!isNaN(parseFloat(data[i].data[j][k].val))){
                                 	data[i].header[k].lastrowvalue += parseFloat(data[i].data[j][k].val);
                                 }
                             }
