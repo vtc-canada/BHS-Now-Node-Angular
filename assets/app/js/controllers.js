@@ -4765,10 +4765,10 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 		vm.groupWatcher();
 	    }
 	    for ( var key in resources) {
-		resources[key].create = 1;
-		resources[key].read = 1;
-		resources[key].update = 1;
-		resources[key]['delete'] = 1;
+		resources[key].create = 0;
+		resources[key].read = 0;
+		resources[key].update = 0;
+		resources[key]['delete'] = 0;
 	    }
 	    $timeout(function() {
 		$scope.selectedGroup = null;

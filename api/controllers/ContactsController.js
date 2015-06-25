@@ -179,9 +179,9 @@ module.exports = {
 			return res.json(err, 500);
 
 		    Database.knex.raw('DELETE FROM dp WHERE id = ' + slaveId).exec(function(err, response) { // clean
-														// out
-														// slave
-														// record
+			// out
+			// slave
+			// record
 			if (err)
 			    return res.json(err, 500);
 			Database.knex.raw('call update_DonationTotals(' + contactId + ')').exec(function(err, result) {
@@ -489,14 +489,17 @@ module.exports = {
 		    callback(null);
 		});
 	    }, ], function(err, result) {
-		if (err)
+		if (err) {
 		    return res.json(err, 500);
-		updateDonorClass(contactId, function(err, result) {
-		    if (err)
+		}
+		updateDonorTotals(contactId, function(err, result) {
+		    if (err) {
 			return res.json(err, 500);
-		    updateDonorTotals(contactId, function(err, result) {
-			if (err)
+		    }
+		    updateDonorClass(contactId, function(err, result) { // now fast fixed.
+			if (err) {
 			    return res.json(err, 500);
+			}
 			req.body.id = contactId;
 			sails.controllers.contacts.getcontact(req, res);
 		    });
@@ -511,7 +514,7 @@ module.exports = {
 	    });
 	}
 	function updateDonorClass(contactId, callback) {
-	    Database.knex.raw('call updateDonorClass(' + contactId + ')').exec(function(err, result) {
+	    Database.knex.raw('call update_DonorClass(' + contactId + ')').exec(function(err, result) {
 		callback(err, result);
 	    });
 	}
@@ -1273,6 +1276,11 @@ module.exports = {
 				    + contactId).exec(function(err, data) {
 				if (err)
 				    return callback(err)
+
+				if (data[0].length == 0) {
+				    console.log('missing donor! ' + contactId);
+				    return callback('missing donor! ' + contactId);
+				}
 
 				if (data[0][0].FLAGS != null) {
 				    data[0][0].FLAGS = data[0][0].FLAGS.split(",");

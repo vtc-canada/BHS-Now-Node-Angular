@@ -304,6 +304,7 @@ ADD INDEX `ix_pledge` (`GL` ASC),
 ADD INDEX `ix_req` (`REQUESTS` ASC),
 ADD INDEX `ix_tbarequests` (`TBAREQS` ASC),
 ADD INDEX `ix_camp_type` (`CAMP_TYPE` ASC),
+ADD INDEX `ix_CURR_Date` (`CURR` ASC, `DATE` ASC),
 ADD FULLTEXT INDEX `ix_SOL_fulltext` (`SOL` ASC);
 
 

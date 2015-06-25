@@ -39,7 +39,7 @@ module.exports = function(req,res,next) {
 		            	}
 		            	cb(null);
 		            }else{
-		        	console.log('Policy Missing!@'+req.session.user.id+':'+path);
+		        	console.log('No User Policies!@'+req.session.user.id+':'+path);
 		            	if(sails.config.environment=='development'){// }&&req.session.user.username==sails.config.autogenerate.user.username){
 		                		return autoGenRoute();
 		            	}
@@ -70,6 +70,11 @@ module.exports = function(req,res,next) {
 		//console.log(JSON.stringify(req.session.user));
             	if(req.session.user.active!=1 || (req.session.user.policy[path].create==0&&req.session.user.policy[path].read==0&&req.session.user.policy[path].update==0&&req.session.user.policy[path].delete==0)){
             	    //req.flash('errormessage',req.__('Invalid Access')); //TODO- this may need to be enabled. 
+            	    
+            	    if(sails.config.environment=='development'){// 
+        		return autoGenRoute();
+            	    }
+            	    
                     req.flash('errordebug','UserId:'+req.session.user.id+' @Path:'+req.route.path);
                     failResponse();
                         
@@ -143,6 +148,9 @@ module.exports = function(req,res,next) {
 	// }
 	// return failResponse();
 	// }
+	
+	console.log(req.route.path);
+	
 	    authorizeResourcePolicy();
 	// });
     } else {

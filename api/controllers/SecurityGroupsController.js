@@ -137,6 +137,8 @@ module.exports = {
 				console.log('Error Saving Mappings:'+err);
 				return res.json({error:'Error Saving Mappings:'+err},500);
 			    }
+			    
+			    SecurityService.triggerAllUsersPolicyRebuild(); // triggers rebuilding everyones policy. Very aggressive.
 			    res.json({success:true, id:securitygroup.id});
 			});
 		    });
