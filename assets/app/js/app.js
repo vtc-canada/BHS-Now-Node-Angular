@@ -39,9 +39,9 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 	if (message.verb === "reload") {
 	    location.reload();
 	}
-	if(message.verb === "report"&&$rootScope.reportHandler){
-	    $rootScope.reportHandler(message.html);
-	}
+//	if(message.verb === "report"&&$rootScope.reportHandler){
+//	    $rootScope.reportHandler(message.html);
+//	}
     });
     
     
@@ -67,7 +67,7 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 
 app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider, ASSETS) {
 
-    $urlRouterProvider.otherwise('/app/contacts');
+    $urlRouterProvider.otherwise('/app/inventory');
 
     $stateProvider.
     // Main Layout Structure
@@ -83,9 +83,9 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 	    $rootScope.firstname = $user.firstname;
 	}
     }).// Dashboards
-    state('app.orders', {
-	url : '/orders',
-	templateUrl : appHelper.templatePath('orders/index'),
+    state('app.inventory', {
+	url : '/inventory',
+	templateUrl : appHelper.templatePath('inventory/index'),
 	resolve : {
 	    jQueryValidate : function($ocLazyLoad) {
 		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
@@ -111,107 +111,109 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
-    }).state('app.admin-users', {
-	url : '/admin-users',
-	templateUrl : appHelper.templatePath('admin/users'),
-	resolve : {
-	    jQueryValidate : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
-	    },
-	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
-	    },
-	    jqui : function($ocLazyLoad) {
-		return $ocLazyLoad.load({
-		    files : ASSETS.core.jQueryUI
-		});
-	    },
-	    inputmask : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
-	    },
-	    select2 : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
-	    },
-	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
-	    }
-	}
-    }).state('app.admin-securitygroups', {
-	url : '/admin-securitygroups',
-	templateUrl : appHelper.templatePath('admin/securitygroups'),
-	resolve : {
-	    jQueryValidate : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
-	    },
-	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
-	    },
-	    jqui : function($ocLazyLoad) {
-		return $ocLazyLoad.load({
-		    files : ASSETS.core.jQueryUI
-		});
-	    },
-	    inputmask : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
-	    },
-	    select2 : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
-	    },
-	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
-	    }
-	}
-    }).state('app.fxchange', {
-	url : '/fxchange',
-	templateUrl : appHelper.templatePath('fxchange/index'),
-	resolve : {
-	    jQueryValidate : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
-	    },
-	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
-	    },
-	    jqui : function($ocLazyLoad) {
-		return $ocLazyLoad.load({
-		    files : ASSETS.core.jQueryUI
-		});
-	    },
-	    inputmask : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
-	    },
-	    select2 : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
-	    },
-	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
-	    }
-	}
-    }).state('app.dpcodes', {
-	url : '/dpcodes',
-	templateUrl : appHelper.templatePath('dpcodes/index'),
-	resolve : {
-	    jQueryValidate : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
-	    },
-	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
-	    },
-	    jqui : function($ocLazyLoad) {
-		return $ocLazyLoad.load({
-		    files : ASSETS.core.jQueryUI
-		});
-	    },
-	    inputmask : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
-	    },
-	    select2 : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
-	    },
-	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
-	    }
-	}
-    }).state('app.reports', {
+    })
+//    .state('app.admin-users', {
+//	url : '/admin-users',
+//	templateUrl : appHelper.templatePath('admin/users'),
+//	resolve : {
+//	    jQueryValidate : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+//	    },
+//	    datepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+//	    },
+//	    jqui : function($ocLazyLoad) {
+//		return $ocLazyLoad.load({
+//		    files : ASSETS.core.jQueryUI
+//		});
+//	    },
+//	    inputmask : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+//	    },
+//	    select2 : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+//	    },
+//	    deps : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+//	    }
+//	}
+//    }).state('app.admin-securitygroups', {
+//	url : '/admin-securitygroups',
+//	templateUrl : appHelper.templatePath('admin/securitygroups'),
+//	resolve : {
+//	    jQueryValidate : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+//	    },
+//	    datepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+//	    },
+//	    jqui : function($ocLazyLoad) {
+//		return $ocLazyLoad.load({
+//		    files : ASSETS.core.jQueryUI
+//		});
+//	    },
+//	    inputmask : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+//	    },
+//	    select2 : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+//	    },
+//	    deps : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+//	    }
+//	}
+//    }).state('app.fxchange', {
+//	url : '/fxchange',
+//	templateUrl : appHelper.templatePath('fxchange/index'),
+//	resolve : {
+//	    jQueryValidate : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+//	    },
+//	    datepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+//	    },
+//	    jqui : function($ocLazyLoad) {
+//		return $ocLazyLoad.load({
+//		    files : ASSETS.core.jQueryUI
+//		});
+//	    },
+//	    inputmask : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+//	    },
+//	    select2 : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+//	    },
+//	    deps : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+//	    }
+//	}
+//    }).state('app.dpcodes', {
+//	url : '/dpcodes',
+//	templateUrl : appHelper.templatePath('dpcodes/index'),
+//	resolve : {
+//	    jQueryValidate : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+//	    },
+//	    datepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+//	    },
+//	    jqui : function($ocLazyLoad) {
+//		return $ocLazyLoad.load({
+//		    files : ASSETS.core.jQueryUI
+//		});
+//	    },
+//	    inputmask : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+//	    },
+//	    select2 : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+//	    },
+//	    deps : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+//	    }
+//	}
+//    })
+    .state('app.reports', {
 	url : '/reports',
 	templateUrl : appHelper.templatePath('reports/reports'),
 	resolve : {
@@ -236,79 +238,80 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
 	    }
 	}
-    }).state('app.contacts', {
-	url : '/contacts',
-	templateUrl : appHelper.templatePath('contacts/contacts'),
-	resolve : {
-	    jQueryValidate : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
-	    },
-	    datepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
-	    },
-	    daterangepicker : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.core.moment, ASSETS.forms.daterangepicker, ]);
-	    },
-	    jqui : function($ocLazyLoad) {
-		return $ocLazyLoad.load({
-		    files : ASSETS.core.jQueryUI
-		});
-	    },
-	    inputmask : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
-	    },
-	    select2 : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
-	    },
-	    deps : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
-	    }
-	}
-    }).state('app.dashboard-variant-1', {
-	url : '/dashboard-variant-1',
-	templateUrl : appHelper.templatePath('dashboards/variant-1'),
-	resolve : {
-	    resources : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ASSETS.extra.toastr, ]);
-	    },
-	    dxCharts : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
-	    },
-	}
-    }).state('app.dashboard-variant-2', {
-	url : '/dashboard-variant-2',
-	templateUrl : appHelper.templatePath('dashboards/variant-2'),
-	resolve : {
-	    resources : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ]);
-	    },
-	    dxCharts : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
-	    },
-	}
-    }).state('app.dashboard-variant-3', {
-	url : '/dashboard-variant-3',
-	templateUrl : appHelper.templatePath('dashboards/variant-3'),
-	resolve : {
-	    resources : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ASSETS.maps.vectorMaps, ]);
-	    },
-	    dxCharts : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
-	    },
-	}
-    }).state('app.dashboard-variant-4', {
-	url : '/dashboard-variant-4',
-	templateUrl : appHelper.templatePath('dashboards/variant-4'),
-	resolve : {
-	    resources : function($ocLazyLoad) {
-		return $ocLazyLoad.load([ ASSETS.icons.meteocons, ASSETS.maps.vectorMaps, ]);
-	    }
-	}
-    }).
+    })
+//    .state('app.contacts', {
+//	url : '/contacts',
+//	templateUrl : appHelper.templatePath('contacts/contacts'),
+//	resolve : {
+//	    jQueryValidate : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+//	    },
+//	    datepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+//	    },
+//	    daterangepicker : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.core.moment, ASSETS.forms.daterangepicker, ]);
+//	    },
+//	    jqui : function($ocLazyLoad) {
+//		return $ocLazyLoad.load({
+//		    files : ASSETS.core.jQueryUI
+//		});
+//	    },
+//	    inputmask : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+//	    },
+//	    select2 : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+//	    },
+//	    deps : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+//	    }
+//	}
+//    }).state('app.dashboard-variant-1', {
+//	url : '/dashboard-variant-1',
+//	templateUrl : appHelper.templatePath('dashboards/variant-1'),
+//	resolve : {
+//	    resources : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ASSETS.extra.toastr, ]);
+//	    },
+//	    dxCharts : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
+//	    },
+//	}
+//    }).state('app.dashboard-variant-2', {
+//	url : '/dashboard-variant-2',
+//	templateUrl : appHelper.templatePath('dashboards/variant-2'),
+//	resolve : {
+//	    resources : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ]);
+//	    },
+//	    dxCharts : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
+//	    },
+//	}
+//    }).state('app.dashboard-variant-3', {
+//	url : '/dashboard-variant-3',
+//	templateUrl : appHelper.templatePath('dashboards/variant-3'),
+//	resolve : {
+//	    resources : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxGlobalize, ASSETS.maps.vectorMaps, ]);
+//	    },
+//	    dxCharts : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.charts.dxCharts, ]);
+//	    },
+//	}
+//    }).state('app.dashboard-variant-4', {
+//	url : '/dashboard-variant-4',
+//	templateUrl : appHelper.templatePath('dashboards/variant-4'),
+//	resolve : {
+//	    resources : function($ocLazyLoad) {
+//		return $ocLazyLoad.load([ ASSETS.icons.meteocons, ASSETS.maps.vectorMaps, ]);
+//	    }
+//	}
+//    }).
 
     // Update Highlights
-    state('app.update-highlights', {
+    .state('app.update-highlights', {
 	url : '/update-highlights',
 	templateUrl : appHelper.templatePath('update-highlights'),
     }).

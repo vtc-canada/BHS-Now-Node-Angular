@@ -71,7 +71,7 @@ module.exports.session = {
   host: 'localhost',
   port: 27017,
   db: 'sails',
-  collection: 'angular_sessions',
+  collection: 'jotires_sessions',
 
   /***************************************************************************
   *                                                                          *
