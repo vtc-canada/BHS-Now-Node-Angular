@@ -49,7 +49,7 @@ module.exports = {
 		return res.json(err);
 	    }
 	    Database.localSproc('NMS_BASE_GetSecurityGroupResources', [req.body.id], function(err, securitygroupresources) {
-		if (err) {
+		if (err || securitygroup[0].length==0) {
 		    console.log('getSecurityGroupResources Error: ' + err);
 		    return res.json(err);
 		}
@@ -115,7 +115,7 @@ module.exports = {
 			if(typeof(clientresourceset[dbresources[dbgroup].id])=='undefined'){ 
 			    // missing a resource
 			    keys.push(''+securitygroup.resources.length);
-			    securitygroup.resources.push({id:dbresources[dbgroup].id,create:1,read:1,update:1,delete:1});
+			    securitygroup.resources.push({id:dbresources[dbgroup].id,create:0,read:0,update:0,delete:0});
 			}
 		    }
 		    

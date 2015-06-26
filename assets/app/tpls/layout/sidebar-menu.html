@@ -5,9 +5,8 @@
 </script>
 
 <script type="text/ng-template" id="menu-items-tpl">
-	<li ng-repeat="item in menuItems" ng-class="{'opened': item.isOpen, 'active': item.isActive, 'has-sub': item.menuItems.length}">
+	<li ng-repeat="item in menuItems" ng-class="{'opened': item.isOpen, 'active': item.isActive, 'has-sub': item.menuItems.length}" ng-if="checkPolicy(item.link,0,1,0,0)">
 		<a href="#{{item.link}}" ng-include="'menu-item-link-tpl'"></a>
-		
 		<ul ng-if="item.menuItems.length" ng-init="subItems = item.menuItems" ng-include="'menu-items-recursive-tpl'"></ul>
 	</li>
 </script>

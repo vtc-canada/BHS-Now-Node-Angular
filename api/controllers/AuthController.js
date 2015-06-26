@@ -89,6 +89,7 @@ module.exports = {
 		    //    if(typeof(policy[0][0].create)!='undefined'&&policy[0][0].create!=null){
 
 		    req.session.user = foundUser;
+		    delete req.session.user.password;
 
 		    Database.localSproc("NMS_BASE_GetUserPolicies", [ foundUser.id ], function(err, policies) {
 			if (err) {

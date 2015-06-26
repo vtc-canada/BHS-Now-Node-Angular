@@ -478,3 +478,15 @@ div.datepicker {
 	cursor:pointer;
 }
 
+fieldset .input-group{
+	width:100%;
+}
+
+form#securitygroup_form label.control-label{
+	
+ -moz-user-select: text;
+ -khtml-user-select: text;
+ -webkit-user-select: text;
+ -ms-user-select: text;
+ user-select: text;
+}

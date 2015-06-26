@@ -8,3 +8,5 @@ INSERT INTO `now_management_base_fatima`.`resources` (`name`) VALUES ('/app/repo
 INSERT INTO `now_management_base_fatima`.`resources` (`name`) VALUES ('/app/dpcodes');
 INSERT INTO `now_management_base_fatima`.`resources` (`name`) VALUES ('/app/fxchange');
 INSERT INTO `now_management_base_fatima`.`resources` (`name`) VALUES ('/app/admin-users');
+INSERT INTO `now_management_base_fatima`.`resources` (`name`) VALUES ('/app/admin-securitygroups');
+

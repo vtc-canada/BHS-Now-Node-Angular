@@ -21,7 +21,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h3 class="panel-title"><i class="fa-users"></i>&nbsp&nbspUsers</h3>
-			<div class="pull-right isn-panel-pull-right">
+			<div class="pull-right isn-panel-pull-right" ng-show="checkPolicy('/app/admin-users',1,1,1,1)">
 				<div class="btn btn-secondary" ng-click="newUser()">New</div>
 			</div>
 			<!--<div class="pull-right pull-right-stack isn-panel-pull-right">
@@ -128,81 +128,83 @@
 			</div>
 		</form>
 		<form role="form" id="users_form" class="form-horizontal validate" ng-show="selectedUser.id!=null">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title lighter-weight-title">Edit <b><i>{{user.username}}</i></b></h3>
-					
-					<div class="pull-right isn-panel-pull-right">
-						<div class="btn btn-white" ng-click="cancelUser()">Cancel</div>
+			<fieldset ng-disabled="!checkPolicy('/app/admin-users',0,1,1,0)">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title lighter-weight-title">Edit <b><i>{{user.username}}</i></b></h3>
+						
+						<div class="pull-right isn-panel-pull-right" ng-show="checkPolicy('/app/admin-users',0,1,1,0)">
+							<div class="btn btn-white" ng-click="cancelUser()">Cancel</div>
+						</div>
+						<div class="pull-right pull-right-stack isn-panel-pull-right" ng-show="checkPolicy('/app/admin-users',1,1,1,1)">
+							<div type="submit" class="btn btn-danger" ng-click="deleteUser('delete-user-modal','md')">Delete</div>
+						</div>
+						<div class="pull-right pull-right-stack isn-panel-pull-right" ng-show="checkPolicy('/app/admin-users',0,1,1,0)">
+							<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[user_modified == false]" ng-click="saveUser()">Save<span ng-show="user.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+						</div>
+						<div ng-show="user_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+							Changes Pending
+						</div>
 					</div>
-					<div class="pull-right pull-right-stack isn-panel-pull-right">
-						<div type="submit" class="btn btn-danger" ng-click="deleteUser('delete-user-modal','md')">Delete</div>
+					<div class="panel-body">
+						<alert type="success" ng-show="updateUserSuccess" close="updateUserSuccess = false" >
+							<strong>Success!</strong> {{updateUserSuccessMessage}}
+						</alert>
+						<alert type="danger" ng-show="updateUserPasswordMatchError" close="updateUserPasswordMatchError = false" >
+							<strong>Error!</strong> Password Fields Must Match!
+						</alert>
+						<div class="form-group">
+							<label class="col-sm-5 control-label" for="user_first_name">First Name:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" name="user_first_name" ng-model="user.firstname" >
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-5 control-label" for="user_last_name">Last Name:</label>
+	
+							<div class="col-sm-7">
+								<input type="text" class="form-control" name="user_last_name" ng-model="user.lastname" >
+							</div>
+						</div>
+						<div class="form-group" >
+							<label class="col-sm-5 control-label" for="user_password">Password:</label>
+							<div class="col-sm-7">
+								<input type="password" class="form-control" name="user_password" ng-model="user.password" placeholder="Modify Password.">
+							</div>
+						</div>
+						<div class="form-group" ng-show="user.password!=null&&user.password!=''">
+							<label class="col-sm-5 control-label" for="user_confirm_password">Confirm Password:</label>
+							<div class="col-sm-7">
+								<input type="password" class="form-control" name="user_confirm_password" ng-model="user.confirm_password" placeholder="Confirm Password field is required.">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-5 control-label" for="user_email">Email:</label>
+	
+							<div class="col-sm-7">
+								<input type="text" class="form-control" name="user_email" ng-model="user.email"  data-validate="email" placeholder="Email Field">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-5 control-label" for="user_active">active:</label>
+							<div class="col-sm-7">
+								<input type="checkbox" class="form-control iswitch-secondary" name="user_active" ng-checked="user.active" ng-model="user.active">
+							</div>
+						</div>
 					</div>
-					<div class="pull-right pull-right-stack isn-panel-pull-right">
-						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[user_modified == false]" ng-click="saveUser()">Save<span ng-show="user.is_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+					<div class="panel-heading">
+						<h3 class="panel-title">Security Groups</h3>
 					</div>
-					<div ng-show="user_modified" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
-						Changes Pending
+					<div class="panel-body">
+						<div class="form-group" ng-repeat="group in user.groups">
+							<label class="col-sm-5 control-label" for="group_{{group.id}}">{{group.name}}</label>
+							<div class="col-sm-7">
+								<input type="checkbox" id="group_{{group.id}}" class="form-control iswitch-secondary" name="group.member" ng-checked="group.member" ng-model="group.member">
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="panel-body">
-					<alert type="success" ng-show="updateUserSuccess" close="updateUserSuccess = false" >
-						<strong>Success!</strong> {{updateUserSuccessMessage}}
-					</alert>
-					<alert type="danger" ng-show="updateUserPasswordMatchError" close="updateUserPasswordMatchError = false" >
-						<strong>Error!</strong> Password Fields Must Match!
-					</alert>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="user_first_name">First Name:</label>
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="user_first_name" ng-model="user.firstname" >
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="user_last_name">Last Name:</label>
-
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="user_last_name" ng-model="user.lastname" >
-						</div>
-					</div>
-					<div class="form-group" >
-						<label class="col-sm-5 control-label" for="user_password">Password:</label>
-						<div class="col-sm-7">
-							<input type="password" class="form-control" name="user_password" ng-model="user.password" placeholder="Modify Password.">
-						</div>
-					</div>
-					<div class="form-group" ng-show="user.password!=null&&user.password!=''">
-						<label class="col-sm-5 control-label" for="user_confirm_password">Confirm Password:</label>
-						<div class="col-sm-7">
-							<input type="password" class="form-control" name="user_confirm_password" ng-model="user.confirm_password" placeholder="Confirm Password field is required.">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="user_email">Email:</label>
-
-						<div class="col-sm-7">
-							<input type="text" class="form-control" name="user_email" ng-model="user.email"  data-validate="email" placeholder="Email Field">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-5 control-label" for="user_active">active:</label>
-						<div class="col-sm-7">
-							<input type="checkbox" class="form-control iswitch-secondary" name="user_active" ng-checked="user.active" ng-model="user.active">
-						</div>
-					</div>
-				</div>
-				<div class="panel-heading">
-					<h3 class="panel-title">Security Groups</h3>
-				</div>
-				<div class="panel-body">
-					<div class="form-group" ng-repeat="group in user.groups">
-						<label class="col-sm-5 control-label" for="group_{{group.id}}">{{group.name}}</label>
-						<div class="col-sm-7">
-							<input type="checkbox" id="group_{{group.id}}" class="form-control iswitch-secondary" name="group.member" ng-checked="group.member" ng-model="group.member">
-						</div>
-					</div>
-				</div>
-			</div>
+			</fieldset>
 		</form>
 	</div>
 </div>

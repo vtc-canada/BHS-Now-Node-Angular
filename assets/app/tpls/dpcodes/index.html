@@ -24,64 +24,66 @@
 	</div>
 	
 	<div class="modal-body form-horizontal">
-		
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="modal_field">Field:</label>
-
-			<div class="col-sm-8">
-				<select2 class="form-control" ng-options="report.id as report.label for report in dpcodefields" ng-model="modalSelectedCode.FIELD" placeholder="All"></select2>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="modal_code">Code:</label>
-
-			<div class="col-sm-8">
-				<input type="text" class="form-control" id="modal_code" ng-model="modalSelectedCode.CODE" ng-model-options="" placeholder="">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="modal_desc">Description:</label>
-
-			<div class="col-sm-8">
-				<input type="text" class="form-control" id="modal_desc" ng-model="modalSelectedCode.DESC" ng-model-options="" placeholder="">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="modal_category">Category:</label>
-
-			<div class="col-sm-8">
-				<input type="text" class="form-control" id="modal_category" ng-model="modalSelectedCode.CATEGORY" ng-model-options="" placeholder="">
-			</div>
-		</div>
-		<div class="form-group" ng-if="modalSelectedCode.FIELD == 'LITEMN' || modalSelectedCode.FIELD == 'LITEMP' ">
-			<label class="col-sm-4 control-label" for="modal_OTHER">Price:</label>
-
-			<div class="col-sm-8">
-				<input type="number" class="form-control" id="modal_OTHER" ng-model="modalSelectedCode.OTHER"  ng-model-options="" placeholder="">
-			</div>
-		</div>
-		<div class="form-group" ng-if="modalSelectedCode.FIELD == 'COUNTY' ">
-			<label class="col-sm-4 control-label" for="modal_MCAT_LO">NY County Tax Rate:</label>
-
-			<div class="col-sm-8">
-				<input type="number" class="form-control" id="modal_MCAT_LO" ng-model="modalSelectedCode.MCAT_LO"  ng-model-options="" placeholder="">
-			</div>
-		</div>
-		<div class="form-group" ng-if="modalSelectedCode.FIELD == 'SOL' ">
-			<label class="col-sm-4 control-label" for="modal_CAMPTYPE">Campaign:</label>
-
-			<div class="col-sm-8">
-				<select2 class="form-control" ng-options="report.id as report.label for report in campaign_types" ng-model="modalSelectedCode.CAMPTYPE" placeholder=""></select2>
+		<fieldset ng-disabled="!checkPolicy('/app/dpcodes',0,1,1,0)">
+			
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="modal_field">Field:</label>
 	
+				<div class="col-sm-8">
+					<select2 class="form-control" ng-disabled="!checkPolicy('/app/dpcodes',0,1,1,0)" ng-options="report.id as report.label for report in dpcodefields" ng-model="modalSelectedCode.FIELD" placeholder="All"></select2>
+				</div>
 			</div>
-		</div>
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="modal_code">Code:</label>
+	
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="modal_code" ng-model="modalSelectedCode.CODE" ng-model-options="" placeholder="">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="modal_desc">Description:</label>
+	
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="modal_desc" ng-model="modalSelectedCode.DESC" ng-model-options="" placeholder="">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="modal_category">Category:</label>
+	
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="modal_category" ng-model="modalSelectedCode.CATEGORY" ng-model-options="" placeholder="">
+				</div>
+			</div>
+			<div class="form-group" ng-if="modalSelectedCode.FIELD == 'LITEMN' || modalSelectedCode.FIELD == 'LITEMP' ">
+				<label class="col-sm-4 control-label" for="modal_OTHER">Price:</label>
+	
+				<div class="col-sm-8">
+					<input type="number" class="form-control" id="modal_OTHER" ng-model="modalSelectedCode.OTHER"  ng-model-options="" placeholder="">
+				</div>
+			</div>
+			<div class="form-group" ng-if="modalSelectedCode.FIELD == 'COUNTY' ">
+				<label class="col-sm-4 control-label" for="modal_MCAT_LO">NY County Tax Rate:</label>
+	
+				<div class="col-sm-8">
+					<input type="number" class="form-control" id="modal_MCAT_LO" ng-model="modalSelectedCode.MCAT_LO"  ng-model-options="" placeholder="">
+				</div>
+			</div>
+			<div class="form-group" ng-if="modalSelectedCode.FIELD == 'SOL' ">
+				<label class="col-sm-4 control-label" for="modal_CAMPTYPE">Campaign:</label>
+	
+				<div class="col-sm-8">
+					<select2 class="form-control" ng-disabled="!checkPolicy('/app/dpcodes',0,1,1,0)" ng-options="report.id as report.label for report in campaign_types" ng-model="modalSelectedCode.CAMPTYPE" placeholder=""></select2>
 		
+				</div>
+			</div>
+		
+		</fieldset>
 		
 	</div>
 	
 	<div class="modal-footer">
 		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
-		<button type="button" class="btn btn-primary" ng-click="currentModal.dismiss('save');">Save</button>
+		<button type="button" class="btn btn-primary" ng-click="currentModal.dismiss('save');" ng-show="checkPolicy('/app/dpcodes',0,1,1,0)">Save</button>
 	</div>
 </script>
 
@@ -152,13 +154,13 @@
 	        </thead>
 	        <tbody></tbody>
 	    </table>
-		<div class="pull-right">
-			<div class="btn btn-primary" ng-click="addDatatableRow('edit-dpcode-modal','lg')">Add</div>
+		<div class="pull-right" ng-show="checkPolicy('/app/dpcodes',1,1,1,1)">
+			<div class="btn btn-primary" ng-click="addDatatableRow('edit-dpcode-modal','lg')" >Add</div>
 		</div>
 		<div class="pull-right pull-right-stack">
 			<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled()}" ng-click="editDatatableRow('edit-dpcode-modal','lg')">Edit</div>
 		</div>
-		<div class="pull-right pull-right-stack">
+		<div class="pull-right pull-right-stack" ng-show="checkPolicy('/app/dpcodes',1,1,1,1)" >
 			<div class="btn btn-danger" ng-class="{disabled:isDatatableEditDisabled()}" ng-click="deleteDatatableRow('delete-dpcode-modal','md')">Delete</div>
 		</div>
 	</div>

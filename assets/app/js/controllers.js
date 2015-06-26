@@ -4368,7 +4368,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
 
 }).controller(
     'ContactsDatatable',
-    function($scope, $rootScope, $timeout, $sails, $modal, $contact, DTOptionsBuilder, DTColumnBuilder) {
+    function($scope, $rootScope, $timeout, $sails, $modal, $contact, $user, DTOptionsBuilder, DTColumnBuilder) {
 	$scope.exportDisabled = false;
 
 	var vm = this;
@@ -5572,11 +5572,19 @@ angular.module('xenon.controllers', []).controller('ContactSections', function($
     $rootScope.isLightLoginPage = false;
     $rootScope.isLockscreenPage = true;
     $rootScope.isMainPage = false;
-}).controller('MainCtrl', function($preloaded, $scope, $rootScope, $location, $layout, $layoutToggles, $pageLoadingBar, Fullscreen, $contact) {
+}).controller('MainCtrl', function($preloaded, $user, $scope, $rootScope, $location, $layout, $layoutToggles, $pageLoadingBar, Fullscreen, $contact) {
     $rootScope.isLoginPage = false;
     $rootScope.isLightLoginPage = false;
     $rootScope.isLockscreenPage = false;
     $rootScope.isMainPage = true;
+    //$rootScope.policy = $user.policy; // copy in policy for pages to do security off of.
+    
+    $rootScope.checkPolicy = function(policy,create,read,update,destroy){
+	if($user.policy[policy]&&$user.policy[policy].create>=create&&$user.policy[policy].read>=read&&$user.policy[policy].update>=update&&$user.policy[policy].delete>=destroy){
+	    return true;
+	}
+	return false;
+    }
 
     $rootScope.layoutOptions = {
 	horizontalMenu : {
