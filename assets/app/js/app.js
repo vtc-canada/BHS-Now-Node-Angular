@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'ngSanitize', 'rt.select2' ]);
+var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.controllers.inventory', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'ngSanitize', 'rt.select2' ]);
 
 app.filter('orderObjectBy', function() {
     return function(items, field, reverse) {

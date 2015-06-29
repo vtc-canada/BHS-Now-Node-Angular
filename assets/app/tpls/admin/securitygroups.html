@@ -98,7 +98,12 @@
 					</div>
 					
 					<div class="form-group" ng-repeat="resource in group.resources">
-						<label class="col-sm-5 control-label" for="resource_{{resource.id}}">{{resource.name}}</label>
+						
+						
+						<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id!=null" >{{resource.name}}</label>
+						<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id==null" style="padding-top:2px;" ><input type="text" ng-model="resource.name"></label>
+						
+						
 						<div class="col-sm-7">
 							<div class="row">
 								<div class="col-xs-2">
@@ -114,11 +119,16 @@
 									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.delete_{{resource.id}}" ng-checked="resource.delete" ng-model="resource.delete">
 								</div>
 								<div class="col-xs-2" >									
-									<div class="btn btn-danger" ng-click="removeResource" style="margin-bottom: 0px;padding: 2px 12px;">Delete</div>
+									<div class="btn btn-danger" ng-click="removeResource(resource)" style="margin-bottom: 0px;padding: 2px 12px;">Delete</div>
 								</div>
+							</div>
 						</div>
 					</div>
-				</div>
+					<div class="form-group" style="margin-top:20px;">
+						<div class="col-xs-12">
+							<div class="pull-right btn btn-secondary" ng-click="addResourceRoute()">Add Resource</div>
+						</div>
+					</div>
 			</div>
 		</form>
 	</div>

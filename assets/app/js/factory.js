@@ -118,430 +118,432 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    }
 	}
     };
-}).factory('$contact', function($rootScope, $window) {
-
-    var initDtBishop = {
-
-	id : null,
-	enabled : false,
-	CONTPERS : null,
-	FOLLOWUP : null,
-	BISHPRES : null,
-	LETTER1 : null,
-	PHONEC1 : null,
-	LETTER2 : null,
-	VISREF : null,
-	VISITD : null,
-	PERSONV1 : null,
-	PERSONV2 : null,
-	PERSONV3 : null,
-	PERSONV4 : null,
-	FOLUPLET : null,
-	FOLUPVIS : null,
-	REPFILED : null,
-	RESPONSE : null,
-	BISNOTES : null,
-	FILEDYN : null
-    }
-
-    var initDtVols1 = {
-	id : null,
-	enabled : false,
-	VORIGIN : null,
-	VSDATE : null,
-	VCATEG : null,
-	VGRADE01 : null,
-	VGRADE02 : null,
-	VGRADE03 : null,
-	VGRADE04 : null,
-	VGRADE05 : null,
-	VGRADE06 : null,
-	VGRADE07 : null,
-	VGRADE08 : null,
-	VGRADE09 : null,
-	VGRADE10 : null,
-	VGRADE11 : null,
-	VGRADE12 : null,
-	VGRADE13 : null,
-	VGRADE14 : null,
-	VGRADE15 : null,
-	VGRADE16 : null,
-	VGRADE17 : null,
-	VGRADE18 : null,
-	VGRADE19 : null,
-	VGRADE20 : null,
-	VGRADE21 : null,
-	VGRADE22 : null,
-	VGRADE23 : null,
-	VSPECTAL : null
-    };
-
-    var obj = {
-
-	init : function() {  
-	    
-	    this.VOLUNTEER = null;
-	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
-	    this.dtbishop = initDtBishop;
-
-	    this.is_saving = false;
-	    this.is_modified = false; // FALSE
-	    // var self = this;
-	    this.FNAME = '';
-	    this.LNAME = '';
-	    this.GENDER = '';
-	    this.PTITLE = '';
-	    this.SECLN = '';
-	    this.PETSIGN = '';
-	    this.LASTCONT = '';
-	    this.TITLE = null;
-	    this.SAL = '';
-	    this.SUFF = '';
-	    this.NOMAIL = false;
-	    this.CALL = false;
-	    this.ADD = null;
-	    this.CITY = null;
-	    this.ST = null;
-	    this.ZIP = null;
-	    this.COUNTRY = null;
-	    this.COUNTY = null;
-	    this.PHTYPE1 = null;
-	    this.PHTYPE2 = null;
-	    this.PHTYPE3 = null;
-	    this.PHONE = null;
-	    this.PHON2 = null;
-	    this.PHON3 = null;
-	    this.otherAddresses = [];
-	    
-	    // Quick Info
-	    
-	    this.total_donation_amount = null;
-	    this.total_donation_records = null;
-	    this.MAX_AMT = null;
-	    this.MAX_DT = null;
-
-	    // Other Information
-	    this.TYPE = null;
-	    this.SOURCE = null;
-	    this.DIOCESE = null;
-	    this.GROUP = null;
-	    this.FLAGS = null;
-	    this.NM_REASON = null;
-	    this.CFN = null;
-	    this.CFNID = null;
-	    this.PLEDGOR = null;
-	    this.AR = null;
-	    //this.SOLS = null;
-	    this.LANGUAGE = null;
-	    this.ENGLISH = null;
-
-	    this.GIVINTS = null;
-	    this.INCLEV = null;
-	    this.GIFTTYPES = null;
-	    this.PG_AMT = null;
-	    this.OCCUPATION = null;
-	    this.BUSINESS = null;
-	    this.PERM_SOLS = null;
-	    this.VOL_TRADE = null;
-
-	    this.dtmail = [];
-	    this.dpgift = [];
-	    this.dpmisc = [];
-	    this.dpordersummary = [];
-	    this.dpplg = [];
-	    this.dplink = [];
-	    this.dpother = [];
-	    this.dplang = [];
-	    this.dptrans = [];
-
-	    this.dtmajor = [];
-
-	    // ECCLESIASTICAL TAB
-
-	    this.ecc_enabled = false;
-	    this.BIRTHDATE = null;
-	    this.ORDINATION = null;
-	    this.CONSECRATE = null;
-	    this.SAYMASS = null;
-	    this.DECIS = null;
-	    this.RELIGIOUS = null;
-	    this.Q01 = null;
-	    this.Q02 = null;
-	    this.Q03 = null;
-	    this.Q04 = null;
-	    this.Q05 = null;
-	    this.Q06 = null;
-	    this.Q07 = null;
-	    this.Q08 = null;
-	    this.Q09 = null;
-	    this.Q10 = null;
-	    this.Q11 = null;
-	    this.Q12 = null;
-	    this.Q13 = null;
-	    this.Q14 = null;
-	    this.Q15 = null;
-	    this.Q16 = null;
-	    this.Q17 = null;
-	    this.Q18 = null;
-	    this.Q19 = null;
-	    this.Q20 = null;
-	    this.Q21 = null;
-	    this.Q22 = null;
-	    this.Q23 = null;
-	    this.EP020 = null;
-	    this.PPRIEST = null; // false?
-
-	    // Notes
-
-	    this.notes = {
-		layman : [],
-		ecclesiastical : [],
-		volunteer : [],
-		orders : []
-	    };
-
-	    
-	    this.id = null;
-	    return this;
-	},
-
-	addNewDtMajor : function() {
-	    var addNewDtMajor = {
-		id : 'new',
-		tempId : Math.floor((Math.random() * 100000) + 1),
-		TYPE : 'A',
-		ASKAMT : null,
-		PLEDAMT : null,
-		PAIDAMT : null,
-		BALAMT : null,
-		PLEDSCHED : null,
-		GIFTOFF : null,
-		WEALTHID : null,
-		STATUS : null,
-		ANNTRUST : null,
-		INSURANC : null,
-		VISDATE1 : null,
-		VISDATE2 : null,
-		VISDATE3 : null,
-		VISDATE4 : null
-
-	    };
-	    this.dtmajor.push(addNewDtMajor);
-	    return this.dtmajor;
-	},
-	updateElementObject : function(elementType, newObj) {
-	    var self = this;
-	    var elementId = newObj.id;
-	    var elementTempId = newObj.tempId;
-	    newObj.is_modified = true;
-	    if (elementId == 'new') { // could be just new or edited new
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].tempId == elementTempId) {
-
-			angular.forEach(newObj, function(value, key) {
-			    if (key != 'id' && key != 'tempId') { // copy over
-				// all
-				// key/values
-				self[elementType][i][key] = value;
-			    }
-			});
-			return;
-		    }
-		}
-		this[elementType].push(newObj);
-		return;
-	    } else {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].id == elementId) {
-			angular.forEach(newObj, function(value, key) {
-			    if (key != 'id' && key != 'tempId') { // copy over
-				// all
-				// key/values
-				self[elementType][i][key] = value;
-			    }
-			});
-			return;
-		    }
-		}
-	    }
-	},
-	getElementObject : function(elementType, elementId, elementTempId) {
-	    if (elementId == 'new') {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].tempId == elementTempId) {
-			return this[elementType][i];
-		    }
-		}
-	    } else {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].id == elementId) {
-			return this[elementType][i];
-		    }
-		}
-	    }
-	},
-	toggleNote : function(note) {
-	    if (!note.is_deleted) { // wasn't already deleted
-		if (note.id == null) { // was new
-		    for (var i = 0; i < this.notes[note.type].length; i++) {
-			if (this.notes[note.type][i].tempId == note.tempId) {
-			    this.notes[note.type].splice(i, 1);
-			    return this.notes[note.type];
-			}
-		    }
-		} else {
-		    for (var i = 0; i < this.notes[note.type].length; i++) {
-			if (this.notes[note.type][i].id == note.id) {
-			    this.notes[note.type][i].is_deleted = true;
-			    return this.notes[note.type];
-			}
-		    }
-		}
-	    } else { // removes isDeleted
-		for (var i = 0; i < this.notes[note.type].length; i++) {
-		    if (this.notes[note.type][i].id == note.id) {
-			delete this.notes[note.type][i].is_deleted;
-			return this.notes[note.type];
-		    }
-		}
-	    }
-	    return this.notes[note.type]; // return all notes
-	},
-	toggleDeleted : function(elementType, element) {
-	    if (!element.is_deleted) {
-		if (element.id == null || element.id == 'new') {
-		    for (var i = 0; i < this[elementType].length; i++) {
-			if (this[elementType][i].tempId == element.tempId) {
-			    this[elementType].splice(i, 1);
-			    return;
-			}
-		    }
-		} else {
-		    for (var i = 0; i < this[elementType].length; i++) {
-			if (this[elementType][i].id == element.id) {
-			    this[elementType][i].is_deleted = true;
-			    return;
-			}
-		    }
-		}
-	    } else {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].id == element.id) {
-			delete this[elementType][i].is_deleted;
-			return;
-		    }
-		}
-	    }
-	},
-	setElementUndeleted : function(elementType, setId) {
-	    for (var i = 0; i < this[elementType].length; i++) {
-		if (this[elementType][i].id == setId) {
-		    delete this[elementType][i].is_deleted;
-		    return;
-		}
-	    }
-	},
-
-	setElementDeleted : function(elementType, setId, tempId) {
-	    if (setId == 'new') {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].tempId == tempId) {
-			this[elementType].splice(i, 1);
-			return;
-		    }
-		}
-	    } else {
-		for (var i = 0; i < this[elementType].length; i++) {
-		    if (this[elementType][i].id == setId) {
-			this[elementType][i].is_deleted = true;
-			return;
-		    }
-		}
-	    }
-	},
-	/*
-	 * elementFocused : function(elementType, setId, tempId) { if (setId ==
-	 * 'new') { for (var i = 0; i < this[elementType].length; i++) { if
-	 * (this[elementType][i].tempId == tempId) {
-	 * if(this[elementType].focused){ delete this[elementType].focused;
-	 * }else{ this[elementType].focused = true; } return; } } } else { for
-	 * (var i = 0; i < this[elementType].length; i++) { if
-	 * (this[elementType][i].id == setId) { this[elementType][i].is_deleted =
-	 * true; return; } } } },
-	 */
-	addNote : function(noteType) {
-	    this.notes[noteType].push({
-		id : null,
-		tempId : Math.floor((Math.random() * 100000) + 1),
-		user : $rootScope.firstname,
-		DONOR : null,
-		type : noteType,
-		text : null,
-		focused : true,
-		modify_text : ''
-	    });
-	    return this.notes[noteType];
-	},
-
-	addOtherAddress : function() {
-	    var otherAddress = {
-		id : 'new',
-		tempId : Math.floor((Math.random() * 100000) + 1),
-		ADDTYPE : null,
-		PTITLE : null,
-		SECLN : null,
-		ADD : null,
-		CITY : null,
-		ST : null,
-		ZIP : null
-
-	    };
-	    this.otherAddresses.push(otherAddress);
-	    return this.otherAddresses;
-	},
-	set : function(contact) { // wierd routine.. should be abled to just
-	    // directly copy.
-	    var self = this;
-	    angular.forEach(contact, function(value, key) {
-
-		if (typeof (self[key]) != 'undefined') {
-		    self[key] = value;
-		}
-
-	    });
-
-	    if (this.dtvols1 != null) {
-		this.dtvols1.enabled = true;
-	    } else {
-		this.dtvols1 = initDtVols1; // init new one
-	    }
-
-	    if (this.dtbishop != null) {
-		this.dtbishop.enabled = true; // already should come in
-		// enabled
-	    } else {
-		this.dtbishop = initDtBishop; // init new one
-	    }
-
-	    /*self.TITLE = {
-		id : self.TITLE,
-		label : self.TITLE + '.'
-	    };*/
-	    /*
-	     * self.ST = { id : self.ST, label : self.ST };
-	     */
-	    this.is_saving = false;
-	    this.is_deleting = false;
-	    this.is_modified = false; // make unmodified as soon as you set a
-	    // contact.
-	}
-
-    };
-
-    obj.init();
-
-    return obj;
-}).factory('$pageLoadingBar', function($rootScope, $window, $timeout, $contact) {
+})
+//.factory('$contact', function($rootScope, $window) {
+//
+//    var initDtBishop = {
+//
+//	id : null,
+//	enabled : false,
+//	CONTPERS : null,
+//	FOLLOWUP : null,
+//	BISHPRES : null,
+//	LETTER1 : null,
+//	PHONEC1 : null,
+//	LETTER2 : null,
+//	VISREF : null,
+//	VISITD : null,
+//	PERSONV1 : null,
+//	PERSONV2 : null,
+//	PERSONV3 : null,
+//	PERSONV4 : null,
+//	FOLUPLET : null,
+//	FOLUPVIS : null,
+//	REPFILED : null,
+//	RESPONSE : null,
+//	BISNOTES : null,
+//	FILEDYN : null
+//    }
+//
+//    var initDtVols1 = {
+//	id : null,
+//	enabled : false,
+//	VORIGIN : null,
+//	VSDATE : null,
+//	VCATEG : null,
+//	VGRADE01 : null,
+//	VGRADE02 : null,
+//	VGRADE03 : null,
+//	VGRADE04 : null,
+//	VGRADE05 : null,
+//	VGRADE06 : null,
+//	VGRADE07 : null,
+//	VGRADE08 : null,
+//	VGRADE09 : null,
+//	VGRADE10 : null,
+//	VGRADE11 : null,
+//	VGRADE12 : null,
+//	VGRADE13 : null,
+//	VGRADE14 : null,
+//	VGRADE15 : null,
+//	VGRADE16 : null,
+//	VGRADE17 : null,
+//	VGRADE18 : null,
+//	VGRADE19 : null,
+//	VGRADE20 : null,
+//	VGRADE21 : null,
+//	VGRADE22 : null,
+//	VGRADE23 : null,
+//	VSPECTAL : null
+//    };
+//
+//    var obj = {
+//
+//	init : function() {  
+//	    
+//	    this.VOLUNTEER = null;
+//	    this.dtvols1 = initDtVols1; // puts in blank dtvols1
+//	    this.dtbishop = initDtBishop;
+//
+//	    this.is_saving = false;
+//	    this.is_modified = false; // FALSE
+//	    // var self = this;
+//	    this.FNAME = '';
+//	    this.LNAME = '';
+//	    this.GENDER = '';
+//	    this.PTITLE = '';
+//	    this.SECLN = '';
+//	    this.PETSIGN = '';
+//	    this.LASTCONT = '';
+//	    this.TITLE = null;
+//	    this.SAL = '';
+//	    this.SUFF = '';
+//	    this.NOMAIL = false;
+//	    this.CALL = false;
+//	    this.ADD = null;
+//	    this.CITY = null;
+//	    this.ST = null;
+//	    this.ZIP = null;
+//	    this.COUNTRY = null;
+//	    this.COUNTY = null;
+//	    this.PHTYPE1 = null;
+//	    this.PHTYPE2 = null;
+//	    this.PHTYPE3 = null;
+//	    this.PHONE = null;
+//	    this.PHON2 = null;
+//	    this.PHON3 = null;
+//	    this.otherAddresses = [];
+//	    
+//	    // Quick Info
+//	    
+//	    this.total_donation_amount = null;
+//	    this.total_donation_records = null;
+//	    this.MAX_AMT = null;
+//	    this.MAX_DT = null;
+//
+//	    // Other Information
+//	    this.TYPE = null;
+//	    this.SOURCE = null;
+//	    this.DIOCESE = null;
+//	    this.GROUP = null;
+//	    this.FLAGS = null;
+//	    this.NM_REASON = null;
+//	    this.CFN = null;
+//	    this.CFNID = null;
+//	    this.PLEDGOR = null;
+//	    this.AR = null;
+//	    //this.SOLS = null;
+//	    this.LANGUAGE = null;
+//	    this.ENGLISH = null;
+//
+//	    this.GIVINTS = null;
+//	    this.INCLEV = null;
+//	    this.GIFTTYPES = null;
+//	    this.PG_AMT = null;
+//	    this.OCCUPATION = null;
+//	    this.BUSINESS = null;
+//	    this.PERM_SOLS = null;
+//	    this.VOL_TRADE = null;
+//
+//	    this.dtmail = [];
+//	    this.dpgift = [];
+//	    this.dpmisc = [];
+//	    this.dpordersummary = [];
+//	    this.dpplg = [];
+//	    this.dplink = [];
+//	    this.dpother = [];
+//	    this.dplang = [];
+//	    this.dptrans = [];
+//
+//	    this.dtmajor = [];
+//
+//	    // ECCLESIASTICAL TAB
+//
+//	    this.ecc_enabled = false;
+//	    this.BIRTHDATE = null;
+//	    this.ORDINATION = null;
+//	    this.CONSECRATE = null;
+//	    this.SAYMASS = null;
+//	    this.DECIS = null;
+//	    this.RELIGIOUS = null;
+//	    this.Q01 = null;
+//	    this.Q02 = null;
+//	    this.Q03 = null;
+//	    this.Q04 = null;
+//	    this.Q05 = null;
+//	    this.Q06 = null;
+//	    this.Q07 = null;
+//	    this.Q08 = null;
+//	    this.Q09 = null;
+//	    this.Q10 = null;
+//	    this.Q11 = null;
+//	    this.Q12 = null;
+//	    this.Q13 = null;
+//	    this.Q14 = null;
+//	    this.Q15 = null;
+//	    this.Q16 = null;
+//	    this.Q17 = null;
+//	    this.Q18 = null;
+//	    this.Q19 = null;
+//	    this.Q20 = null;
+//	    this.Q21 = null;
+//	    this.Q22 = null;
+//	    this.Q23 = null;
+//	    this.EP020 = null;
+//	    this.PPRIEST = null; // false?
+//
+//	    // Notes
+//
+//	    this.notes = {
+//		layman : [],
+//		ecclesiastical : [],
+//		volunteer : [],
+//		orders : []
+//	    };
+//
+//	    
+//	    this.id = null;
+//	    return this;
+//	},
+//
+//	addNewDtMajor : function() {
+//	    var addNewDtMajor = {
+//		id : 'new',
+//		tempId : Math.floor((Math.random() * 100000) + 1),
+//		TYPE : 'A',
+//		ASKAMT : null,
+//		PLEDAMT : null,
+//		PAIDAMT : null,
+//		BALAMT : null,
+//		PLEDSCHED : null,
+//		GIFTOFF : null,
+//		WEALTHID : null,
+//		STATUS : null,
+//		ANNTRUST : null,
+//		INSURANC : null,
+//		VISDATE1 : null,
+//		VISDATE2 : null,
+//		VISDATE3 : null,
+//		VISDATE4 : null
+//
+//	    };
+//	    this.dtmajor.push(addNewDtMajor);
+//	    return this.dtmajor;
+//	},
+//	updateElementObject : function(elementType, newObj) {
+//	    var self = this;
+//	    var elementId = newObj.id;
+//	    var elementTempId = newObj.tempId;
+//	    newObj.is_modified = true;
+//	    if (elementId == 'new') { // could be just new or edited new
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].tempId == elementTempId) {
+//
+//			angular.forEach(newObj, function(value, key) {
+//			    if (key != 'id' && key != 'tempId') { // copy over
+//				// all
+//				// key/values
+//				self[elementType][i][key] = value;
+//			    }
+//			});
+//			return;
+//		    }
+//		}
+//		this[elementType].push(newObj);
+//		return;
+//	    } else {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].id == elementId) {
+//			angular.forEach(newObj, function(value, key) {
+//			    if (key != 'id' && key != 'tempId') { // copy over
+//				// all
+//				// key/values
+//				self[elementType][i][key] = value;
+//			    }
+//			});
+//			return;
+//		    }
+//		}
+//	    }
+//	},
+//	getElementObject : function(elementType, elementId, elementTempId) {
+//	    if (elementId == 'new') {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].tempId == elementTempId) {
+//			return this[elementType][i];
+//		    }
+//		}
+//	    } else {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].id == elementId) {
+//			return this[elementType][i];
+//		    }
+//		}
+//	    }
+//	},
+//	toggleNote : function(note) {
+//	    if (!note.is_deleted) { // wasn't already deleted
+//		if (note.id == null) { // was new
+//		    for (var i = 0; i < this.notes[note.type].length; i++) {
+//			if (this.notes[note.type][i].tempId == note.tempId) {
+//			    this.notes[note.type].splice(i, 1);
+//			    return this.notes[note.type];
+//			}
+//		    }
+//		} else {
+//		    for (var i = 0; i < this.notes[note.type].length; i++) {
+//			if (this.notes[note.type][i].id == note.id) {
+//			    this.notes[note.type][i].is_deleted = true;
+//			    return this.notes[note.type];
+//			}
+//		    }
+//		}
+//	    } else { // removes isDeleted
+//		for (var i = 0; i < this.notes[note.type].length; i++) {
+//		    if (this.notes[note.type][i].id == note.id) {
+//			delete this.notes[note.type][i].is_deleted;
+//			return this.notes[note.type];
+//		    }
+//		}
+//	    }
+//	    return this.notes[note.type]; // return all notes
+//	},
+//	toggleDeleted : function(elementType, element) {
+//	    if (!element.is_deleted) {
+//		if (element.id == null || element.id == 'new') {
+//		    for (var i = 0; i < this[elementType].length; i++) {
+//			if (this[elementType][i].tempId == element.tempId) {
+//			    this[elementType].splice(i, 1);
+//			    return;
+//			}
+//		    }
+//		} else {
+//		    for (var i = 0; i < this[elementType].length; i++) {
+//			if (this[elementType][i].id == element.id) {
+//			    this[elementType][i].is_deleted = true;
+//			    return;
+//			}
+//		    }
+//		}
+//	    } else {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].id == element.id) {
+//			delete this[elementType][i].is_deleted;
+//			return;
+//		    }
+//		}
+//	    }
+//	},
+//	setElementUndeleted : function(elementType, setId) {
+//	    for (var i = 0; i < this[elementType].length; i++) {
+//		if (this[elementType][i].id == setId) {
+//		    delete this[elementType][i].is_deleted;
+//		    return;
+//		}
+//	    }
+//	},
+//
+//	setElementDeleted : function(elementType, setId, tempId) {
+//	    if (setId == 'new') {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].tempId == tempId) {
+//			this[elementType].splice(i, 1);
+//			return;
+//		    }
+//		}
+//	    } else {
+//		for (var i = 0; i < this[elementType].length; i++) {
+//		    if (this[elementType][i].id == setId) {
+//			this[elementType][i].is_deleted = true;
+//			return;
+//		    }
+//		}
+//	    }
+//	},
+//	/*
+//	 * elementFocused : function(elementType, setId, tempId) { if (setId ==
+//	 * 'new') { for (var i = 0; i < this[elementType].length; i++) { if
+//	 * (this[elementType][i].tempId == tempId) {
+//	 * if(this[elementType].focused){ delete this[elementType].focused;
+//	 * }else{ this[elementType].focused = true; } return; } } } else { for
+//	 * (var i = 0; i < this[elementType].length; i++) { if
+//	 * (this[elementType][i].id == setId) { this[elementType][i].is_deleted =
+//	 * true; return; } } } },
+//	 */
+//	addNote : function(noteType) {
+//	    this.notes[noteType].push({
+//		id : null,
+//		tempId : Math.floor((Math.random() * 100000) + 1),
+//		user : $rootScope.firstname,
+//		DONOR : null,
+//		type : noteType,
+//		text : null,
+//		focused : true,
+//		modify_text : ''
+//	    });
+//	    return this.notes[noteType];
+//	},
+//
+//	addOtherAddress : function() {
+//	    var otherAddress = {
+//		id : 'new',
+//		tempId : Math.floor((Math.random() * 100000) + 1),
+//		ADDTYPE : null,
+//		PTITLE : null,
+//		SECLN : null,
+//		ADD : null,
+//		CITY : null,
+//		ST : null,
+//		ZIP : null
+//
+//	    };
+//	    this.otherAddresses.push(otherAddress);
+//	    return this.otherAddresses;
+//	},
+//	set : function(contact) { // wierd routine.. should be abled to just
+//	    // directly copy.
+//	    var self = this;
+//	    angular.forEach(contact, function(value, key) {
+//
+//		if (typeof (self[key]) != 'undefined') {
+//		    self[key] = value;
+//		}
+//
+//	    });
+//
+//	    if (this.dtvols1 != null) {
+//		this.dtvols1.enabled = true;
+//	    } else {
+//		this.dtvols1 = initDtVols1; // init new one
+//	    }
+//
+//	    if (this.dtbishop != null) {
+//		this.dtbishop.enabled = true; // already should come in
+//		// enabled
+//	    } else {
+//		this.dtbishop = initDtBishop; // init new one
+//	    }
+//
+//	    /*self.TITLE = {
+//		id : self.TITLE,
+//		label : self.TITLE + '.'
+//	    };*/
+//	    /*
+//	     * self.ST = { id : self.ST, label : self.ST };
+//	     */
+//	    this.is_saving = false;
+//	    this.is_deleting = false;
+//	    this.is_modified = false; // make unmodified as soon as you set a
+//	    // contact.
+//	}
+//
+//    };
+//
+//    obj.init();
+//
+//    return obj;
+//})
+.factory('$pageLoadingBar', function($rootScope, $window, $timeout){//}, $contact) {
 
     return {
 
@@ -554,33 +556,31 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    $window.hideLoadingBar = this.hideLoadingBar;
 	    
 	    $window.onbeforeunload = function (e) {
-		if ($contact.is_modified) {
-		    return unloadMessage;
-		}else{
+//		if ($contact.is_modified) {
+//		    return unloadMessage;
+//		}else{
 		    return undefined;
-		}
+//		}
 	    };
 	    
-	    $rootScope.user_modified = false;
+//	    $rootScope.user_modified = false;
 
 	    $rootScope.$on('$stateChangeStart', function(event) {
 
 
-		if ($contact.is_modified||$rootScope.user_modified) {
-		    if (confirm(unsavedMessage)) {
-
-			//return;
-		    //} else {
-			$contact.is_modified = false;
-			$rootScope.user_modified = false;
-		    }
-		}
+//		if ($contact.is_modified||$rootScope.user_modified) {
+//		    if (confirm(unsavedMessage)) {
+//
+//			$contact.is_modified = false;
+//			$rootScope.user_modified = false;
+//		    }
+//		}
 
 		// Already checked and possibly changed contact.is_modified to true.
 
-		if ($contact.is_modified||$rootScope.user_modified) {  // Block page change if necessary
-		    return event.preventDefault();
-		}
+//		if ($contact.is_modified||$rootScope.user_modified) {  // Block page change if necessary
+//		    return event.preventDefault();
+//		}
 		pl.showLoadingBar({ // continue switching pages
 		    pct : 95,
 		    delay : 1.1,
