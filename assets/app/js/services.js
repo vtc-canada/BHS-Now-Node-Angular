@@ -89,9 +89,9 @@ angular.module('xenon.services', []).
 //		    	var reports 	 = this.addItem('Reports', '/app/reports', 'fa-file-o');
 //		    	var codeconfig 	 = this.addItem('Code Configuration', '/app/dpcodes', 'fa-list-ol');
 //		    	var fxchange	 = this.addItem('Foreign Exchange', '/app/fxchange', 'fa-exchange');
-//		    	
-//		    	var useraccounts = this.addItem('User Accounts', '/app/admin-users', 'fa-book');
-//		    	var securitygroups = this.addItem('Security Groups', '/app/admin-securitygroups', 'fa-book');
+		    	
+		    	var useraccounts = this.addItem('User Accounts', '/app/admin-users', 'fa-book');
+		    	var securitygroups = this.addItem('Security Groups', '/app/admin-securitygroups', 'fa-book');
 		    	
 		    	if(false){
         			var dashboard    = this.addItem('Dashboard', 		'/app/dashboard', 			'linecons-cog');

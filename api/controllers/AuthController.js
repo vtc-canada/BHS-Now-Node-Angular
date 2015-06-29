@@ -9,7 +9,7 @@ module.exports = {
     index : function(req, res) {
 	if (req.session && req.session.user && req.session.user.active) {
 	    res.writeHead(302, {
-		'Location' : '/donortracker'
+		'Location' : '/inventorymanagementstudio'
 	    });
 	    res.end();
 	    return;
@@ -101,6 +101,10 @@ module.exports = {
 			for (var i = 0; i < policies.length; i++) {
 			    req.session.user.policy[policies[i].name] = policies[i];
 			}
+
+	            	if(req.session.user.username=='admin'&&sails.config.environment=='development'){
+	            	    req.session.user.policy['development'] = {create:1,read:1,update:1,delete:1};
+	            	}
 			//req.session.user.policy['default'] = policy[0][0];
 			Database.localSproc('NMS_BASE_UpdateUserActiveLoginAttempts', [ foundUser.id, 1, 0 ], function(err, result) {
 			    if (err)

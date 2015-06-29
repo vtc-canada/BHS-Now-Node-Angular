@@ -31,7 +31,7 @@ module.exports.policies = {
         '*':'RoutePolicy',
         'index':true
     },
-    'donortracker':'RoutePolicy',
+    'inventorymanagementstudio':'RoutePolicy',
     'auth':{
         '*':true
     },
@@ -39,17 +39,19 @@ module.exports.policies = {
         '*':'RoutePolicy',
         'view':true
     },
-    'contacts':{
-	'*':'RoutePolicy',
-	'view_order':true,
-	'view_contact':true
-    },
-    'orders':{
-        '*':'RoutePolicy',
-    },
-    'datamaintenance':{
-	'*':true
-    }
+    
+//    
+//    'contacts':{
+//	'*':'RoutePolicy',
+//	'view_order':true,
+//	'view_contact':true
+//    },
+//    'orders':{
+//        '*':'RoutePolicy',
+//    },
+//    'datamaintenance':{
+//	'*':true
+//    }
     
     
   // '*': true,

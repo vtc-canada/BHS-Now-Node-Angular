@@ -37,6 +37,9 @@ module.exports = function(req,res,next) {
 		            	for(var i =0;i<policies.length;i++){
 		            	    req.session.user.policy[policies[i].name]=policies[i];
 		            	}
+		            	if(req.session.user.username=='admin'&&sails.config.environment=='development'){
+		            	    req.session.user.policy['development'] = {create:1,read:1,update:1,delete:1};
+		            	}
 		            	cb(null);
 		            }else{
 		        	console.log('No User Policies!@'+req.session.user.id+':'+path);

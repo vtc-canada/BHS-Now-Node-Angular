@@ -11,6 +11,6 @@ module.exports.autogenerate = {
 	password : '.Glasgow931'
     },
     securitygroups:['Administrator'],
-    resources : ['default']
+    resources : ['default','/app/admin-users','/app/admin-securitygroups']
 
 };
