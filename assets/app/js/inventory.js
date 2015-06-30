@@ -873,11 +873,12 @@ angular.module('xenon.controllers.inventory', [])
 	vm.rowClicked = rowClicked;
 	vm.dtOptions = DTOptionsBuilder.newOptions().withOption('ajax', {
 	    dataSrc : 'data',
-	    url : '/inventory/search',
+	    url : '/inventory/getall',//search',
 	    type : 'POST'
 	})
 	// .withDataProp('data')
-	.withOption('serverSide', true).withOption('processing', true).withOption('fnServerParams', function(aoData) {
+	//.withOption('serverSide', true).withOption('processing', true)
+	.withOption('fnServerParams', function(aoData) {
 	    aoData.inventory = $rootScope.inventory_search;
 	    $timeout(function() { // Whenever the table searches, it clears
 		// the selected
@@ -902,7 +903,7 @@ angular.module('xenon.controllers.inventory', [])
 		$(nRow).addClass('selected');
 	    }
 	    return nRow;
-	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"l>sf>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
 	// l length
 	// r processing
 	// f filtering

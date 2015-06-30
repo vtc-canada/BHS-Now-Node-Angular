@@ -97,32 +97,37 @@
 						</div>
 					</div>
 					
-					<div class="form-group" ng-repeat="resource in group.resources">
+					<div class="form-group" ng-repeat="resource in group.resources" ng-class="{ 'is_deleted':resource.is_deleted == true}" >
+						<fieldset >
 						
-						
-						<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id!=null" >{{resource.name}}</label>
-						<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id==null" style="padding-top:2px;" ><input type="text" ng-model="resource.name"></label>
-						
-						
-						<div class="col-sm-7">
-							<div class="row">
-								<div class="col-xs-2">
-									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.create_{{resource.id}}" ng-checked="resource.create" ng-model="resource.create">
-								</div>
-								<div class="col-xs-2">
-									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.read_{{resource.id}}" ng-checked="resource.read" ng-model="resource.read">
-								</div>
-								<div class="col-xs-2">
-									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.update_{{resource.id}}" ng-checked="resource.update" ng-model="resource.update">
-								</div>
-								<div class="col-xs-2">
-									<input type="checkbox" id="resource_{{resource.id}}" class="form-control iswitch-secondary security-checkbox" name="resource.delete_{{resource.id}}" ng-checked="resource.delete" ng-model="resource.delete">
-								</div>
-								<div class="col-xs-2" >									
-									<div class="btn btn-danger" ng-click="removeResource(resource)" style="margin-bottom: 0px;padding: 2px 12px;">Delete</div>
+							<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id!=null" >{{resource.name}}</label>
+							
+							<label class="col-sm-5 control-label" for="resource_{{resource.id}}" ng-if="resource.id==null" style="padding-top:2px;" ><input type="text" ng-model="resource.name"></label>
+							
+							
+							<div class="col-sm-7">
+								<div class="row"  >
+									<div class="col-xs-2">
+										<input type="checkbox" id="resource_{{resource.id}}" ng-disabled="resource.is_deleted" class="form-control iswitch-secondary security-checkbox" name="resource.create_{{resource.id}}" ng-checked="resource.create" ng-model="resource.create">
+									</div>
+									<div class="col-xs-2">
+										<input type="checkbox" id="resource_{{resource.id}}" ng-disabled="resource.is_deleted" class="form-control iswitch-secondary security-checkbox" name="resource.read_{{resource.id}}" ng-checked="resource.read" ng-model="resource.read">
+									</div>
+									<div class="col-xs-2">
+										<input type="checkbox" id="resource_{{resource.id}}" ng-disabled="resource.is_deleted" class="form-control iswitch-secondary security-checkbox" name="resource.update_{{resource.id}}" ng-checked="resource.update" ng-model="resource.update">
+									</div>
+									<div class="col-xs-2">
+										<input type="checkbox" id="resource_{{resource.id}}" ng-disabled="resource.is_deleted" class="form-control iswitch-secondary security-checkbox" name="resource.delete_{{resource.id}}" ng-checked="resource.delete" ng-model="resource.delete">
+									</div>
+									<div class="col-xs-2" ng-hide="resource.is_deleted" >									
+										<div class="btn btn-danger" ng-click="removeResource(resource)" style="margin-bottom: 0px;padding: 2px 12px;">Delete</div>
+									</div>
+									<div class="col-xs-2" ng-show="resource.is_deleted" >									
+										<div class="btn btn-orange" ng-click="restoreResource(resource)" style="margin-bottom: 0px;padding: 2px 12px;">Restore</div>
+									</div>
 								</div>
 							</div>
-						</div>
+						</fieldset>
 					</div>
 					<div class="form-group" style="margin-top:20px;">
 						<div class="col-xs-12">

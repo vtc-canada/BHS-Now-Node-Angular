@@ -14,7 +14,18 @@ module.exports = {
 	    }
 	});
     },
-    
+    getall : function(req,res){
+	Database.knex
+	    .raw('SELECT dpordersummary.id, dpordersummary.FUNDS, dpcodes.DESC AS `SHIPFROM` ,  DATE_FORMAT(SHIPDATE,"%Y-%m-%d") AS `SHIPDATE`,  DATE_FORMAT(DATE,"%Y-%m-%d") AS `DATE`, IF (dpordersummary.order_type = 1,"Sale",IF(dpordersummary.order_type = 2,"Free Gift",dpordersummary.order_type)) AS `order_type`, FORMAT(dpordersummary.GTOTAL,2) AS "GTOTAL" FROM ( SELECT dpordersummary.id FROM dpordersummary) `dpIds` LEFT JOIN dpordersummary ON `dpIds`.`id` = `dpordersummary`.`id` LEFT JOIN dpcodes ON (dpcodes.FIELD = "SHIPFROM" AND dpcodes.CODE = dpordersummary.SHIPFROM)'
+	+'LIMIT 5000').exec(function(err, response) {
+	    if (err)
+		    return console.log(err.toString());
+
+			return res.json({
+			    "data" : response[0]
+			});
+	});
+    },
     search : function(req, res) {
 	var mysql = require('mysql');
 	var searchmode = (req.body.columns && req.body.inventory);
