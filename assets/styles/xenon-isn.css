@@ -268,6 +268,12 @@ table.dataTable tbody tr{
 	height:77px;
 }
 
+form#securitygroup_form div.is_deleted label.control-label {
+	text-decoration:line-through; 
+}
+
+
+
 table.table-striped>tbody>tr.is_deleted:not(.focused){
 	text-decoration:line-through; 
 	background:#FFE7E7;  /*pink */
