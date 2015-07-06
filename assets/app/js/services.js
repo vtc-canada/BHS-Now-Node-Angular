@@ -84,6 +84,7 @@ angular.module('xenon.services', []).
 		this.prepareSidebarMenu = function()
 		{
 		    	var inventory 	 = this.addItem('Inventory', '/app/inventory', 'fa-book');
+		    	var materials 	 = this.addItem('Materials', '/app/materials', 'fa-book');
 //		    	var contacts 	 = this.addItem('Contacts', '/app/contacts', 'fa-users');
 //		    	var orders 	 = this.addItem('Orders', '/app/orders', 'fa-list-alt');
 //		    	var reports 	 = this.addItem('Reports', '/app/reports', 'fa-file-o');

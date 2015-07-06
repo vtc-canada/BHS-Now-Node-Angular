@@ -1,10 +1,13 @@
-DROP PROCEDURE if EXISTS `INV_DeleteMatBrand` ;
+
+DROP procedure IF EXISTS `INV_DeleteMatCategory`;
+
 DELIMITER $$
-CREATE PROCEDURE  `INV_DeleteMatBrand` (IN brandID INT) 
+CREATE PROCEDURE `INV_DeleteMatCategory` (IN categoryID INT)
 BEGIN
-		UPDATE inv_cfg_mat_brands 
+
+		UPDATE inv_cfg_mat_category 
 		SET	is_deleted = 1
-		WHERE  id = brandID;
-		
-END $$
+		WHERE  id = categoryID;
+END$$
+
 DELIMITER ;

@@ -335,6 +335,10 @@ table.dataTable{
 	float:right;
 }
 
+.dataTables_wrapper .dataTables_filter {
+  float: left;
+}
+
 .dataTables_length select{
 	display: inline-block;
 	width: auto;
