@@ -1089,6 +1089,7 @@ angular.module('xenon.controllers.inventory', [])
 	    }
 	    $timeout(function() {
 		$rootScope.selectedLot = angular.copy(aData);
+		$rootScope.selectedLot.price = isNaN(parseFloat($rootScope.selectedLot.price))?0:parseFloat($rootScope.selectedLot.price);
 		$rootScope.selectedLotChanged = true;
 		$rootScope.changes_pending = false;
 		$scope.inventoryDatatable.dataTable.api().draw(false);
