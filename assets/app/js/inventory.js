@@ -963,7 +963,7 @@ angular.module('xenon.controllers.inventory', [])
 	// i info
 	// p pagination
 	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
-	                 DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'),
+	                 DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(), DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'),
 	    DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall'), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
 		return '$' + $filter('number')(data, 2);
 	    }), DTColumnBuilder.newColumn('date_added').withTitle('Date Added'), DTColumnBuilder.newColumn('user_name').withTitle('Username'), DTColumnBuilder.newColumn('notes').withTitle('Notes'), ];
@@ -988,7 +988,7 @@ angular.module('xenon.controllers.inventory', [])
 			if ($scope.inventory_search.id != '' && data[$scope.column_index['id']] != $scope.inventory_search.id) {
 			    return false;
 			}
-		    } else if (sfield == 'brand' || sfield == 'type') {
+		    } else if (sfield == 'brand' || sfield == 'type' || sfield == 'uom') {
 			if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(parseInt(data[$scope.column_index[sfield + 'ID']])) == -1) {
 			    return false;
 			}
@@ -1244,6 +1244,13 @@ angular.module('xenon.controllers.inventory', [])
 		    $scope.dropdowns.brands.push({
 			id : data.brands[i].id,
 			label : data.brands[i].brand
+		    });
+		}
+		$scope.dropdowns.uoms = [];
+		for (var i = 0; i < data.uoms.length; i++) {
+		    $scope.dropdowns.uoms.push({
+			id : data.uoms[i].id,
+			label : data.uoms[i].uom
 		    });
 		}
 

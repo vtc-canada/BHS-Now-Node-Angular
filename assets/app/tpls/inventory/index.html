@@ -116,7 +116,7 @@
 							<label class="col-sm-2 control-label" for="inventory_search.uom">Unit of Measurement</label>
 	
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inventory_search.uom" ng-model="inventory_search.uom" ng-model-options="" placeholder="Unit of Measurement">
+								<select2 class="form-control"  id="inventory_search.uom" name="inventory_search.uom" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="inventory_search.uom" placeholder="Unit Of Measurement" multiple></select2>
 							</div>
 						</div>
 						<div class="form-group">
@@ -265,6 +265,7 @@
 			<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 		        <thead>
 		        	<tr>
+						<th ></th>
 						<th ></th>
 						<th ></th>
 						<th ></th>

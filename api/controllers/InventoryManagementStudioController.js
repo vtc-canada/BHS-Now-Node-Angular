@@ -22,6 +22,13 @@ module.exports = {
 			return callback(err);
 		    callback(null,result[0]);
 		});
+	    },
+	    uoms : function(callback) {
+		Database.dataSproc('INV_GetUoms',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
 	    }
 	}, function(err, results) {
 	    if (err)
