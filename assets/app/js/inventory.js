@@ -1068,8 +1068,8 @@ angular.module('xenon.controllers.inventory', [])
 	 */
 
 	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	     var unsavedMessage = 'You have unsaved changes pending. Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
-	    
+	    var unsavedMessage = 'You have unsaved changes pending. Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
+
 	    if ($rootScope.changes_pending) {// $contact.is_modified) {
 		if (!confirm(unsavedMessage)) {
 		    // $contact.is_modified = false;
@@ -1089,7 +1089,7 @@ angular.module('xenon.controllers.inventory', [])
 	    }
 	    $timeout(function() {
 		$rootScope.selectedLot = angular.copy(aData);
-		$rootScope.selectedLot.price = isNaN(parseFloat($rootScope.selectedLot.price))?0:parseFloat($rootScope.selectedLot.price);
+		$rootScope.selectedLot.price = isNaN(parseFloat($rootScope.selectedLot.price)) ? 0 : parseFloat($rootScope.selectedLot.price);
 		$rootScope.selectedLotChanged = true;
 		$rootScope.changes_pending = false;
 		$scope.inventoryDatatable.dataTable.api().draw(false);
@@ -1227,5 +1227,42 @@ angular.module('xenon.controllers.inventory', [])
 	    // });
 	    // }
 	    // });
-	}
+
+	};
+
+	(function() {
+	    $sails.get('/inventorymanagementstudio/getinventoryattributes').success(function(data) {
+
+		var data = data.result;
+
+		$scope.dropdowns.brands = [];
+		for (var i = 0; i < data.brands.length; i++) {
+		    $scope.dropdowns.brands.push({
+			id : data.brands[i].brand,
+			label : data.brands[i].brand
+		    });
+		}
+
+	    }).error(function(data) {
+		alert('err!' + data.toString());
+	    });
+	})();
+
+	$scope.$watch('inventory_search.brand', function(newValue, oldValue) {
+	    if (!angular.equals(newValue, oldValue)) {
+		$sails.post('/inventory/get-types-in-brands', newValue).success(function(data) {
+		    if (data.success) {
+			var types = data.data;
+			$scope.dropdowns.types = [];
+			for (var i = 0; i < types.length; i++) {
+			    $scope.dropdowns.brands.push({
+				id : types[i].type,
+				label : types[i].type
+			    });
+			}
+		    }
+		});
+	    }
+	});
+
     });

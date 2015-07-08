@@ -94,14 +94,15 @@
 							<label class="col-sm-2 control-label" for="inventory_search.brand">Brand</label>
 	
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inventory_search.brand" ng-model="inventory_search.brand" ng-model-options="" placeholder="Brand">
+								<select2 class="form-control"  id="inventory_search.brand" name="inventory_search.brand" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="inventory_search.brand" placeholder="Brands" multiple></select2>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="inventory_search.type">Type</label>
 	
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inventory_search.type" ng-model="inventory_search.type" ng-model-options="" placeholder="Type">
+								<select2 class="form-control"  id="inventory_search.type" name="inventory_search.type" ng-options="title.id as title.label for title in dropdowns.types" ng-model="inventory_search.type" placeholder="Types" multiple></select2>
+
 							</div>
 						</div>
 						<div class="form-group">

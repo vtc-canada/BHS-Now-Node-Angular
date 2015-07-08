@@ -23,7 +23,17 @@ module.exports = {
 		"data" : response
 	    });
 	});
+    },
+    'get-types-in-brands' : function(req,res){
+	Database.dataSproc('INV_GetMatTypesInBrands',[req.body.brands||null],function(err,result){
+	    if (err)
+		return callback(err);
+	    res.json({success:"success",data:result[0]});
+	})
     }
+    
+    
+    
 //    ,
 //    search : function(req, res) {
 //	var mysql = require('mysql');
