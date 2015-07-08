@@ -34,6 +34,13 @@ module.exports = {
 		return callback(err);
 	    res.json({success:"success",data:result[0]});
 	})
+    },
+    'get-types-by-brand' : function(req,res){
+	Database.dataSproc('INV_GetMatTypesByBrand',[req.body.brand||null],function(err,result){
+	    if (err)
+		return callback(err);
+	    res.json({success:"success",data:result[0]});
+	})
     }
     
     

@@ -1279,5 +1279,33 @@ angular.module('xenon.controllers.inventory', [])
 		});
 	    }
 	});
+	
+	$scope.$watch('selectedLot.brandID', function(newValue, oldValue) {
+	    if (!angular.equals(newValue, oldValue)) {
+		$sails.post('/inventory/get-types-by-brand', {
+		    brand : newValue
+		}).success(function(data) {
+		    if (data.success) {
+			$timeout(function() {
+			    var hasType = false;
+			    var types = data.data;
+			    $scope.dropdowns.form_types = [];
+			    for (var i = 0; i < types.length; i++) {
+				$scope.dropdowns.form_types.push({
+				    id : types[i].id,
+				    label : types[i].type
+				});
+				if(types[i].id==$rootScope.selectedLot.typeID){
+				    hasType = true;
+				}
+			    }
+			    if(!hasType){ // then clear out the bad value
+				$rootScope.selectedLot.typeID = null;
+			    }
+			}, 0);
+		    }
+		});
+	    }
+	});
 
     });
