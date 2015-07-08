@@ -159,6 +159,24 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    
+
+			    toastr.success('Category <b>' + $rootScope.currentModal.category + '</b> was created successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
+			    
 			    $scope.selectedCategory = null;
 			    $scope.resetCategoriesPageNumber();
 			    $scope.updateCategoriesDataTable();
@@ -196,6 +214,21 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Category <b>' + $rootScope.currentModal.category + '</b> was updated successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
 			    $scope.selectedCategory.category = $rootScope.currentModal.category;  // triggers change on watching 'selectedBrand'  Types datatable
 			    // $scope.resetCategorysPageNumber();
 			    $scope.updateCategoriesDataTable();
@@ -214,7 +247,7 @@ angular.module('xenon.controllers.materials', [])
 	$rootScope.modalPopup({
 	    title : 'Confirm Delete',
 	    size : 'sm',
-	    message : 'Are you sure you want to delete <b>' + $scope.selectedCategory.category + '</b> and all of it\'s Types?',
+	    message : 'Are you sure you want to delete category <b>' + $scope.selectedCategory.category + '</b>?',
 	    buttons : [ {
 		name : 'Cancel',
 		class : 'btn-white',
@@ -236,6 +269,21 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Category <b>' + $scope.selectedCategory.category + '</b> was deleted successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
 			    $scope.selectedCategory = null;
 			    // $scope.resetCategorysPageNumber();
 			    $scope.updateCategoriesDataTable();
@@ -477,6 +525,22 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Brand <b>' + $rootScope.currentModal.brand + '</b> was created successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
+			    
 			    $scope.selectedBrand = null;
 			    $scope.resetBrandsPageNumber();
 			    $scope.updateBrandsDataTable();
@@ -514,6 +578,21 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Brand <b>' + $rootScope.currentModal.brand + '</b> was updated successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
 			    $scope.selectedBrand.brand = $rootScope.currentModal.brand;  // triggers change on watching 'selectedBrand'  Types datatable
 			    // $scope.resetBrandsPageNumber();
 			    $scope.updateBrandsDataTable();
@@ -532,7 +611,7 @@ angular.module('xenon.controllers.materials', [])
 	$rootScope.modalPopup({
 	    title : 'Confirm Delete',
 	    size : 'sm',
-	    message : 'Are you sure you want to delete <b>' + $scope.selectedBrand.brand + '</b> and all of it\'s Types?',
+	    message : 'Are you sure you want to delete brand <b>' + $scope.selectedBrand.brand + '</b>?',
 	    buttons : [ {
 		name : 'Cancel',
 		class : 'btn-white',
@@ -554,6 +633,21 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Brand <b>' + $scope.selectedBrand.brand + '</b> was deleted successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
 			    $scope.selectedBrand = null;
 			    // $scope.resetBrandsPageNumber();
 			    $scope.updateBrandsDataTable();
@@ -684,6 +778,22 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Type <b>' + $rootScope.currentModal.type + '</b> was created successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
+			    
 			    $scope.selectedType = null;
 			    $scope.resetTypesPageNumber();
 			    $scope.updateTypesDataTable();
@@ -721,6 +831,22 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Type <b>' + $rootScope.currentModal.type + '</b> was updated successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
+			    
 			    $scope.selectedType.type = $rootScope.currentModal.type;
 			    // $scope.resetTypesPageNumber();
 			    $scope.updateTypesDataTable();
@@ -761,6 +887,21 @@ angular.module('xenon.controllers.materials', [])
 		    }
 		    if (data.success) {
 			$timeout(function() {
+			    toastr.success('Type <b>' + $scope.selectedType.type + '</b> was deleted successfully.', 'Success', {
+				  "closeButton": true,
+				  "debug": false,
+				  "newestOnTop": false,
+				  "progressBar": false,
+				  "positionClass": "toast-top-right",
+				  "preventDuplicates": false,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"});
 			    $scope.selectedType = null;
 			    // $scope.resetTypesPageNumber();
 			    $scope.updateTypesDataTable();

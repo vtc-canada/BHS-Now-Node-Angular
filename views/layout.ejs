@@ -111,6 +111,7 @@
 	  angular.module('preloaded', [])
 	  .constant('$user', <%- JSON.stringify(req.session.user) %>)
 	  .constant('$preloaded', <%- JSON.stringify(preloaded) %>)
+	  .constant('$dropdowns', <%- JSON.stringify(dropdowns) %>)
 	  .constant('$reports', <%- JSON.stringify(reports['/reports']) %>)
 	  .constant('$reportselects', <%- JSON.stringify(reportselects) %>)
 	</script>

@@ -556,31 +556,31 @@ angular.module('xenon.factory', []).factory('Utility', function($rootScope, $win
 	    $window.hideLoadingBar = this.hideLoadingBar;
 	    
 	    $window.onbeforeunload = function (e) {
-//		if ($contact.is_modified) {
-//		    return unloadMessage;
-//		}else{
+		if ($rootScope.changes_pending) {
+		    return unloadMessage;
+		}else{
 		    return undefined;
-//		}
+		}
 	    };
 	    
-//	    $rootScope.user_modified = false;
+	    $rootScope.user_modified = false;
 
 	    $rootScope.$on('$stateChangeStart', function(event) {
 
 
-//		if ($contact.is_modified||$rootScope.user_modified) {
-//		    if (confirm(unsavedMessage)) {
-//
-//			$contact.is_modified = false;
-//			$rootScope.user_modified = false;
-//		    }
-//		}
+		if ($rootScope.changes_pending||$rootScope.user_modified) {
+		    if (confirm(unsavedMessage)) {
+
+			$rootScope.changes_pending = false;
+			$rootScope.user_modified = false;
+		    }
+		}
 
 		// Already checked and possibly changed contact.is_modified to true.
 
-//		if ($contact.is_modified||$rootScope.user_modified) {  // Block page change if necessary
-//		    return event.preventDefault();
-//		}
+		if ($rootScope.changes_pending||$rootScope.user_modified) {  // Block page change if necessary
+		    return event.preventDefault();
+		}
 		pl.showLoadingBar({ // continue switching pages
 		    pct : 95,
 		    delay : 1.1,
