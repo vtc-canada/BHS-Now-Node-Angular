@@ -27,7 +27,7 @@ module.exports = {
     'get-types-in-brands' : function(req,res){
 	var searchterm = null;
 	if(req.body.brands instanceof Array &&req.body.brands.length>0){
-	    searchterm = "'" + req.body.brands.join(',') + "'";
+	    searchterm = req.body.brands.join(',');
 	}
 	Database.dataSproc('INV_GetMatTypesInBrands',[searchterm],function(err,result){
 	    if (err)
