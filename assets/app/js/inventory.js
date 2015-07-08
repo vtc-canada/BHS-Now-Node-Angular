@@ -1250,7 +1250,7 @@ angular.module('xenon.controllers.inventory', [])
 
 	$scope.$watch('inventory_search.brand', function(newValue, oldValue) {
 	    if (!angular.equals(newValue, oldValue)) {
-		$sails.post('/inventory/get-types-in-brands', newValue).success(function(data) {
+		$sails.post('/inventory/get-types-in-brands', {brands: newValue}).success(function(data) {
 		    if (data.success) {
 			var types = data.data;
 			$scope.dropdowns.types = [];
