@@ -905,7 +905,8 @@ angular.module('xenon.controllers.inventory', [])
 	    price_MAX : '',
 	    date_added_MIN : null,
 	    date_added_MAX : null,
-	    user_name : ''
+	    user_name : '',
+	    notes : ''
 	};
 	$scope.inventory_search = angular.copy(blankSearch);
 
@@ -1094,6 +1095,7 @@ angular.module('xenon.controllers.inventory', [])
 	    $timeout(function() {
 		$rootScope.selectedLot = angular.copy(aData);
 		$rootScope.selectedLot.price = isNaN(parseFloat($rootScope.selectedLot.price)) ? 0 : parseFloat($rootScope.selectedLot.price);
+		$rootScope.selectedLot.quantity = isNaN(parseInt($rootScope.selectedLot.quantity)) ? 0 : parseInt($rootScope.selectedLot.quantity);
 		$rootScope.selectedLotChanged = true;
 		$rootScope.changes_pending = false;
 		$scope.inventoryDatatable.dataTable.api().draw(false);

@@ -14,6 +14,15 @@ module.exports = {
 	    }
 	});
     },
+    save : function(req,res){
+	var lot = req.body.lot;
+	var lotId = lot.id;
+
+	delete lot.id;
+
+	var otherAddresses = contact.otherAddresses;
+	var dtmail = contact.dtmail;
+    },
     'get-lots-details' : function(req, res) {
 	Database.knex('lots_details').select('*').exec(function(err, response) {
 	    if (err)
