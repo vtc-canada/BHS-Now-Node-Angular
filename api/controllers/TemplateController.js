@@ -7,12 +7,11 @@
 
 module.exports = {
     
-    lineitems : function(req,res){
-	Database.knex('templates').select('*').where({
+    inventory : function(req,res){
+	Database.knex('inv_cur_templates').select('*').where({
 	    userId : req.session.user.id,
-	    location : 'lineitems'
+	    location : 'inventory'
 	}).exec(function(err, results) {
-	    // cb(err,results);
 	    if (err)
 		return console.log('Error getting Templates');
 
@@ -23,45 +22,6 @@ module.exports = {
 	});
 	
     },
-    orders : function(req,res){
-	Database.knex('templates').select('*').where({
-	    userId : req.session.user.id,
-	    location : 'orders'
-	}).exec(function(err, results) {
-	    // cb(err,results);
-	    if (err)
-		return console.log('Error getting Templates');
-
-	    for (var i = 0; i < results.length; i++) {
-		results[i].data = JSON.parse(results[i].data);
-	    }
-	    res.json(results);
-	});
-    },
-    contacts : function(req, res) {
-	// async.parallel({
-	// contacts : function(cb){
-	Database.knex('templates').select('*').where({
-	    userId : req.session.user.id,
-	    location : 'contacts'
-	}).exec(function(err, results) {
-	    // cb(err,results);
-	    if (err)
-		return console.log('Error getting Templates');
-
-	    for (var i = 0; i < results.length; i++) {
-		results[i].data = JSON.parse(results[i].data);
-	    }
-	    res.json(results);
-	});
-	// }
-	// },function(err,data){
-	// if(err)
-	// return console.log('Error getting Templates');
-	// res.json(data);
-	// })
-
-    },
     save : function(req, res) {
 	var template = req.body;
 	template.userId = req.session.user.id;
@@ -71,7 +31,7 @@ module.exports = {
 	delete template.id;
 
 	if (templateId == null) {
-	    Database.knex('templates').insert(template, 'id').exec(function(err, response) {
+	    Database.knex('inv_cur_templates').insert(template, 'id').exec(function(err, response) {
 		if (err)
 		    return console.log('Err' + err.toString());
 		template.data = JSON.parse(template.data);// id = response[0];
@@ -82,7 +42,7 @@ module.exports = {
 		});
 	    });
 	} else {
-	    Database.knex('templates').update(template).where({
+	    Database.knex('inv_cur_templates').update(template).where({
 		id : templateId,
 		userId : req.session.user.id
 	    }).exec(function(err, response) {
@@ -100,7 +60,7 @@ module.exports = {
 	var template = req.body;
 
 	if (template.id) {
-	    Database.knex('templates').where({id:template.id, userId : req.session.user.id}).del().exec(function(err, response) {
+	    Database.knex('inv_cur_templates').where({id:template.id, userId : req.session.user.id}).del().exec(function(err, response) {
 		if (err)
 		    return console.log('Err' + err.toString());
 		res.json({
