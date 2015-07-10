@@ -24,7 +24,16 @@ module.exports = {
 	                                          , lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted*/], function(err, result) {
 		if (err)
 		    return console.log(err.toString());
-		return res.rson({success:true});
+		res.json({success:true});
+		
+		SecurityService.sendMessage(null,{verb : 'lotUpdate', data : lot});
+		
+//		for(var key in sails.io.rooms){
+//		    if(key.substring(0,6)=='/user_'){
+//			users[parseInt(key.substring(6,key.length))] = true;
+//			sails.io.sockets.emit('user_'+parseInt(key.substring(6,key.length)),{verb:'reload'});
+//		    }
+//		}
 		
 	    });
 	}
