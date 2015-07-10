@@ -388,9 +388,9 @@ angular.module('xenon.controllers.inventory', [])
 		// $scope.contact.otherAddresses =
 		// $scope.otherAddresses;
 		// delete $scope.contact.initDtVols1;
-		delete $scope.selectedInventory.is_saving;
-		delete $scope.selectedInventory.is_deleting;
-		$sails.post("/inventory/save", $scope.selectedInventory).success(function(data) {
+//		delete $scope.selectedLot.is_saving;
+//		delete $scope.selectedLot.is_deleting;
+		$sails.post("/inventory/save", {lot : $scope.selectedLot }).success(function(data) {
 		    if (data.error != undefined) { // USER NO LONGER LOGGED
 			// IN!!!!!
 			location.reload(); // Will boot back to login
@@ -409,7 +409,7 @@ angular.module('xenon.controllers.inventory', [])
 
 			    // $scope.selectedInventory =
 			    // angular.copy(data.order);
-			    delete $scope.selectedInventory.is_saving;
+			    delete $scope.selectedLot.is_saving;
 			    // $contact.is_modified =
 			    // $scope.selectedInventory.is_modified = false;//
 			    // .set(data.contact);
@@ -417,7 +417,7 @@ angular.module('xenon.controllers.inventory', [])
 			    // sets
 			    // is_saving
 			    // to
-			    vm.blockInventorySelectedModified = true; // ??
+//			    vm.blockInventorySelectedModified = true; // ??
 			    // not
 			    // sure if
 			    // this
@@ -426,20 +426,24 @@ angular.module('xenon.controllers.inventory', [])
 
 			    // false.
 			    resetInventoryForms();
-			    $rootScope.updateInventoryDataTable();
+//			    $rootScope.updateInventoryDataTable();
+			    
+			    $rootScope.changes_pending = false;
+			    $scope.inventoryDatatable.dataTable.api().draw(false);
+			    
 			}, 0);
 		    }
 		}).error(function(data) {
 		    alert('err!');
 		});
 
-		$scope.selectedInventory.is_saving = true;
+		$scope.selectedLot.is_saving = true;
 	    }
 	}, 0);
     }
     function resetInventoryForms() {
 	// $scope.$apply(function() {
-	vm.watchEnabled = false;
+//	vm.watchEnabled = false;
 	// $scope.contact = $contact; // this applies the contact to the
 	// scope..
 	// seems needed a bunch verified.

@@ -14,14 +14,27 @@ module.exports = {
 	    }
 	});
     },
-    save : function(req,res){
+    save : function(req, res) {
 	var lot = req.body.lot;
-	var lotId = lot.id;
 
-	delete lot.id;
+	if (lot.id == 'new') {
 
-	var otherAddresses = contact.otherAddresses;
-	var dtmail = contact.dtmail;
+	} else {
+	    Database.dataSproc('INV_UpdateLot', [ lot.id, lot.uomID, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, lot.user_name, lot.notes
+	                                          , lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted*/], function(err, result) {
+		if (err)
+		    return console.log(err.toString());
+		return res.rson({success:true});
+		
+	    });
+	}
+//
+//	var lotId = lot.id;
+//
+//	delete lot.id;
+//
+//	var otherAddresses = contact.otherAddresses;
+//	var dtmail = contact.dtmail;
     },
     'get-lots-details' : function(req, res) {
 	Database.knex('lots_details').select('*').exec(function(err, response) {
@@ -33,27 +46,31 @@ module.exports = {
 	    });
 	});
     },
-    'get-types-in-brands' : function(req,res){
+    'get-types-in-brands' : function(req, res) {
 	var searchterm = null;
-	if(req.body.brands instanceof Array &&req.body.brands.length>0){
+	if (req.body.brands instanceof Array && req.body.brands.length > 0) {
 	    searchterm = req.body.brands.join(',');
 	}
-	Database.dataSproc('INV_GetMatTypesInBrands',[searchterm],function(err,result){
+	Database.dataSproc('INV_GetMatTypesInBrands', [ searchterm ], function(err, result) {
 	    if (err)
 		return callback(err);
-	    res.json({success:"success",data:result[0]});
+	    res.json({
+		success : "success",
+		data : result[0]
+	    });
 	})
     },
-    'get-types-by-brand' : function(req,res){
-	Database.dataSproc('INV_GetMatTypesByBrand',[req.body.brand||null],function(err,result){
+    'get-types-by-brand' : function(req, res) {
+	Database.dataSproc('INV_GetMatTypesByBrand', [ req.body.brand || null ], function(err, result) {
 	    if (err)
 		return callback(err);
-	    res.json({success:"success",data:result[0]});
+	    res.json({
+		success : "success",
+		data : result[0]
+	    });
 	})
     }
-    
-    
-    
+
 //    ,
 //    search : function(req, res) {
 //	var mysql = require('mysql');
