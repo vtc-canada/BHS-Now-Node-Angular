@@ -18,7 +18,24 @@ module.exports = {
 	var lot = req.body.lot;
 
 	if (lot.id == 'new') {
-
+	    var paramCreateId = '@out' + Math.floor((Math.random() * 1000000) + 1);
+	    Database.dataSproc('INV_InsertLot', [ lot.uomID, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, lot.user_name, lot.notes
+	                                          , lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted*/, paramCreateId], function(err, result) {
+		if (err)
+		    return console.log(err.toString());
+		lot.id = result[1][paramCreateId];
+		res.json({success:true }); //, lot : lot
+		// TODO - need ID  back. need to push to datatables on clients.
+		SecurityService.sendMessage(null,{verb : 'lotUpdate', data : lot});
+		
+//		for(var key in sails.io.rooms){
+//		    if(key.substring(0,6)=='/user_'){
+//			users[parseInt(key.substring(6,key.length))] = true;
+//			sails.io.sockets.emit('user_'+parseInt(key.substring(6,key.length)),{verb:'reload'});
+//		    }
+//		}
+		
+	    });
 	} else {
 	    Database.dataSproc('INV_UpdateLot', [ lot.id, lot.uomID, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, lot.user_name, lot.notes
 	                                          , lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted*/], function(err, result) {

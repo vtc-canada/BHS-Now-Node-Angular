@@ -96,7 +96,7 @@ angular.module('xenon.controllers.inventory', [])
 
 .controller(
     'InventoryDatatable',
-    function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder, $sails, $modal, $filter, $dropdowns) {// $contact
+    function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder, $sails, $modal, $filter, $dropdowns, $user) {// $contact
 
 	var vm = this;
 	vm.pageReset = false;
@@ -108,7 +108,11 @@ angular.module('xenon.controllers.inventory', [])
 	$rootScope.lotUpdate = function(lot) {
 	    // alert('anupdate');
 
-	    $scope.inventoryDatatable.dataTable.fnUpdate(lot, $scope.index_aoData[lot.id], undefined, true);
+	    if($scope.index_aoData[lot.id]==undefined){
+		$scope.inventoryDatatable.dataTable.fnAddData(lot);//, $scope.index_aoData[lot.id], undefined, true);
+	    }else{
+		$scope.inventoryDatatable.dataTable.fnUpdate(lot, $scope.index_aoData[lot.id], undefined, true);
+	    }
 
 	    // This update below really isn't necessary.. interupts/overwrites
 	    // form fields other users when editing the same id.
@@ -233,45 +237,47 @@ angular.module('xenon.controllers.inventory', [])
 		$scope.column_index[aoColumns[column].mData] = parseInt(column);
 	    }
 
-	    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-		// Break out returning false if any of the filters do not
-		// succeed.
+	    $.fn.dataTable.ext.search
+		.push(function(settings, data, dataIndex) {
+		    // Break out returning false if any of the filters do not
+		    // succeed.
 
-		for ( var sfield in $scope.inventory_search) {
-		    if (sfield == 'id') {
-			if ($scope.inventory_search.id != '' && $scope.inventory_search.id != null && data[$scope.column_index['id']] != $scope.inventory_search.id) {
+		    for ( var sfield in $scope.inventory_search) {
+			if (sfield == 'id') {
+			    if ($scope.inventory_search.id != '' && $scope.inventory_search.id != null && data[$scope.column_index['id']] != $scope.inventory_search.id) {
+				return false;
+			    }
+			} else if (sfield == 'brand' || sfield == 'type' || sfield == 'uom') {
+			    if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(parseInt(data[$scope.column_index[sfield + 'ID']])) == -1) {
+				return false;
+			    }
+			} else if (sfield == 'quantity_MIN' || sfield == 'quantity_MAX') {
+			    if (sfield == 'quantity_MIN' && $scope.inventory_search.quantity_MIN !== '' && $scope.inventory_search.quantity_MIN != null && parseInt(data[$scope.column_index['quantity']]) < parseInt($scope.inventory_search.quantity_MIN)) {
+				return false;
+			    } else if (sfield == 'quantity_MAX' && $scope.inventory_search.quantity_MAX !== '' && $scope.inventory_search.quantity_MAX != null && parseInt(data[$scope.column_index['quantity']]) < parseInt($scope.inventory_search.quantity_MAX)) {
+				return false;
+			    }
+			} else if (sfield == 'date_added_MIN' || sfield == 'date_added_MAX') {
+			    if (sfield == 'date_added_MIN' && $scope.inventory_search.date_added_MIN !== '' && $scope.inventory_search.date_added_MIN != null && $scope.inventory_search.date_added_MIN !== null && (data[$scope.column_index['date_added']]) < ($scope.inventory_search.date_added_MIN)) {
+				return false;
+			    } else if (sfield == 'date_added_MAX' && $scope.inventory_search.date_added_MAX !== '' && $scope.inventory_search.date_added_MAX != null && $scope.inventory_search.date_added_MAX !== null
+				&& (data[$scope.column_index['date_added']]) > ($scope.inventory_search.date_added_MAX)) {
+				return false;
+			    }
+			} else if (sfield == 'price_MIN' || sfield == 'price_MAX') {
+			    if (sfield == 'price_MIN' && $scope.inventory_search.price_MIN !== '' && $scope.inventory_search.price_MIN != null && parseInt(data[$scope.column_index['price']]) < parseInt($scope.inventory_search.price_MIN)) {
+				return false;
+			    } else if (sfield == 'price_MAX' && $scope.inventory_search.price_MAX !== '' && $scope.inventory_search.price_MAX != null && parseInt(data[$scope.column_index['price']]) > parseInt($scope.inventory_search.price_MAX)) {
+				return false;
+			    }
+			} else if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(data[$scope.column_index[sfield]]) == -1) {
+			    return false;
+			} else if (typeof ($scope.inventory_search[sfield]) == 'string' && $scope.inventory_search[sfield] != '' && $scope.inventory_search[sfield] != null && data[$scope.column_index[sfield]].indexOf($scope.inventory_search[sfield]) == -1) {
 			    return false;
 			}
-		    } else if (sfield == 'brand' || sfield == 'type' || sfield == 'uom') {
-			if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(parseInt(data[$scope.column_index[sfield + 'ID']])) == -1) {
-			    return false;
-			}
-		    } else if (sfield == 'quantity_MIN' || sfield == 'quantity_MAX') {
-			if (sfield == 'quantity_MIN' && $scope.inventory_search.quantity_MIN !== '' && $scope.inventory_search.quantity_MIN != null && parseInt(data[$scope.column_index['quantity']]) < parseInt($scope.inventory_search.quantity_MIN)) {
-			    return false;
-			} else if (sfield == 'quantity_MAX' && $scope.inventory_search.quantity_MAX !== '' && $scope.inventory_search.quantity_MAX != null && parseInt(data[$scope.column_index['quantity']]) < parseInt($scope.inventory_search.quantity_MAX)) {
-			    return false;
-			}
-		    } else if (sfield == 'date_added_MIN' || sfield == 'date_added_MAX') {
-			if (sfield == 'date_added_MIN' && $scope.inventory_search.date_added_MIN !== '' && $scope.inventory_search.date_added_MIN != null && $scope.inventory_search.date_added_MIN !== null && (data[$scope.column_index['date_added']]) < ($scope.inventory_search.date_added_MIN)) {
-			    return false;
-			} else if (sfield == 'date_added_MAX' && $scope.inventory_search.date_added_MAX !== '' && $scope.inventory_search.date_added_MAX != null && $scope.inventory_search.date_added_MAX !== null && (data[$scope.column_index['date_added']]) > ($scope.inventory_search.date_added_MAX)) {
-			    return false;
-			}
-		    } else if (sfield == 'price_MIN' || sfield == 'price_MAX') {
-			if (sfield == 'price_MIN' && $scope.inventory_search.price_MIN !== '' && $scope.inventory_search.price_MIN != null && parseInt(data[$scope.column_index['price']]) < parseInt($scope.inventory_search.price_MIN)) {
-			    return false;
-			} else if (sfield == 'price_MAX' && $scope.inventory_search.price_MAX !== '' && $scope.inventory_search.price_MAX != null && parseInt(data[$scope.column_index['price']]) > parseInt($scope.inventory_search.price_MAX)) {
-			    return false;
-			}
-		    } else if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(data[$scope.column_index[sfield]]) == -1) {
-			return false;
-		    } else if (typeof ($scope.inventory_search[sfield]) == 'string' && $scope.inventory_search[sfield] != '' && $scope.inventory_search[sfield] != null && data[$scope.column_index[sfield]].indexOf($scope.inventory_search[sfield]) == -1) {
-			return false;
 		    }
-		}
-		return true;
-	    });
+		    return true;
+		});
 
 	});
 	$rootScope.updateInventoryDataTable = function(selectedInventory, event, args) {
@@ -461,6 +467,34 @@ angular.module('xenon.controllers.inventory', [])
 	    // }
 	    // });
 	}
+
+	$scope.addInventory = function() {
+	    var blankInventory = {
+		"id" : 'new',
+		"serial_no" : null,
+		"brandID" : null,
+		"brand" : null,
+		"typeID" : null,
+		"type" : null,
+		"quantity" : 0,
+		"uomID" : 1,
+		"uom" : "Each",
+		"tread_depth" : null,
+		"side_wall" : null,
+		"tire_type" : null,
+		"tire_size" : null,
+		"price" : 0,
+		"date_added" : null,
+		"user_name" : $user.username,
+		"notes" : null
+	    };
+
+	    $rootScope.selectedLot = angular.copy(blankInventory);
+	    $rootScope.selectedLot.price = isNaN(parseFloat($rootScope.selectedLot.price)) ? 0 : parseFloat($rootScope.selectedLot.price);
+	    $rootScope.selectedLot.quantity = isNaN(parseInt($rootScope.selectedLot.quantity)) ? 0 : parseInt($rootScope.selectedLot.quantity);
+	    $rootScope.selectedLotChanged = true;
+	    $rootScope.changes_pending = false;
+	};
 
 	$scope.addDatatableRow = function(modal_id, modal_size) {
 	    // $('#' +
@@ -795,7 +829,7 @@ angular.module('xenon.controllers.inventory', [])
 	});
 
 	$scope.$watch('selectedLot.typeID', function(newValue, oldValue) {
-	    if (!angular.equals(newValue, oldValue)) {
+	    if (!angular.equals(newValue, oldValue) && $scope.typeNames) {
 		$rootScope.selectedLot.type = $scope.typeNames[newValue];
 	    }
 	});
