@@ -172,7 +172,11 @@ module.exports = {
 					if(sgroup.id==securitygroup.id){
 					    return sgcallback(null);
 					}
-					Database.localSproc('NMS_BASE_CreateResourceSecurityGroupMapping',[resourceObj.id,sgroup.id,0,0,0,0],function(err,newmapping){
+					var addPolicy = 0;
+					if(sgroup.id==1&&sails.config.environment=='development'){ //Adiministrator group
+					    addPolicy = 1;
+					}
+					Database.localSproc('NMS_BASE_CreateResourceSecurityGroupMapping',[resourceObj.id,sgroup.id,addPolicy,addPolicy,addPolicy,addPolicy],function(err,newmapping){
 					    if(err){
 						return callback(err);
 					    }

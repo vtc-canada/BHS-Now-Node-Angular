@@ -38,14 +38,24 @@ angular.module('xenon.controllers.inventory', [])
 
 	    if (!founderrors) {
 		$sails.post("/inventory/save", {
-		    lot : $scope.selectedLot
+		    lot : $rootScope.selectedLot
 		}).success(function(data) {
 		    if (data.error != undefined) { // USER NO LONGER LOGGED
 			location.reload(); // Will boot back to login
 		    }
 		    if (data.success) {
-			$timeout(function() {
+			$rootScope.selectedLot.id = data.lot.id;
 
+			$sails.post("/inventory/pushlot", {
+			    lot : data.lot
+			}, function(data) {
+			    if (data.error != undefined) { // USER NO LONGER
+				// LOGGED
+				location.reload(); // Will boot back to login
+			    }
+			});
+
+			$timeout(function() {
 			    delete $scope.inventory_saving;
 			    resetInventoryForms();
 			    $rootScope.changes_pending = false;
@@ -104,22 +114,213 @@ angular.module('xenon.controllers.inventory', [])
 	$scope.dropdowns = $dropdowns;
 
 	$rootScope.changes_pending = false;
+	$rootScope.selectAll = {
+	    checked : false,
+	    pagemode : true,
+	    pagecount : 0,
+	    filteredcount : 0,
+	    persistpagemodemessage : false,
+	    pagemodemessagevisible : false,
+	    count : 0
+
+	};
+
+	$scope.selectAllDropdownSelectCustom0Qty = function() {
+	    $rootScope.selectAll.checked = null;
+	};
+
+	$scope.selectAllPages = function() {
+	    $rootScope.selectAll.pagemode = false;
+	    $scope.doSelectAllDropdownSelectAll();
+	    $scope.inventoryDatatable.dataTable.api().draw(false);
+	};
+
+	$scope.checkSelectAllState = function() {
+	    if (!$scope.inventoryDatatable) {
+		return;
+	    }
+	    var selectedCount = 0;
+	    var areSelected = false;
+	    var allSelected = true;
+
+	    var tempSelected = $scope.inventoryDatatable.dataTable.fnGetData();
+	    for (var i = 0; i < tempSelected.length; ++i) {
+		if (tempSelected[i].selected === true) {
+		    selectedCount++;
+		}
+	    }
+
+	    if ($rootScope.selectAll.pagemode) {
+		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
+		for (var i = 0; i < anNodes.length; ++i) {
+		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
+		    if (tempRow == null) {
+			continue;
+		    }
+		    if (tempRow.selected !== true) {
+			allSelected = false;
+		    } else {
+			areSelected = true;
+		    }
+		}
+
+	    } else {
+
+		// / from FILTERED data
+		var tempData = $scope.inventoryDatatable.dataTable._('tr', {
+		    "filter" : "applied"
+		}); // $scope.inventoryDatatable.dataTable.fnGetData();
+		for (var i = 0; i < tempData.length; i++) {
+		    if (tempData[i].selected !== true) {
+			allSelected = false;
+		    } else {
+			selectedCount++;
+			areSelected = true;
+		    }
+		    // var tempRow = tempData[i];
+		    // tempRow.selected = true;
+		    // $scope.inventoryDatatable.dataTable.fnUpdate(true,
+		    // $scope.index_aoData[tempRow.id], 0, false, false);
+		    // }
+		}
+
+		// $rootScope.selectAll.pagecount = tempData.length;
+
+		// var tempData =
+		// $scope.inventoryDatatable.dataTable.fnGetData();
+		// for (var i = 0; i < tempData.length; i++) {
+		// if (tempData[i].selected !== true) {
+		// allSelected = false;
+		// } else {
+		// areSelected = true;
+		// }
+		// }
+	    }
+	    $timeout(function() {
+		if (areSelected == false) { // All unchecked - SUBSEARCH?
+		    $rootScope.selectAll.checked = false;
+		} else if (allSelected == true) {
+		    $rootScope.selectAll.checked = true;
+		} else {
+		    $rootScope.selectAll.checked = null;
+		}
+		$rootScope.selectAll.count = selectedCount;
+	    }, 0);
+	    // $scope.inventoryDatatable.dataTable.api().draw(false);
+	}
+
+	$scope.clickSelectAllCheckbox = function() {
+	    if ($rootScope.selectAll.checked === false) { // if NONE are
+		// checked - check
+		// all
+		$scope.selectAllDropdownSelectAll();
+	    } else { // otherwise check nothing - clearing partials
+		$scope.selectAllDropdownSelectNone();
+	    }
+	}
+
+	$scope.selectAllDropdownSelectAll = function() {
+	    $timeout(function() {
+		$rootScope.selectAll.checked = true;
+		$rootScope.selectAll.pagemode = true;
+		$rootScope.selectAll.persistpagemodemessage = true;
+		$rootScope.selectAll.pagemodemessagevisible = true;
+		$scope.doSelectAllDropdownSelectAll();
+
+		$scope.inventoryDatatable.dataTable.api().draw(false);
+	    }, 0);
+	}
+
+	$scope.doSelectAllDropdownSelectAll = function() {
+
+	    if ($rootScope.selectAll.pagemode) { // 1 page mode
+		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
+		for (var i = 0; i < anNodes.length; ++i) {
+		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
+		    tempRow.selected = true;
+		    $scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
+
+		}
+		$rootScope.selectAll.pagecount = anNodes.length;
+		$rootScope.selectAll.filteredcount = $scope.inventoryDatatable.dataTable._('tr', {
+		    "filter" : "applied"
+		}).length;
+	    } else {
+		// var anNodes = $scope.inventoryDatatable.dataTable.find('tbody
+		// tr');
+		// $scope.inventoryDatatable.dataTable.fnGetData($scope.index_aoData[[0].id])
+		//		 
+		//		 
+		// var data = '';
+
+		var tempData = $scope.inventoryDatatable.dataTable._('tr', {
+		    "filter" : "applied"
+		}); // $scope.inventoryDatatable.dataTable.fnGetData();
+		for (var i = 0; i < tempData.length; i++) {
+		    if (!tempData[i].selected) {
+			var tempRow = tempData[i];
+			tempRow.selected = true;
+			$scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
+		    }
+		}
+		$rootScope.selectAll.pagecount = tempData.length;
+
+	    }
+
+	}
+
+	$scope.selectAllDropdownSelectNone = function() {
+	    $timeout(function() {
+		$rootScope.selectAll.checked = false;
+		$rootScope.selectAll.pagemode = true;
+		var tempData = $scope.inventoryDatatable.dataTable.fnGetData();
+		for (var i = 0; i < tempData.length; i++) {
+		    if (tempData[i].selected) {
+			var tempRow = tempData[i];
+			tempRow.selected = false;
+			$scope.inventoryDatatable.dataTable.fnUpdate(false, i, 0, false, false);
+			// $scope.inventoryDatatable.dataTable.fnUpdate(tempRow,
+			// i, undefined, false, false);
+		    }
+		}
+		$scope.inventoryDatatable.dataTable.api().draw(false);
+	    }, 0);
+	}
+
+	$scope.outerSelectCheckboxButton = function(event) {
+	    // alert('inside');
+	    if (!$(event.target).hasClass('block-dropdown')) {
+		$timeout(function() {
+		    // $('#select_lots_dropdown').addClass('open');
+		    $('#select_lots_dropdown_caret').click();
+		}, 0);
+	    }
+	}
 
 	$rootScope.lotUpdate = function(lot) {
 	    // alert('anupdate');
+	    $timeout(function() {
+		if ($scope.index_aoData[lot.id] == undefined) {
+		    $scope.inventoryDatatable.dataTable.fnAddData(lot, false);// ,
+		    // $scope.index_aoData[lot.id],
+		    // undefined,
+		    // true);
+		    $scope.inventoryDatatable.dataTable.api().draw(false);
+		} else {
+		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData($scope.index_aoData[lot.id]);
+		    lot.selected = tempRow.selected;
+		    $scope.inventoryDatatable.dataTable.fnUpdate(lot, $scope.index_aoData[lot.id], undefined, false);
+		    $scope.inventoryDatatable.dataTable.api().draw(false);
+		}
 
-	    if($scope.index_aoData[lot.id]==undefined){
-		$scope.inventoryDatatable.dataTable.fnAddData(lot);//, $scope.index_aoData[lot.id], undefined, true);
-	    }else{
-		$scope.inventoryDatatable.dataTable.fnUpdate(lot, $scope.index_aoData[lot.id], undefined, true);
-	    }
-
-	    // This update below really isn't necessary.. interupts/overwrites
-	    // form fields other users when editing the same id.
-	    if ($rootScope.selectedLot.id == lot.id && !angular.equals($rootScope.selectedLot, lot)) {
-		$rootScope.selectedLot = angular.copy(lot);
-		$rootScope.selectedLotChanged = true;
-	    }
+		// This update below really isn't necessary..
+		// interupts/overwrites
+		// form fields other users when editing the same id.
+		if ($rootScope.selectedLot.id == lot.id && !angular.equals($rootScope.selectedLot, lot)) {
+		    $rootScope.selectedLot = angular.copy(lot);
+		    $rootScope.selectedLotChanged = true;
+		}
+	    }, 0);
 	};
 	$scope.template = null;
 	$rootScope.newInventoryTemplateModal = {
@@ -193,9 +394,21 @@ angular.module('xenon.controllers.inventory', [])
 	    // }, 0);
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
-	    $('td', nRow).bind('click', function() {
+	    $('td', nRow).bind('click', function(event) {
 		// $scope.$apply(function() {
-		vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		if (($(event.target).prop('tagName') == 'INPUT' && $(event.target).attr('type') == 'checkbox')) {
+		    if ($(event.target).is(':checked')) {
+			aData.selected = true;
+		    } else {
+			delete aData.selected;// = false;
+		    }
+
+		    $rootScope.selectAll.persistpagemodemessage = false;
+		    $rootScope.selectAll.pagemodemessagevisible = false;
+		    $scope.checkSelectAllState();
+		} else {
+		    vm.rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+		}
 		// });
 	    });
 	    $(nRow).removeClass('selected');
@@ -208,8 +421,16 @@ angular.module('xenon.controllers.inventory', [])
 	    for ( var aoDataIndex in settings.aoData) {
 		$scope.index_aoData[settings.aoData[aoDataIndex]['_aData'].id] = aoDataIndex;
 	    }
+	    $timeout(function() {
+		if ($rootScope.selectAll.persistpagemodemessage) {
+		    $rootScope.selectAll.persistpagemodemessage = false;
+		} else {
+		    $rootScope.selectAll.pagemodemessagevisible = false;
+		}
+	    }, 0);
+	    $scope.checkSelectAllState(); // check state on all draws
 	    // alert('drawcallback');
-	}).withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"fl>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>');
+	}).withOption('stateSave', true).withPaginationType('full_numbers').withDOM('rt<"row"<"col-lg-4"i><"col-lg-8"p>>'); // <"row"<"col-xs-12"fl>>
 	// l length
 	// r processing
 	// f filtering
@@ -219,7 +440,11 @@ angular.module('xenon.controllers.inventory', [])
 
 	// $scope.inventoryDatatable.dataTable.fnGetData()
 
-	vm.dtColumns = [ DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
+	vm.dtColumns = [ DTColumnBuilder.newColumn('selected').withTitle('&nbsp').notSortable().renderWith(function(data, type, full, meta) {
+	    return '<input type="checkbox" ' + (full.selected ? 'checked="checked"' : '') + '>';
+	}),
+
+	DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
 	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
 	    DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall'), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'),
 	    DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
@@ -236,6 +461,22 @@ angular.module('xenon.controllers.inventory', [])
 	    for ( var column in aoColumns) {
 		$scope.column_index[aoColumns[column].mData] = parseInt(column);
 	    }
+
+	    $.fn.dataTable.ext.oApi.fnStandingRedraw = function(oSettings) {
+		if (oSettings.oFeatures.bServerSide === false) {
+		    var before = oSettings._iDisplayStart;
+
+		    oSettings.oApi._fnReDraw(oSettings);
+
+		    // iDisplayStart has been reset to zero - so lets change it
+		    // back
+		    oSettings._iDisplayStart = before;
+		    oSettings.oApi._fnCalculateEnd(oSettings);
+		}
+
+		// draw the 'current' page
+		oSettings.oApi._fnDraw(oSettings);
+	    };
 
 	    $.fn.dataTable.ext.search
 		.push(function(settings, data, dataIndex) {
@@ -348,6 +589,7 @@ angular.module('xenon.controllers.inventory', [])
 			    $(window).scrollTop(obj.pos);
 			}
 		    });
+
 		    return;
 		}
 	    }

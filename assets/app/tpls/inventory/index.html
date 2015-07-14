@@ -268,13 +268,70 @@
 			
 		</div>
 		<div class="panel-body">
-			<div class="pull-right">
-				<div class="btn btn-primary" ng-click="addInventory()">Add</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="pull-left pull-right-stack">
+						<div class="btn-group" dropdown id="select_lots_dropdown">
+							<div type="button" class="btn btn-white nocursor dropdown-toggle-margin-clear" ng-click="outerSelectCheckboxButton($event)"  >
+								
+								<input ng-show="selectAll.checked!==null" class="checkbox-no-margin block-dropdown select-all-checkbox" type="checkbox" ng-click="clickSelectAllCheckbox()" ng-model="selectAll.checked">
+								
+								<span ng-show="selectAll.checked===null" class="T-Jo J-J5-Ji T-Jo-ayH T-Jo-auq block-dropdown" aria-checked="mixed" role="checkbox" dir="ltr" style="-webkit-user-select: none;" ng-click="selectAllDropdownSelectNone()">
+									<div class="T-Jo-auh block-dropdown" role="presentation"></div>
+								</span>
+							</div>
+							<div type="button" class="btn btn-white dropdown-toggle" id="select_lots_dropdown_caret" data-toggle="dropdown">
+								<span class="caret"></span>
+							</div>
+							<ul class="dropdown-menu dropdown-white" role="menu">
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectAll()">Select All</a>
+								</li>
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectNone()">Select None</a>
+								</li>
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectCustom0Qty()">Select something specific</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="pull-left " >
+						<div class="btn-group" dropdown >
+							<button type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" ng-class="{disabled:selectAll.checked===false}">
+								{{selectAll.checked===false?'More':'Items('+selectAll.count+')'}} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-blue" role="menu">
+								<li>
+									<a href="">Bulk Move</a>
+								</li>
+								<li>
+									<a href="">Bulk Status</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					
+					<div class="pull-right ">
+						<div class="btn btn-primary no-margin" ng-click="addInventory()">Add</div>
+					</div>
+					
+				</div>
 			</div>
 			
+			<div class="row">
+				<div class="col-xs-12 ">
+					<div class="pages-mode-message-wrapper" ng-click="selectAllPages()" ng-show="selectAll.pagemodemessagevisible">
+						<span>All <b>{{selectAll.pagecount}}</b> items on this page are selected.</span> 
+						<span class="select-all-pages" tabindex="0" role="link">Select all <b>{{selectAll.filteredcount}}</b> filtered items in Inventory</span>
+					</div>
+				</div>
+			</div>
 			<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 		        <thead>
 		        	<tr>
+						<th ></th>
 						<th ></th>
 						<th ></th>
 						<th ></th>

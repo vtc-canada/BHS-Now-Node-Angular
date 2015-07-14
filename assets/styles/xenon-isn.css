@@ -500,3 +500,91 @@ form#securitygroup_form label.control-label{
  -ms-user-select: text;
  user-select: text;
 }
+
+.btn.dropdown-toggle{
+	margin-bottom:0px;
+}
+.btn.dropdown-toggle-margin-clear{
+	margin-bottom:0px;
+}
+.dropdown-menu {
+  margin: 1px 0 0;
+}
+
+.T-Jo {
+  /*cursor: default;*/
+}
+.T-Jo-ayH {
+  background-color: #fff;
+  background-color: rgba(255,255,255,.65);
+}
+.T-Jo {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.68);
+  border: 1px solid #c6c6c6;
+  border: 1px solid rgba(155,155,155,.57);
+  font-size: 1px;
+  height: 12px;
+  margin: 0px 1px 0 0px;
+  outline: 0;
+  vertical-align: text-bottom;
+  width: 12px;
+  border-radius: 2px;
+  top: -4px;
+}
+.J-J5-Ji {
+  position: relative;
+  display: inline-block;
+}
+
+.T-Jo-ayH .T-Jo-auh {
+  background: url(/assets/images/checkmark-partial.png) no-repeat -5px -3px;
+  background-image: -webkit-image-set(url(/assets/images/checkmark-partial.png) 1x,url(/assets/images/checkmark-partial_2x.png) 2x);
+  height: 11px;
+  margin-left: 0px;
+  width: 9px;
+}
+.T-Jo-auh {
+  height: 15px;
+  outline: 0;
+  width: 15px;
+  left: 0;
+  position: relative;
+  top: -2px;
+  cursor: default;
+}
+
+.btn.nocursor{
+	
+  /*cursor: default;*/
+}
+
+.btn.no-margin{
+	margin:0px;
+}
+
+input[type=checkbox].checkbox-no-margin{
+	margin-top:0px;
+}
+
+.dropdown-toggle-margin-clear{
+  padding: 9px 12px 3px 12px
+}
+
+.pages-mode-message-wrapper {
+  text-align: center;
+  /*font-size: 80%;*/
+  background-color: #ffc;
+  color: #222;
+  /*background-color: #fff;*/
+  border-left: 1px #e5e5e5 solid;
+  border-right: 1px #e5e5e5 solid;
+  border-top: 1px #e5e5e5 solid;
+  padding: 3px 8px;
+}
+
+span.select-all-pages{
+	cursor:pointer;
+	text-decoration	:underline;
+}
