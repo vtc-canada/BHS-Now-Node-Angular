@@ -25,42 +25,49 @@ module.exports = {
     save : function(req, res) {
 	var lot = req.body.lot;
 
+	var cpcfg = CustomProperties.getCfg();
+	var lotIDs = [];
+	var propValsID = [];
+	var propvals = [];
+	for (var i = 0; i < cpcfg.length; i++) {
+	    lotIDs.push(lot.id);
+	    propValsID.push(cpcfg[i].id);
+	    propvals.push(lot[cpcfg[i].property]);
+	}
+	lotIDs = lotIDs.join(',');
+	propValsID = propValsID.join(',');
+	propvals = propvals.join(',');
+
 	if (lot.id == 'new') {
 	    var paramCreateId = '@out' + Math.floor((Math.random() * 1000000) + 1);
-	    Database.dataSproc('INV_InsertLot', [ lot.uomID, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, lot.user_name, lot.notes, lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted */, paramCreateId ],
-		function(err, result) {
-		    if (err)
-			return console.log(err.toString());
-		    lot.id = result[1][paramCreateId];
-		    res.json({
-			success : true,
-			lot : lot
-		    }); // , lot : lot
-		    // TODO - need ID back. need to push to datatables on
-		    // clients.
-
-		    // for(var key in sails.io.rooms){
-		    // if(key.substring(0,6)=='/user_'){
-		    // users[parseInt(key.substring(6,key.length))] = true;
-		    // sails.io.sockets.emit('user_'+parseInt(key.substring(6,key.length)),{verb:'reload'});
-		    // }
-		    // }
-
-		});
-	} else {
-	    Database.dataSproc('INV_UpdateLot', [ lot.id, lot.uomID, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, lot.user_name, lot.notes, lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size, false /* is_deleted */], function(err, result) {
+	    Database.dataSproc('INV_InsertLot', [ lot.uomID, 1, 43, lot.brandID, lot.typeID, lot.serial_no, lot.quantity, lot.price, lot.date_added, null, req.session.user.username, lot.notes, propValsID, propvals, paramCreateId ], function(err, result) {
 		if (err)
 		    return console.log(err.toString());
+		lot.id = result[1][paramCreateId];
 		res.json({
 		    success : true,
 		    lot : lot
 		});
-		// setTimeout(function() {
-		// SecurityService.sendMessage(null, {
-		// verb : 'lotUpdate',
-		// data : lot
-		// });
-		// }, 100);
+	    });
+	} else {
+
+	    // lot.brandID, lot.typeID, lot.serial_no, lot.notes,
+
+	    // lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size,
+	    Database.dataSproc('INV_UpdateLot', [ lot.id, lot.uomID, lot.quantity, lot.price, lot.date_added, null, req.session.user.username, propValsID, propvals ], function(err, result) {
+		if (err)
+		    return console.log(err.toString());
+
+		res.json({
+		    success : true,
+		    lot : lot
+		});
+//		setTimeout(function() {
+//		    SecurityService.sendMessage(null, {
+//			verb : 'lotUpdate',
+//			data : lot
+//		    });
+//		}, 100);
 
 		// for(var key in sails.io.rooms){
 		// if(key.substring(0,6)=='/user_'){
@@ -80,12 +87,12 @@ module.exports = {
 	// var dtmail = contact.dtmail;
     },
     'get-lots-details' : function(req, res) {
-	Database.knex('lots_details').select('*').exec(function(err, response) {
+	Database.dataSproc('INV_GetLots', [], function(err, response) {
 	    if (err)
 		return console.log(err.toString());
 
 	    return res.json({
-		"data" : response
+		"data" : response[0]
 	    });
 	});
     },

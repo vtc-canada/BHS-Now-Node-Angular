@@ -2,7 +2,7 @@ var deepequal = require('deep-equal');
 var onlinestatus = null;
 var users = null;
 var onlineservicecounter = 0;
-var fetchUsersInterval = 30000;
+var fetchUsersInterval = 300000; //5 minutes until it starts to pick up and monitor online status of newly created users
 var monitorRate = 500;
 
 

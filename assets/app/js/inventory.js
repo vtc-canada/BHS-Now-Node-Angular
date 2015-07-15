@@ -174,7 +174,7 @@ angular.module('xenon.controllers.inventory', [])
 		    if (tempData[i].selected !== true) {
 			allSelected = false;
 		    } else {
-			selectedCount++;
+			//selectedCount++;
 			areSelected = true;
 		    }
 		    // var tempRow = tempData[i];
@@ -215,7 +215,7 @@ angular.module('xenon.controllers.inventory', [])
 		// all
 		$scope.selectAllDropdownSelectAll();
 	    } else { // otherwise check nothing - clearing partials
-		$scope.selectAllDropdownSelectNone();
+		$scope.selectAllDropdownUncheck();
 	    }
 	}
 
@@ -237,8 +237,10 @@ angular.module('xenon.controllers.inventory', [])
 		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
 		for (var i = 0; i < anNodes.length; ++i) {
 		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
-		    tempRow.selected = true;
-		    $scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
+		    if(tempRow.selected!==true){
+			    tempRow.selected = true;
+			    $scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
+		    }
 
 		}
 		$rootScope.selectAll.pagecount = anNodes.length;
@@ -267,6 +269,34 @@ angular.module('xenon.controllers.inventory', [])
 
 	    }
 
+	}
+	
+	$scope.selectAllDropdownUncheck = function(){
+	    if($rootScope.selectAll.pagemode){ // 1 page
+		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
+		for (var i = 0; i < anNodes.length; ++i) {
+		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
+		    if(tempRow.selected===true){
+			tempRow.selected = false;
+			$scope.inventoryDatatable.dataTable.fnUpdate(false, $scope.index_aoData[tempRow.id], 0, false, false);
+		    }
+		}
+	    }else{
+		var tempData = $scope.inventoryDatatable.dataTable.fnGetData();
+		for (var i = 0; i < tempData.length; i++) {
+		    if (tempData[i].selected) {
+			var tempRow = tempData[i];
+			tempRow.selected = false;
+			$scope.inventoryDatatable.dataTable.fnUpdate(false, i, 0, false, false);
+		    }
+		}
+	    }
+	    
+	    $timeout(function() {
+		$rootScope.selectAll.checked = false;
+		
+		$scope.inventoryDatatable.dataTable.api().draw(false);
+	    }, 0);
 	}
 
 	$scope.selectAllDropdownSelectNone = function() {
@@ -305,13 +335,13 @@ angular.module('xenon.controllers.inventory', [])
 		    // $scope.index_aoData[lot.id],
 		    // undefined,
 		    // true);
-		    $scope.inventoryDatatable.dataTable.api().draw(false);
 		} else {
 		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData($scope.index_aoData[lot.id]);
 		    lot.selected = tempRow.selected;
 		    $scope.inventoryDatatable.dataTable.fnUpdate(lot, $scope.index_aoData[lot.id], undefined, false);
-		    $scope.inventoryDatatable.dataTable.api().draw(false);
 		}
+		$scope.inventoryDatatable.dataTable.api().draw(false);
+		$scope.checkSelectAllState();
 
 		// This update below really isn't necessary..
 		// interupts/overwrites
@@ -345,6 +375,8 @@ angular.module('xenon.controllers.inventory', [])
 	    quantity_MIN : '',
 	    quantity_MAX : '',
 	    uom : '',
+	    lotStatusID : '',
+	    locationID : '',
 	    tread_depth : '',
 	    side_wall : '',
 	    tire_type : '',
@@ -446,6 +478,7 @@ angular.module('xenon.controllers.inventory', [])
 
 	DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
 	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
+	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(),
 	    DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall'), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'),
 	    DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
 		return '$' + $filter('number')(data, 2);
@@ -488,7 +521,7 @@ angular.module('xenon.controllers.inventory', [])
 			    if ($scope.inventory_search.id != '' && $scope.inventory_search.id != null && data[$scope.column_index['id']] != $scope.inventory_search.id) {
 				return false;
 			    }
-			} else if (sfield == 'brand' || sfield == 'type' || sfield == 'uom') {
+			} else if (sfield == 'brand' || sfield == 'type' || sfield == 'uom' || sfield == 'lotStatus' || sfield == 'location') {
 			    if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(parseInt(data[$scope.column_index[sfield + 'ID']])) == -1) {
 				return false;
 			    }
@@ -536,6 +569,9 @@ angular.module('xenon.controllers.inventory', [])
 	    vm.pageReset = true;
 	}
 
+	$scope.bulkMove = function(){
+	    
+	}
 	$scope.exportList = function() {
 	    // $rootScope.currentModal = $modal.open({
 	    // templateUrl : 'export-contacts-modal',
@@ -721,6 +757,10 @@ angular.module('xenon.controllers.inventory', [])
 		"quantity" : 0,
 		"uomID" : 1,
 		"uom" : "Each",
+		"lotStatusID" : 1,
+		"lotStatus" : "In Inventory",
+		"locationID" : 43,
+		"location" : "Tomken - Rack 114B",
 		"tread_depth" : null,
 		"side_wall" : null,
 		"tire_type" : null,
@@ -796,6 +836,20 @@ angular.module('xenon.controllers.inventory', [])
 		    $scope.dropdowns.uoms.push({
 			id : data.uoms[i].id,
 			label : data.uoms[i].uom
+		    });
+		}
+		$scope.dropdowns.locations = [];
+		for (var i = 0; i < data.locations.length; i++) {
+		    $scope.dropdowns.locations.push({
+			id : data.locations[i].id,
+			label : data.locations[i].location
+		    });
+		}
+		$scope.dropdowns.lot_status = [];
+		for (var i = 0; i < data.lot_status.length; i++) {
+		    $scope.dropdowns.lot_status.push({
+			id : data.lot_status[i].id,
+			label : data.lot_status[i].status
 		    });
 		}
 

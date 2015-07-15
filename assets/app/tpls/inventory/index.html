@@ -120,6 +120,22 @@
 							</div>
 						</div>
 						<div class="form-group">
+							<label class="col-sm-2 control-label" for="inventory_search.lotStatus">Lot Status</label>
+	
+							<div class="col-sm-10">
+								<select2 class="form-control"  id="inventory_search.lotStatus" name="inventory_search.lotStatus" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="inventory_search.lotStatus" placeholder="Lot Status" multiple></select2>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="inventory_search.location">Location</label>
+	
+							<div class="col-sm-10">
+								<select2 class="form-control"  id="inventory_search.location" name="inventory_search.location" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="inventory_search.location" placeholder="Location" multiple></select2>
+							</div>
+						</div>
+						
+						
+						<div class="form-group">
 							<label class="col-sm-2 control-label" for="inventory_search.tread_depth">Tread Depth</label>
 							<div class="col-sm-10">
 								<select2 class="form-control"  id="inventory_search.tread_depth" name="inventory_search.tread_depth" ng-options="title.id as title.label for title in dropdowns.tread_depths" ng-model="inventory_search.tread_depth" multiple></select2>
@@ -276,7 +292,7 @@
 								
 								<input ng-show="selectAll.checked!==null" class="checkbox-no-margin block-dropdown select-all-checkbox" type="checkbox" ng-click="clickSelectAllCheckbox()" ng-model="selectAll.checked">
 								
-								<span ng-show="selectAll.checked===null" class="T-Jo J-J5-Ji T-Jo-ayH T-Jo-auq block-dropdown" aria-checked="mixed" role="checkbox" dir="ltr" style="-webkit-user-select: none;" ng-click="selectAllDropdownSelectNone()">
+								<span ng-show="selectAll.checked===null" class="T-Jo J-J5-Ji T-Jo-ayH T-Jo-auq block-dropdown" aria-checked="mixed" role="checkbox" dir="ltr" style="-webkit-user-select: none;" ng-click="selectAllDropdownUncheck()">
 									<div class="T-Jo-auh block-dropdown" role="presentation"></div>
 								</span>
 							</div>
@@ -298,12 +314,12 @@
 					</div>
 					<div class="pull-left " >
 						<div class="btn-group" dropdown >
-							<button type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" ng-class="{disabled:selectAll.checked===false}">
-								{{selectAll.checked===false?'More':'Items('+selectAll.count+')'}} <span class="caret"></span>
+							<button type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" ng-class="{disabled:selectAll.count==0}">
+								{{selectAll.count==0?'Items':'Items ('}}<b>{{selectAll.count==0?'':selectAll.count}}</b>{{selectAll.count==0?'':')'}} <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu dropdown-blue" role="menu">
 								<li>
-									<a href="">Bulk Move</a>
+									<a href="" ng-click"bulkMove()">Bulk Move</a>
 								</li>
 								<li>
 									<a href="">Bulk Status</a>
@@ -323,7 +339,7 @@
 			<div class="row">
 				<div class="col-xs-12 ">
 					<div class="pages-mode-message-wrapper" ng-click="selectAllPages()" ng-show="selectAll.pagemodemessagevisible">
-						<span>All <b>{{selectAll.pagecount}}</b> items on this page are selected.</span> 
+						<span>All <b>{{selectAll.pagecount}}</b> items on this page are selected{{selectAll.count!=selectAll.pagecount?' of ':''}}<b>{{selectAll.count!=selectAll.pagecount?selectAll.count:''}}</b>{{selectAll.count!=selectAll.pagecount?' total':''}}.</span> 
 						<span class="select-all-pages" tabindex="0" role="link">Select all <b>{{selectAll.filteredcount}}</b> filtered items in Inventory</span>
 					</div>
 				</div>
@@ -331,6 +347,8 @@
 			<table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 		        <thead>
 		        	<tr>
+						<th ></th>
+						<th ></th>
 						<th ></th>
 						<th ></th>
 						<th ></th>
@@ -435,6 +453,20 @@
 													<select2 class="form-control"  id="selectedLot.uomID" name="selectedLot.uomID" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="selectedLot.uomID" placeholder="Unit Of Measurement" ></select2>
 												</div>
 											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.lotStatusID">Lot Status</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  ng-disabled="true" id="selectedLot.lotStatusID" name="selectedLot.lotStatusID" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="selectedLot.lotStatusID" placeholder="Lot Status" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.locationID">Location</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-disabled="true" id="selectedLot.locationID" name="selectedLot.locationID" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="selectedLot.locationID" placeholder="Location" ></select2>
+												</div>
+											</div>
 											
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="selectedLot.tread_depth">Tread Depth</label>
@@ -474,7 +506,7 @@
 											<div class="form-group">
 												<label class="col-sm-5 control-label" for="selectedLot.notes">Notes</label>
 												<div class="col-sm-7">
-													<textarea ng-disabled="!checkPolicy('/app/inventory',0,1,1,0)" maxlength="255" class="form-control" name="selectedLot.notes" id="selectedLot.notes" ng-model="selectedLot.notes" placeholder="Notes"></textarea>
+													<textarea ng-disabled="true||!checkPolicy('/app/inventory',0,1,1,0)" maxlength="255" class="form-control" name="selectedLot.notes" id="selectedLot.notes" ng-model="selectedLot.notes" placeholder="Notes"></textarea>
 
 													<!-- <input type="text" class="form-control" id="selectedLot.notes" ng-model="selectedLot.notes" ng-model-options="" > -->
 												</div>
