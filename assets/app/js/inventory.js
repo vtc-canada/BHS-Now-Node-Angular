@@ -81,29 +81,6 @@ angular.module('xenon.controllers.inventory', [])
 
 })
 
-.controller('InventorySearch', function($scope, $rootScope, $modal, $sails, $timeout) { // $contact
-    var vm = this;
-
-    var blankSearch = {
-	id : ''
-    };
-
-    $scope.inventory_search = angular.copy(blankSearch);
-
-    // $rootScope.inventory_search = $scope.inventory;
-
-    $scope.$watchCollection('inventory', function() {
-	return;
-	if (vm.updateTable) {
-	    clearTimeout(vm.updateTable);
-	}
-	vm.updateTable = setTimeout(function() {
-	    $rootScope.updateInventoryDataTable();
-	}, 300);
-    });
-
-})
-
 .controller(
     'InventoryDatatable',
     function($scope, $rootScope, $timeout, DTOptionsBuilder, DTColumnBuilder, $sails, $modal, $filter, $dropdowns, $user) {// $contact
@@ -174,7 +151,7 @@ angular.module('xenon.controllers.inventory', [])
 		    if (tempData[i].selected !== true) {
 			allSelected = false;
 		    } else {
-			//selectedCount++;
+			// selectedCount++;
 			areSelected = true;
 		    }
 		    // var tempRow = tempData[i];
@@ -237,9 +214,9 @@ angular.module('xenon.controllers.inventory', [])
 		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
 		for (var i = 0; i < anNodes.length; ++i) {
 		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
-		    if(tempRow.selected!==true){
-			    tempRow.selected = true;
-			    $scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
+		    if (tempRow.selected !== true) {
+			tempRow.selected = true;
+			$scope.inventoryDatatable.dataTable.fnUpdate(true, $scope.index_aoData[tempRow.id], 0, false, false);
 		    }
 
 		}
@@ -270,18 +247,18 @@ angular.module('xenon.controllers.inventory', [])
 	    }
 
 	}
-	
-	$scope.selectAllDropdownUncheck = function(){
-	    if($rootScope.selectAll.pagemode){ // 1 page
+
+	$scope.selectAllDropdownUncheck = function() {
+	    if ($rootScope.selectAll.pagemode) { // 1 page
 		var anNodes = $scope.inventoryDatatable.dataTable.find('tbody tr');
 		for (var i = 0; i < anNodes.length; ++i) {
 		    var tempRow = $scope.inventoryDatatable.dataTable.fnGetData(anNodes[i]);
-		    if(tempRow.selected===true){
+		    if (tempRow.selected === true) {
 			tempRow.selected = false;
 			$scope.inventoryDatatable.dataTable.fnUpdate(false, $scope.index_aoData[tempRow.id], 0, false, false);
 		    }
 		}
-	    }else{
+	    } else {
 		var tempData = $scope.inventoryDatatable.dataTable.fnGetData();
 		for (var i = 0; i < tempData.length; i++) {
 		    if (tempData[i].selected) {
@@ -291,10 +268,10 @@ angular.module('xenon.controllers.inventory', [])
 		    }
 		}
 	    }
-	    
+
 	    $timeout(function() {
 		$rootScope.selectAll.checked = false;
-		
+
 		$scope.inventoryDatatable.dataTable.api().draw(false);
 	    }, 0);
 	}
@@ -405,25 +382,7 @@ angular.module('xenon.controllers.inventory', [])
 	    dataSrc : 'data',
 	    url : '/inventory/get-lots-details',
 	    type : 'POST'
-	})
-	// .withDataProp('data')
-	// .withOption('serverSide', true).withOption('processing', true)
-	.withOption('fnServerParams', function(aoData) {
-	    // aoData.inventory = $rootScope.inventory_search;
-	    // $timeout(function() { // Whenever the table searches, it clears
-	    // // the selected
-	    // if ($rootScope.getInventorySelectedInventory()) { // passes
-	    // through
-	    // // the
-	    // // selectedOrder..
-	    // $scope.selectedInventory =
-	    // angular.copy($rootScope.getInventorySelectedInventory());
-	    // // $scope.selectedOrder = $scope.retrieveId;
-	    // $scope.retrieveId = null;
-	    // } else {
-	    // $scope.selectedInventory = null;
-	    // }
-	    // }, 0);
+	}).withOption('fnServerParams', function(aoData) {
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
 	    $('td', nRow).bind('click', function(event) {
@@ -474,17 +433,43 @@ angular.module('xenon.controllers.inventory', [])
 
 	vm.dtColumns = [ DTColumnBuilder.newColumn('selected').withTitle('&nbsp').notSortable().renderWith(function(data, type, full, meta) {
 	    return '<input type="checkbox" ' + (full.selected ? 'checked="checked"' : '') + '>';
-	}),
-
-	DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
+	}), DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
 	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
-	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(),
-	    DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall'), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'),
-	    DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
+	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(), DTColumnBuilder.newColumn('uom').withTitle('Unit'), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'),
+	    DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall'), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
 		return '$' + $filter('number')(data, 2);
 	    }), DTColumnBuilder.newColumn('date_added').withTitle('Date Added'), DTColumnBuilder.newColumn('user_name').withTitle('Username'), DTColumnBuilder.newColumn('notes').withTitle('Notes'), ];
 
+	//
+
+	$scope.dtBulkOptions = DTOptionsBuilder.newOptions()
+
+	.withPaginationType('full_numbers').withDOM('<"row"<"col-xs-12"fl>>rt<"row"<"col-lg-4"i><"col-lg-8"p>>'); // <"row"<"col-xs-12"fl>>
+	// l length
+	// r processing
+	// f filtering
+	// t table
+	// i info
+	// p pagination
+
+	$scope.dtBulkColumns = [ DTColumnBuilder.newColumn('selected').withTitle('&nbsp').notVisible()
+	// .notSortable().renderWith(function(data, type, full, meta) {
+	// return '<input type="checkbox" ' + (full.selected ?
+	// 'checked="checked"' : '') + '>';
+	// })
+	, DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand').notVisible(),
+	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
+	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(), DTColumnBuilder.newColumn('uom').withTitle('Unit').notVisible(),
+	    DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth').notVisible(), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall').notVisible(), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'),
+	    DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
+		return '$' + $filter('number')(data, 2);
+	    }).notVisible(), DTColumnBuilder.newColumn('date_added').withTitle('Date Added').notVisible(), DTColumnBuilder.newColumn('user_name').withTitle('Username').notVisible(), DTColumnBuilder.newColumn('notes').withTitle('Notes').notVisible(), ];
+
 	$scope.$on('event:dataTableLoaded', function(event, data) {
+	    var allowFilter = [ 'inventory' ];
+	    if (data.id.indexOf(allowFilter) == -1) {
+		return;
+	    }
 	    $scope.tableId = data.id; // Record table ID, for refreshes later.
 	    $scope.inventoryDatatable = data;
 
@@ -495,26 +480,14 @@ angular.module('xenon.controllers.inventory', [])
 		$scope.column_index[aoColumns[column].mData] = parseInt(column);
 	    }
 
-	    $.fn.dataTable.ext.oApi.fnStandingRedraw = function(oSettings) {
-		if (oSettings.oFeatures.bServerSide === false) {
-		    var before = oSettings._iDisplayStart;
-
-		    oSettings.oApi._fnReDraw(oSettings);
-
-		    // iDisplayStart has been reset to zero - so lets change it
-		    // back
-		    oSettings._iDisplayStart = before;
-		    oSettings.oApi._fnCalculateEnd(oSettings);
-		}
-
-		// draw the 'current' page
-		oSettings.oApi._fnDraw(oSettings);
-	    };
-
 	    $.fn.dataTable.ext.search
 		.push(function(settings, data, dataIndex) {
 		    // Break out returning false if any of the filters do not
 		    // succeed.
+		    if ($.inArray(settings.nTable.getAttribute('id'), allowFilter) == -1) {
+			// if not table should be ignored
+			return true;
+		    }
 
 		    for ( var sfield in $scope.inventory_search) {
 			if (sfield == 'id') {
@@ -554,59 +527,74 @@ angular.module('xenon.controllers.inventory', [])
 		});
 
 	});
-	$rootScope.updateInventoryDataTable = function(selectedInventory, event, args) {
-	    if ($scope.tableId) {
-		if ($rootScope.getInventorySelectedInventory) {
-		    $scope.selectedInventory = angular.copy($rootScope.getInventorySelectedInventory());
+
+	$scope.bulkMove = function() {
+	    $rootScope.currentModal = $modal.open({
+		templateUrl : 'bulk-operation-modal',
+		size : 'lg',
+		backdrop : true,
+		scope : $scope
+	    });
+	    $rootScope.currentModal.title = "Bulk Move";
+	    $rootScope.currentModal.bulkmode = 'Move';
+	    $rootScope.currentModal.locationID = null;
+	    // $rootScope.currentModal.dtBulkColumns = vm.dtBulkColumns;
+	    // $rootScope.currentModal.dtBulkOptions = vm.dtBulkOptions;
+	    $timeout(function() {
+		var tempSelected = $scope.inventoryDatatable.dataTable.fnGetData();
+		for (var i = 0; i < tempSelected.length; ++i) {
+		    if (tempSelected[i].selected === true) {
+			$('#bulk').dataTable().fnAddData(tempSelected[i], false);
+		    }
 		}
-		$('#' + $scope.tableId).DataTable().ajax.reload(function() {
-		}, vm.pageReset);
-		vm.pageReset = false;
-	    }
+		$('#bulk').dataTable().api().draw();
+	    }, 0);
+
+	    $rootScope.currentModal.result.then(function(selectedItem) {
+	    }, function(triggerElement) {
+		if (triggerElement == 'save') {
+		    $sails.post('/inventory/bulkmove', {
+			lots : $('#bulk').dataTable().fnGetData(),
+			value : $rootScope.currentModal.locationID
+		    }).success(function(data) {
+			if (data.error != undefined) { // USER NO
+			    // LONGER LOGGED
+			    // IN!!!!!
+			    location.reload(); // Will boot back to
+			    // login screen
+			}
+			if (data.success) {
+			    alert('saved bulkmove');
+//			    $scope.retrieveId = $scope.selectedCode;
+//			    $rootScope.updateDpCodesDataTable();
+			}
+		    }).error(function(data) {
+			alert('err!');
+		    });
+
+		    // $('#bulk').dataTable().api()
+		    // $sails.post('/dpcodes/save',
+		    // $rootScope.modalSelectedCode).success(function(data) {
+		    // if (data.error != undefined) { // USER NO
+		    // // LONGER LOGGED
+		    // // IN!!!!!
+		    // location.reload(); // Will boot back to
+		    // // login screen
+		    // }
+		    // if (data.success) {
+		    // $scope.retrieveId = $scope.selectedCode;
+		    // $rootScope.updateDpCodesDataTable();
+		    // }
+		    // }).error(function(data) {
+		    // alert('err!');
+		    // });
+		}
+	    });
 	}
 
-	$rootScope.resetInventoryPageNumber = function() {
-	    vm.pageReset = true;
-	}
-
-	$scope.bulkMove = function(){
-	    
-	}
 	$scope.exportList = function() {
-	    // $rootScope.currentModal = $modal.open({
-	    // templateUrl : 'export-contacts-modal',
-	    // size : 'md',
-	    // backdrop : true
-	    // });
-	    // $rootScope.exporting_contacts = true;
-	    //
-	    // $sails.post('/contacts/export', {
-	    // contact : $rootScope.search_contact
-	    // }).success(function(response) {
-	    // if (response.error != undefined) { // USER NO LONGER
-	    // // LOGGEDIN!!!!!
-	    // location.reload(); // Will boot back to login screen
-	    // }
-	    // if (response.oversize) {
-	    // $rootScope.currentModal.dismiss('oversize');
-	    // return alert('Unable to export ' + response.recordsFiltered + '
-	    // records. The system can export a maximum of 100,000 records.');
-	    //
-	    // }
-	    // $timeout(function() {
-	    // // $rootScope.pdfurl = response.pdfurl;
-	    // $rootScope.contact_export_csvurl = response.csvurl;
-	    // $rootScope.contact_export_dbfurl = response.dbfurl;
-	    // delete $rootScope.exporting_contacts;
-	    // }, 0);
-	    // });
-	}
 
-	/*
-	 * $scope.$on('refreshContactsx', function(event, args){
-	 * //console.log('deb'); vm.contact = args;
-	 * $timeout(vm.dtOptions.reloadData,500); //(); });
-	 */
+	}
 
 	function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    var unsavedMessage = 'You have unsaved changes pending. Are you sure you want to discard these changes? Press Cancel to go back and save your changes.';
@@ -649,101 +637,6 @@ angular.module('xenon.controllers.inventory', [])
 		// it
 		// green.
 	    }, 0);
-
-	    // $rootScope.$broadcast("getinventory", {
-	    // id : aData.id
-	    // });
-	    // // if(aData.id == $contact.id){
-	    // $('tr').removeClass('selected');
-	    // $(nRow).addClass('selected');
-	    // }
-	    // console.log('here');
-	    // vm.message = info.DONOR2 + ' - ' + info.FNAME;
-	}
-
-	// function rowClicked(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-	// $('tr').removeClass('selected');
-	// $(nRow).addClass('selected');
-	// $timeout(function() {
-	// $scope.selectedOrder = aData;
-	// }, 0);
-	// }
-
-	$scope.isDatatableEditDisabled = function() {
-	    return $scope.selectedInventory == null;
-	}
-
-	$scope.editDatatableRow = function(modal_id, modal_size, modal_backdrop) {
-	    $sails.post("/inventory/getinventory", {
-		id : $scope.selectedInventory.id
-	    }).success(function(data) {
-		if (data.error != undefined) { // USER NO LONGER LOGGED IN!!!!!
-		    location.reload(); // Will boot back to login screen
-		}
-		if (data.success) {
-		    // $rootScope.modalSelectedOrder =
-		    // angular.copy(data.dpcode);
-		    // $rootScope.currentModal = $modal.open({
-		    // templateUrl : modal_id,
-		    // size : modal_size,
-		    // backdrop : typeof modal_backdrop == 'undefined' ? true :
-		    // modal_backdrop
-		    // });
-		    // $rootScope.currentModal.result.then(function(selectedItem)
-		    // {
-		    // }, function(triggerElement) {
-		    // if (triggerElement == 'save') {
-		    // $sails.post('/dpcodes/save',
-		    // $rootScope.modalSelectedCode).success(function(data) {
-		    // if (data.error != undefined) { // USER NO
-		    // // LONGER LOGGED
-		    // // IN!!!!!
-		    // location.reload(); // Will boot back to
-		    // // login screen
-		    // }
-		    // if (data.success) {
-		    // $scope.retrieveId = $scope.selectedCode;
-		    // $rootScope.updateDpCodesDataTable();
-		    // }
-		    // }).error(function(data) {
-		    // alert('err!');
-		    // });
-		    // }
-		    // });
-		}
-	    }).error(function(data) {
-		alert('err!');
-	    });
-	};
-
-	$scope.deleteDatatableRow = function(modal_id, modal_size) {
-	    // $rootScope.currentModal = $modal.open({
-	    // templateUrl : modal_id,
-	    // size : modal_size,
-	    // backdrop : true
-	    // });
-	    // $rootScope.deleteModalText = $scope.selectedCode.id + ' ' +
-	    // $scope.selectedCode.FIELD + ' ' + $scope.selectedCode.CODE + ' '
-	    // + $scope.selectedCode.DESC;
-	    // $rootScope.currentModal.result.then(function(selectedItem) {
-	    // }, function(triggerElement) {
-	    // if (triggerElement == 'delete') {
-	    // $sails.post('/dpcodes/destroy',
-	    // $scope.selectedCode).success(function(data) {
-	    // if (data.error != undefined) { // USER NO LONGER LOGGED
-	    // // IN!!!!!
-	    // location.reload(); // Will boot back to login
-	    // // screen
-	    // }
-	    // if (data.success) {
-	    // // $scope.retrieveId = $scope.selectedCode;
-	    // $rootScope.updateDpCodesDataTable();
-	    // }
-	    // }).error(function(data) {
-	    // alert('err!');
-	    // });
-	    // }
-	    // });
 	}
 
 	$scope.addInventory = function() {
@@ -776,45 +669,6 @@ angular.module('xenon.controllers.inventory', [])
 	    $rootScope.selectedLot.quantity = isNaN(parseInt($rootScope.selectedLot.quantity)) ? 0 : parseInt($rootScope.selectedLot.quantity);
 	    $rootScope.selectedLotChanged = true;
 	    $rootScope.changes_pending = false;
-	};
-
-	$scope.addDatatableRow = function(modal_id, modal_size) {
-	    // $('#' +
-	    // $scope.tableId).find('tr.selected').removeClass('selected');
-	    // $scope.selectedCode = null;
-	    // $rootScope.modalSelectedCode = {
-	    // id : null,
-	    // FIELD : $rootScope.dpsearch.field,
-	    // CODE : null,
-	    // DESC : null,
-	    // CATEGORY : null
-	    // };
-	    // $rootScope.currentModal = $modal.open({
-	    // templateUrl : modal_id,
-	    // size : modal_size,
-	    // backdrop : typeof modal_backdrop == 'undefined' ? true :
-	    // modal_backdrop
-	    // });
-	    // $rootScope.currentModal.result.then(function(selectedItem) {
-	    // }, function(triggerElement) {
-	    // if (triggerElement == 'save') {
-	    // $sails.post('/dpcodes/save',
-	    // $rootScope.modalSelectedCode).success(function(data) {
-	    // if (data.error != undefined) { // USER NO LONGER LOGGED
-	    // // IN!!!!!
-	    // location.reload(); // Will boot back to login
-	    // // screen
-	    // }
-	    // if (data.success) {
-	    // // $scope.retrieveId = $scope.selectedCode;
-	    // $rootScope.updateDpCodesDataTable();
-	    // }
-	    // }).error(function(data) {
-	    // alert('err!');
-	    // });
-	    // }
-	    // });
-
 	};
 
 	(function() {

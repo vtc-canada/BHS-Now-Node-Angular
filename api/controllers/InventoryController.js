@@ -22,6 +22,23 @@ module.exports = {
 	    });
 	}
     },
+    bulkmove : function(req, res) {
+	var lots = req.body.lots;
+	var value = req.body.value;
+	var lotIDs = [];
+	for (var i = 0; i < lots.length; i++) {
+	    lotIDs.push(lots[i].id);
+	}
+	lotIDs = lotIDs.join(',');
+
+	Database.dataSproc('INV_UpdateLotLocation', [ lotIDs, value, req.session.user.username ], function(err, result) {
+	    if (err)
+		return console.log(err.toString())
+	    res.json({
+		success : true
+	    });
+	})
+    },
     save : function(req, res) {
 	var lot = req.body.lot;
 
@@ -50,10 +67,6 @@ module.exports = {
 		});
 	    });
 	} else {
-
-	    // lot.brandID, lot.typeID, lot.serial_no, lot.notes,
-
-	    // lot.tread_depth, lot.side_wall, lot.tire_type, lot.tire_size,
 	    Database.dataSproc('INV_UpdateLot', [ lot.id, lot.uomID, lot.quantity, lot.price, lot.date_added, null, req.session.user.username, propValsID, propvals ], function(err, result) {
 		if (err)
 		    return console.log(err.toString());
@@ -62,29 +75,8 @@ module.exports = {
 		    success : true,
 		    lot : lot
 		});
-//		setTimeout(function() {
-//		    SecurityService.sendMessage(null, {
-//			verb : 'lotUpdate',
-//			data : lot
-//		    });
-//		}, 100);
-
-		// for(var key in sails.io.rooms){
-		// if(key.substring(0,6)=='/user_'){
-		// users[parseInt(key.substring(6,key.length))] = true;
-		// sails.io.sockets.emit('user_'+parseInt(key.substring(6,key.length)),{verb:'reload'});
-		// }
-		// }
-
 	    });
 	}
-	//
-	// var lotId = lot.id;
-	//
-	// delete lot.id;
-	//
-	// var otherAddresses = contact.otherAddresses;
-	// var dtmail = contact.dtmail;
     },
     'get-lots-details' : function(req, res) {
 	Database.dataSproc('INV_GetLots', [], function(err, response) {
