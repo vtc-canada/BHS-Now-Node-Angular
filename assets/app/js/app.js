@@ -42,6 +42,16 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 	if(message.verb == "lotUpdate"&&$rootScope.lotUpdate){
 	    $rootScope.lotUpdate(message.data);
 	}
+	if(message.verb == "lotLocationUpdate"&&$rootScope.lotLocationUpdate){
+	    $rootScope.lotLocationUpdate(message.data);
+	}
+	if(message.verb == "lotQuantityUpdate"&&$rootScope.lotQuantityUpdate){
+	    $rootScope.lotQuantityUpdate(message.data);
+	}
+	if(message.verb == "lotStatusUpdate"&&$rootScope.lotStatusUpdate){
+	    $rootScope.lotStatusUpdate(message.data);
+	}
+	//TODO QUANTITY
 //	if(message.verb === "report"&&$rootScope.reportHandler){
 //	    $rootScope.reportHandler(message.html);
 //	}

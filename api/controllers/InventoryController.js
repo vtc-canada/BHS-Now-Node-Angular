@@ -29,15 +29,67 @@ module.exports = {
 	for (var i = 0; i < lots.length; i++) {
 	    lotIDs.push(lots[i].id);
 	}
-	lotIDs = lotIDs.join(',');
+	var lotIDsJoin = lotIDs.join(',');
 
-	Database.dataSproc('INV_UpdateLotLocation', [ lotIDs, value, req.session.user.username ], function(err, result) {
+	Database.dataSproc('INV_UpdateLotLocation', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
 	    if (err)
 		return console.log(err.toString())
+		
 	    res.json({
 		success : true
 	    });
+	    console.log('pushing location lots update');
+	    SecurityService.sendMessage(null, {
+		verb : 'lotLocationUpdate',
+		data : {lotIDs:lotIDs, locationID : value}
+	    });
 	})
+    },
+    bulkquantity : function(req,res){
+	var lots = req.body.lots;
+	var value = req.body.value;
+	var lotIDs = [];
+	for (var i = 0; i < lots.length; i++) {
+	    lotIDs.push(lots[i].id);
+	}
+	var lotIDsJoin = lotIDs.join(',');
+
+	Database.dataSproc('INV_UpdateLotQuantity', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
+	    if (err)
+		return console.log(err.toString())
+		
+	    res.json({
+		success : true
+	    });
+	    console.log('pushing quantity lots update');
+	    SecurityService.sendMessage(null, {
+		verb : 'lotQuantityUpdate',
+		data : {lotIDs:lotIDs, quantity : value}
+	    });
+	})
+    },
+    bulkstatus : function(req,res){
+	var lots = req.body.lots;
+	var value = req.body.value;
+	var lotIDs = [];
+	for (var i = 0; i < lots.length; i++) {
+	    lotIDs.push(lots[i].id);
+	}
+	var lotIDsJoin = lotIDs.join(',');
+
+	Database.dataSproc('INV_UpdateLotStatus', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
+	    if (err)
+		return console.log(err.toString())
+		
+	    res.json({
+		success : true
+	    });
+	    console.log('pushing status lots update');
+	    SecurityService.sendMessage(null, {
+		verb : 'lotStatusUpdate',
+		data : {lotIDs:lotIDs, lotStatusID : value}
+	    });
+	});
     },
     save : function(req, res) {
 	var lot = req.body.lot;
