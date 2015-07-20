@@ -10,13 +10,13 @@ BEGIN
 	UPDATE inv_cur_lots 
 
 	SET inv_cfg_uom_id = uomID
-		,price = price
 		,born_date = dateAdded
 		,expiration_date = expirationDate
 		,user_name = userName
 	WHERE inv_cur_lots.id = lotID;
 
 	CALL `INV_UpdateLotQuantity` (lotID, quantity, userName);
+	CALL `INV_UpdateLotPrice` (lotID, price, userName);
 	CALL `INV_UpdateLotCustomProps` (lotID, propValsID, propVals, userName);
 
 
