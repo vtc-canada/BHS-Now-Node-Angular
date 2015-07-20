@@ -29,6 +29,20 @@ module.exports = {
 			return callback(err);
 		    callback(null,result[0]);
 		});
+	    },
+	    locations : function(callback) {
+		Database.dataSproc('INV_GetLocations',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
+	    },
+	    lot_status : function(callback) {
+		Database.dataSproc('INV_GetLotStatus',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
 	    }
 	}, function(err, results) {
 	    if (err)

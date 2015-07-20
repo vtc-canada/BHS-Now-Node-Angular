@@ -1,32 +1,10 @@
-<page-title ng-if="layoutOptions.pageTitles" title="Inventory" description=""></page-title>
+<page-title ng-if="layoutOptions.pageTitles" title="History" description=""></page-title>
 
 
-
-<script type="text/ng-template" id="export-inventory-modal">
+<script type="text/ng-template" id="save-history-template-modal">
 	<div class="modal-header">
 		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
-		<h4 class="modal-title">Inventory Export</h4>
-	</div>
-	
-	<div class="modal-body form-horizontal">
-		<div ng-show="exporting_inventory">
-		Generating Export
-		<span >&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span>
-		</div>
-		<div ng-hide="exporting_inventory">
-			<a class="btn btn-success" href="{{inventory_export_pdf}}" target="_blank" >Download PDF</a>
-		</div>
-	</div>
-	
-	<div class="modal-footer">
-		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
-	</div>
-</script>
-
-<script type="text/ng-template" id="save-inventory-template-modal">
-	<div class="modal-header">
-		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
-		<h4 class="modal-title">Save Inventory Search Template</h4>
+		<h4 class="modal-title">Save History Search Template</h4>
 	</div>
 	
 	<div class="modal-body form-horizontal">
@@ -46,8 +24,7 @@
 	</div>
 </script>
 
-
-<div ng-controller="InventoryDatatable as showCase">
+<div ng-controller="HistoryDatatable as showCase">
 	
 
 	<div class="row" >
@@ -78,67 +55,80 @@
 				<div class="panel-body always-visible">
 	
 					<form role="form" class="form-horizontal">
-						<div class="row">
-							<div class="col-md-6">
+						<div class="form-group">
+										<label class="col-sm-5 control-label" for="history_search.id">Lot ID</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.id" ng-model="history_search.id" ng-model-options="" placeholder="Lot ID">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.date">Date Range:</label>
+											<div class="col-sm-7">
+												<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="history_search.date_MIN" ng-model-max="history_search.date_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+													<i class="fa-calendar"></i>
+													<span></span>
+												</div>
+												<abbr ng-show="history_search.date_MIN != null" class="isn-calendar-clear" ng-click="history_search.date_MIN = null; history_search.date_MAX = null;" ></abbr>
+											</div>
+										</div>
+										<!-- <div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.serial_no">Serial #</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.serial_no" ng-model="history_search.serial_no" ng-model-options="" placeholder="Serial #">
+											</div>
+										</div> -->
+										
+										
+						<!-- <div class="row">
+							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-lg-6">
-										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.id">Inventory ID</label>
+										
+									 <div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.brand">Brand</label>
 					
 											<div class="col-sm-7">
-												<input type="text" class="form-control" id="inventory_search.id" ng-model="inventory_search.id" ng-model-options="" placeholder="Inventory #">
+												<select2 class="form-control"  id="history_search.brand" name="history_search.brand" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="history_search.brand" placeholder="Brands" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.serial_no">Serial #</label>
+											<label class="col-sm-5 control-label" for="history_search.type">Type</label>
 					
 											<div class="col-sm-7">
-												<input type="text" class="form-control" id="inventory_search.serial_no" ng-model="inventory_search.serial_no" ng-model-options="" placeholder="Serial #">
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.brand">Brand</label>
-					
-											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.brand" name="inventory_search.brand" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="inventory_search.brand" placeholder="Brands" multiple></select2>
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.type">Type</label>
-					
-											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.type" name="inventory_search.type" ng-options="title.id as title.label for title in dropdowns.types" ng-model="inventory_search.type" placeholder="Types" multiple></select2>
+												<select2 class="form-control"  id="history_search.type" name="history_search.type" ng-options="title.id as title.label for title in dropdowns.types" ng-model="history_search.type" placeholder="Types" multiple></select2>
 				
 											</div>
 										</div>
 									</div>
 									<div class="col-lg-6">
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.quantity">Quantity:</label>
+											<label class="col-sm-5 control-label" for="history_search.quantity">Quantity:</label>
 					
 											<div class="col-sm-7">
-												<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="100" ng-model-min="inventory_search.quantity_MIN" ng-model-max="inventory_search.quantity_MAX" data-min-val="0" data-max-val="100"  data-step="1"></div>
+												<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="100" ng-model-min="history_search.quantity_MIN" ng-model-max="history_search.quantity_MAX" data-min-val="0" data-max-val="100"  data-step="1"></div>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.uom">Unit of Measurement</label>
+											<label class="col-sm-5 control-label" for="history_search.uom">Unit of Measurement</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.uom" name="inventory_search.uom" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="inventory_search.uom" placeholder="Unit Of Measurement" multiple></select2>
+												<select2 class="form-control"  id="history_search.uom" name="history_search.uom" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="history_search.uom" placeholder="Unit Of Measurement" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.lotStatus">Lot Status</label>
+											<label class="col-sm-5 control-label" for="history_search.lotStatus">Lot Status</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.lotStatus" name="inventory_search.lotStatus" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="inventory_search.lotStatus" placeholder="Lot Status" multiple></select2>
+												<select2 class="form-control"  id="history_search.lotStatus" name="history_search.lotStatus" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="history_search.lotStatus" placeholder="Lot Status" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.location">Location</label>
+											<label class="col-sm-5 control-label" for="history_search.location">Location</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.location" name="inventory_search.location" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="inventory_search.location" placeholder="Location" multiple></select2>
+												<select2 class="form-control"  id="history_search.location" name="history_search.location" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="history_search.location" placeholder="Location" multiple></select2>
 											</div>
 										</div>
 									</div>
@@ -148,70 +138,61 @@
 								<div class="row">
 									<div class="col-lg-6">
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.tread_depth">Tread Depth</label>
+											<label class="col-sm-5 control-label" for="history_search.tread_depth">Tread Depth</label>
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.tread_depth" name="inventory_search.tread_depth" ng-options="title.id as title.label for title in dropdowns.tread_depths" ng-model="inventory_search.tread_depth" multiple></select2>
+												<select2 class="form-control"  id="history_search.tread_depth" name="history_search.tread_depth" ng-options="title.id as title.label for title in dropdowns.tread_depths" ng-model="history_search.tread_depth" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.side_wall">Side Wall</label>
+											<label class="col-sm-5 control-label" for="history_search.side_wall">Side Wall</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.side_wall" name="inventory_search.side_wall" ng-options="title.id as title.label for title in dropdowns.side_walls" ng-model="inventory_search.side_wall" multiple></select2>
+												<select2 class="form-control"  id="history_search.side_wall" name="history_search.side_wall" ng-options="title.id as title.label for title in dropdowns.side_walls" ng-model="history_search.side_wall" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.tire_type">Tire Type</label>
+											<label class="col-sm-5 control-label" for="history_search.tire_type">Tire Type</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.tire_type" name="inventory_search.tire_type" ng-options="title.id as title.label for title in dropdowns.tire_types" ng-model="inventory_search.tire_type" multiple></select2>
+												<select2 class="form-control"  id="history_search.tire_type" name="history_search.tire_type" ng-options="title.id as title.label for title in dropdowns.tire_types" ng-model="history_search.tire_type" multiple></select2>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.tire_size">Tire Size</label>
+											<label class="col-sm-5 control-label" for="history_search.tire_size">Tire Size</label>
 					
 											<div class="col-sm-7">
-												<select2 class="form-control"  id="inventory_search.tire_size" name="inventory_search.tire_size" ng-options="title.id as title.label for title in dropdowns.tire_sizes" ng-model="inventory_search.tire_size" multiple></select2>
+												<select2 class="form-control"  id="history_search.tire_size" name="history_search.tire_size" ng-options="title.id as title.label for title in dropdowns.tire_sizes" ng-model="history_search.tire_size" multiple></select2>
 											</div>
 										</div>
 									</div>
 									<div class="col-lg-6">
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.price">Price:</label>
+											<label class="col-sm-5 control-label" for="history_search.price">Price:</label>
 					
 											<div class="col-sm-7">
-												<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="1000" ng-model-min="inventory_search.price_MIN" ng-model-max="inventory_search.price_MAX" data-min-val="0" data-max-val="1000"  data-step="10"></div>
+												<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="1000" ng-model-min="history_search.price_MIN" ng-model-max="history_search.price_MAX" data-min-val="0" data-max-val="1000"  data-step="10"></div>
 											</div>
 										</div>
-										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.date_added">Date Range:</label>
-											<div class="col-sm-7">
-												<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="inventory_search.date_added_MIN" ng-model-max="inventory_search.date_added_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-													<i class="fa-calendar"></i>
-													<span></span>
-												</div>
-												<abbr ng-show="inventory_search.date_added_MIN != null" class="isn-calendar-clear" ng-click="inventory_search.date_added_MIN = null; inventory_search.date_added_MAX = null;" ></abbr>
-											</div>
-										</div>
+										
 												
 												
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.user_name">Username</label>
+											<label class="col-sm-5 control-label" for="history_search.user_name">Username</label>
 					
 											<div class="col-sm-7">
-												<input type="text" class="form-control" id="inventory_search.user_name" ng-model="inventory_search.user_name" ng-model-options="" placeholder="Username">
+												<input type="text" class="form-control" id="history_search.user_name" ng-model="history_search.user_name" ng-model-options="" placeholder="Username">
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label" for="inventory_search.notes">Notes</label>
+											<label class="col-sm-5 control-label" for="history_search.notes">Notes</label>
 											<div class="col-sm-7">
-												<input type="text" class="form-control" id="inventory_search.notes" ng-model="inventory_search.notes" ng-model-options="" placeholder="Notes">
+												<input type="text" class="form-control" id="history_search.notes" ng-model="history_search.notes" ng-model-options="" placeholder="Notes">
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
+						</div> -->
 						
 						
 						
@@ -225,10 +206,10 @@
 	    
 	    
 						<!-- <div class="form-group">
-							<label class="col-sm-2 control-label" for="inventory_search.quantity">Quantity</label>
+							<label class="col-sm-2 control-label" for="history_search.quantity">Quantity</label>
 	
 							<div class="col-sm-10">
-								<input type="number" class="form-control" id="inventory_search.quantity" ng-model="inventory_search.quantity" ng-model-options="" placeholder="Inventory #">
+								<input type="number" class="form-control" id="history_search.quantity" ng-model="history_search.quantity" ng-model-options="" placeholder="Inventory #">
 							</div>
 						</div> -->
 						<!-- <div class="form-group">
@@ -302,15 +283,15 @@
 		</div>
 	</div>
 	
-	<div class="panel panel-default inventory-datatable-panel" >
+	<div class="panel panel-default history-datatable-panel" >
 		<div class="panel-heading">
-			<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspInventory</h3>
+			<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspHistory</h3>
 			
 		</div>
 		<div class="panel-body">
-			<div class="row">
+			<!--<div class="row">
 				<div class="col-xs-12">
-					<div class="pull-left pull-right-stack">
+					 <div class="pull-left pull-right-stack">
 						<div class="btn-group" dropdown id="select_lots_dropdown">
 							<div type="button" class="btn btn-white nocursor dropdown-toggle-margin-clear" ng-click="outerSelectCheckboxButton($event)"  >
 								
@@ -361,7 +342,7 @@
 					</div>
 					
 				</div>
-			</div>
+			</div> -->
 			
 			<div class="row">
 				<div class="col-xs-12 ">
@@ -374,19 +355,6 @@
 			<table datatable="" id="inventory" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
 		        <thead>
 		        	<tr>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
 						<th ></th>
 						<th ></th>
 						<th ></th>
@@ -411,21 +379,12 @@
 			
 		</div>
 	</div>
-	<div ng-controller="InventorySection">
+	<!-- <div ng-controller="InventorySection">
 		<fieldset ng-disabled="!checkPolicy('/app/inventory',0,1,1,0)">
 			<div class="panel panel-default inventory-form" ng-if="selectedLot.id"  id="inventory_form" >
 				<div class="panel-heading">
 					<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspInventory</h3>
-					<!-- <div class="pull-right isn-panel-pull-right">
-						<div type="submit" class="btn btn-white" ng-class="{true: '', false: 'disabled'}[contact.is_modified == false]" ng-click="exportContact()">Export PDF<span ng-show="false">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
-					</div> -->
-					<!-- <div class="pull-right pull-right-stack isn-panel-pull-right">
-						<div type="submit" class="btn btn-danger" ng-class="{true: 'disabled', false: ''}[contact.id == 'new']" ng-click="deleteContact()">{{ contact.id == 'new'?'Cancel':'Delete' }}</div>
-					</div> -->	
 					
-					<div class="pull-right pull-right-stack isn-panel-pull-right">
-						<div class="btn btn-white pull-right"  ng-click="exportInventory();">Export PDF</div>
-					</div>
 											
 					<div class="pull-right pull-right-stack isn-panel-pull-right" ng-show="checkPolicy('/app/inventory',0,1,1,0)">
 						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[changes_pending == false]" ng-click="saveInventory()">Save<span ng-show="inventory_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
@@ -454,7 +413,7 @@
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="col-sm-5 control-label" for="inventory_search.brandID">Brand</label>
+												<label class="col-sm-5 control-label" for="history_search.brandID">Brand</label>
 												<div class="col-sm-7">
 													<select2 class="form-control"  id="selectedLot.brandID" name="selectedLot.brandID" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="selectedLot.brandID" placeholder="Brands" ></select2>
 												</div>
@@ -527,7 +486,7 @@
 												<label class="col-sm-5 control-label" for="selectedLot.price">Price:</label>
 						
 												<div class="col-sm-7">
-													<input type="number" class="form-control" ng-model="selectedLot.price" > <!-- ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" > -->
+													<input type="number" class="form-control" ng-model="selectedLot.price" > 
 													
 												</div>
 											</div>
@@ -536,29 +495,11 @@
 												<div class="col-sm-7">
 													<textarea ng-disabled="true||!checkPolicy('/app/inventory',0,1,1,0)" maxlength="255" class="form-control" name="selectedLot.notes" id="selectedLot.notes" ng-model="selectedLot.notes" placeholder="Notes"></textarea>
 
-													<!-- <input type="text" class="form-control" id="selectedLot.notes" ng-model="selectedLot.notes" ng-model-options="" > -->
 												</div>
 											</div>
-											<!-- <div class="form-group">
-												<label class="col-sm-2 control-label" for="inventory_search.date_added">Date Range:</label>
-												<div class="col-sm-10">
-													<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="inventory_search.date_added_MIN" ng-model-max="inventory_search.date_added_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
-														<i class="fa-calendar"></i>
-														<span></span>
-													</div>
-													<abbr ng-show="inventory_search.date_added_MIN != null" class="isn-calendar-clear" ng-click="inventory_search.date_added_MIN = null; inventory_search.date_added_MAX = null;" ></abbr>
-												</div>
-											</div> -->
 											
 											
 											
-											<!-- <div class="form-group">
-												<label class="col-sm-5 control-label" for="selectedInventory.LNAME">Last Name:</label>
-						
-												<div class="col-sm-7">
-													<input type="text" class="form-control" name="selectedInventory.LNAME" id="selectedInventory.LNAME" ng-model="selectedInventory.LNAME"  data-validate="required" data-message-required="This is a required field." placeholder="Required Field">
-												</div>
-											</div> -->
 										</div>
 										
 										
@@ -574,76 +515,6 @@
 				</div>
 			</div>
 		</fieldset>
-	</div>
-	<script type="text/ng-template" id="bulk-operation-modal">
-		<div class="modal-header">
-			<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
-			<h4 class="modal-title">{{currentModal.title}}</h4>
-		</div>
-		
-		<div class="modal-body form-horizontal">
-			<table datatable="" id="bulk" dt-options="dtBulkOptions" dt-columns="dtBulkColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
-		        <thead>
-		        	<tr>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-						<th ></th>
-					</tr>
-		        </thead>
-		        <tbody></tbody>
-		    </table>
-
-			<form role="form" id="bulk_form" class="form-horizontal validate bulk-form">
-				<div class="form-group" ng-show="currentModal.bulkmode =='Move'">
-					<label class="col-sm-4 control-label" for="currentModal_locationID">Destination:</label>
-		
-					<div class="col-sm-8">
-						<!-- <input class="form-control" id="currentModal.locationID" name="currentModal.locationID"  data-validate="required" data-message-required="This is a required field." ng-model="currentModal.locationID" placeholder="Location" > -->
-						<select2 class="form-control" data-validate="required" data-message-required="This is a required field." id="currentModal_locationID" name="currentModal.locationID" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="currentModal.locationID" placeholder="Location" ></select2> 
-					</div>
-				</div>
-				<div class="form-group" ng-show="currentModal.bulkmode =='Quantity'">
-					<label class="col-sm-4 control-label" for="currentModal_quantity">Quantity:</label>
-		
-					<div class="col-sm-8">
-						<input class="form-control" type="text" ng-model="currentModal.quantity" id="currentModal_quantity" name="currentModal.quantity" data-validate="required,number" data-message-required="This is a required field." placeholder="Quantity" >
-					</div>
-				</div>
-				<div class="form-group" ng-show="currentModal.bulkmode =='Status'">
-					<label class="col-sm-4 control-label" for="currentModal_lotStatus">Status:</label>
-		
-					<div class="col-sm-8">
-						<select2 class="form-control" data-validate="required" data-message-required="This is a required field." id="currentModal_lotStatus" name="currentModal.lotStatus" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="currentModal.lotStatus" placeholder="Status" ></select2> 
-					</div>
-				</div>
-			</form>
-
-		</div>
-		
-		<div class="modal-footer">
-			<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
-			<!-- <button type="button" class="btn btn-primary" ng-click="doBulkMove();" >{{currentModal.bulkmode}}</button> --> <!-- currentModal.dismiss('save') -->
-			<button type="button" class="btn btn-primary" ng-click="doBulkMove();" ng-show="currentModal.bulkmode=='Move'">Move</button> <!-- currentModal.dismiss('save') -->
-			<button type="button" class="btn btn-primary" ng-click="doBulkQuantity();" ng-show="currentModal.bulkmode=='Quantity'">Update</button>
-			<button type="button" class="btn btn-primary" ng-click="doBulkStatus();" ng-show="currentModal.bulkmode=='Status'">Update</button>
-		</div>
-	</script>
+	</div> -->
+	
 </div>

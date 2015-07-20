@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.controllers.inventory', 'xenon.controllers.materials', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'ngSanitize', 'rt.select2' ]);
+var app = angular.module('xenon-app', [ 'ngCookies', 'ui.router', 'ui.bootstrap', 'oc.lazyLoad', 'preloaded', 'xenon.controllers', 'xenon.controllers.inventory', 'xenon.controllers.history', 'xenon.controllers.materials', 'xenon.directives', 'xenon.factory', 'xenon.services', 'datatables', 'FBAngular', 'ngSails', 'ngSanitize', 'rt.select2' ]);
 
 app.filter('orderObjectBy', function() {
     return function(items, field, reverse) {
@@ -30,7 +30,25 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 
     $sails.get('/security/join').success(function(response) {
 	if (response.error != undefined) {
-	    location.reload();
+	   return location.reload();
+	}
+	if(response.success){
+//	    toastr.success(response.success, 'Success', {
+//		"closeButton" : true,
+//		"debug" : false,
+//		"newestOnTop" : false,
+//		"progressBar" : false,
+//		"positionClass" : "toast-top-right",
+//		"preventDuplicates" : false,
+//		"showDuration" : "300",
+//		"hideDuration" : "1000",
+//		"timeOut" : "5000",
+//		"extendedTimeOut" : "1000",
+//		"showEasing" : "swing",
+//		"hideEasing" : "linear",
+//		"showMethod" : "fadeIn",
+//		"hideMethod" : "fadeOut"
+//	    });
 	}
     }).error(function(data) {
 	alert('err!');
@@ -42,6 +60,16 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 	if(message.verb == "lotUpdate"&&$rootScope.lotUpdate){
 	    $rootScope.lotUpdate(message.data);
 	}
+	if(message.verb == "lotLocationUpdate"&&$rootScope.lotLocationUpdate){
+	    $rootScope.lotLocationUpdate(message.data);
+	}
+	if(message.verb == "lotQuantityUpdate"&&$rootScope.lotQuantityUpdate){
+	    $rootScope.lotQuantityUpdate(message.data);
+	}
+	if(message.verb == "lotStatusUpdate"&&$rootScope.lotStatusUpdate){
+	    $rootScope.lotStatusUpdate(message.data);
+	}
+	//TODO QUANTITY
 //	if(message.verb === "report"&&$rootScope.reportHandler){
 //	    $rootScope.reportHandler(message.html);
 //	}
@@ -86,6 +114,35 @@ app.config(function($preloaded, $user, $stateProvider, $urlRouterProvider, $ocLa
 	    $rootScope.firstname = $user.firstname;
 	}
     })// Dashboards
+    .state('app.history', {
+	url : '/history',
+	templateUrl : appHelper.templatePath('history/index'),
+	resolve : {
+	    jQueryValidate : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.jQueryValidate, ]);
+	    },
+	    datepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.datepicker, ]);
+	    },
+	    daterangepicker : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.core.moment, ASSETS.forms.daterangepicker, ]);
+	    },
+	    jqui : function($ocLazyLoad) {
+		return $ocLazyLoad.load({
+		    files : ASSETS.core.jQueryUI
+		});
+	    },
+	    inputmask : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.inputmask, ]);
+	    },
+	    select2 : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.forms.select2, ]);
+	    },
+	    deps : function($ocLazyLoad) {
+		return $ocLazyLoad.load([ ASSETS.tables.rwd, ASSETS.tables.scrollTableBody, ]);
+	    }
+	}
+    })
     .state('app.inventory', {
 	url : '/inventory',
 	templateUrl : appHelper.templatePath('inventory/index'),

@@ -1,8 +1,10 @@
-DROP PROCEDURE if EXISTS `INV_GetLotOperationHistory` ;
+
+DROP procedure IF EXISTS `INV_GetLotOperationHistory`;
+
 DELIMITER $$
 CREATE PROCEDURE  `INV_GetLotOperationHistory` (IN lotID INT, IN startTime DATETIME, IN endTime DATETIME) 
 BEGIN
-	SELECT inv_cur_lots.id as 'lot_id'
+	SELECT inv_cur_lots.id as 'lotID'
 		,inv_cur_lots.serial_no
 		,inv_cfg_lot_operations.operation
 		,inv_cfg_custom_props.property as 'custom_property'
@@ -18,7 +20,7 @@ BEGIN
 			WHEN inv_cur_lot_operations.inv_cfg_lot_operations_id = 6 THEN inv_cur_lot_operations.cur_custom_prop_val
 			WHEN inv_cur_lot_operations.inv_cfg_lot_operations_id = 7 THEN inv_cur_lot_operations.cur_price
 		END) AS 'cur_value'
-		,inv_cur_lot_operations.user
+		,inv_cur_lot_operations.user_name AS `user_name`  
 		,inv_cur_lot_operations.last_modified
 	FROM inv_cur_lot_operations
 	INNER JOIN inv_cur_lots ON (inv_cur_lot_operations.inv_cur_lots_id = inv_cur_lots.id)
@@ -31,5 +33,7 @@ BEGIN
 	AND (endTime IS NULL OR endTime >= inv_cur_lot_operations.last_modified)
 	ORDER BY inv_cur_lot_operations.last_modified;
 
-END $$
+END$$
+
 DELIMITER ;
+
