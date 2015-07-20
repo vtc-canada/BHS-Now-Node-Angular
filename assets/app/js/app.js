@@ -30,7 +30,25 @@ app.run(function($pageLoadingBar, $rootScope, $preloaded, $sails, $user) {
 
     $sails.get('/security/join').success(function(response) {
 	if (response.error != undefined) {
-	    location.reload();
+	   return location.reload();
+	}
+	if(response.success){
+//	    toastr.success(response.success, 'Success', {
+//		"closeButton" : true,
+//		"debug" : false,
+//		"newestOnTop" : false,
+//		"progressBar" : false,
+//		"positionClass" : "toast-top-right",
+//		"preventDuplicates" : false,
+//		"showDuration" : "300",
+//		"hideDuration" : "1000",
+//		"timeOut" : "5000",
+//		"extendedTimeOut" : "1000",
+//		"showEasing" : "swing",
+//		"hideEasing" : "linear",
+//		"showMethod" : "fadeIn",
+//		"hideMethod" : "fadeOut"
+//	    });
 	}
     }).error(function(data) {
 	alert('err!');
