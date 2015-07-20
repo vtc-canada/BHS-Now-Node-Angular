@@ -11,7 +11,7 @@ module.exports = {
 	var date_MAX = req.body.date_MAX;
 	var lotID = req.body.lotID;
 
-	Database.dataSproc('INV_GetLotOperationHistory', [lotID, date_MIN, date_MAX], function(err, response) {
+	Database.dataSproc('INV_GetLotOperationHistory', [lotID==''?null:lotID, date_MIN==''?null:date_MIN, date_MAX==''?null:date_MAX], function(err, response) {
 	    if (err)
 		return console.log(err.toString());
 

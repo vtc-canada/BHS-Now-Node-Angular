@@ -2,7 +2,7 @@
 DROP procedure IF EXISTS `INV_GetLotOperationHistory`;
 
 DELIMITER $$
-CREATE PROCEDURE  `INV_GetLotOperationHistory` (IN lotID INT, IN startTime DATETIME, IN endTime DATETIME) 
+CREATE DEFINER=`root`@`%` PROCEDURE `INV_GetLotOperationHistory`(IN lotID INT, IN startTime DATETIME, IN endTime DATETIME)
 BEGIN
 	SELECT inv_cur_lots.id as 'lotID'
 		,inv_cur_lots.serial_no
@@ -20,8 +20,8 @@ BEGIN
 			WHEN inv_cur_lot_operations.inv_cfg_lot_operations_id = 6 THEN inv_cur_lot_operations.cur_custom_prop_val
 			WHEN inv_cur_lot_operations.inv_cfg_lot_operations_id = 7 THEN inv_cur_lot_operations.cur_price
 		END) AS 'cur_value'
-		,inv_cur_lot_operations.user_name AS `user_name`  
-		,inv_cur_lot_operations.last_modified
+		,inv_cur_lot_operations.user_name AS `user_name` 
+		,DATE_FORMAT(inv_cur_lot_operations.last_modified, "%Y-%m-%d") AS `last_modified`
 	FROM inv_cur_lot_operations
 	INNER JOIN inv_cur_lots ON (inv_cur_lot_operations.inv_cur_lots_id = inv_cur_lots.id)
 	INNER JOIN inv_cfg_lot_operations ON (inv_cur_lot_operations.inv_cfg_lot_operations_id = inv_cfg_lot_operations.id)

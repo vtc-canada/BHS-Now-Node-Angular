@@ -863,6 +863,8 @@ directive('tagsinput', function() {
 	    ngModelMax : '='
 	},
 	link : function(scope, el, attr) {
+	    
+	    
 	    if (!jQuery.isFunction(jQuery.fn.daterangepicker))
 		return false;
 
@@ -871,11 +873,11 @@ directive('tagsinput', function() {
 	    // Change the range as you desire
 	    var ranges = {
 		'Today' : [ moment(), moment() ],
-		'Yesterday' : [ moment().subtract('days', 1), moment().subtract('days', 1) ],
-		'Last 7 Days' : [ moment().subtract('days', 6), moment() ],
-		'Last 30 Days' : [ moment().subtract('days', 29), moment() ],
+		'Yesterday' : [ moment().subtract(1, 'days'), moment().subtract(1, 'days') ],
+		'Last 7 Days' : [ moment().subtract(6 , 'days'), moment() ],
+		'Last 30 Days' : [ moment().subtract(29, 'days'), moment() ],
 		'This Month' : [ moment().startOf('month'), moment().endOf('month') ],
-		'Last Month' : [ moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month') ]
+		'Last Month' : [ moment().subtract(1, 'month' ).startOf('month'), moment().subtract(1,'month').endOf('month') ]
 	    };
 
 	    var opts = {
@@ -923,7 +925,11 @@ directive('tagsinput', function() {
 	    });
 
 	    scope.$watch('[ngModelMin,ngModelMax]', function(newValue, oldValue) {
-		if (newValue != oldValue) {
+		this.init = this.init||true;
+		if (newValue != oldValue || this.init) {
+		    if(this.init){
+			this.init=false;
+		    }
 		    //var changed = false;
 		    if (newValue[0] == null || newValue[1] == null) {  // both go null together.
 			var drp = $this.data('daterangepicker');

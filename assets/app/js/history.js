@@ -126,20 +126,12 @@ angular.module('xenon.controllers.history', [])
 	var blankSearch = {
 	    id : '',
 	    // serial_no : '',
-	    date_MIN : '',
-	    date_MAX : '',
+	    date_MIN : moment().subtract( 29, 'days').format('YYYY-MM-DD'),
+	    date_MAX : moment().format('YYYY-MM-DD'),
 	// user_name : '',
 	// notes : ''
 	};
-	$timeout(function(){
-
-		$scope.history_search.date_MIN = '2013-01-13';
-		$scope.history_search.date_MAX = '2014-01-14';
-		
-	},0);
 	$scope.history_search = angular.copy(blankSearch);
-	$scope.history_search.date_MIN = '2013-01-13';
-	$scope.history_search.date_MAX = '2014-01-14';
 //	{
 //	    id : '',
 //	    // serial_no : '',
@@ -158,7 +150,10 @@ angular.module('xenon.controllers.history', [])
 	    // alert('changed');
 	    // $scope.historyDatatable.dataTable.draw();
 	    // $scope.tableId
-//	    $scope.historyDatatable.dataTable.api().draw();
+
+	    $scope.historyDatatable.dataTable.api().ajax.reload(function() {
+	    }, false);
+	    //$scope.historyDatatable.dataTable.api().draw();
 	}, true);
 
 	vm.rowClicked = rowClicked;
@@ -167,9 +162,9 @@ angular.module('xenon.controllers.history', [])
 	    url : '/history/get-operation-history',
 	    type : 'POST'
 	}).withOption('fnServerParams', function(aoData) {
-	    aoData.lotID = $scope.history_search.id;
-	    aoData.date_MIN = $scope.history_search.date_MIN;
-	    aoData.date_MAX = $scope.history_search.date_MAX;
+	    aoData.push({name:'lotID' , value:$scope.history_search.id});
+	    aoData.push({name:'date_MIN' , value:$scope.history_search.date_MIN});
+	    aoData.push({name:'date_MAX' , value:$scope.history_search.date_MAX});
 
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
