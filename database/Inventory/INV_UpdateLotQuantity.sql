@@ -36,7 +36,7 @@ START TRANSACTION;
 			-- Check that it's a new value
 			IF (CAST(@prevQuantity AS UNSIGNED INTEGER) <> newValue) THEN
 				-- Update Lot Operations
-				INSERT INTO inv_cur_lot_operations(inv_cur_lots_id, inv_cfg_lot_operations_id,prev_quantity,cur_quantity, user)
+				INSERT INTO inv_cur_lot_operations(inv_cur_lots_id, inv_cfg_lot_operations_id,prev_quantity,cur_quantity, user_name)
 					VALUES (SUBSTRING_INDEX(lotIDs, ',', 1), 1,  @prevQuantity , newValue, user);
 				-- Update Lot Quantity
 				UPDATE  inv_cur_lots SET quantity = newValue WHERE id = lotID;
