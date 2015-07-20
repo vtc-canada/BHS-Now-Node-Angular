@@ -1,0 +1,520 @@
+<page-title ng-if="layoutOptions.pageTitles" title="History" description=""></page-title>
+
+
+<script type="text/ng-template" id="save-history-template-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Save History Search Template</h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="modal_template">Template Name:</label>
+
+			<div class="col-sm-8">
+				<input type="text" class="form-control" id="modal_template" ng-model="newInventoryTemplateModal.name" ng-model-options="" placeholder="">
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Cancel</button>
+		<button type="button" class="btn btn-secondary" ng-click="saveInventoryTemplate();">Save</button>
+	</div>
+</script>
+
+<div ng-controller="HistoryDatatable as showCase">
+	
+
+	<div class="row" >
+		<div class="col-sm-12">
+			<div class="panel panel-default collapsed">
+				<div class="panel-heading">
+					<h3 class="panel-title"><i class="linecons-search"></i>&nbsp&nbspSearch Filter</h3>
+					<div class="pull-right isn-panel-pull-right">
+						<div class="btn btn-blue " ng-click="searchInventory();">Search</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="isn-button-seperator"></div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="btn btn-white " ng-click="clearTemplates();">Clear</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="btn btn-secondary" ng-click="saveTemplateModal()" >Save Template</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="btn btn-danger" ng-click="deleteTemplate()" ng-show="template!=null">Delete Template</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<!--<div class="btn btn-secondary" ng-click="">Choose</div>-->
+						<select2 class="form-control" id="select2_template" name="template" ng-options="title.id as title.label for title in search_templates" ng-model="template" placeholder="Search Templates..."></select2> 
+					</div>
+				</div>
+				<div class="panel-body always-visible">
+	
+					<form role="form" class="form-horizontal">
+						<div class="form-group">
+										<label class="col-sm-5 control-label" for="history_search.id">Lot ID</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.id" ng-model="history_search.id" ng-model-options="" placeholder="Lot ID">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.date">Date Range:</label>
+											<div class="col-sm-7">
+												<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="history_search.date_MIN" ng-model-max="history_search.date_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+													<i class="fa-calendar"></i>
+													<span></span>
+												</div>
+												<abbr ng-show="history_search.date_MIN != null" class="isn-calendar-clear" ng-click="history_search.date_MIN = null; history_search.date_MAX = null;" ></abbr>
+											</div>
+										</div>
+										<!-- <div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.serial_no">Serial #</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.serial_no" ng-model="history_search.serial_no" ng-model-options="" placeholder="Serial #">
+											</div>
+										</div> -->
+										
+										
+						<!-- <div class="row">
+							<div class="col-xs-12">
+								<div class="row">
+									<div class="col-lg-6">
+										
+									 <div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.brand">Brand</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.brand" name="history_search.brand" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="history_search.brand" placeholder="Brands" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.type">Type</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.type" name="history_search.type" ng-options="title.id as title.label for title in dropdowns.types" ng-model="history_search.type" placeholder="Types" multiple></select2>
+				
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.quantity">Quantity:</label>
+					
+											<div class="col-sm-7">
+												<div class="slider slider-primary"  data-prefix=""  data-min="0" data-max="100" ng-model-min="history_search.quantity_MIN" ng-model-max="history_search.quantity_MAX" data-min-val="0" data-max-val="100"  data-step="1"></div>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.uom">Unit of Measurement</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.uom" name="history_search.uom" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="history_search.uom" placeholder="Unit Of Measurement" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.lotStatus">Lot Status</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.lotStatus" name="history_search.lotStatus" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="history_search.lotStatus" placeholder="Lot Status" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.location">Location</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.location" name="history_search.location" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="history_search.location" placeholder="Location" multiple></select2>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="row">
+									<div class="col-lg-6">
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.tread_depth">Tread Depth</label>
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.tread_depth" name="history_search.tread_depth" ng-options="title.id as title.label for title in dropdowns.tread_depths" ng-model="history_search.tread_depth" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.side_wall">Side Wall</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.side_wall" name="history_search.side_wall" ng-options="title.id as title.label for title in dropdowns.side_walls" ng-model="history_search.side_wall" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.tire_type">Tire Type</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.tire_type" name="history_search.tire_type" ng-options="title.id as title.label for title in dropdowns.tire_types" ng-model="history_search.tire_type" multiple></select2>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.tire_size">Tire Size</label>
+					
+											<div class="col-sm-7">
+												<select2 class="form-control"  id="history_search.tire_size" name="history_search.tire_size" ng-options="title.id as title.label for title in dropdowns.tire_sizes" ng-model="history_search.tire_size" multiple></select2>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.price">Price:</label>
+					
+											<div class="col-sm-7">
+												<div class="slider slider-primary"  data-prefix="$"  data-min="0" data-max="1000" ng-model-min="history_search.price_MIN" ng-model-max="history_search.price_MAX" data-min-val="0" data-max-val="1000"  data-step="10"></div>
+											</div>
+										</div>
+										
+												
+												
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.user_name">Username</label>
+					
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.user_name" ng-model="history_search.user_name" ng-model-options="" placeholder="Username">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label" for="history_search.notes">Notes</label>
+											<div class="col-sm-7">
+												<input type="text" class="form-control" id="history_search.notes" ng-model="history_search.notes" ng-model-options="" placeholder="Notes">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div> -->
+						
+						
+						
+						
+						
+						
+						
+				<!-- 
+	    date_added_MIN : '',
+	    date_added_MAX : '', -->
+	    
+	    
+						<!-- <div class="form-group">
+							<label class="col-sm-2 control-label" for="history_search.quantity">Quantity</label>
+	
+							<div class="col-sm-10">
+								<input type="number" class="form-control" id="history_search.quantity" ng-model="history_search.quantity" ng-model-options="" placeholder="Inventory #">
+							</div>
+						</div> -->
+						<!-- <div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.donor_search">Donor Search</label>
+	
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="orders.donor_search" ng-model="orders.donor_search" ng-model-options="" placeholder="Donor #, Name">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.SHIPFROM">Ship From:</label>
+							<div class="col-sm-10">
+								<select2 class="form-control" ng-options="title.id as title.label for title in ship_from" ng-model="orders.SHIPFROM" placeholder="All" multiple></select2>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.order_type">Order Type:</label>
+							<div class="col-sm-10">
+								<select2 class="form-control" ng-options="title.id as title.label for title in order_types" ng-model="orders.order_type" placeholder="All"></select2>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.HASSHIPDATE">Has Shipped Date:</label>
+							<div class="col-sm-10">
+								<select2 class="form-control" ng-options="title.id as title.label for title in staticyesno" ng-model="orders.HASSHIPDATE" placeholder="All"></select2>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.SHIPDATE">Shipped Date:</label>
+							<div class="col-sm-10">
+								<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="orders.SHIPDATE_MIN" ng-model-max="orders.SHIPDATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+									<i class="fa-calendar"></i>
+									<span></span>
+								</div>
+								<abbr ng-show="orders.SHIPDATE_MIN != null" class="isn-calendar-clear" ng-click="orders.SHIPDATE_MIN = null; orders.SHIPDATE_MAX = null;" ></abbr>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="orders.DATE">Order Placed:</label>
+							<div class="col-sm-10">
+								<div class="daterange daterange-inline add-ranges" data-format="YYYY-MM-DD" ng-model-min="orders.DATE_MIN" ng-model-max="orders.DATE_MAX" data-start-date="2014-01-01" data-end-date="2015-01-01">
+									<i class="fa-calendar"></i>
+									<span></span>
+								</div>
+								<abbr ng-show="orders.DATE_MIN != null" class="isn-calendar-clear" ng-click="orders.DATE_MIN = null; orders.DATE_MAX = null;" ></abbr>
+							</div>
+						</div> -->
+						
+										
+										
+						<!-- <div class="form-group">
+							<label class="col-sm-2 control-label" for="dpcodes_field_search">Search</label>
+	
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="dpcodes_field_search" ng-model="dpsearch.id" ng-model-options="" placeholder="Code ID, Field, Code, Description">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="dpcodes_field_select">Field</label>
+	
+							<div class="col-sm-10">
+								<select2 class="form-control" ng-options="report.id as report.label for report in dpcodefields" ng-model="dpsearch.field" placeholder="All"></select2>
+							</div>
+						</div> -->
+	
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel panel-default history-datatable-panel" >
+		<div class="panel-heading">
+			<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspHistory</h3>
+			
+		</div>
+		<div class="panel-body">
+			<!--<div class="row">
+				<div class="col-xs-12">
+					 <div class="pull-left pull-right-stack">
+						<div class="btn-group" dropdown id="select_lots_dropdown">
+							<div type="button" class="btn btn-white nocursor dropdown-toggle-margin-clear" ng-click="outerSelectCheckboxButton($event)"  >
+								
+								<input ng-show="selectAll.checked!==null" class="checkbox-no-margin block-dropdown select-all-checkbox" type="checkbox" ng-click="clickSelectAllCheckbox()" ng-model="selectAll.checked">
+								
+								<span ng-show="selectAll.checked===null" class="T-Jo J-J5-Ji T-Jo-ayH T-Jo-auq block-dropdown" aria-checked="mixed" role="checkbox" dir="ltr" style="-webkit-user-select: none;" ng-click="selectAllDropdownUncheck()">
+									<div class="T-Jo-auh block-dropdown" role="presentation"></div>
+								</span>
+							</div>
+							<div type="button" class="btn btn-white dropdown-toggle" id="select_lots_dropdown_caret" data-toggle="dropdown">
+								<span class="caret"></span>
+							</div>
+							<ul class="dropdown-menu dropdown-white" role="menu">
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectAll()">Select All</a>
+								</li>
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectNone()">Select None</a>
+								</li>
+								<li>
+									<a href="" ng-click="selectAllDropdownSelectCustom0Qty()">Select something specific</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="pull-left " >
+						<div class="btn-group" dropdown >
+							<button type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" ng-class="{disabled:selectAll.count==0}">
+								{{selectAll.count==0?'Items':'Items ('}}<b>{{selectAll.count==0?'':selectAll.count}}</b>{{selectAll.count==0?'':')'}} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-blue" role="menu">
+								<li>
+									<a href="" ng-click="bulkMove()">Bulk Location</a>
+								</li>
+								<li>
+									<a href="" ng-click="bulkQuantity()">Bulk Quantity</a>
+								</li>
+								<li>
+									<a href="" ng-click="bulkStatus()">Bulk Status</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					
+					<div class="pull-right ">
+						<div class="btn btn-primary no-margin" ng-click="addInventory()">Add</div>
+					</div>
+					
+				</div>
+			</div> -->
+			
+			<div class="row">
+				<div class="col-xs-12 ">
+					<div class="pages-mode-message-wrapper" ng-click="selectAllPages()" ng-show="selectAll.pagemodemessagevisible">
+						<span>All <b>{{selectAll.pagecount}}</b> items on this page are selected{{selectAll.count!=selectAll.pagecount?' of ':''}}<b>{{selectAll.count!=selectAll.pagecount?selectAll.count:''}}</b>{{selectAll.count!=selectAll.pagecount?' total':''}}.</span> 
+						<span class="select-all-pages" tabindex="0" role="link">Select all <b>{{selectAll.filteredcount}}</b> filtered items in Inventory</span>
+					</div>
+				</div>
+			</div>
+			<table datatable="" id="inventory" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="table-condensed focus-on row-border hover table table-striped table-bordered">
+		        <thead>
+		        	<tr>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+						<th ></th>
+					</tr>
+		        </thead>
+		        <tbody></tbody>
+		    </table>
+			
+			
+			<!-- <div class="pull-right pull-right-stack">
+				<div class="btn btn-secondary" ng-class="{disabled:isDatatableEditDisabled()}" ng-click="editDatatableRow('edit-dpcode-modal','lg')">Edit</div>
+			</div>
+			<div class="pull-right pull-right-stack">
+				<div class="btn btn-danger" ng-class="{disabled:isDatatableEditDisabled()}" ng-click="deleteDatatableRow('delete-dpcode-modal','md')">Delete</div>
+			</div> -->
+			
+			
+		</div>
+	</div>
+	<!-- <div ng-controller="InventorySection">
+		<fieldset ng-disabled="!checkPolicy('/app/inventory',0,1,1,0)">
+			<div class="panel panel-default inventory-form" ng-if="selectedLot.id"  id="inventory_form" >
+				<div class="panel-heading">
+					<h3 class="panel-title"><i class="fa-list-ol"></i>&nbsp&nbspInventory</h3>
+					
+											
+					<div class="pull-right pull-right-stack isn-panel-pull-right" ng-show="checkPolicy('/app/inventory',0,1,1,0)">
+						<div type="submit" class="btn btn-primary" ng-class="{true: 'disabled', false: ''}[changes_pending == false]" ng-click="saveInventory()">Save<span ng-show="inventory_saving">&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span></div>
+					</div>
+					<div ng-show="changes_pending" class="control-label changes-pending pull-right pull-right-stack isn-panel-pull-right">
+						Changes Pending
+					</div>
+					
+				</div>
+				<div class="panel-body">
+					<form role="form" id="fullinventory" class="form-horizontal validate inventory-form">
+						<div class="row" ng-show="selectedLot.id">
+							<div class="col-xs-12">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Lot Information</h3>
+									</div>
+									<div class="panel-body">
+										<div class="col-xs-12">
+											
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.serial_no">Serial #</label>
+						
+												<div class="col-sm-7">
+													<input type="text" class="form-control" id="selectedLot.serial_no" ng-model="selectedLot.serial_no" ng-model-options="" >
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="history_search.brandID">Brand</label>
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.brandID" name="selectedLot.brandID" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="selectedLot.brandID" placeholder="Brands" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.typeID">Type</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.typeID" name="selectedLot.typeID" ng-options="title.id as title.label for title in dropdowns.form_types" ng-model="selectedLot.typeID" placeholder="Types" ></select2>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.quantity">Quantity:</label>
+						
+												<div class="col-sm-7">
+													<input type="number" class="form-control" ng-model="selectedLot.quantity" placeholder="Quantity">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.uom">Unit of Measurement</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.uomID" name="selectedLot.uomID" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="selectedLot.uomID" placeholder="Unit Of Measurement" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.lotStatusID">Lot Status</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  ng-disabled="true" id="selectedLot.lotStatusID" name="selectedLot.lotStatusID" ng-options="title.id as title.label for title in dropdowns.lot_status" ng-model="selectedLot.lotStatusID" placeholder="Lot Status" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.locationID">Location</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control" ng-disabled="true" id="selectedLot.locationID" name="selectedLot.locationID" ng-options="title.id as title.label for title in dropdowns.locations" ng-model="selectedLot.locationID" placeholder="Location" ></select2>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.tread_depth">Tread Depth</label>
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.tread_depth" name="selectedLot.tread_depth" ng-options="title.id as title.label for title in dropdowns.tread_depths" ng-model="selectedLot.tread_depth" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.side_wall">Side Wall</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.side_wall" name="selectedLot.side_wall" ng-options="title.id as title.label for title in dropdowns.side_walls" ng-model="selectedLot.side_wall" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.tire_type">Tire Type</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.tire_type" name="selectedLot.tire_type" ng-options="title.id as title.label for title in dropdowns.tire_types" ng-model="selectedLot.tire_type" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.tire_size">Tire Size</label>
+						
+												<div class="col-sm-7">
+													<select2 class="form-control"  id="selectedLot.tire_size" name="selectedLot.tire_size" ng-options="title.id as title.label for title in dropdowns.tire_sizes" ng-model="selectedLot.tire_size" ></select2>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.price">Price:</label>
+						
+												<div class="col-sm-7">
+													<input type="number" class="form-control" ng-model="selectedLot.price" > 
+													
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-5 control-label" for="selectedLot.notes">Notes</label>
+												<div class="col-sm-7">
+													<textarea ng-disabled="true||!checkPolicy('/app/inventory',0,1,1,0)" maxlength="255" class="form-control" name="selectedLot.notes" id="selectedLot.notes" ng-model="selectedLot.notes" placeholder="Notes"></textarea>
+
+												</div>
+											</div>
+											
+											
+											
+										</div>
+										
+										
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						
+						
+					</form>
+			
+				</div>
+			</div>
+		</fieldset>
+	</div> -->
+	
+</div>

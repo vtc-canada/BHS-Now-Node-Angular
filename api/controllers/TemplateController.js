@@ -22,6 +22,21 @@ module.exports = {
 	});
 	
     },
+    history : function(req,res){
+	Database.knex('inv_cur_templates').select('*').where({
+	    userId : req.session.user.id,
+	    location : 'history'
+	}).exec(function(err, results) {
+	    if (err)
+		return console.log('Error getting Templates');
+
+	    for (var i = 0; i < results.length; i++) {
+		results[i].data = JSON.parse(results[i].data);
+	    }
+	    res.json(results);
+	});
+	
+    },
     save : function(req, res) {
 	var template = req.body;
 	template.userId = req.session.user.id;
