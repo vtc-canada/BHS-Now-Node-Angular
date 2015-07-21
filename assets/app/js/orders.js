@@ -4,12 +4,12 @@ angular.module('xenon.controllers.orders', [])
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
     // var vm = this;
-    // vm.blockInventorySelectedModified = true;
+    // vm.blockOrderSelectedModified = true;
 
-    // $rootScope.clearInventory = function() {
+    // $rootScope.clearOrder = function() {
     // // vm.watchEnabled = false;
     //
-    // resetInventoryForms();
+    // resetOrderForms();
     // }
     //
     // $scope.$watch('selectedOrder', function(newValue, oldValue) {
@@ -27,18 +27,18 @@ angular.module('xenon.controllers.orders', [])
     // }
     // }, true);
     //
-    // $scope.saveInventory = function(tab) {
+    // $scope.saveOrder = function(tab) {
     // $timeout(function() {
     // var founderrors = false;
-    // $('#' + "fullinventory").valid(); // this was blocked at some
+    // $('#' + "fullorder").valid(); // this was blocked at some
     // // point for some reason..
-    // if ($rootScope.validator["fullinventory"].numberOfInvalids() > 0) { //
+    // if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { //
     // error
     // founderrors = true;
     // }
     //
     // if (!founderrors) {
-    // $sails.post("/inventory/save", {
+    // $sails.post("/orders/save", {
     // lot : $rootScope.selectedOrder
     // }).success(function(data) {
     // if (data.error != undefined) { // USER NO LONGER LOGGED
@@ -66,7 +66,7 @@ angular.module('xenon.controllers.orders', [])
     //			
     // $rootScope.selectedOrder.id = data.lot.id;
     //
-    // $sails.post("/inventory/pushlot", {
+    // $sails.post("/orders/pushorder", {
     // lot : data.lot
     // }, function(data) {
     // if (data.error != undefined) { // USER NO LONGER
@@ -76,8 +76,8 @@ angular.module('xenon.controllers.orders', [])
     // });
     //
     // $timeout(function() {
-    // delete $scope.inventory_saving;
-    // resetInventoryForms();
+    // delete $scope.order_saving;
+    // resetOrderForms();
     // $rootScope.changes_pending = false;
     // // Datatable is update via socket emit from this
     // // update.
@@ -88,15 +88,15 @@ angular.module('xenon.controllers.orders', [])
     // alert('err!');
     // });
     //
-    // $scope.inventory_saving = true;
+    // $scope.order_saving = true;
     // }
     // }, 0);
     // }
-    // function resetInventoryForms() {
-    // if ($('form#' + "fullinventory").length > 0 && $rootScope.validator &&
-    // $rootScope.validator["fullinventory"]) {
-    // $rootScope.validator["fullinventory"].resetForm();
-    // $('form#' + "fullinventory" + '
+    // function resetOrderForms() {
+    // if ($('form#' + "fullorder").length > 0 && $rootScope.validator &&
+    // $rootScope.validator["fullorder"]) {
+    // $rootScope.validator["fullorder"].resetForm();
+    // $('form#' + "fullorder" + '
     // .validate-has-error').removeClass('validate-has-error');
     // }
     // }
@@ -368,24 +368,8 @@ angular.module('xenon.controllers.orders', [])
 
 	var blankSearch = {
 	    id : '',
-	    serial_no : '',
-	    brand : '',
-	    type : '',
-	    quantity_MIN : '',
-	    quantity_MAX : '',
-	    uom : '',
-	    lotStatusID : '',
-	    locationID : '',
-	    tread_depth : '',
-	    side_wall : '',
-	    tire_type : '',
-	    tire_size : '',
-	    price_MIN : '',
-	    price_MAX : '',
-	    date_added_MIN : null,
-	    date_added_MAX : null,
-	    user_name : '',
-	    notes : ''
+	    date_MIN : moment().subtract( 29, 'days').format('YYYY-MM-DD'),
+	    date_MAX : moment().format('YYYY-MM-DD'),
 	};
 	$scope.orders_search = angular.copy(blankSearch);
 
@@ -406,6 +390,9 @@ angular.module('xenon.controllers.orders', [])
 	    url : '/orders/get-orders-history',
 	    type : 'POST'
 	}).withOption('fnServerParams', function(aoData) {
+	    aoData.push({name : 'id', value : $scope.orders_search.id});
+	    aoData.push({name : 'date_MIN', value : $scope.orders_search.date_MIN});
+	    aoData.push({name : 'date_MAX', value : $scope.orders_search.date_MAX});
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
 	    $('td', nRow).bind('click', function(event) {
@@ -613,8 +600,8 @@ angular.module('xenon.controllers.orders', [])
 	    }, 0);
 	}
 
-	$scope.addInventory = function() {
-	    var blankInventory = {
+	$scope.addOrder = function() {
+	    var blankOrder = {
 		"id" : 'new',
 		"serial_no" : null,
 		"brandID" : null,
@@ -638,7 +625,7 @@ angular.module('xenon.controllers.orders', [])
 		"notes" : null
 	    };
 
-	    $rootScope.selectedOrder = angular.copy(blankInventory);
+	    $rootScope.selectedOrder = angular.copy(blankOrder);
 	    $rootScope.selectedOrder.price = isNaN(parseFloat($rootScope.selectedOrder.price)) ? 0 : parseFloat($rootScope.selectedOrder.price);
 	    $rootScope.selectedOrder.quantity = isNaN(parseInt($rootScope.selectedOrder.quantity)) ? 0 : parseInt($rootScope.selectedOrder.quantity);
 	    $rootScope.selectedOrderChanged = true;
@@ -773,7 +760,7 @@ angular.module('xenon.controllers.orders', [])
 		if (dismiss == 'delete') {
 		    $sails.post('/template/destroy', {
 			id : $rootScope.newOrderTemplateModal.id,
-			location : 'inventory'
+			location : 'orders'
 		    }).success(function(data) {
 			if (data.error != undefined) { // USER NO LONGER LOGGED
 			    // IN!!!!!
@@ -784,7 +771,7 @@ angular.module('xenon.controllers.orders', [])
 			    $scope.template = null;
 			    $rootScope.newOrderTemplateModal.id = null;
 			    $rootScope.newOrderTemplateModal.name = null;
-			    $rootScope.search_inventory = $scope.inventory = angular.copy(blankSearch);
+			    $scope.orders_search = angular.copy(blankSearch);
 			    $timeout(function() {
 				$sails.get('/template/orders').success(function(data) {
 				    if (data.error != undefined) { // USER NO
@@ -813,7 +800,7 @@ angular.module('xenon.controllers.orders', [])
 	    });
 	}
 
-	$rootScope.saveInventoryTemplate = function() {
+	$rootScope.saveOrderTemplate = function() {
 	    $rootScope.newOrderTemplateModal.id = null;
 	    for (var i = 0; i < $scope.search_templates.length; i++) {
 		if ($scope.search_templates[i].label == $rootScope.newOrderTemplateModal.name) { // matching
@@ -904,7 +891,7 @@ angular.module('xenon.controllers.orders', [])
 
 	// $scope.$watch('orders_search.brand', function(newValue, oldValue) {
 	// if (!angular.equals(newValue, oldValue)) {
-	// $sails.post('/inventory/get-types-in-brands', {
+	// $sails.post('/orders/get-types-in-brands', {
 	// brands : newValue
 	// }).success(function(data) {
 	//		    if (data.success) {
