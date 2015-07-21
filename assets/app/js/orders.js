@@ -633,43 +633,16 @@ angular.module('xenon.controllers.orders', [])
 	};
 
 	(function() {
-	    $sails.get('/inventorymanagementstudio/getinventoryattributes').success(function(data) {
+	    $sails.get('/inventorymanagementstudio/getordersattributes').success(function(data) {
 
 		var data = data.result;
 
-		$scope.brandNames = {};
-		$scope.dropdowns.brands = [];
-		for (var i = 0; i < data.brands.length; i++) {
-		    $scope.dropdowns.brands.push({
-			id : data.brands[i].id,
-			label : data.brands[i].brand
+		$scope.contacts = [];
+		for (var i = 0; i < data.contacts.length; i++) {
+		    $scope.contacts.push({
+			id : data.contacts[i].id,
+			label : data.contacts[i].name
 		    });
-		    $scope.brandNames[data.brands[i].id] = data.brands[i].brand;
-		}
-		$scope.dropdowns.uoms = [];
-		for (var i = 0; i < data.uoms.length; i++) {
-		    $scope.dropdowns.uoms.push({
-			id : data.uoms[i].id,
-			label : data.uoms[i].uom
-		    });
-		}
-		$scope.dropdowns.locationNames = {};
-		$scope.dropdowns.locations = [];
-		for (var i = 0; i < data.locations.length; i++) {
-		    $scope.dropdowns.locations.push({
-			id : data.locations[i].id,
-			label : data.locations[i].location
-		    });
-		    $scope.dropdowns.locationNames[data.locations[i].id] = data.locations[i].location;
-		}
-		$scope.dropdowns.lot_statusNames = {};
-		$scope.dropdowns.lot_status = [];
-		for (var i = 0; i < data.lot_status.length; i++) {
-		    $scope.dropdowns.lot_status.push({
-			id : data.lot_status[i].id,
-			label : data.lot_status[i].status
-		    });
-		    $scope.dropdowns.lot_statusNames[data.lot_status[i].id] = data.lot_status[i].status;
 		}
 
 	    }).error(function(data) {

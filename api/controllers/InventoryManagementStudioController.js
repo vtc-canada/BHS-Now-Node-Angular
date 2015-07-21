@@ -52,5 +52,23 @@ module.exports = {
 		result : results
 	    });
 	});
+    },
+    getordersattributes : function(req,res){
+	async.parallel({
+	    contacts : function(callback) {
+		Database.dataSproc('NMS_GetContacts',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
+	    }
+	}, function(err, results) {
+	    if (err)
+		return res.json(err.toString(), 500);
+	    return res.json({
+		success : "success",
+		result : results
+	    });
+	});
     }
 };
