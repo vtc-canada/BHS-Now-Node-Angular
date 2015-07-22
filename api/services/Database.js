@@ -23,7 +23,7 @@ var mysql = require('mysql');
 
 module.exports = {
     knex : require('knex')({ // node cache'ing stops this from actually
-				// loading it multiple times.
+	// loading it multiple times.
 	client : 'mysql',
 	connection : sails.config.connections[sails.config.connections['data_default']],
 	pool : {
@@ -79,15 +79,17 @@ module.exports = {
 	    if (err) {
 		cb(err);
 	    } else {
-		console.log("call " + sprocName + sprocArgs);
+		if (sprocName != 'NMS_BASE_GetUser' && sprocName != 'NMS_BASE_GetUserPolicies') {
+		    console.log("call " + sprocName + sprocArgs);
+		}
 		connection.query("call " + sprocName + sprocArgs, function(err, results) {
 		    if (err) {
 			cb(err);
 		    } else {
 			if (typeof (results) != 'undefined' && typeof (results.serverStatus) != 'undefined') {
 			    results = [ [], results ];// corrects
-							// controversial
-							// responses
+			    // controversial
+			    // responses
 			}
 			function loop(i) {
 			    if (data[i] != null && data[i].length > 0 && data[i].substring(0, 1) == '@') {
@@ -143,11 +145,11 @@ function BuildSproc(data) {
 	    sprocArgs += "NULL";
 	} else {
 	    if (typeof (data[curArg]) == 'string' && data[curArg].substring(0, 1) != '@' && data[curArg] != 'NOW()' && data[curArg] != 'true' && data[curArg] != 'false') { // puts
-																					    // very
-																					    // necessary
-																					    // quotes
-																					    // around
-																					    // strings
+		// very
+		// necessary
+		// quotes
+		// around
+		// strings
 		sprocArgs += '"' + replaceAll(replaceAll(data[curArg], '\\', '\\\\'), '"', '\\"') + '"';
 	    } else {
 		sprocArgs += data[curArg].toString();

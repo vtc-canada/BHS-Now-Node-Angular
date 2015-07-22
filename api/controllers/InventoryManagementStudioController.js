@@ -61,7 +61,21 @@ module.exports = {
 			return callback(err);
 		    callback(null,result[0]);
 		});
-	    }
+	    },
+	    odr_cfg_order_states : function(callback) {
+		Database.dataSproc('ODR_GetCfgOrderStates',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
+	    },
+	    brands : function(callback) {
+		Database.dataSproc('INV_GetMatBrandsByCategory',[1],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
+	    },
 	}, function(err, results) {
 	    if (err)
 		return res.json(err.toString(), 500);

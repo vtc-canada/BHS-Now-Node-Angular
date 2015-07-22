@@ -3,6 +3,38 @@ angular.module('xenon.controllers.orders', [])
 
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
+
+    var blankEntry = {
+
+    };
+
+    $scope.addEntry = function() {
+	$scope.selectedOrder.entries.push({
+	    id : 'new',
+	    tempId : Math.floor((Math.random() * 1000000000) + 1)
+	});
+    }
+
+    $scope.$watch('selectedOrder.entries', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)&&typeof(oldValue)!='undefined') {
+	    for (var i = 0; i < newValue.length; i++) {
+		if (newValue[i]['inv_cfg_mat_brands_id'] != oldValue[i]['inv_cfg_mat_brands_id']) {
+		    newValue[i].types = [ {
+			id : 1,
+			label : 'one'
+		    }, {
+			id : 2,
+			label : 'two'
+		    } ];
+		}
+	    }
+	}
+    }, true);
+
+    $scope.brandChanged = function() {
+	alert('branc');
+    };
+
     // var vm = this;
     // vm.blockOrderSelectedModified = true;
 
@@ -14,12 +46,12 @@ angular.module('xenon.controllers.orders', [])
     //
     // $scope.$watch('selectedOrder', function(newValue, oldValue) {
     // if (!angular.equals(newValue, oldValue)) {
-    // if ($rootScope.selectedOrder == null) {
-    // $rootScope.selectedOrderChanged = true;
+    // if ($scope.selectedOrder == null) {
+    // $scope.selectedOrderChanged = true;
     // return;
     // }
-    // if ($rootScope.selectedOrderChanged) {
-    // $rootScope.selectedOrderChanged = false;
+    // if ($scope.selectedOrderChanged) {
+    // $scope.selectedOrderChanged = false;
     // } else {
     // $rootScope.changes_pending = true;
     // }
@@ -39,14 +71,14 @@ angular.module('xenon.controllers.orders', [])
     //
     // if (!founderrors) {
     // $sails.post("/orders/save", {
-    // lot : $rootScope.selectedOrder
+    // lot : $scope.selectedOrder
     // }).success(function(data) {
     // if (data.error != undefined) { // USER NO LONGER LOGGED
     // location.reload(); // Will boot back to login
     // }
     // if (data.success) {
     //			
-    // toastr.success('Lot <b>' + $rootScope.selectedOrder.id + '</b> was
+    // toastr.success('Lot <b>' + $scope.selectedOrder.id + '</b> was
     // updated.', 'Success', {
     // "closeButton" : true,
     // "debug" : false,
@@ -64,7 +96,7 @@ angular.module('xenon.controllers.orders', [])
     // "hideMethod" : "fadeOut"
     // });
     //			
-    // $rootScope.selectedOrder.id = data.lot.id;
+    // $scope.selectedOrder.id = data.lot.id;
     //
     // $sails.post("/orders/pushorder", {
     // lot : data.lot
@@ -345,9 +377,9 @@ angular.module('xenon.controllers.orders', [])
 		// This update below really isn't necessary..
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-		if ($rootScope.selectedOrder != null && $rootScope.selectedOrder.id == lot.id && !angular.equals($rootScope.selectedOrder, lot)) {
-		    $rootScope.selectedOrder = angular.copy(lot);
-		    $rootScope.selectedOrderChanged = true;
+		if ($scope.selectedOrder != null && $scope.selectedOrder.id == lot.id && !angular.equals($scope.selectedOrder, lot)) {
+		    $scope.selectedOrder = angular.copy(lot);
+		    $scope.selectedOrderChanged = true;
 		}
 	    }, 0);
 	};
@@ -363,12 +395,12 @@ angular.module('xenon.controllers.orders', [])
 	};
 
 	// Selected Lot
-	$rootScope.selectedOrder = null;
-	$rootScope.selectedOrderChanged = false;
+	$scope.selectedOrder = null;
+	$scope.selectedOrderChanged = false;
 
 	var blankSearch = {
 	    id : '',
-	    date_MIN : moment().subtract( 29, 'days').format('YYYY-MM-DD'),
+	    date_MIN : moment().subtract(29, 'days').format('YYYY-MM-DD'),
 	    date_MAX : moment().format('YYYY-MM-DD'),
 	};
 	$scope.orders_search = angular.copy(blankSearch);
@@ -390,9 +422,18 @@ angular.module('xenon.controllers.orders', [])
 	    url : '/orders/get-orders-history',
 	    type : 'POST'
 	}).withOption('fnServerParams', function(aoData) {
-	    aoData.push({name : 'id', value : $scope.orders_search.id});
-	    aoData.push({name : 'date_MIN', value : $scope.orders_search.date_MIN});
-	    aoData.push({name : 'date_MAX', value : $scope.orders_search.date_MAX});
+	    aoData.push({
+		name : 'id',
+		value : $scope.orders_search.id
+	    });
+	    aoData.push({
+		name : 'date_MIN',
+		value : $scope.orders_search.date_MIN
+	    });
+	    aoData.push({
+		name : 'date_MAX',
+		value : $scope.orders_search.date_MAX
+	    });
 	}).withOption('rowCallback', function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 	    $('td', nRow).unbind('click');
 	    $('td', nRow).bind('click', function(event) {
@@ -413,7 +454,7 @@ angular.module('xenon.controllers.orders', [])
 		// });
 	    });
 	    $(nRow).removeClass('selected');
-	    if ($rootScope.selectedOrder != null && aData.id == $rootScope.selectedOrder.id) {
+	    if ($scope.selectedOrder != null && aData.id == $scope.selectedOrder.id) {
 		$(nRow).addClass('selected');
 	    }
 	    return nRow;
@@ -578,57 +619,76 @@ angular.module('xenon.controllers.orders', [])
 		    return;
 		}
 	    }
-	    $timeout(function() {
-		$rootScope.selectedOrder = angular.copy(aData);
-		$rootScope.selectedOrder.price = isNaN(parseFloat($rootScope.selectedOrder.price)) ? 0 : parseFloat($rootScope.selectedOrder.price);
-		$rootScope.selectedOrder.quantity = isNaN(parseInt($rootScope.selectedOrder.quantity)) ? 0 : parseInt($rootScope.selectedOrder.quantity);
-		$rootScope.selectedOrderChanged = true;
-		$rootScope.changes_pending = false;
-		$scope.ordersDatatable.dataTable.api().draw(false); // redrawing
-		// it
-		// makes
-		// it
-		// see
-		// the
-		// matched
-		// selectedOrder
-		// id
-		// and
-		// draw
-		// it
-		// green.
-	    }, 0);
+
+	    $sails.post("/orders/get-order", {
+		id : aData.id
+	    }).success(function(data) {
+		if (data.error != undefined) { // USER NO LONGER LOGGED
+		    location.reload(); // Will boot back to login
+		}
+		if (data.success) {
+		    $timeout(function() {
+			$scope.selectedOrder = angular.copy(data.data);
+			// $scope.selectedOrder.price =
+			// isNaN(parseFloat($scope.selectedOrder.price)) ? 0 :
+			// parseFloat($scope.selectedOrder.price);
+			// $scope.selectedOrder.quantity =
+			// isNaN(parseInt($scope.selectedOrder.quantity)) ? 0 :
+			// parseInt($scope.selectedOrder.quantity);
+			// $scope.selectedOrder.entries = [];
+			$scope.selectedOrderChanged = true;
+			$rootScope.changes_pending = false;
+			$scope.ordersDatatable.dataTable.api().draw(false); // redrawing
+		    }, 0);
+
+		}
+	    });
+
+	    // it
+	    // makes
+	    // it
+	    // see
+	    // the
+	    // matched
+	    // selectedOrder
+	    // id
+	    // and
+	    // draw
+	    // it
+	    // green.
 	}
 
 	$scope.addOrder = function() {
 	    var blankOrder = {
 		"id" : 'new',
-		"serial_no" : null,
-		"brandID" : null,
-		"brand" : null,
-		"typeID" : null,
-		"type" : null,
-		"quantity" : 0,
-		"uomID" : 1,
-		"uom" : "Each",
-		"lotStatusID" : 1,
-		"lotStatus" : "In Inventory",
-		"locationID" : 43,
-		"location" : "Tomken - Rack 114B",
-		"tread_depth" : null,
-		"side_wall" : null,
-		"tire_type" : null,
-		"tire_size" : null,
-		"price" : 0,
-		"date_added" : null,
+
+		// "serial_no" : null,
+		// "brandID" : null,
+		// "brand" : null,
+		// "typeID" : null,
+		// "type" : null,
+		// "quantity" : 0,
+		// "uomID" : 1,
+		// "uom" : "Each",
+		// "lotStatusID" : 1,
+		// "lotStatus" : "In Inventory",
+		// "locationID" : 43,
+		// "location" : "Tomken - Rack 114B",
+		// "tread_depth" : null,
+		// "side_wall" : null,
+		// "tire_type" : null,
+		// "tire_size" : null,
+		// "price" : 0,
+		nms_cur_contacts_id : null,
+		odr_cfg_order_state_id : null,
+		entries : [],
 		"user_name" : $user.username,
-		"notes" : null
 	    };
 
-	    $rootScope.selectedOrder = angular.copy(blankOrder);
-	    $rootScope.selectedOrder.price = isNaN(parseFloat($rootScope.selectedOrder.price)) ? 0 : parseFloat($rootScope.selectedOrder.price);
-	    $rootScope.selectedOrder.quantity = isNaN(parseInt($rootScope.selectedOrder.quantity)) ? 0 : parseInt($rootScope.selectedOrder.quantity);
-	    $rootScope.selectedOrderChanged = true;
+	    $scope.selectedOrder = angular.copy(blankOrder);
+	    $scope.selectedOrder.price = isNaN(parseFloat($scope.selectedOrder.price)) ? 0 : parseFloat($scope.selectedOrder.price);
+	    $scope.selectedOrder.quantity = isNaN(parseInt($scope.selectedOrder.quantity)) ? 0 : parseInt($scope.selectedOrder.quantity);
+	    $scope.selectedOrderChanged = true;
 	    $rootScope.changes_pending = false;
 	};
 
@@ -643,6 +703,26 @@ angular.module('xenon.controllers.orders', [])
 			id : data.contacts[i].id,
 			label : data.contacts[i].name
 		    });
+		}
+
+		$scope.dropdowns = {};
+
+		$scope.dropdowns.odr_cfg_order_states = [];
+		for (var i = 0; i < data.odr_cfg_order_states.length; i++) {
+		    $scope.dropdowns.odr_cfg_order_states.push({
+			id : data.odr_cfg_order_states[i].id,
+			label : data.odr_cfg_order_states[i].state
+		    });
+		}
+
+		$scope.brandNames = {};
+		$scope.dropdowns.brands = [];
+		for (var i = 0; i < data.brands.length; i++) {
+		    $scope.dropdowns.brands.push({
+			id : data.brands[i].id,
+			label : data.brands[i].brand
+		    });
+		    $scope.brandNames[data.brands[i].id] = data.brands[i].brand;
 		}
 
 	    }).error(function(data) {
@@ -867,20 +947,20 @@ angular.module('xenon.controllers.orders', [])
 	// $sails.post('/orders/get-types-in-brands', {
 	// brands : newValue
 	// }).success(function(data) {
-	//		    if (data.success) {
-	//			$timeout(function() {
-	//			    var types = data.data;
-	//			    $scope.dropdowns.types = [];
-	//			    for (var i = 0; i < types.length; i++) {
-	//				$scope.dropdowns.types.push({
-	//				    id : types[i].id,
-	//				    label : types[i].type
-	//				});
-	//			    }
-	//			}, 0);
-	//		    }
-	//		});
-	//	    }
-	//	});
+	// if (data.success) {
+	// $timeout(function() {
+	// var types = data.data;
+	// $scope.dropdowns.types = [];
+	// for (var i = 0; i < types.length; i++) {
+	// $scope.dropdowns.types.push({
+	// id : types[i].id,
+	// label : types[i].type
+	// });
+	// }
+	// }, 0);
+	// }
+	// });
+	// }
+	// });
 
     });
