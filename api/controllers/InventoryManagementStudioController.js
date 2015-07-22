@@ -62,6 +62,13 @@ module.exports = {
 		    callback(null,result[0]);
 		});
 	    },
+	    uoms : function(callback) {
+		Database.dataSproc('INV_GetUoms',[],function(err,result){
+		    if (err)
+			return callback(err);
+		    callback(null,result[0]);
+		});
+	    },
 	    odr_cfg_order_states : function(callback) {
 		Database.dataSproc('ODR_GetCfgOrderStates',[],function(err,result){
 		    if (err)

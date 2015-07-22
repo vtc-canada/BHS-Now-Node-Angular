@@ -4,35 +4,132 @@ angular.module('xenon.controllers.orders', [])
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
 
-    var blankEntry = {
-
-    };
-
     $scope.addEntry = function() {
 	$scope.selectedOrder.entries.push({
 	    id : 'new',
-	    tempId : Math.floor((Math.random() * 1000000000) + 1)
+	    tempId : Math.floor((Math.random() * 1000000000) + 1),
+	    odr_cur_orders_id : null,
+	    inv_cfg_mat_types_id : null,
+	    inv_cfg_mat_brands_id : null,
+	    quantity : 1,
+	    types : [],
+	    inv_cfg_uom_id : 1
 	});
     }
 
-    $scope.$watch('selectedOrder.entries', function(newValue, oldValue) {
-	if (!angular.equals(newValue, oldValue)&&typeof(oldValue)!='undefined') {
-	    for (var i = 0; i < newValue.length; i++) {
-		if (newValue[i]['inv_cfg_mat_brands_id'] != oldValue[i]['inv_cfg_mat_brands_id']) {
-		    newValue[i].types = [ {
-			id : 1,
-			label : 'one'
-		    }, {
-			id : 2,
-			label : 'two'
-		    } ];
-		}
+    // Watch and update order changes.
+    $scope.$watch('selectedOrder', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue)) {
+	    if ($scope.selectedOrderChanged) { // reads parent
+		$scope.$parent.selectedOrderChanged = false; // writes parent
+		return;
 	    }
+	    $rootScope.changes_pending = true;
+	    
+	    if($('#selectedOrder_nms_cur_contacts_id').hasClass('ng-dirty')){
+		$('#selectedOrder_nms_cur_contacts_id').valid();
+		alert('somedirty');
+	    }
+	    
+//	    $('#' + "fullorder").valid();
 	}
     }, true);
 
-    $scope.brandChanged = function() {
-	alert('branc');
+    // Watch and update types comboboxes
+    $scope.$watch('selectedOrder.entries', function(newValue, oldValue) {
+	if (!angular.equals(newValue, oldValue) && typeof (oldValue) != 'undefined') {
+
+	    for (var iEntries = 0; iEntries < newValue.length; iEntries++) {
+		if (typeof (oldValue[iEntries]) == 'undefined' || newValue[iEntries]['inv_cfg_mat_brands_id'] != oldValue[iEntries]['inv_cfg_mat_brands_id']) {
+		    (function(ihold) {
+			newValue[ihold]['inv_cfg_mat_types_id'] = null;
+			$sails.post('/inventory/get-types-by-brand', {
+			    brand : newValue[ihold]['inv_cfg_mat_brands_id']
+			}).success(function(data) {
+			    if (data.success) {
+				var types = data.data;
+				$timeout(function() {
+				    newValue[ihold].types = [];
+				    for (var i = 0; i < types.length; i++) {
+					newValue[ihold].types.push({
+					    id : types[i].id,
+					    type : types[i].type
+					});
+				    }
+				}, 0);
+			    }
+			});
+		    })(iEntries);
+		}
+	    }
+
+	}
+    }, true);
+
+    $scope.saveOrder = function(tab) {
+	$timeout(function() {
+	    var founderrors = false;
+	    $('#' + "fullorder").valid(); // this was blocked at some
+	    // point for some reason..
+	    if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { //error
+		founderrors = true;
+	    }
+
+	    if (!founderrors) {
+		//TODO- maybe clone and strip "types" excessive data
+		$sails.post("/orders/save", {
+		    order : $scope.selectedOrder
+		}).success(function(data) {
+		    if (data.error != undefined) { // USER NO LONGER LOGGED
+			location.reload(); // Will boot back to login
+		    }
+		    if (data.success) {
+			var order = data.data;
+			$scope.selectedOrder = order; 
+			toastr.success('Order <b>' + $scope.selectedOrder.id + '</b> was updated.', 'Success', {
+			    "closeButton" : true,
+			    "debug" : false,
+			    "newestOnTop" : false,
+			    "progressBar" : false,
+			    "positionClass" : "toast-top-right",
+			    "preventDuplicates" : false,
+			    "showDuration" : "300",
+			    "hideDuration" : "1000",
+			    "timeOut" : "5000",
+			    "extendedTimeOut" : "1000",
+			    "showEasing" : "swing",
+			    "hideEasing" : "linear",
+			    "showMethod" : "fadeIn",
+			    "hideMethod" : "fadeOut"
+			});
+
+//			$scope.selectedOrder.id = data.lot.id;
+
+			$sails.post("/orders/pushorder", {
+			    order : order
+			}, function(data) {
+			    if (data.error != undefined) { // USER NO LONGER
+				// LOGGED
+				location.reload(); // Will boot back to login
+			    }
+			});
+
+			$timeout(function() {
+			    delete $scope.order_saving;
+			    resetOrderForms();
+			    $rootScope.changes_pending = false;
+			    // Datatable is update via socket emit from this
+			    // update.
+
+			}, 0);
+		    }
+		}).error(function(data) {
+		    alert('err!');
+		});
+
+		$scope.order_saving = true;
+	    }
+	}, 0);
     };
 
     // var vm = this;
@@ -59,79 +156,13 @@ angular.module('xenon.controllers.orders', [])
     // }
     // }, true);
     //
-    // $scope.saveOrder = function(tab) {
-    // $timeout(function() {
-    // var founderrors = false;
-    // $('#' + "fullorder").valid(); // this was blocked at some
-    // // point for some reason..
-    // if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { //
-    // error
-    // founderrors = true;
-    // }
-    //
-    // if (!founderrors) {
-    // $sails.post("/orders/save", {
-    // lot : $scope.selectedOrder
-    // }).success(function(data) {
-    // if (data.error != undefined) { // USER NO LONGER LOGGED
-    // location.reload(); // Will boot back to login
-    // }
-    // if (data.success) {
-    //			
-    // toastr.success('Lot <b>' + $scope.selectedOrder.id + '</b> was
-    // updated.', 'Success', {
-    // "closeButton" : true,
-    // "debug" : false,
-    // "newestOnTop" : false,
-    // "progressBar" : false,
-    // "positionClass" : "toast-top-right",
-    // "preventDuplicates" : false,
-    // "showDuration" : "300",
-    // "hideDuration" : "1000",
-    // "timeOut" : "5000",
-    // "extendedTimeOut" : "1000",
-    // "showEasing" : "swing",
-    // "hideEasing" : "linear",
-    // "showMethod" : "fadeIn",
-    // "hideMethod" : "fadeOut"
-    // });
-    //			
-    // $scope.selectedOrder.id = data.lot.id;
-    //
-    // $sails.post("/orders/pushorder", {
-    // lot : data.lot
-    // }, function(data) {
-    // if (data.error != undefined) { // USER NO LONGER
-    // // LOGGED
-    // location.reload(); // Will boot back to login
-    // }
-    // });
-    //
-    // $timeout(function() {
-    // delete $scope.order_saving;
-    // resetOrderForms();
-    // $rootScope.changes_pending = false;
-    // // Datatable is update via socket emit from this
-    // // update.
-    //
-    // }, 0);
-    // }
-    // }).error(function(data) {
-    // alert('err!');
-    // });
-    //
-    // $scope.order_saving = true;
-    // }
-    // }, 0);
-    // }
-    // function resetOrderForms() {
-    // if ($('form#' + "fullorder").length > 0 && $rootScope.validator &&
-    // $rootScope.validator["fullorder"]) {
-    // $rootScope.validator["fullorder"].resetForm();
-    // $('form#' + "fullorder" + '
-    // .validate-has-error').removeClass('validate-has-error');
-    // }
-    // }
+
+    function resetOrderForms() {
+	if ($('form#' + "fullorder").length > 0 && $rootScope.validator && $rootScope.validator["fullorder"]) {
+	    $rootScope.validator["fullorder"].resetForm();
+	    $('form#' + "fullorder" + '.validate-has-error').removeClass('validate-has-error');
+	}
+    }
 
 })
 
@@ -358,7 +389,7 @@ angular.module('xenon.controllers.orders', [])
 	    }
 	}
 
-	$rootScope.lotUpdate = function(lot) {
+	$rootScope.orderUpdate = function(lot) {
 	    // alert('anupdate');
 	    $timeout(function() {
 		if ($scope.index_aoData[lot.id] == undefined) {
@@ -394,7 +425,7 @@ angular.module('xenon.controllers.orders', [])
 	    minimumInputLength : 2
 	};
 
-	// Selected Lot
+	// Selected Order
 	$scope.selectedOrder = null;
 	$scope.selectedOrderChanged = false;
 
@@ -686,8 +717,12 @@ angular.module('xenon.controllers.orders', [])
 	    };
 
 	    $scope.selectedOrder = angular.copy(blankOrder);
-	    $scope.selectedOrder.price = isNaN(parseFloat($scope.selectedOrder.price)) ? 0 : parseFloat($scope.selectedOrder.price);
-	    $scope.selectedOrder.quantity = isNaN(parseInt($scope.selectedOrder.quantity)) ? 0 : parseInt($scope.selectedOrder.quantity);
+	    // $scope.selectedOrder.price =
+	    // isNaN(parseFloat($scope.selectedOrder.price)) ?
+	    // 0 : parseFloat($scope.selectedOrder.price);
+	    // $scope.selectedOrder.quantity =
+	    // isNaN(parseInt($scope.selectedOrder.quantity)) ? 0 :
+	    // parseInt($scope.selectedOrder.quantity);
 	    $scope.selectedOrderChanged = true;
 	    $rootScope.changes_pending = false;
 	};
@@ -723,6 +758,14 @@ angular.module('xenon.controllers.orders', [])
 			label : data.brands[i].brand
 		    });
 		    $scope.brandNames[data.brands[i].id] = data.brands[i].brand;
+		}
+
+		$scope.dropdowns.uoms = [];
+		for (var i = 0; i < data.uoms.length; i++) {
+		    $scope.dropdowns.uoms.push({
+			id : data.uoms[i].id,
+			label : data.uoms[i].uom
+		    });
 		}
 
 	    }).error(function(data) {
