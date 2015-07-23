@@ -152,7 +152,7 @@ module.exports = {
 		success : "success",
 		data : result[0]
 	    });
-	})
+	});
     },
     'get-types-by-brand' : function(req, res) {
 	Database.dataSproc('INV_GetMatTypesByBrand', [ req.body.brand || null ], function(err, result) {
@@ -162,7 +162,7 @@ module.exports = {
 		success : "success",
 		data : result[0]
 	    });
-	})
+	});
     }
 
 // ,

@@ -409,7 +409,10 @@
 												<label class="col-sm-5 control-label" for="selectedOrder_nms_cur_contacts_id">Customer</label>
 						
 												<div class="col-sm-7">
-													<select2 class="form-control"  id="selectedOrder_nms_cur_contacts_id" name="selectedOrder.nms_cur_contacts_id" ng-options="title.id as title.label for title in contacts" ng-model="selectedOrder.nms_cur_contacts_id" placeholder="Customer" ></select2>
+													<!-- <input class="form-control" type="text" data-validate="required" data-message-required="This is a required field."  id="selectedOrder_nms_cur_contacts_id" name="selectedOrder.nms_cur_contacts_id" ng-model="selectedOrder.nms_cur_contacts_id" placeholder="Customer" >
+												 -->
+													<select2 class="form-control" data-validate="required" data-message-required="This is a required field."  id="selectedOrder_nms_cur_contacts_id" name="selectedOrder.nms_cur_contacts_id" ng-options="title.id as title.label for title in contacts" ng-model="selectedOrder.nms_cur_contacts_id" placeholder="Customer" ></select2>
+												
 												</div>
 											</div>
 											<div class="form-group">
@@ -532,9 +535,6 @@
 										</div>
 									</div>
 									<div class="panel-body" >
-										
-										
-										
 										<!--<div class="form-group-separator"></div>-->
 										<table id="entries_datatable" cellspacing="0" class="table-condensed table table-bordered table-striped selectableisn">
 											<thead>
@@ -542,6 +542,8 @@
 													<th >id</th>
 													<th >Brand</th>
 													<th >Type</th>
+													<th >Quantity</th>
+													<th >Unit Of Measurement</th>
 													<!--<th >Qty</th>
 													<th >Item</th>
 													<th >Unit Price</th>
@@ -554,13 +556,14 @@
 												<tr ng-repeat="row in selectedOrder.entries" ng-hide="row.is_deleted" ng-class="{ 'is_deleted':row.is_deleted == true}" ng-click=""  >
 													<td>{{row.id}} | {{row.tempId}}</td>
 													<!-- options="longSelectOptions"  -->
-													<td><select2 class="form-control" ng-change="brandChanged()" id="row.inv_cfg_mat_brands_id" name="row.inv_cfg_mat_brands_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="row.inv_cfg_mat_brands_id"></select2></td>
+													<td><select2 class="form-control" id="row.inv_cfg_mat_brands_id" name="row.inv_cfg_mat_brands_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="row.inv_cfg_mat_brands_id"></select2></td>
 													
 													
-													<td><select2 class="form-control" id="row.inv_cfg_mat_types_id" name="row.inv_cfg_mat_types_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in row.types" ng-model="row.inv_cfg_mat_types_id"></select2></td>
+													<td><select2 class="form-control" id="row.inv_cfg_mat_types_id" name="row.inv_cfg_mat_types_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.type for title in row.types" ng-model="row.inv_cfg_mat_types_id"></select2></td>
+													<td><input type="number" class="form-control" id="row_quantity" ng-model="row.quantity" ng-model-options="" placeholder=""></td>
+													<td><select2 class="form-control" id="row.inv_cfg_uom_id" name="row.inv_cfg_uom_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="row.inv_cfg_uom_id"></select2></td>
 													
-													
-													<!--<td><input type="number" class="form-control" id="modal_sum_sol" ng-model="row.LQTY" ng-model-options="" placeholder=""></td>
+													<!--
 													<td><select2 options="longSelectOptions" class="form-control" id="row.LITEMP" name="row.LITEMP" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in litems" ng-model="row.LITEMP"></select2></td>
 										
 													<td><input type="number" class="form-control" ng-model="row.LPRICE" ng-model-options="" placeholder=""></td>
@@ -570,7 +573,10 @@
 												</tr>	
 											</tbody>
 										</table>
-										<div class="row">
+										
+										
+										
+										<!-- <div class="row">
 											<div class="col-xs-6 pull-right">
 												<div class="form-group">
 													<label class="col-xs-5 control-label" for="selectedOrder">Subtotal:</label>
@@ -591,7 +597,7 @@
 													</div>
 												</div>
 											</div>
-										</div>
+										</div> -->
 										
 										<!--<div class="row">
 											<div class="col-xs-6 pull-right">
@@ -654,7 +660,11 @@
 													</div>
 												</div>
 											</div>
-										</div>-->
+										</div>--><!--<i class="fa fa-"></i>-->
+										
+										
+										
+										<!-- 
 										<div class="row">
 											<div class="col-xs-6 pull-right">
 												<div class="form-group-separator"></div>
@@ -666,11 +676,11 @@
 													<label class="col-xs-5 control-label" for="selectedOrder.GTOTAL">Grand Totals:</label>
 							
 													<div class="col-xs-7">
-														<label class="control-label control-label-value" ><!--<i class="fa fa-"></i>-->{{3.14159 | currency : '$' : 2}}</label>
+														<label class="control-label control-label-value" >{{3.14159 | currency : '$' : 2}}</label>
 													</div>
 												</div>
 											</div>
-										</div>
+										</div> -->
 									</div>
 								</div>
 							
