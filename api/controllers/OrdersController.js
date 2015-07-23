@@ -17,29 +17,76 @@ module.exports = {
 		if (err)
 		    return console.log(err.toString());
 
-		sails.controllers.orders.doGetOrder(response[1][paramCreateId],function(order){
-		    return res.json({
-			success : true,
-			"data" : order
+		processEntries(function(err) {
+		    if (err) {
+			console.log('Error processing entries:' + err.toString());
+			return res.json({
+			    error : err.toString()
+			}, 500);
+		    }
+		    sails.controllers.orders.doGetOrder(response[1][paramCreateId], function(order) {
+			return res.json({
+			    success : true,
+			    "data" : order
+			});
 		    });
 		});
+
 	    });
-	}else{
+	} else {
 	    Database.dataSproc('ODR_UpdateOrderStatus', [ order.id, order.odr_cfg_order_state_id, req.session.user.username ], function(err, response) {
 		if (err)
 		    return console.log(err.toString());
-		sails.controllers.orders.doGetOrder(order.id,function(order){
-		    return res.json({
-			success : true,
-			"data" : order
+		processEntries(function(err) {
+		    if (err) {
+			console.log('Error processing entries:' + err.toString());
+			return res.json({
+			    error : err.toString()
+			}, 500);
+		    }
+		    sails.controllers.orders.doGetOrder(order.id, function(order) {
+			return res.json({
+			    success : true,
+			    "data" : order
+			});
 		    });
 		});
 	    });
 	}
 
+	function processEntries(callback) {
+	    async.each(entries,function(entry,entrycallback){
+		if(entry.id=='new'){
+		    Database.dataSproc('ODR_InsertOrderEntry',[order.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id,'@outDummyParam'],function(err,response){
+			entrycallback(err,response);
+		    })
+		}else{
+		    entrycallback(null);
+		}
+	    },function(err,result){
+		callback(err,result);
+	    })
+	}
+
     },
-    pushorder : function(req,res){
-	
+    pushorder : function(req, res) {
+	if (req.body.orderId) {
+	    Database.dataSproc('ODR_GetOrdersHistory', [ req.body.orderId, null, null, 1 ], function(err, response) {
+		if (err)
+		    return console.log(err.toString());
+		if (response[0] && response[0][0]) {
+		    SecurityService.sendMessage(null, {
+			verb : 'orderUpdate',
+			data : response[0][0]
+		    });
+		}
+	    });
+	    // sails.controllers.orders.doGetOrder(req.body.orderId,
+	    // function(order) {
+	    // console.log(JSON.stringify(order));
+	    //
+	    // });
+	}
     },
     'get-orders-history' : function(req, res) {
 	var date_MIN = req.body.date_MIN;
@@ -55,7 +102,7 @@ module.exports = {
 	    });
 	});
     },
-    doGetOrder : function(orderId, ordercallback){
+    doGetOrder : function(orderId, ordercallback) {
 	Database.dataSproc('ODR_GetOrder', [ orderId ], function(err, response) {
 	    if (err)
 		return console.log(err.toString());
@@ -100,7 +147,7 @@ module.exports = {
 	});
     },
     'get-order' : function(req, res) {
-	sails.controllers.orders.doGetOrder(req.body.id,function(order){
+	sails.controllers.orders.doGetOrder(req.body.id, function(order) {
 	    return res.json({
 		success : true,
 		"data" : order
