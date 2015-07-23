@@ -61,7 +61,9 @@ module.exports = {
 			entrycallback(err,response);
 		    })
 		}else{
-		    entrycallback(null);
+		    Database.dataSproc('ODR_UpdateOrderEntry',[entry.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, req.session.user.username],function(err,response){
+			entrycallback(null);
+		    })
 		}
 	    },function(err,result){
 		callback(err,result);

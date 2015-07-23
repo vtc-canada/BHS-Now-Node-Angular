@@ -395,7 +395,7 @@
 					
 				</div>
 				<div class="panel-body">
-					<form role="form" id="fullorder" class="form-horizontal validate order-form">
+					<form role="form" id="fullorder"  class="form-horizontal validate order-form" >
 						<div class="row" ng-show="selectedOrder.id">
 							<div class="col-xs-12">
 								<div class="panel panel-default">
@@ -419,7 +419,7 @@
 												<label class="col-sm-5 control-label" for="selectedOrder_odr_cfg_order_state_id">Order State</label>
 						
 												<div class="col-sm-7">
-													<select2 class="form-control"  id="selectedOrder_odr_cfg_order_state_id" name="selectedOrder.odr_cfg_order_state_id" ng-options="title.id as title.label for title in dropdowns.odr_cfg_order_states" ng-model="selectedOrder.odr_cfg_order_state_id" placeholder="Order State" ></select2>
+													<select2 class="form-control" data-validate="required" data-message-required="This is a required field."   id="selectedOrder_odr_cfg_order_state_id" name="selectedOrder.odr_cfg_order_state_id" ng-options="title.id as title.label for title in dropdowns.odr_cfg_order_states" ng-model="selectedOrder.odr_cfg_order_state_id" placeholder="Order State" ></select2>
 												</div>
 											</div>
 											
@@ -559,8 +559,15 @@
 													<td><select2 class="form-control" id="row.inv_cfg_mat_brands_id" name="row.inv_cfg_mat_brands_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="row.inv_cfg_mat_brands_id"></select2></td>
 													
 													
-													<td><select2 class="form-control" id="row.inv_cfg_mat_types_id" name="row.inv_cfg_mat_types_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.type for title in row.types" ng-model="row.inv_cfg_mat_types_id"></select2></td>
-													<td><input type="number" class="form-control" id="row_quantity" ng-model="row.quantity" ng-model-options="" placeholder=""></td>
+													<td>
+														<div class="form-group">
+															<select2 required class="form-control" id="row.inv_cfg_mat_types_id" name="row.inv_cfg_mat_types_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.type for title in row.types" ng-model="row.inv_cfg_mat_types_id"></select2></td>
+														</div>
+													<td>
+														<div class="form-group">
+															<input required type="text" class="form-control" name="row_quantity" ng-model="row.quantity"  placeholder="">
+														</div>
+													</td>
 													<td><select2 class="form-control" id="row.inv_cfg_uom_id" name="row.inv_cfg_uom_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.uoms" ng-model="row.inv_cfg_uom_id"></select2></td>
 													
 													<!--

@@ -22,7 +22,12 @@ angular.module('xenon.controllers.orders', [])
 	if (!angular.equals(newValue, oldValue)) {
 	    if (newValue.id != $scope.$parent.lastSelectedOrderId){//  typeof(oldValue)!='undefined'&&typeof(oldValue.id)!='undefined'  $scope.lastSelectedOrderId == null || ) { // reads parent
 		//$scope.$parent.selectedOrderChanged = false; // writes parent
-		$scope.$parent.lastSelectedOrderId = newValue.id;
+//		if($scope.selectedOrderTimeout){
+//		    clearTimeout($scope.selectedOrderTimeout);
+//		}
+//		$scope.selectedOrderTimeout = setTimeout(function(){
+			$scope.$parent.lastSelectedOrderId = newValue.id;
+//		},100);
 		return;
 	    }
 	    var newEntries = newValue.entries;
@@ -85,11 +90,12 @@ angular.module('xenon.controllers.orders', [])
 	    if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { //error
 		founderrors = true;
 	    }
+//	    $('#entries_datatable').find('.rowquantity').valid();
 
 	    if (!founderrors) {
 		//TODO- maybe clone and strip "types" excessive data
 		$sails.post("/orders/save", {
-		    order : $scope.selectedOrder
+		    order : $scope.$parent.selectedOrder
 		}).success(function(data) {
 		    if (data.error != undefined) { // USER NO LONGER LOGGED
 			location.reload(); // Will boot back to login
@@ -114,7 +120,7 @@ angular.module('xenon.controllers.orders', [])
 			    "hideMethod" : "fadeOut"
 			});
 
-//			$scope.selectedOrder.id = data.lot.id;
+			//$scope.$parent.selectedOrder.id = null;// ensures changed value.   = null;//.id = order.id;// = null;//.id = order.id;
 
 			$sails.post("/orders/pushorder", {
 			    orderId : order.id
@@ -128,7 +134,9 @@ angular.module('xenon.controllers.orders', [])
 			$timeout(function() {
 			    delete $scope.order_saving;
 			    resetOrderForms();
-			    $scope.$parent.lastSelectedOrderId = null; // should ensure blocked change event
+			    $scope.$parent.selectedOrder = order; // may or may not trigger change because of updating ID's on entries
+			    
+			    //$scope.$parent.lastSelectedOrderId = null; // should ensure blocked change event
 			    $rootScope.changes_pending = false;
 			    // Datatable is update via socket emit from this
 			    // update.
