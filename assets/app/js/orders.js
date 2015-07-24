@@ -19,16 +19,25 @@ angular.module('xenon.controllers.orders', [])
 
     // Watch and update order changes.
     $scope.$watch('selectedOrder', function(newValue, oldValue) {
+	
+	
 	if (!angular.equals(newValue, oldValue)) {
-	    if (newValue.id != $scope.$parent.lastSelectedOrderId){//  typeof(oldValue)!='undefined'&&typeof(oldValue.id)!='undefined'  $scope.lastSelectedOrderId == null || ) { // reads parent
+	    if (typeof(oldValue)=='undefined'||oldValue==null||newValue.id != oldValue.id ){//$scope.$parent.lastSelectedOrderId){//  typeof(oldValue)!='undefined'&&typeof(oldValue.id)!='undefined'  $scope.lastSelectedOrderId == null || ) { // reads parent
+		//$scope.$parent.lastSelectedOrderId = newValue.id
 		//$scope.$parent.selectedOrderChanged = false; // writes parent
-//		if($scope.selectedOrderTimeout){
-//		    clearTimeout($scope.selectedOrderTimeout);
-//		}
-//		$scope.selectedOrderTimeout = setTimeout(function(){
-			$scope.$parent.lastSelectedOrderId = newValue.id;
-//		},100);
+		$scope.idChanged = true;
+		
+		if($scope.selectedOrderTimeout){
+		    clearTimeout($scope.selectedOrderTimeout);
+		}
+		$scope.selectedOrderTimeout = setTimeout(function(){
+			//additional block latch
+		    $scope.idChanged = false;
+		},100);
 		return;
+	    }
+	    if($scope.idChanged){ // block all change actions if 100 ms within id change event.
+		return; 
 	    }
 	    var newEntries = newValue.entries;
 	    var oldEntries = oldValue.entries;
