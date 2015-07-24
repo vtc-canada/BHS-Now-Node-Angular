@@ -22,6 +22,43 @@ module.exports = {
 	    });
 	}
     },
+    viewbarcode : function(req, res) {
+	var phantom_bool, lot;
+	if (typeof (req.query) != 'undefined' && typeof (req.query.lot) != 'undefined') {
+	    // see if we're passing in the report stuff as GET parameters
+	    lot = JSON.parse(req.query.lot);
+	    // pass_locale = report.locale;
+	    phantom_bool = true;
+	    res.view('reports/lotbarcode.ejs', {
+		phantom : phantom_bool,
+		layout : false,
+		title : '',
+		lot : lot
+	    });
+	} else { // Otherwise, we expect the parameters to be POSTED
+	    lot = req.body.lot;
+	    // if (typeof (req.session.user) != 'undefined') {
+	    // report.locale = req.session.user.locale || 'en';
+	    // } else {
+	    // report.locale = 'en';
+	    // }
+	    phantom_bool = false;
+	    sails.renderView('reports/lotbarcode', {
+		phantom : phantom_bool,
+		layout : false,
+		title : '',
+		lot : lot
+	    }, function(err, html) {
+		res.json(html);
+	    });
+
+	    // res.render('path/to/view', function (err, html) {
+	    //		
+	    // res.json(html);
+	    // }
+	}
+
+    },
     bulkmove : function(req, res) {
 	var lots = req.body.lots;
 	var value = req.body.value;
@@ -34,18 +71,21 @@ module.exports = {
 	Database.dataSproc('INV_UpdateLotLocation', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
 	    if (err)
 		return console.log(err.toString())
-		
+
 	    res.json({
 		success : true
 	    });
 	    console.log('pushing location lots update');
 	    SecurityService.sendMessage(null, {
 		verb : 'lotLocationUpdate',
-		data : {lotIDs:lotIDs, locationID : value}
+		data : {
+		    lotIDs : lotIDs,
+		    locationID : value
+		}
 	    });
 	})
     },
-    bulkquantity : function(req,res){
+    bulkquantity : function(req, res) {
 	var lots = req.body.lots;
 	var value = req.body.value;
 	var lotIDs = [];
@@ -57,18 +97,21 @@ module.exports = {
 	Database.dataSproc('INV_UpdateLotQuantity', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
 	    if (err)
 		return console.log(err.toString())
-		
+
 	    res.json({
 		success : true
 	    });
 	    console.log('pushing quantity lots update');
 	    SecurityService.sendMessage(null, {
 		verb : 'lotQuantityUpdate',
-		data : {lotIDs:lotIDs, quantity : value}
+		data : {
+		    lotIDs : lotIDs,
+		    quantity : value
+		}
 	    });
 	})
     },
-    bulkstatus : function(req,res){
+    bulkstatus : function(req, res) {
 	var lots = req.body.lots;
 	var value = req.body.value;
 	var lotIDs = [];
@@ -80,14 +123,17 @@ module.exports = {
 	Database.dataSproc('INV_UpdateLotStatus', [ lotIDsJoin, value, req.session.user.username ], function(err, result) {
 	    if (err)
 		return console.log(err.toString())
-		
+
 	    res.json({
 		success : true
 	    });
 	    console.log('pushing status lots update');
 	    SecurityService.sendMessage(null, {
 		verb : 'lotStatusUpdate',
-		data : {lotIDs:lotIDs, lotStatusID : value}
+		data : {
+		    lotIDs : lotIDs,
+		    lotStatusID : value
+		}
 	    });
 	});
     },

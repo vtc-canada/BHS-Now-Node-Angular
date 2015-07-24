@@ -1,7 +1,7 @@
 'use strict';
 angular.module('xenon.controllers.inventory', [])
 
-.controller('InventorySection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
+.controller('InventorySection', function($scope, $rootScope, $sce, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
     // var vm = this;
     // vm.blockInventorySelectedModified = true;
@@ -27,6 +27,49 @@ angular.module('xenon.controllers.inventory', [])
 	}
     }, true);
 
+    $scope.printBarcode = function() {
+	$rootScope.currentModal = $modal.open({
+	    templateUrl : 'print-barcode-modal',
+	    size : 'md',
+	    backdrop : true,
+	    scope : $scope
+	});
+//	$scope.lotBarcodeHtml = null;
+	
+	
+
+	$sails.post('/inventory/viewbarcode', {
+	    lot : $scope.selectedLot
+	}).success(function(html) {
+	    if (html.error != undefined) { 
+		location.reload(); 
+	    }
+	    if (html.emit) {
+		return;
+	    }
+	    $timeout(function() {
+		$scope.barcodehtml = $sce.trustAsHtml(html);
+	    }, 0);
+	}).error(function(data) {
+	    alert('err!');
+	});
+	
+//	$rootScope.currentModal.selectedLot = angular.copy($rootScope.selectedLot);
+//	
+//	title = "Bulk Move";
+//	$rootScope.currentModal.bulkmode = 'Move';
+//	$rootScope.currentModal.locationID = null;
+	
+	
+	
+
+	$rootScope.currentModal.result.then(function(selectedItem) {
+	}, function(triggerElement) {
+	    if (triggerElement == 'save') {
+	    }
+	});
+    }
+
     $scope.saveInventory = function(tab) {
 	$timeout(function() {
 	    var founderrors = false;
@@ -44,24 +87,24 @@ angular.module('xenon.controllers.inventory', [])
 			location.reload(); // Will boot back to login
 		    }
 		    if (data.success) {
-			
+
 			toastr.success('Lot <b>' + $rootScope.selectedLot.id + '</b> was updated.', 'Success', {
-				"closeButton" : true,
-				"debug" : false,
-				"newestOnTop" : false,
-				"progressBar" : false,
-				"positionClass" : "toast-top-right",
-				"preventDuplicates" : false,
-				"showDuration" : "300",
-				"hideDuration" : "1000",
-				"timeOut" : "5000",
-				"extendedTimeOut" : "1000",
-				"showEasing" : "swing",
-				"hideEasing" : "linear",
-				"showMethod" : "fadeIn",
-				"hideMethod" : "fadeOut"
-			    });
-			
+			    "closeButton" : true,
+			    "debug" : false,
+			    "newestOnTop" : false,
+			    "progressBar" : false,
+			    "positionClass" : "toast-top-right",
+			    "preventDuplicates" : false,
+			    "showDuration" : "300",
+			    "hideDuration" : "1000",
+			    "timeOut" : "5000",
+			    "extendedTimeOut" : "1000",
+			    "showEasing" : "swing",
+			    "hideEasing" : "linear",
+			    "showMethod" : "fadeIn",
+			    "hideMethod" : "fadeOut"
+			});
+
 			$rootScope.selectedLot.id = data.lot.id;
 
 			$sails.post("/inventory/pushlot", {
@@ -321,17 +364,16 @@ angular.module('xenon.controllers.inventory', [])
 		}, 0);
 	    }
 	}
-	
 
-	$rootScope.lotStatusUpdate = function(data){
+	$rootScope.lotStatusUpdate = function(data) {
 	    var lotIDs = data.lotIDs;
 	    var lotStatusID = data.lotStatusID;
-	    
-	    $timeout(function(){
+
+	    $timeout(function() {
 		var lotstempRow = $scope.inventoryDatatable.dataTable.fnGetData();
-		for(var i=0;i<lotstempRow.length;i++){
-		    if(lotIDs.indexOf(lotstempRow[i].id)!==-1&&lotstempRow[i].lotStatusID!=lotStatusID){
-			//alert('found buggerup record');
+		for (var i = 0; i < lotstempRow.length; i++) {
+		    if (lotIDs.indexOf(lotstempRow[i].id) !== -1 && lotstempRow[i].lotStatusID != lotStatusID) {
+			// alert('found buggerup record');
 			$scope.inventoryDatatable.fnUpdate
 			var row = lotstempRow[i];
 			row.lotStatus = $scope.dropdowns.lot_statusNames[lotStatusID];
@@ -340,27 +382,29 @@ angular.module('xenon.controllers.inventory', [])
 		    }
 		}
 		$scope.inventoryDatatable.dataTable.api().draw(false);
-		
+
 		// This update below really isn't necessary..
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-		if ($rootScope.selectedLot!=null&&lotIDs.indexOf($rootScope.selectedLot.id)!==-1) {  // && !angular.equals($rootScope.selectedLot, lot)
+		if ($rootScope.selectedLot != null && lotIDs.indexOf($rootScope.selectedLot.id) !== -1) { // &&
+													    // !angular.equals($rootScope.selectedLot,
+													    // lot)
 		    $rootScope.selectedLot.lotStatus = $scope.dropdowns.lot_statusNames[lotStatusID];
 		    $rootScope.selectedLot.lotStatusID = lotStatusID;
 		    $rootScope.selectedLotChanged = true;
 		}
-	    },0);
+	    }, 0);
 	}
-	
-	$rootScope.lotQuantityUpdate = function(data){
+
+	$rootScope.lotQuantityUpdate = function(data) {
 	    var lotIDs = data.lotIDs;
 	    var quantity = data.quantity;
-	    
-	    $timeout(function(){
+
+	    $timeout(function() {
 		var lotstempRow = $scope.inventoryDatatable.dataTable.fnGetData();
-		for(var i=0;i<lotstempRow.length;i++){
-		    if(lotIDs.indexOf(lotstempRow[i].id)!==-1&&lotstempRow[i].quantity!=quantity){
-			//alert('found buggerup record');
+		for (var i = 0; i < lotstempRow.length; i++) {
+		    if (lotIDs.indexOf(lotstempRow[i].id) !== -1 && lotstempRow[i].quantity != quantity) {
+			// alert('found buggerup record');
 			$scope.inventoryDatatable.fnUpdate
 			var row = lotstempRow[i];
 			row.quantity = quantity;
@@ -368,47 +412,50 @@ angular.module('xenon.controllers.inventory', [])
 		    }
 		}
 		$scope.inventoryDatatable.dataTable.api().draw(false);
-		
+
 		// This update below really isn't necessary..
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-		if ($rootScope.selectedLot!=null&&lotIDs.indexOf($rootScope.selectedLot.id)!==-1) {  // && !angular.equals($rootScope.selectedLot, lot)
+		if ($rootScope.selectedLot != null && lotIDs.indexOf($rootScope.selectedLot.id) !== -1) { // &&
+													    // !angular.equals($rootScope.selectedLot,
+													    // lot)
 		    $rootScope.selectedLot.quantity = quantity;
 		    $rootScope.selectedLotChanged = true;
 		}
-	    },0);
+	    }, 0);
 	}
-	
-	$rootScope.lotLocationUpdate = function(data){
+
+	$rootScope.lotLocationUpdate = function(data) {
 	    var lotIDs = data.lotIDs;
 	    var locationID = data.locationID;
-	    
-	    $timeout(function(){
+
+	    $timeout(function() {
 		var lotstempRow = $scope.inventoryDatatable.dataTable.fnGetData();
-		for(var i=0;i<lotstempRow.length;i++){
-		    if(lotIDs.indexOf(lotstempRow[i].id)!==-1&&lotstempRow[i].locationID!=locationID){
-			//alert('found buggerup record');
+		for (var i = 0; i < lotstempRow.length; i++) {
+		    if (lotIDs.indexOf(lotstempRow[i].id) !== -1 && lotstempRow[i].locationID != locationID) {
+			// alert('found buggerup record');
 			$scope.inventoryDatatable.fnUpdate
 			var row = lotstempRow[i];
 			row.location = $scope.dropdowns.locationNames[locationID];
 			row.locationID = locationID;
-			
+
 			$scope.inventoryDatatable.dataTable.fnUpdate(row, $scope.index_aoData[row.id], undefined, false, false);
 		    }
 		}
 		$scope.inventoryDatatable.dataTable.api().draw(false);
-		
+
 		// This update below really isn't necessary..
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-		if ($rootScope.selectedLot!=null&&lotIDs.indexOf($rootScope.selectedLot.id)!==-1) {  // && !angular.equals($rootScope.selectedLot, lot)
+		if ($rootScope.selectedLot != null && lotIDs.indexOf($rootScope.selectedLot.id) !== -1) { // &&
+													    // !angular.equals($rootScope.selectedLot,
+													    // lot)
 		    $rootScope.selectedLot.locationID = locationID;
 		    $rootScope.selectedLot.location = $scope.dropdowns.locationNames[locationID];
 		    $rootScope.selectedLotChanged = true;
 		}
-		
-		
-	    },0);
+
+	    }, 0);
 	}
 
 	$rootScope.lotUpdate = function(lot) {
@@ -430,7 +477,7 @@ angular.module('xenon.controllers.inventory', [])
 		// This update below really isn't necessary..
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-		if ($rootScope.selectedLot!=null&&$rootScope.selectedLot.id == lot.id && !angular.equals($rootScope.selectedLot, lot)) {
+		if ($rootScope.selectedLot != null && $rootScope.selectedLot.id == lot.id && !angular.equals($rootScope.selectedLot, lot)) {
 		    $rootScope.selectedLot = angular.copy(lot);
 		    $rootScope.selectedLotChanged = true;
 		}
@@ -529,7 +576,7 @@ angular.module('xenon.controllers.inventory', [])
 	    $scope.checkSelectAllState(); // check state on all draws
 	    // alert('drawcallback');
 	})
-	//.withOption('stateSave', true)
+	// .withOption('stateSave', true)
 	.withPaginationType('full_numbers').withDOM('rt<"row"<"col-lg-4"i><"col-lg-8"p>>'); // <"row"<"col-xs-12"fl>>
 	// l length
 	// r processing
@@ -544,10 +591,11 @@ angular.module('xenon.controllers.inventory', [])
 	    return '<input type="checkbox" ' + (full.selected ? 'checked="checked"' : '') + '>';
 	}), DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand'),
 	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
-	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('lotStatus').withTitle('lotStatus'), DTColumnBuilder.newColumn('locationID').withTitle('locationID'), DTColumnBuilder.newColumn('uom').withTitle('Unit').notVisible(), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'),
-	    DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall').notVisible(), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
+	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('lotStatus').withTitle('lotStatus'), DTColumnBuilder.newColumn('locationID').withTitle('locationID'), DTColumnBuilder.newColumn('uom').withTitle('Unit').notVisible(),
+	    DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth'), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall').notVisible(), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'),
+	    DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
 		return '$' + $filter('number')(data, 2);
-	    }), DTColumnBuilder.newColumn('date_added').withTitle('Date Added').notVisible() , DTColumnBuilder.newColumn('user_name').withTitle('Username').notVisible(), DTColumnBuilder.newColumn('notes').withTitle('Notes').notVisible(), ];
+	    }), DTColumnBuilder.newColumn('date_added').withTitle('Date Added').notVisible(), DTColumnBuilder.newColumn('user_name').withTitle('Username').notVisible(), DTColumnBuilder.newColumn('notes').withTitle('Notes').notVisible(), ];
 
 	//
 
@@ -568,9 +616,9 @@ angular.module('xenon.controllers.inventory', [])
 	// })
 	, DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('serial_no').withTitle('Serial #'), DTColumnBuilder.newColumn('brandID').withTitle('BrandID').notVisible(), DTColumnBuilder.newColumn('brand').withTitle('Brand').notVisible(),
 	    DTColumnBuilder.newColumn('typeID').withTitle('typeID').notVisible(), DTColumnBuilder.newColumn('type').withTitle('Type'), DTColumnBuilder.newColumn('quantity').withTitle('Quantity'), DTColumnBuilder.newColumn('uomID').withTitle('uomID').notVisible(),
-	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('lotStatus').withTitle('lotStatus').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(), DTColumnBuilder.newColumn('uom').withTitle('Unit').notVisible(),
-	    DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth').notVisible(), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall').notVisible(), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'), DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'),
-	    DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
+	    DTColumnBuilder.newColumn('lotStatusID').withTitle('lotStatusID').notVisible(), DTColumnBuilder.newColumn('lotStatus').withTitle('lotStatus').notVisible(), DTColumnBuilder.newColumn('locationID').withTitle('locationID').notVisible(),
+	    DTColumnBuilder.newColumn('uom').withTitle('Unit').notVisible(), DTColumnBuilder.newColumn('tread_depth').withTitle('Tread Depth').notVisible(), DTColumnBuilder.newColumn('side_wall').withTitle('Side Wall').notVisible(), DTColumnBuilder.newColumn('tire_type').withTitle('Tire Type'),
+	    DTColumnBuilder.newColumn('tire_size').withTitle('Tire Size'), DTColumnBuilder.newColumn('price').withTitle('Price').renderWith(function(data, type, full, meta) {
 		return '$' + $filter('number')(data, 2);
 	    }).notVisible(), DTColumnBuilder.newColumn('date_added').withTitle('Date Added').notVisible(), DTColumnBuilder.newColumn('user_name').withTitle('Username').notVisible(), DTColumnBuilder.newColumn('notes').withTitle('Notes').notVisible(), ];
 
@@ -621,9 +669,9 @@ angular.module('xenon.controllers.inventory', [])
 				return false;
 			    }
 			} else if (sfield == 'price_MIN' || sfield == 'price_MAX') {
-			    if (sfield == 'price_MIN' && $scope.inventory_search.price_MIN !== '' && $scope.inventory_search.price_MIN != null && parseInt(data[$scope.column_index['price']].replace('$','')) < parseInt($scope.inventory_search.price_MIN)) {
+			    if (sfield == 'price_MIN' && $scope.inventory_search.price_MIN !== '' && $scope.inventory_search.price_MIN != null && parseInt(data[$scope.column_index['price']].replace('$', '')) < parseInt($scope.inventory_search.price_MIN)) {
 				return false;
-			    } else if (sfield == 'price_MAX' && $scope.inventory_search.price_MAX !== '' && $scope.inventory_search.price_MAX != null && parseInt(data[$scope.column_index['price']].replace('$','')) > parseInt($scope.inventory_search.price_MAX)) {
+			    } else if (sfield == 'price_MAX' && $scope.inventory_search.price_MAX !== '' && $scope.inventory_search.price_MAX != null && parseInt(data[$scope.column_index['price']].replace('$', '')) > parseInt($scope.inventory_search.price_MAX)) {
 				return false;
 			    }
 			} else if ($scope.inventory_search[sfield] instanceof Array && $scope.inventory_search[sfield].length > 0 && $scope.inventory_search[sfield].indexOf(data[$scope.column_index[sfield]]) == -1) {
@@ -636,8 +684,7 @@ angular.module('xenon.controllers.inventory', [])
 		});
 
 	});
-	
-	
+
 	$scope.bulkMove = function() {
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : 'bulk-operation-modal',
@@ -672,7 +719,8 @@ angular.module('xenon.controllers.inventory', [])
 	    var founderrors = false;
 	    $('#' + "bulk_form").valid(); // this was blocked at some
 	    // point for some reason..
-	    if (!$('#currentModal_locationID').valid()){//$rootScope.validator["bulk_form"].numberOfInvalids() > 0) { // error
+	    if (!$('#currentModal_locationID').valid()) {// $rootScope.validator["bulk_form"].numberOfInvalids()
+							    // > 0) { // error
 		founderrors = true;
 	    }
 
@@ -692,16 +740,16 @@ angular.module('xenon.controllers.inventory', [])
 			$timeout(function() {
 			    var movecount = 0;
 			    var lotlist = '';
-			    for(var i=0;i<lotBunch.length;i++){
-				movecount ++;
-				if(movecount<10){
-				    lotlist = lotlist + (lotlist==''?'':', ') + lotBunch[i].id;
-				}else if(movecount ==10){
+			    for (var i = 0; i < lotBunch.length; i++) {
+				movecount++;
+				if (movecount < 10) {
+				    lotlist = lotlist + (lotlist == '' ? '' : ', ') + lotBunch[i].id;
+				} else if (movecount == 10) {
 				    lotlist = lotlist + '...';
 				}
 			    }
-			    
-			    toastr.success((movecount==1?'Lot':'Lots') +  ' <b>' + lotlist + '</b> ' + (movecount==1?'was':'were') + ' updated to location <b>' + $scope.dropdowns.locationNames[$rootScope.currentModal.locationID] + '</b>.', 'Success', {
+
+			    toastr.success((movecount == 1 ? 'Lot' : 'Lots') + ' <b>' + lotlist + '</b> ' + (movecount == 1 ? 'was' : 'were') + ' updated to location <b>' + $scope.dropdowns.locationNames[$rootScope.currentModal.locationID] + '</b>.', 'Success', {
 				"closeButton" : true,
 				"debug" : false,
 				"newestOnTop" : false,
@@ -726,7 +774,7 @@ angular.module('xenon.controllers.inventory', [])
 	    }
 	}
 
-	$scope.bulkQuantity = function(){
+	$scope.bulkQuantity = function() {
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : 'bulk-operation-modal',
 		size : 'lg',
@@ -748,22 +796,21 @@ angular.module('xenon.controllers.inventory', [])
 		$('#bulk').dataTable().api().draw();
 		resetBulkForms();
 	    }, 0);
-	    
 
 	    $rootScope.currentModal.result.then(function(selectedItem) {
 	    }, function(triggerElement) {
 		if (triggerElement == 'save') {
 		}
 	    });
-	    
-	    
+
 	}
-	
-	$scope.doBulkQuantity = function(){
+
+	$scope.doBulkQuantity = function() {
 	    var founderrors = false;
 	    $('#' + "bulk_form").valid(); // this was blocked at some
 	    // point for some reason..
-	    if (!$('#currentModal_quantity').valid()){//$rootScope.validator["bulk_form"].numberOfInvalids() > 0) { // error
+	    if (!$('#currentModal_quantity').valid()) {// $rootScope.validator["bulk_form"].numberOfInvalids()
+							// > 0) { // error
 		founderrors = true;
 	    }
 	    if (!founderrors) {
@@ -782,16 +829,16 @@ angular.module('xenon.controllers.inventory', [])
 			$timeout(function() {
 			    var movecount = 0;
 			    var lotlist = '';
-			    for(var i=0;i<lotBunch.length;i++){
-				movecount ++;
-				if(movecount<10){
-				    lotlist = lotlist + (lotlist==''?'':', ') + lotBunch[i].id;
-				}else if(movecount ==10){
+			    for (var i = 0; i < lotBunch.length; i++) {
+				movecount++;
+				if (movecount < 10) {
+				    lotlist = lotlist + (lotlist == '' ? '' : ', ') + lotBunch[i].id;
+				} else if (movecount == 10) {
 				    lotlist = lotlist + '...';
 				}
 			    }
-			    
-			    toastr.success((movecount==1?'Lot':'Lots') +  ' <b>' + lotlist + '</b> ' + (movecount==1?'was':'were') + ' updated to have a quantity of <b>' + $rootScope.currentModal.quantity + '</b>.', 'Success', {
+
+			    toastr.success((movecount == 1 ? 'Lot' : 'Lots') + ' <b>' + lotlist + '</b> ' + (movecount == 1 ? 'was' : 'were') + ' updated to have a quantity of <b>' + $rootScope.currentModal.quantity + '</b>.', 'Success', {
 				"closeButton" : true,
 				"debug" : false,
 				"newestOnTop" : false,
@@ -815,9 +862,8 @@ angular.module('xenon.controllers.inventory', [])
 		$rootScope.currentModal.dismiss();
 	    }
 	}
-	
-	
-	$scope.bulkStatus = function(){
+
+	$scope.bulkStatus = function() {
 	    $rootScope.currentModal = $modal.open({
 		templateUrl : 'bulk-operation-modal',
 		size : 'lg',
@@ -845,12 +891,13 @@ angular.module('xenon.controllers.inventory', [])
 		}
 	    });
 	}
-	
-	$scope.doBulkStatus = function(){
+
+	$scope.doBulkStatus = function() {
 	    var founderrors = false;
 	    $('#' + "bulk_form").valid(); // this was blocked at some
 	    // point for some reason..
-	    if (!$('#currentModal_lotStatus').valid()){//$rootScope.validator["bulk_form"].numberOfInvalids() > 0) { // error
+	    if (!$('#currentModal_lotStatus').valid()) {// $rootScope.validator["bulk_form"].numberOfInvalids()
+							// > 0) { // error
 		founderrors = true;
 	    }
 	    if (!founderrors) {
@@ -869,16 +916,16 @@ angular.module('xenon.controllers.inventory', [])
 			$timeout(function() {
 			    var movecount = 0;
 			    var lotlist = '';
-			    for(var i=0;i<lotBunch.length;i++){
-				movecount ++;
-				if(movecount<10){
-				    lotlist = lotlist + (lotlist==''?'':', ') + lotBunch[i].id;
-				}else if(movecount ==10){
+			    for (var i = 0; i < lotBunch.length; i++) {
+				movecount++;
+				if (movecount < 10) {
+				    lotlist = lotlist + (lotlist == '' ? '' : ', ') + lotBunch[i].id;
+				} else if (movecount == 10) {
 				    lotlist = lotlist + '...';
 				}
 			    }
-			    
-			    toastr.success((movecount==1?'Lot':'Lots') +  ' <b>' + lotlist + '</b> ' + (movecount==1?'was':'were') + ' updated to have a status of <b>' + $scope.dropdowns.lot_statusNames[$rootScope.currentModal.lotStatus] + '</b>.', 'Success', {
+
+			    toastr.success((movecount == 1 ? 'Lot' : 'Lots') + ' <b>' + lotlist + '</b> ' + (movecount == 1 ? 'was' : 'were') + ' updated to have a status of <b>' + $scope.dropdowns.lot_statusNames[$rootScope.currentModal.lotStatus] + '</b>.', 'Success', {
 				"closeButton" : true,
 				"debug" : false,
 				"newestOnTop" : false,
@@ -1305,7 +1352,7 @@ angular.module('xenon.controllers.inventory', [])
 
 	    }
 	});
-	
+
 	$scope.$watch('currentModal.quantity', function(newValue, oldValue) {
 	    if ((!angular.equals(newValue, oldValue)) && newValue != null) {
 		resetBulkForms();

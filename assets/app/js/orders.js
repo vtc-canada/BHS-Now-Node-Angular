@@ -3,7 +3,14 @@ angular.module('xenon.controllers.orders', [])
 
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
-    
+
+    $scope.removeEntry = function(index){
+	if($scope.$parent.selectedOrder.entries[index].id == 'new'){
+		$scope.$parent.selectedOrder.entries.splice(index,1);
+	}else{
+	    $scope.$parent.selectedOrder.entries[index].is_deleted = true;
+	}
+    }
     $scope.addEntry = function() {
 	$scope.$parent.selectedOrder.entries.push({
 	    id : 'new',
@@ -19,34 +26,44 @@ angular.module('xenon.controllers.orders', [])
 
     // Watch and update order changes.
     $scope.$watch('selectedOrder', function(newValue, oldValue) {
-	
-	
+
 	if (!angular.equals(newValue, oldValue)) {
-	    if (typeof(oldValue)=='undefined'||oldValue==null||newValue.id != oldValue.id ){//$scope.$parent.lastSelectedOrderId){//  typeof(oldValue)!='undefined'&&typeof(oldValue.id)!='undefined'  $scope.lastSelectedOrderId == null || ) { // reads parent
-		//$scope.$parent.lastSelectedOrderId = newValue.id
-		//$scope.$parent.selectedOrderChanged = false; // writes parent
+	    if (typeof (oldValue) == 'undefined' || oldValue == null || newValue.id != oldValue.id) {// $scope.$parent.lastSelectedOrderId){//
+		// typeof(oldValue)!='undefined'&&typeof(oldValue.id)!='undefined'
+		// $scope.lastSelectedOrderId
+		// ==
+		// null
+		// || )
+		// { //
+		// reads
+		// parent
+		// $scope.$parent.lastSelectedOrderId = newValue.id
+		// $scope.$parent.selectedOrderChanged = false; // writes parent
 		$scope.idChanged = true;
-		
-		if($scope.selectedOrderTimeout){
+
+		if ($scope.selectedOrderTimeout) {
 		    clearTimeout($scope.selectedOrderTimeout);
 		}
-		$scope.selectedOrderTimeout = setTimeout(function(){
-			//additional block latch
+		$scope.selectedOrderTimeout = setTimeout(function() {
+		    // additional block latch
 		    $scope.idChanged = false;
-		},100);
+		}, 100);
 		return;
 	    }
-	    if($scope.idChanged){ // block all change actions if 100 ms within id change event.
-		return; 
+	    if ($scope.idChanged) { // block all change actions if 100 ms within
+		// id change event.
+		return;
 	    }
 	    var newEntries = newValue.entries;
 	    var oldEntries = oldValue.entries;
 	    for (var iEntries = 0; iEntries < newEntries.length; iEntries++) {
 		if (typeof (oldEntries[iEntries]) == 'undefined' || newEntries[iEntries]['inv_cfg_mat_brands_id'] != oldEntries[iEntries]['inv_cfg_mat_brands_id']) {
 		    (function(ihold) {
-			newEntries[ihold]['inv_cfg_mat_types_id'] = null; // Responsible for detatching Orders
-			
-			
+			newEntries[ihold]['inv_cfg_mat_types_id'] = null; // Responsible
+			// for
+			// detatching
+			// Orders
+
 			$sails.post('/inventory/get-types-by-brand', {
 			    brand : newEntries[ihold]['inv_cfg_mat_brands_id']
 			}).success(function(data) {
@@ -66,43 +83,66 @@ angular.module('xenon.controllers.orders', [])
 		    })(iEntries);
 		}
 	    }
-	    
-	    
+
 	    $rootScope.changes_pending = true;
-	    
-	    
-	    
-	    
-//	    if($('#selectedOrder_nms_cur_contacts_id').hasClass('ng-dirty')){
-//		$('#selectedOrder_nms_cur_contacts_id').valid();
-//		alert('somedirty');
-//	    }
-	    
-//	    $('#' + "fullorder").valid();
+
+	    // if($('#selectedOrder_nms_cur_contacts_id').hasClass('ng-dirty')){
+	    // $('#selectedOrder_nms_cur_contacts_id').valid();
+	    // alert('somedirty');
+	    // }
+
+	    // $('#' + "fullorder").valid();
 	}
     }, true);
 
     // Watch and update types comboboxes
-//    $scope.$watch('$parent.selectedOrder.entries', function(newValue, oldValue) {
-//	if (!angular.equals(newValue, oldValue) && typeof (oldValue) != 'undefined') {
-//
-//	    
-//
-//	}
-//    }, true);
+    // $scope.$watch('$parent.selectedOrder.entries', function(newValue,
+    // oldValue) {
+    // if (!angular.equals(newValue, oldValue) && typeof (oldValue) !=
+    // 'undefined') {
+    //
+    //	    
+    //
+    // }
+    // }, true);
+
+    $scope.deleteOrder = function() {
+	$sails.post('/orders/destroy', {
+	    order : $scope.$parent.selectedOrder
+	}).success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED
+		location.reload(); // Will boot back to login
+	    }
+	    if (data.success) {
+		$sails.post("/orders/pushdestroyorder", {
+		    order : $scope.$parent.selectedOrder
+		}, function(data) {
+		    if (data.error != undefined) { // USER NO LONGER
+			// LOGGED
+			location.reload(); // Will boot back to login
+		    }
+		});
+		$timeout(function() {
+		    $scope.$parent.selectedOrder = null;
+		}, 0);
+	    }
+	}).error(function(data) {
+	    alert('err!');
+	});
+    }
 
     $scope.saveOrder = function(tab) {
 	$timeout(function() {
 	    var founderrors = false;
 	    $('#' + "fullorder").valid(); // this was blocked at some
 	    // point for some reason..
-	    if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { //error
+	    if ($rootScope.validator["fullorder"].numberOfInvalids() > 0) { // error
 		founderrors = true;
 	    }
-//	    $('#entries_datatable').find('.rowquantity').valid();
+	    // $('#entries_datatable').find('.rowquantity').valid();
 
 	    if (!founderrors) {
-		//TODO- maybe clone and strip "types" excessive data
+		// TODO- maybe clone and strip "types" excessive data
 		$sails.post("/orders/save", {
 		    order : $scope.$parent.selectedOrder
 		}).success(function(data) {
@@ -111,7 +151,7 @@ angular.module('xenon.controllers.orders', [])
 		    }
 		    if (data.success) {
 			var order = data.data;
-			$scope.$parent.selectedOrder = order; 
+			$scope.$parent.selectedOrder = order;
 			toastr.success('Order <b>' + $scope.selectedOrder.id + '</b> was updated.', 'Success', {
 			    "closeButton" : true,
 			    "debug" : false,
@@ -129,7 +169,9 @@ angular.module('xenon.controllers.orders', [])
 			    "hideMethod" : "fadeOut"
 			});
 
-			//$scope.$parent.selectedOrder.id = null;// ensures changed value.   = null;//.id = order.id;// = null;//.id = order.id;
+			// $scope.$parent.selectedOrder.id = null;// ensures
+			// changed value. = null;//.id = order.id;// =
+			// null;//.id = order.id;
 
 			$sails.post("/orders/pushorder", {
 			    orderId : order.id
@@ -143,9 +185,18 @@ angular.module('xenon.controllers.orders', [])
 			$timeout(function() {
 			    delete $scope.order_saving;
 			    resetOrderForms();
-			    $scope.$parent.selectedOrder = order; // may or may not trigger change because of updating ID's on entries
-			    
-			    //$scope.$parent.lastSelectedOrderId = null; // should ensure blocked change event
+			    $scope.$parent.selectedOrder = order; // may or
+			    // may not
+			    // trigger
+			    // change
+			    // because
+			    // of
+			    // updating
+			    // ID's on
+			    // entries
+
+			    // $scope.$parent.lastSelectedOrderId = null; //
+			    // should ensure blocked change event
 			    $rootScope.changes_pending = false;
 			    // Datatable is update via socket emit from this
 			    // update.
@@ -215,9 +266,7 @@ angular.module('xenon.controllers.orders', [])
 	    count : 0
 
 	};
-	
-	$scope.lastSelectedOrderId = null;
-	
+
 
 	$scope.selectAllDropdownSelectCustom0Qty = function() {
 	    $rootScope.selectAll.checked = null;
@@ -424,26 +473,40 @@ angular.module('xenon.controllers.orders', [])
 	$rootScope.orderUpdate = function(order) {
 	    // alert('anupdate');
 	    $timeout(function() {
-		if ($scope.index_aoData[order.id] == undefined) {
+		if ($scope.index_aoData[order.id] == undefined) { // NEW
 		    $scope.ordersDatatable.dataTable.fnAddData(order, false);// ,
 		    // $scope.index_aoData[order.id],
 		    // undefined,
 		    // true);
-		} else {
+		} else if (order.is_deleted) { // DELETED
 		    var tempRow = $scope.ordersDatatable.dataTable.fnGetData($scope.index_aoData[order.id]);
-		    order.selected = tempRow.selected;
-		    $scope.ordersDatatable.dataTable.fnUpdate(order, $scope.index_aoData[order.id], undefined, false);
+		    if (tempRow) {
+			$scope.ordersDatatable.dataTable.fnDeleteRow( $scope.index_aoData[order.id], null, false);
+			
+			
+			if($scope.selectedOrder != null && $scope.selectedOrder.id == order.id ){
+			    $scope.selectedOrder = null; //
+			}
+		    }
+		} else { // UPDATED
+		    var tempRow = $scope.ordersDatatable.dataTable.fnGetData($scope.index_aoData[order.id]);
+		    if (tempRow) {
+			order.selected = tempRow.selected;
+			$scope.ordersDatatable.dataTable.fnUpdate(order, $scope.index_aoData[order.id], undefined, false);
+		    }
 		}
 		$scope.ordersDatatable.dataTable.api().draw(false);
 		$scope.checkSelectAllState();
 
-		// This update below really isn't necessary..
+		// This update below really isn't necessary..  Beware- this will need to maintain entry is_deleted states otherwise it might be whacko
 		// interupts/overwrites
 		// form fields other users when editing the same id.
-//		if ($scope.selectedOrder != null && $scope.selectedOrder.id == order.id && !angular.equals($scope.selectedOrder, order)) {
-//		    $scope.selectedOrder = angular.copy(order);
-//		    $scope.lastSelectedOrderId = true;
-//		}
+		// if ($scope.selectedOrder != null && $scope.selectedOrder.id
+		// == order.id && !angular.equals($scope.selectedOrder, order))
+		// {
+		// $scope.selectedOrder = angular.copy(order);
+		// $scope.lastSelectedOrderId = true;
+		// }
 	    }, 0);
 	};
 	$scope.template = null;
@@ -459,7 +522,7 @@ angular.module('xenon.controllers.orders', [])
 
 	// Selected Order
 	$scope.selectedOrder = null;
-//	$scope.selectedOrderChanged = false;
+	// $scope.selectedOrderChanged = false;
 
 	var blankSearch = {
 	    id : '',
@@ -699,7 +762,6 @@ angular.module('xenon.controllers.orders', [])
 			// isNaN(parseInt($scope.selectedOrder.quantity)) ? 0 :
 			// parseInt($scope.selectedOrder.quantity);
 			// $scope.selectedOrder.entries = [];
-			$scope.lastSelectedOrderId = null; //ensures no changes pend
 			$rootScope.changes_pending = false;
 			$scope.ordersDatatable.dataTable.api().draw(false); // redrawing
 		    }, 0);
@@ -729,9 +791,9 @@ angular.module('xenon.controllers.orders', [])
 		entries : [],
 		"user_name" : $user.username,
 	    };
-	    $scope.selectedOrder = null; // hopefully trips any oldValues to be null on change watchers
+	    $scope.selectedOrder = null; // hopefully trips any oldValues to
+	    // be null on change watchers
 	    $scope.selectedOrder = angular.copy(blankOrder);
-	    $scope.lastSelectedOrderId = null;  //ensures no
 	    $rootScope.changes_pending = false;
 
 	    $scope.ordersDatatable.dataTable.api().draw(false);
