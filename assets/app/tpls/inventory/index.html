@@ -1,6 +1,34 @@
 <page-title ng-if="layoutOptions.pageTitles" title="Inventory" description=""></page-title>
 
 
+<script type="text/ng-template" id="print-barcode-modal">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">{{selectedLot.brand}} {{selectedLot.type}} </h4>
+	</div>
+	
+	<div class="modal-body form-horizontal">
+		<div ng-show="barcodehtml == null">
+		Generating Barcode
+		<span >&nbsp&nbsp<i class=""><span class="fa fa-spin fa-cog"></span></i></span>
+		</div>
+		<!-- <div ng-hide="exporting_inventory">
+			<a class="btn btn-success" href="{{inventory_export_pdf}}" target="_blank" >Download PDF</a>
+		</div> -->
+		<div ng-show="barcodehtml != null">
+			<div ng-bind-html="barcodehtml" id="barcode_html" class="row">
+						
+			</div>
+		</div>
+				
+				
+				
+	</div>
+	
+	<div class="modal-footer">
+		<button type="button" class="btn btn-white" ng-click="currentModal.close();">Close</button>
+	</div>
+</script>
 
 <script type="text/ng-template" id="export-inventory-modal">
 	<div class="modal-header">
@@ -422,7 +450,12 @@
 					<!-- <div class="pull-right pull-right-stack isn-panel-pull-right">
 						<div type="submit" class="btn btn-danger" ng-class="{true: 'disabled', false: ''}[contact.id == 'new']" ng-click="deleteContact()">{{ contact.id == 'new'?'Cancel':'Delete' }}</div>
 					</div> -->	
-					
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="btn btn-info pull-right"  ng-click="printBarcode();">Print Barcode</div>
+					</div>
+					<div class="pull-right pull-right-stack isn-panel-pull-right">
+						<div class="isn-button-seperator"></div>
+					</div>
 					<div class="pull-right pull-right-stack isn-panel-pull-right">
 						<div class="btn btn-white pull-right"  ng-click="exportInventory();">Export PDF</div>
 					</div>
