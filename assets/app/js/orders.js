@@ -4,13 +4,192 @@ angular.module('xenon.controllers.orders', [])
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
 
-    $scope.removeEntry = function(index){
-	if($scope.$parent.selectedOrder.entries[index].id == 'new'){
-		$scope.$parent.selectedOrder.entries.splice(index,1);
-	}else{
+    $scope.removeEntry = function(index) {
+	if ($scope.$parent.selectedOrder.entries[index].id == 'new') {
+	    $scope.$parent.selectedOrder.entries.splice(index, 1);
+	} else {
 	    $scope.$parent.selectedOrder.entries[index].is_deleted = true;
 	}
     }
+
+    $scope.editPicklist = function(index) {
+
+	$sails.post('/orders/getpicklistoptions', {
+	    entryID : $scope.$parent.selectedOrder.entries[index].id
+	}).success(function(data) {
+	    if (data.error != undefined) { // USER NO LONGER LOGGED
+		// IN!!!!!
+		location.reload(); // Will boot back to login
+		// screen
+	    }
+	    if (data.success) {
+		var mappings = data.data;
+
+		$rootScope.currentModal = $modal.open({
+		    templateUrl : 'edit-picked-items-modal',
+		    size : 'lg',
+		    backdrop : true,
+		    scope : $scope
+		});
+		//empty and options entries
+		$scope.pickedItems = [[{
+		      icon: './img/icons/facebook.jpg',
+		      title: 'Facebook (a)',
+		      link: 'http://www.facebook.com'
+		    }, {
+		      icon: './img/icons/youtube.jpg',
+		      title: 'Youtube (a)',
+		      link: 'http://www.youtube.com'
+		    }, {
+		      icon: './img/icons/gmail.jpg',
+		      title: 'Gmail (a)',
+		      link: 'http://www.gmail.com'
+		    }, {
+		      icon: './img/icons/google+.jpg',
+		      title: 'Google+ (a)',
+		      link: 'http://plus.google.com'
+		    }, {
+		      icon: './img/icons/twitter.jpg',
+		      title: 'Twitter (a)',
+		      link: 'http://www.twitter.com'
+		    }, {
+		      icon: './img/icons/yahoomail.jpg',
+		      title: 'Yahoo Mail (a)',
+		      link: 'http://mail.yahoo.com'
+		    }, {
+		      icon: './img/icons/pinterest.jpg',
+		      title: 'Pinterest (a)',
+		      link: 'http://www.pinterest.com'
+		    }],
+		    [{
+		      icon: './img/icons/facebook.jpg',
+		      title: 'Facebook (b)',
+		      link: 'http://www.facebook.com'
+		    }, {
+		      icon: './img/icons/youtube.jpg',
+		      title: 'Youtube (b)',
+		      link: 'http://www.youtube.com'
+		    }, {
+		      icon: './img/icons/gmail.jpg',
+		      title: 'Gmail (b)',
+		      link: 'http://www.gmail.com'
+		    }, {
+		      icon: './img/icons/google+.jpg',
+		      title: 'Google+ (b)',
+		      link: 'http://plus.google.com'
+		    }, {
+		      icon: './img/icons/twitter.jpg',
+		      title: 'Twitter (b)',
+		      link: 'http://www.twitter.com'
+		    }, {
+		      icon: './img/icons/yahoomail.jpg',
+		      title: 'Yahoo Mail (b)',
+		      link: 'http://mail.yahoo.com'
+		    }, {
+		      icon: './img/icons/pinterest.jpg',
+		      title: 'Pinterest (b)',
+		      link: 'http://www.pinterest.com'
+		    }]];
+		    
+		    
+		    //[ angular.copy($scope.$parent.selectedOrder.entries[index].pickeditems), data.data ]; // currentModal.picklistoptions = data.data;
+		$scope.pickedItemsTables = [$scope.createOptions('A'), $scope.createOptions('B')];
+		
+		$rootScope.currentModal.result.then(function(selectedItem) {
+		}, function(triggerElement) {
+		    if (triggerElement == 'save') {
+			//			$sails.post('/template/save', {
+			//			    id : $rootScope.newOrderTemplateModal.id,
+			//			    location : 'orders',
+			//			    name : $rootScope.newOrderTemplateModal.name,
+			//			    data : $scope.orders_search
+			//			}).success(function(data) {
+			//			    if (data.error != undefined) { // USER NO LONGER LOGGED
+			//				// IN!!!!!
+			//				location.reload(); // Will boot back to login
+			//				// screen
+			//			    }
+			//			    if (data.success) {
+			//				$rootScope.newOrderTemplateModal.id = data.template.id;
+			//				$scope.template = data.template.id;
+			//				$timeout(function() {
+			//				    $sails.get('/template/orders').success(function(data) {
+			//					if (data.error != undefined) { // USER NO
+			//					    // LONGER LOGGED
+			//					    // IN!!!!!
+			//					    location.reload(); // Will boot back to
+			//					    // login
+			//					    // screen
+			//					}
+			//					$scope.search_templates = [];
+			//					for (var i = 0; i < data.length; i++) {
+			//					    $scope.search_templates.push({
+			//						id : data[i].id,
+			//						label : data[i].name,
+			//						data : data[i].data
+			//					    });
+			//					}
+			//				    });
+			//				}, 0);
+			//			    }
+			//			}).error(function(data) {
+			//			    alert('err!');
+			//			});
+		    }
+		});
+	    }
+	});
+    }
+
+    $scope.createOptions = function(listName) {
+	var _listName = listName;
+	var options = {
+	    placeholder : "pickeditemsplaceholder",
+	    connectWith : ".pickeditems-wrapper",
+	    'ui-floating': true,
+	    activate : function() {
+		console.log("list " + _listName + ": activate");
+	    },
+	    beforeStop : function() {
+		console.log("list " + _listName + ": beforeStop");
+	    },
+	    change : function() {
+		console.log("list " + _listName + ": change");
+	    },
+	    create : function() {
+		console.log("list " + _listName + ": create");
+	    },
+	    deactivate : function() {
+		console.log("list " + _listName + ": deactivate");
+	    },
+	    out : function() {
+		console.log("list " + _listName + ": out");
+	    },
+	    over : function() {
+		console.log("list " + _listName + ": over");
+	    },
+	    receive : function() {
+		console.log("list " + _listName + ": receive");
+	    },
+	    remove : function() {
+		console.log("list " + _listName + ": remove");
+	    },
+	    sort : function() {
+		console.log("list " + _listName + ": sort");
+	    },
+	    start : function() {
+		console.log("list " + _listName + ": start");
+	    },
+	    stop : function() {
+		console.log("list " + _listName + ": stop");
+	    },
+	    update : function() {
+		console.log("list " + _listName + ": update");
+	    }
+	};
+	return options;
+    };
+
     $scope.addEntry = function() {
 	$scope.$parent.selectedOrder.entries.push({
 	    id : 'new',
@@ -20,6 +199,7 @@ angular.module('xenon.controllers.orders', [])
 	    inv_cfg_mat_brands_id : null,
 	    quantity : 1,
 	    types : [],
+	    pickeditems : [],
 	    inv_cfg_uom_id : 1
 	});
     }
@@ -267,7 +447,6 @@ angular.module('xenon.controllers.orders', [])
 
 	};
 
-
 	$scope.selectAllDropdownSelectCustom0Qty = function() {
 	    $rootScope.selectAll.checked = null;
 	};
@@ -481,10 +660,9 @@ angular.module('xenon.controllers.orders', [])
 		} else if (order.is_deleted) { // DELETED
 		    var tempRow = $scope.ordersDatatable.dataTable.fnGetData($scope.index_aoData[order.id]);
 		    if (tempRow) {
-			$scope.ordersDatatable.dataTable.fnDeleteRow( $scope.index_aoData[order.id], null, false);
-			
-			
-			if($scope.selectedOrder != null && $scope.selectedOrder.id == order.id ){
+			$scope.ordersDatatable.dataTable.fnDeleteRow($scope.index_aoData[order.id], null, false);
+
+			if ($scope.selectedOrder != null && $scope.selectedOrder.id == order.id) {
 			    $scope.selectedOrder = null; //
 			}
 		    }

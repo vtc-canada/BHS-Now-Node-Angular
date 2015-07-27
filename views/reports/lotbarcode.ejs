@@ -40,6 +40,15 @@
 	        }
 	    </style> -->
     
+		<script src="assets/js/jsbarcode/CODE128.js"></script>
+		<script src="assets/js/jsbarcode/JsBarcode.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#barcode").JsBarcode("Javascript is fun!");
+		});
+		
+		</script>
+		
 	</head>
 	<body>
 	
@@ -74,10 +83,13 @@ var n = this,
    </div>-->
    
    <div class="col-xs-12">
+   		<div class="row ">
+   			<div class="col-xs-12 barcode-row-wrapper">
+   		
+				<img id="barcode">
+   			</div>
+   		</div>
 		<div class="row report-main-content">
-			<div class="col-xs-6" style="background:black;">
-			&nbsp
-			</div>
 			<div class="col-xs-6" >
 				<div class="row">
 					<div class="form-group">
@@ -95,6 +107,10 @@ var n = this,
 						</label>
 					</div>
 				</div>
+				
+			</div>
+			<div class="col-xs-6" >
+				
 				<div class="row">
 					<div class="form-group">
 						<label class="col-xs-5 control-label" >Brand:</label>

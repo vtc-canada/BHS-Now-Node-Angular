@@ -8,12 +8,17 @@
 module.exports = {
     destroy : function(req, res) {
 	var order = req.body.order;
-	Database.dataSproc('ODR_DeleteOrder', [ order.id, req.session.user.username], function(err, response) {
+	Database.dataSproc('ODR_DeleteOrder', [ order.id, req.session.user.username ], function(err, response) {
 	    if (err) {
 		console.log(err.toString());
-		return res.json({error:err.toString()},500);
+		return res.json({
+		    error : err.toString()
+		}, 500);
 	    }
-	   res.json({success:true,data:order});
+	    res.json({
+		success : true,
+		data : order
+	    });
 	});
     },
     save : function(req, res) {
@@ -44,20 +49,27 @@ module.exports = {
 
 	    });
 	} else {
-	    Database.dataSproc('ODR_UpdateOrderStatus', [ order.id, order.odr_cfg_order_state_id, req.session.user.username ], function(err, response) {
+
+	    Database.dataSproc('ODR_UpdateOrder', [ order.id, order.nms_cur_contacts_id, req.session.user.username ], function(err, response) {
 		if (err)
 		    return console.log(err.toString());
-		processEntries(function(err) {
-		    if (err) {
-			console.log('Error processing entries:' + err.toString());
-			return res.json({
-			    error : err.toString()
-			}, 500);
-		    }
-		    sails.controllers.orders.doGetOrder(order.id, function(neworder) {
-			return res.json({
-			    success : true,
-			    "data" : neworder
+
+		Database.dataSproc('ODR_UpdateOrderStatus', [ order.id, order.odr_cfg_order_state_id, req.session.user.username ], function(err, response) {
+		    if (err)
+			return console.log(err.toString());
+
+		    processEntries(function(err) {
+			if (err) {
+			    console.log('Error processing entries:' + err.toString());
+			    return res.json({
+				error : err.toString()
+			    }, 500);
+			}
+			sails.controllers.orders.doGetOrder(order.id, function(neworder) {
+			    return res.json({
+				success : true,
+				"data" : neworder
+			    });
 			});
 		    });
 		});
@@ -70,11 +82,11 @@ module.exports = {
 		    Database.dataSproc('ODR_InsertOrderEntry', [ order.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, '@outDummyParam' ], function(err, response) {
 			entrycallback(err, response);
 		    });
-		} else if(entry.is_deleted){
+		} else if (entry.is_deleted) {
 		    Database.dataSproc('ODR_DeleteOrderEntry', [ entry.id, req.session.user.username ], function(err, response) {
 			entrycallback(err, response);
 		    });
-		}else{
+		} else {
 		    Database.dataSproc('ODR_UpdateOrderEntry', [ entry.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, req.session.user.username ], function(err, response) {
 			entrycallback(null);
 		    })
@@ -85,16 +97,44 @@ module.exports = {
 	}
 
     },
-    pushdestroyorder : function(req,res){
-	if(req.body.order){
-	    req.body.order.is_deleted = true; // sets flag that pushes to clients to let them know to delete
+    getpicklistmappings : function(req, res) {
+	if (req.body.entryID) {
+	    Database.dataSproc('ODR_GetPickListMappings', [ req.body.entryID ], function(err, response) {
+		if (err) {
+		    console.log(err);
+		    return res.json(500, {
+			error : err.toString()
+		    });
+		}
+		res.json({success:true, data:response[0]});
+	    });
+	}
+    },
+    getpicklistoptions : function(req, res) {
+	if (req.body.entryID) {
+	    Database.dataSproc('ODR_GetPickListOptions', [ req.body.entryID ], function(err, response) {
+		if (err) {
+		    console.log(err);
+		    return res.json(500, {
+			error : err.toString()
+		    });
+		}
+		res.json({success:true, data:response[0]});
+	    });
+	}
+    },
+    pushdestroyorder : function(req, res) {
+	if (req.body.order) {
+	    req.body.order.is_deleted = true; // sets flag that pushes to
+	    // clients to let them know to
+	    // delete
 	    console.log('pushing delete order:' + JSON.stringify(req.body.order));
 	    SecurityService.sendMessage(null, {
 		verb : 'orderUpdate',
 		data : req.body.order
 	    });
 	}
-	
+
     },
     pushorder : function(req, res) {
 	if (req.body.orderId) {
@@ -150,9 +190,12 @@ module.exports = {
 			    callback(null);
 			});
 		    }, function(callback) {
-			setTimeout(function() {
-			    callback(null, 'two');
-			}, 0);
+			Database.dataSproc('ODR_GetPickListMappings',[entry.id],function(err,result){
+			    if (err)
+				return cb(err);
+			    entry.pickeditems = result[0];
+			    callback(null);
+			});
 		    } ], function(err, results) {
 			cb(err, results);
 		    });
