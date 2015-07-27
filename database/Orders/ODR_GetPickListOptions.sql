@@ -24,6 +24,7 @@ BEGIN
 		 AND inv_cur_lots.quantity > 0
 		 AND inv_cur_lots.quantity <= odr_cur_order_entries.quantity
 		 AND inv_cur_lots.is_deleted = 0
+		 AND inv_cur_lots.inv_cfg_lot_status_id = 1 #In Inventory
 	ORDER BY inv_cur_lots.quantity DESC, inv_cur_lots.inv_cfg_locations_id;
 END$$
 
