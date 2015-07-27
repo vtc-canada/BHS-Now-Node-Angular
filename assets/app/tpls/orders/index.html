@@ -730,22 +730,34 @@
 					<div class="row">
 						<div class="col-xs-6">
 							
-							<table >
+							<table class="table-condensed table table-bordered table-striped selectableisn" >
+								<thead>
+									<tr>
+										<th>Item</th>
+									</tr>
+								</thead>
 								<tbody ui-sortable="pickedItemsTables[0]" class="pickeditems-wrapper"  ng-model="pickedItems[0]">
-							  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[0]"><td>{{ item }}</td></tr>
+							  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[0]" ng-class="{sortdisabled : item.sortdisabled}">
+							  			<td>{{ item }}</td>
+						  			</tr>
 							  	</tbody>
-							  	<!-- <li class="pickeditemsplaceholder" ng-repeat="item in pickedItems[0]">{{ item }}</li> -->
 							</table>
 							
 						</div>
 						<div class="col-xs-6">
 							
 							
-							<table >
+							<table class="table-condensed table table-bordered table-striped selectableisn">
+								<thead>
+									<tr>
+										<th>Item</th>
+									</tr>
+								</thead>
 								<tbody ui-sortable="pickedItemsTables[1]" class="pickeditems-wrapper"  ng-model="pickedItems[1]">
-							  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[1]"><td>{{ item }}</td></tr>
+							  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[1]" ng-class="{sortdisabled : item.sortdisabled}">
+							  			<td>{{ item }}</td>
+						  			</tr>
 							  	</tbody>
-							  	<!-- <li class="pickeditemsplaceholder" ng-repeat="item in pickedItems[1]">{{ item }}</li> -->
 							</table>
 						</div>
 					</div>

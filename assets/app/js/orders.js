@@ -32,67 +32,14 @@ angular.module('xenon.controllers.orders', [])
 		    scope : $scope
 		});
 		//empty and options entries
-		$scope.pickedItems = [[{
-		      icon: './img/icons/facebook.jpg',
-		      title: 'Facebook (a)',
-		      link: 'http://www.facebook.com'
-		    }, {
-		      icon: './img/icons/youtube.jpg',
-		      title: 'Youtube (a)',
-		      link: 'http://www.youtube.com'
-		    }, {
-		      icon: './img/icons/gmail.jpg',
-		      title: 'Gmail (a)',
-		      link: 'http://www.gmail.com'
-		    }, {
-		      icon: './img/icons/google+.jpg',
-		      title: 'Google+ (a)',
-		      link: 'http://plus.google.com'
-		    }, {
-		      icon: './img/icons/twitter.jpg',
-		      title: 'Twitter (a)',
-		      link: 'http://www.twitter.com'
-		    }, {
-		      icon: './img/icons/yahoomail.jpg',
-		      title: 'Yahoo Mail (a)',
-		      link: 'http://mail.yahoo.com'
-		    }, {
-		      icon: './img/icons/pinterest.jpg',
-		      title: 'Pinterest (a)',
-		      link: 'http://www.pinterest.com'
-		    }],
-		    [{
-		      icon: './img/icons/facebook.jpg',
-		      title: 'Facebook (b)',
-		      link: 'http://www.facebook.com'
-		    }, {
-		      icon: './img/icons/youtube.jpg',
-		      title: 'Youtube (b)',
-		      link: 'http://www.youtube.com'
-		    }, {
-		      icon: './img/icons/gmail.jpg',
-		      title: 'Gmail (b)',
-		      link: 'http://www.gmail.com'
-		    }, {
-		      icon: './img/icons/google+.jpg',
-		      title: 'Google+ (b)',
-		      link: 'http://plus.google.com'
-		    }, {
-		      icon: './img/icons/twitter.jpg',
-		      title: 'Twitter (b)',
-		      link: 'http://www.twitter.com'
-		    }, {
-		      icon: './img/icons/yahoomail.jpg',
-		      title: 'Yahoo Mail (b)',
-		      link: 'http://mail.yahoo.com'
-		    }, {
-		      icon: './img/icons/pinterest.jpg',
-		      title: 'Pinterest (b)',
-		      link: 'http://www.pinterest.com'
-		    }]];
-		    
-		    
-		    //[ angular.copy($scope.$parent.selectedOrder.entries[index].pickeditems), data.data ]; // currentModal.picklistoptions = data.data;
+		
+		var picklistoptions = angular.copy(data.data);
+		picklistoptions.push({sortdisabled: true});
+		
+		var picklist = [];
+		picklist.push({sortdisabled: true});
+		
+		$scope.pickedItems = [ picklistoptions, picklist ]; // currentModal.picklistoptions = data.data;
 		$scope.pickedItemsTables = [$scope.createOptions('A'), $scope.createOptions('B')];
 		
 		$rootScope.currentModal.result.then(function(selectedItem) {
@@ -147,6 +94,7 @@ angular.module('xenon.controllers.orders', [])
 	    placeholder : "pickeditemsplaceholder",
 	    connectWith : ".pickeditems-wrapper",
 	    'ui-floating': true,
+	    items : ">*:not(.sortdisabled)",
 	    activate : function() {
 		console.log("list " + _listName + ": activate");
 	    },
