@@ -11,6 +11,16 @@ angular.module('xenon.controllers.orders', [])
 	    $scope.$parent.selectedOrder.entries[index].is_deleted = true;
 	}
     }
+    
+    $scope.selectPickedItem = function(index){
+	
+	
+    }
+    
+    
+    $scope.focusPickedItem = function(tableIndex , index){
+	$scope.focusLotId = $scope.pickedItems[tableIndex][index].id;
+    }
 
     $scope.editPicklist = function(index) {
 
@@ -95,8 +105,12 @@ angular.module('xenon.controllers.orders', [])
 	    connectWith : ".pickeditems-wrapper",
 	    'ui-floating': true,
 	    items : ">*:not(.sortdisabled)",
-	    activate : function() {
-		console.log("list " + _listName + ": activate");
+	    activate : function(event,object) {
+		// Seem to have to manually style object. Must have been disconnected from angular during drag.
+//		if(_listName == 'A'){
+//		    $scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted = null; // will hopefully be realized when dropped.
+//		}
+		console.log("list " + _listName + ": activate"); 
 	    },
 	    beforeStop : function() {
 		console.log("list " + _listName + ": beforeStop");
@@ -116,22 +130,31 @@ angular.module('xenon.controllers.orders', [])
 	    over : function() {
 		console.log("list " + _listName + ": over");
 	    },
-	    receive : function() {
+	    receive : function(event, object) {
 		console.log("list " + _listName + ": receive");
 	    },
 	    remove : function() {
 		console.log("list " + _listName + ": remove");
 	    },
-	    sort : function() {
+	    sort : function(){
 		console.log("list " + _listName + ": sort");
 	    },
-	    start : function() {
+	    start : function(event,object) {
+		$scope.focusLotId = null;
+		$(object.item).removeClass('selected');
+		$(object.item).addClass('dragging');
+		$(object.item).css('width','auto');
+		$(object.item).css('height','auto');
+		
 		console.log("list " + _listName + ": start");
 	    },
-	    stop : function() {
-		console.log("list " + _listName + ": stop");
+	    stop : function(event, object) {
+		if(_listName == 'A'){
+		    //$scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted = null; // clear any selected states when they are dropped
+		}
+		console.log("list " + _listName + ": stop");//, INDEX:"+object.item.attr('pickedindex'));
 	    },
-	    update : function() {
+	    update : function(event, object) {
 		console.log("list " + _listName + ": update");
 	    }
 	};

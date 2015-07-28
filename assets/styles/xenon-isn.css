@@ -610,4 +610,26 @@ span.select-all-pages{
 
 tbody tr.sortdisabled{
 	visibility:hidden;
+	line-height : 0px;
+	font-size:0px;
+}
+
+.table>tbody>tr.sortdisabled td{
+	visibility:hidden;
+	padding:1px; 
+	margin: 0px;
+	/*border: none;*/
+}
+
+table.selectpicklist>thead>tr>th{
+	border-bottom : none;
+}
+
+
+table.table-striped >tbody tr.dragging{
+	background : rgb(245,245,252);
+}
+
+table.table-striped >tbody tr.dragging td{
+	white-space: nowrap;
 }
