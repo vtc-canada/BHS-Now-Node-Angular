@@ -608,13 +608,13 @@ span.select-all-pages{
 
 
 
-tbody tr.sortdisabled{
+tbody tr.hiddendroprow{
 	visibility:hidden;
 	line-height : 0px;
 	font-size:0px;
 }
 
-.table>tbody>tr.sortdisabled td{
+.table>tbody>tr.hiddendroprow td{
 	visibility:hidden;
 	padding:1px; 
 	margin: 0px;
@@ -645,4 +645,33 @@ table.table-striped >tbody tr.dragging td{
 .modal-dialog.modal-xl {
   width: auto;
   margin: 30px 30px;
+}
+
+
+.lotCountOverPicked{
+	color : red;	
+}
+
+
+.lotFullyPicked{
+	color : green;
+}
+
+
+table.selectpicklist{
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div.modal-body.modal-noselect{
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

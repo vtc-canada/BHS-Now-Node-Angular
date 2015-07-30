@@ -28,12 +28,46 @@ angular.module('xenon.controllers.orders', [])
 
     }
 
-    $scope.pickListFraction = function(row) {
+    $scope.getEntryPickedCount = function(row) {
 	var pickedCount = 0;
 	for (var i = 0; i < row.pickeditems.length; i++) {
 	    pickedCount += parseInt(row.pickeditems[i].quantity);
 	}
-	return pickedCount + '/' + row.quantity;
+	return pickedCount;
+
+    }
+
+    $scope.isPicked = function(row) {
+	return $scope.getEntryPickedCount(row) >= row.quantity;
+    }
+
+    $scope.isOverPicked = function(row) {
+	return $scope.getEntryPickedCount(row) > row.quantity;
+    }
+    
+    $scope.getItemTitleColorClass = function(){
+	if(!$scope.formPicklist){
+	    return '';
+	}
+	var pickedCount = 0;
+	for(var i=0; i<$scope.formPicklist.length;i++){
+	    if(!isNaN(parseInt($scope.formPicklist[i].quantity))){
+		    pickedCount += parseInt($scope.formPicklist[i].quantity);
+	    }
+	}
+	if(pickedCount > $scope.formPicklistTotalQuantity){
+	    return 'lotCountOverPicked';
+	}else if(pickedCount ==$scope.formPicklistTotalQuantity){
+	    return 'lotFullyPicked';
+	}
+    }
+
+    $scope.pickListFraction = function(row) {
+	//	var pickedCount = 0;
+	//	for (var i = 0; i < row.pickeditems.length; i++) {
+	//	    pickedCount += parseInt(row.pickeditems[i].quantity);
+	//	}
+	return $scope.getEntryPickedCount(row) + '/' + row.quantity;
 
     }
 
@@ -82,19 +116,19 @@ angular.module('xenon.controllers.orders', [])
 		var i = picklistoptions.length;
 		while (i--) {
 		    //for (var j = 0; j < $scope.$parent.selectedOrder.entries[i].pickeditems.length; j++) {
-			if (pickeditemslists.indexOf(picklistoptions[i].id)!=-1) {  // ||picklistoptions[i].id == $scope.$parent.selectedOrder.entries[index].pickeditems[j].id
-			    picklistoptions.splice(i, 1);
-			}
+		    if (pickeditemslists.indexOf(picklistoptions[i].id) != -1) { // ||picklistoptions[i].id == $scope.$parent.selectedOrder.entries[index].pickeditems[j].id
+			picklistoptions.splice(i, 1);
+		    }
 		    //}
 		}
 
 		picklistoptions.push({
-		    sortdisabled : true
+		    hiddendroprow : true
 		});
 
 		$rootScope.formPicklist = angular.copy($scope.$parent.selectedOrder.entries[index].pickeditems);
 		$rootScope.formPicklist.push({
-		    sortdisabled : true
+		    hiddendroprow : true
 		});
 		$scope.formPicklistTotalQuantity = $scope.$parent.selectedOrder.entries[index].quantity;
 		$scope.selectedOrderEntryIndex = index;
@@ -186,6 +220,20 @@ angular.module('xenon.controllers.orders', [])
 	$rootScope.currentModal.dismiss();
     }
 
+    $scope.isSortDisabled = function() {
+	var pickedcount = 0;
+	for (var i = 0; i < $rootScope.formPicklist.length; i++) {
+	    if ($rootScope.formPicklist[i].quantity) {
+		pickedcount = pickedcount + parseInt($rootScope.formPicklist[i].quantity);
+	    }
+	}
+	if (pickedcount >= $scope.formPicklistTotalQuantity) {
+	    return true;
+	}
+	return false;
+	//'(' + pickedcount + '/' + $scope.formPicklistTotalQuantity + ')';
+    }
+
     $scope.createOptions = function(listName) {
 	var _listName = listName;
 	var options = {
@@ -243,6 +291,8 @@ angular.module('xenon.controllers.orders', [])
 		    // $scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted
 		    // = null; // clear any selected states when they are
 		    // dropped
+		    $scope.pickedItems[0] = angular.copy($scope.pickedItems[0]);
+		    
 		}
 		$(object.item).removeClass('dragging');
 		console.log("list " + _listName + ": stop");// ,

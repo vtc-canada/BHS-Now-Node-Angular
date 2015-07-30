@@ -559,7 +559,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr ng-repeat="row in selectedOrder.entries" ng-hide="row.is_deleted" ng-class="{ 'is_deleted':row.is_deleted == true}" ng-click=""  >
+												<tr ng-repeat="row in selectedOrder.entries" ng-hide="row.is_deleted" ng-class="{ overpicked : isOverPicked(row), picked : isPicked(row), 'is_deleted':row.is_deleted == true}" ng-click=""  >
 													<td>{{row.id}} | {{row.tempId}}</td>
 													<!-- options="longSelectOptions"  -->
 													<td><select2 class="form-control" id="row.inv_cfg_mat_brands_id" name="row.inv_cfg_mat_brands_id" ng-disabled="!checkPolicy('/app/orders',0,1,1,0)" ng-options="title.id as title.label for title in dropdowns.brands" ng-model="row.inv_cfg_mat_brands_id"></select2></td>
@@ -604,10 +604,10 @@
 		<script type="text/ng-template" id="edit-picked-items-modal">
 			<div class="modal-header">
 				<button type="button" class="close" ng-click="currentModal.close();" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Items Picked {{getItemsPicked()}}</h4>
+				<h4 class="modal-title">Items Picked <span ng-class="getItemTitleColorClass()">{{getItemsPicked()}}</span></h4>
 			</div>
 			
-			<div class="modal-body form-horizontal">
+			<div class="modal-body form-horizontal modal-noselect">
 				<!-- 
 				<div class="form-group-separator"></div> -->
 				
@@ -632,7 +632,7 @@
 											</tr>
 										</thead>
 										<tbody ui-sortable="pickedItemsTables[0]" class="pickeditems-wrapper"  ng-model="pickedItems[0]">
-									  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[0]" pickedindex="{{$index}}" ng-class="{sortdisabled : item.sortdisabled, selected : item.id == focusLotId && focusLotId != null}" ng-click="focusPickedItem(0,$index)">
+									  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[0]" pickedindex="{{$index}}" ng-class="{hiddendroprow : item.hiddendroprow, sortdisabled : item.hiddendroprow || isSortDisabled() , selected : item.id == focusLotId && focusLotId != null}" ng-click="focusPickedItem(0,$index)">
 									  			
 									  			<td>{{ item.id }}</td>
 									  			<td>{{ item.serial_no }}</td>
@@ -669,7 +669,7 @@
 											</tr>
 										</thead>
 										<tbody ui-sortable="pickedItemsTables[1]" class="pickeditems-wrapper"  ng-model="pickedItems[1]">
-									  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[1]" pickedindex="{{$index}}" ng-class="{sortdisabled : item.sortdisabled, selected : item.id == focusLotId && focusLotId != null}" ng-click="focusPickedItem(1, $index)">
+									  		<tr class="pickeditemsplaceholder" ng-repeat="item in pickedItems[1]" pickedindex="{{$index}}" ng-class="{hiddendroprow : item.hiddendroprow, sortdisabled : item.hiddendroprow , selected : item.id == focusLotId && focusLotId != null}" ng-click="focusPickedItem(1, $index)">
 									  			<td>{{ item.id }}</td>
 									  			<td>{{ item.serial_no }}</td>
 									  			<td>{{ item.quantity }}</td>
