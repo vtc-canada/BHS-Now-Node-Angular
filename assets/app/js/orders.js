@@ -3,6 +3,7 @@ angular.module('xenon.controllers.orders', [])
 
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
     $scope.helpers = public_vars.helpers;
+    $rootScope.formPicklist = [];
 
     $scope.removeEntry = function(index) {
 	if ($scope.$parent.selectedOrder.entries[index].id == 'new') {
@@ -11,15 +12,29 @@ angular.module('xenon.controllers.orders', [])
 	    $scope.$parent.selectedOrder.entries[index].is_deleted = true;
 	}
     }
-    
-    $scope.selectPickedItem = function(index){
-	
-	
-    }
-    
-    
-    $scope.focusPickedItem = function(tableIndex , index){
+
+    $scope.focusPickedItem = function(tableIndex, index) {
 	$scope.focusLotId = $scope.pickedItems[tableIndex][index].id;
+    }
+
+    $scope.getItemsPicked = function() {
+	var pickedcount = 0;
+	for (var i = 0; i < $rootScope.formPicklist.length; i++) {
+	    if ($rootScope.formPicklist[i].quantity) {
+		pickedcount = pickedcount + parseInt($rootScope.formPicklist[i].quantity);
+	    }
+	}
+	return '(' + pickedcount + '/' + $scope.formPicklistTotalQuantity + ')';
+
+    }
+
+    $scope.pickListFraction = function(row) {
+	var pickedCount = 0;
+	for (var i = 0; i < row.pickeditems.length; i++) {
+	    pickedCount += parseInt(row.pickeditems[i].quantity);
+	}
+	return pickedCount + '/' + row.quantity;
+
     }
 
     $scope.editPicklist = function(index) {
@@ -37,65 +52,138 @@ angular.module('xenon.controllers.orders', [])
 
 		$rootScope.currentModal = $modal.open({
 		    templateUrl : 'edit-picked-items-modal',
-		    size : 'lg',
+		    size : 'xl',
 		    backdrop : true,
 		    scope : $scope
 		});
-		//empty and options entries
-		
-		var picklistoptions = angular.copy(data.data);
-		picklistoptions.push({sortdisabled: true});
-		
-		var picklist = [];
-		picklist.push({sortdisabled: true});
-		
-		$scope.pickedItems = [ picklistoptions, picklist ]; // currentModal.picklistoptions = data.data;
-		$scope.pickedItemsTables = [$scope.createOptions('A'), $scope.createOptions('B')];
-		
+		// empty and options entries
+
+		var picklistoptions = data.data;
+
+		/// Need to check picklists so that they block out ID's..
+		//  A lot may have been taken from 
+		// This is to work around not having ODR_GetPickListOptions return non-available lots (flagged as such)
+
+		// The inverse problem is NOT solved.  There is an issue right now with the interface
+		//  If you are moving a picked item from one entry to another on the same order, you will need to:
+		// Remove it, save it
+		// Add it, save it
+		// Implementing this clientside will require serverside ordering operations carefully.
+		var pickeditemslists = [];
+		for (var i = 0; i < $scope.$parent.selectedOrder.entries.length; i++) {
+		    for (var j = 0; j < $scope.$parent.selectedOrder.entries[i].pickeditems.length; j++) {
+			if (!isNaN(parseInt($scope.$parent.selectedOrder.entries[i].pickeditems[j].id))) {
+			    pickeditemslists.push($scope.$parent.selectedOrder.entries[i].pickeditems[j].id);
+			}
+		    }
+		}
+
+		// Clear out options that are already picked (By ID)
+		var i = picklistoptions.length;
+		while (i--) {
+		    //for (var j = 0; j < $scope.$parent.selectedOrder.entries[i].pickeditems.length; j++) {
+			if (pickeditemslists.indexOf(picklistoptions[i].id)!=-1) {  // ||picklistoptions[i].id == $scope.$parent.selectedOrder.entries[index].pickeditems[j].id
+			    picklistoptions.splice(i, 1);
+			}
+		    //}
+		}
+
+		picklistoptions.push({
+		    sortdisabled : true
+		});
+
+		$rootScope.formPicklist = angular.copy($scope.$parent.selectedOrder.entries[index].pickeditems);
+		$rootScope.formPicklist.push({
+		    sortdisabled : true
+		});
+		$scope.formPicklistTotalQuantity = $scope.$parent.selectedOrder.entries[index].quantity;
+		$scope.selectedOrderEntryIndex = index;
+
+		$scope.pickedItems = [ picklistoptions, $rootScope.formPicklist ]; // currentModal.picklistoptions
+		// =
+		// data.data;
+		$scope.pickedItemsTables = [ $scope.createOptions('A'), $scope.createOptions('B') ];
+
 		$rootScope.currentModal.result.then(function(selectedItem) {
 		}, function(triggerElement) {
 		    if (triggerElement == 'save') {
-			//			$sails.post('/template/save', {
-			//			    id : $rootScope.newOrderTemplateModal.id,
-			//			    location : 'orders',
-			//			    name : $rootScope.newOrderTemplateModal.name,
-			//			    data : $scope.orders_search
-			//			}).success(function(data) {
-			//			    if (data.error != undefined) { // USER NO LONGER LOGGED
-			//				// IN!!!!!
-			//				location.reload(); // Will boot back to login
-			//				// screen
-			//			    }
-			//			    if (data.success) {
-			//				$rootScope.newOrderTemplateModal.id = data.template.id;
-			//				$scope.template = data.template.id;
-			//				$timeout(function() {
-			//				    $sails.get('/template/orders').success(function(data) {
-			//					if (data.error != undefined) { // USER NO
-			//					    // LONGER LOGGED
-			//					    // IN!!!!!
-			//					    location.reload(); // Will boot back to
-			//					    // login
-			//					    // screen
-			//					}
-			//					$scope.search_templates = [];
-			//					for (var i = 0; i < data.length; i++) {
-			//					    $scope.search_templates.push({
-			//						id : data[i].id,
-			//						label : data[i].name,
-			//						data : data[i].data
-			//					    });
-			//					}
-			//				    });
-			//				}, 0);
-			//			    }
-			//			}).error(function(data) {
-			//			    alert('err!');
-			//			});
+			// $sails.post('/template/save', {
+			// id : $rootScope.newOrderTemplateModal.id,
+			// location : 'orders',
+			// name : $rootScope.newOrderTemplateModal.name,
+			// data : $scope.orders_search
+			// }).success(function(data) {
+			// if (data.error != undefined) { // USER NO LONGER
+			// LOGGED
+			// // IN!!!!!
+			// location.reload(); // Will boot back to login
+			// // screen
+			// }
+			// if (data.success) {
+			// $rootScope.newOrderTemplateModal.id =
+			// data.template.id;
+			// $scope.template = data.template.id;
+			// $timeout(function() {
+			// $sails.get('/template/orders').success(function(data)
+			// {
+			// if (data.error != undefined) { // USER NO
+			// // LONGER LOGGED
+			// // IN!!!!!
+			// location.reload(); // Will boot back to
+			// // login
+			// // screen
+			// }
+			// $scope.search_templates = [];
+			// for (var i = 0; i < data.length; i++) {
+			// $scope.search_templates.push({
+			// id : data[i].id,
+			// label : data[i].name,
+			// data : data[i].data
+			// });
+			// }
+			// });
+			// }, 0);
+			// }
+			// }).error(function(data) {
+			// alert('err!');
+			// });
 		    }
 		});
 	    }
 	});
+    }
+
+    $scope.pickedItemsFormOkay = function() {
+	var i = $rootScope.formPicklist.length;
+	var formLots = angular.copy($rootScope.formPicklist);
+	while (i--) { // Strip out Dropspacer record.
+	    if (!formLots[i].id) {
+		formLots.splice(i, 1);
+	    }
+	}
+
+	// Now must go through the new picked lots and apply them to the actual set
+	// This means we must figure out 'new', 'is_deleted'.
+
+	// First generate index to use;
+
+	//	
+	//	for(var i=0; i<formLots.length; i++){
+	//	    
+	//	    
+	//	}
+	//	
+	//	
+	//	var i=formLots.length;
+	//	while(i--){ // Strip out Dropspacer record.
+	//	    if(!formLots[i].id){
+	//		formLots.splice(i,1);
+	//	    }
+	//	}
+
+	$scope.$parent.selectedOrder.entries[$scope.selectedOrderEntryIndex].pickeditems = formLots;
+
+	$rootScope.currentModal.dismiss();
     }
 
     $scope.createOptions = function(listName) {
@@ -103,14 +191,16 @@ angular.module('xenon.controllers.orders', [])
 	var options = {
 	    placeholder : "pickeditemsplaceholder",
 	    connectWith : ".pickeditems-wrapper",
-	    'ui-floating': true,
+	    'ui-floating' : true,
 	    items : ">*:not(.sortdisabled)",
-	    activate : function(event,object) {
-		// Seem to have to manually style object. Must have been disconnected from angular during drag.
-//		if(_listName == 'A'){
-//		    $scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted = null; // will hopefully be realized when dropped.
-//		}
-		console.log("list " + _listName + ": activate"); 
+	    activate : function(event, object) {
+		// Seem to have to manually style object. Must have been
+		// disconnected from angular during drag.
+		// if(_listName == 'A'){
+		// $scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted
+		// = null; // will hopefully be realized when dropped.
+		// }
+		console.log("list " + _listName + ": activate");
 	    },
 	    beforeStop : function() {
 		console.log("list " + _listName + ": beforeStop");
@@ -136,23 +226,27 @@ angular.module('xenon.controllers.orders', [])
 	    remove : function() {
 		console.log("list " + _listName + ": remove");
 	    },
-	    sort : function(){
+	    sort : function() {
 		console.log("list " + _listName + ": sort");
 	    },
-	    start : function(event,object) {
+	    start : function(event, object) {
 		$scope.focusLotId = null;
 		$(object.item).removeClass('selected');
 		$(object.item).addClass('dragging');
-		$(object.item).css('width','auto');
-		$(object.item).css('height','auto');
-		
+		$(object.item).css('width', 'auto');
+		$(object.item).css('height', 'auto');
+
 		console.log("list " + _listName + ": start");
 	    },
 	    stop : function(event, object) {
-		if(_listName == 'A'){
-		    //$scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted = null; // clear any selected states when they are dropped
+		if (_listName == 'A') {
+		    // $scope.pickedItems[0][parseInt(object.item.attr('pickedindex'))].is_seleted
+		    // = null; // clear any selected states when they are
+		    // dropped
 		}
-		console.log("list " + _listName + ": stop");//, INDEX:"+object.item.attr('pickedindex'));
+		$(object.item).removeClass('dragging');
+		console.log("list " + _listName + ": stop");// ,
+		// INDEX:"+object.item.attr('pickedindex'));
 	    },
 	    update : function(event, object) {
 		console.log("list " + _listName + ": update");
@@ -171,6 +265,7 @@ angular.module('xenon.controllers.orders', [])
 	    quantity : 1,
 	    types : [],
 	    pickeditems : [],
+	    // pick_list_quantity : 0,
 	    inv_cfg_uom_id : 1
 	});
     }
@@ -647,7 +742,9 @@ angular.module('xenon.controllers.orders', [])
 		$scope.ordersDatatable.dataTable.api().draw(false);
 		$scope.checkSelectAllState();
 
-		// This update below really isn't necessary..  Beware- this will need to maintain entry is_deleted states otherwise it might be whacko
+		// This update below really isn't necessary.. Beware- this will
+		// need to maintain entry is_deleted states otherwise it might
+		// be whacko
 		// interupts/overwrites
 		// form fields other users when editing the same id.
 		// if ($scope.selectedOrder != null && $scope.selectedOrder.id

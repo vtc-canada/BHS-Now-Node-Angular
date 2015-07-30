@@ -633,3 +633,16 @@ table.table-striped >tbody tr.dragging{
 table.table-striped >tbody tr.dragging td{
 	white-space: nowrap;
 }
+
+@media (min-width: 768px){
+	
+.modal-dialog.modal-xl {
+  width: auto;
+  margin: 30px 30px;
+}
+}
+
+.modal-dialog.modal-xl {
+  width: auto;
+  margin: 30px 30px;
+}
