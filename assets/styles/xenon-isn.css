@@ -82,6 +82,12 @@ textarea.isn-textarea-col-8{
 	margin-bottom:0px;
 }
 
+.panel.panel-stack table{
+	margin-bottom: 0px;
+}
+
+
+
 .panel.collapsed .panel-body.always-visible{
 	display:block;
 }
@@ -592,6 +598,7 @@ span.select-all-pages{
 .form-horizontal tbody tr td .form-group{
 	margin-left:0px;
 	margin-right:0px;
+	margin-bottom:0px;
 }
 
 .barcode-row-wrapper img,.barcode-row-wrapper canvas{
@@ -674,4 +681,11 @@ div.modal-body.modal-noselect{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+#entries_datatable > tbody > tr.ng-scope.picked td {
+  background: rgba(4, 219, 4, 0.1);
+}
+#entries_datatable > tbody > tr.ng-scope.picked.overpicked td {
+	background: rgba(219, 4, 4, 0.1);
 }

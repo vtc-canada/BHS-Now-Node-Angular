@@ -257,6 +257,7 @@ angular.module('xenon.controllers.orders', [])
 	    placeholder : "pickeditemsplaceholder",
 	    connectWith : ".pickeditems-wrapper",
 	    'ui-floating' : true,
+	    cursorAt : {top:10,left : 150 },
 	    items : ">*:not(.sortdisabled)",
 	    activate : function(event, object) {
 		// Seem to have to manually style object. Must have been
@@ -309,7 +310,51 @@ angular.module('xenon.controllers.orders', [])
 		    // = null; // clear any selected states when they are
 		    // dropped
 		    $scope.pickedItems[0] = angular.copy($scope.pickedItems[0]);
+		    
+		    if($scope.pickedItems[0].length == 0){
+			$scope.pickedItems[0].push({
+			    hiddendroprow : true
+			});
+		    }else if($scope.pickedItems[0].length>1){
+			// check and find it and clear it
+			var i = $scope.pickedItems[0].length;
+			while(i--){
+			    if($scope.pickedItems[0][i].hiddendroprow){
+				$scope.pickedItems[0].splice(i,1);
+			    }
+			}
+			
+		    }
 
+		    
+		    
+		    
+//
+//			$rootScope.formPicklist = angular.copy($scope.$parent.selectedOrder.entries[index].pickeditems);
+//			$rootScope.formPicklist.push({
+//			    hiddendroprow : true
+//			});
+//			$scope.formPicklistTotalQuantity = $scope.$parent.selectedOrder.entries[index].quantity;
+//			$scope.selectedOrderEntryIndex = index;
+//
+//			$scope.pickedItems = [ picklistoptions, $rootScope.formPicklist ]; // currentModal.picklistoptions
+		    
+		    
+		}else if (_listName == 'B'){
+		    if($rootScope.formPicklist.length == 0){
+			$rootScope.formPicklist.push({
+			    hiddendroprow : true
+			});
+		    }else if($rootScope.formPicklist.length>1){
+			// check and find it and clear it
+			var i = $rootScope.formPicklist.length;
+			while(i--){
+			    if($rootScope.formPicklist[i].hiddendroprow){
+				$rootScope.formPicklist.splice(i,1);
+			    }
+			}
+			
+		    }
 		}
 		$(object.item).removeClass('dragging');
 		console.log("list " + _listName + ": stop");// ,
