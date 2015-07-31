@@ -1038,6 +1038,85 @@ directive('tagsinput', function() {
 	    });
 	}
     }
+}).directive('modalfullscreen', function($timeout, $window) {
+    return {
+	restrict : 'C',
+	link : function(scope, el, attr) {
+	    var paddingVertical = 65;
+	    $timeout(function(){
+				
+//		var winHeight = $window.innerHeight;
+		
+//		var modalHeight = el.parents('.modal');
+//		var modalContent = el.parents('.modal-content');
+		
+		el.css('min-height',$window.innerHeight - el.parents('.modal-content').innerHeight() + el.innerHeight() - paddingVertical);
+		
+		
+		var w = angular.element($window);
+//	        scope.$watch(function () {
+//	            return {
+//	                'h': w.height(), 
+////	                'w': w.width()
+//	            };
+//	        }, function (newValue, oldValue) {
+//	            scope.windowHeight = newValue.h;
+////	            scope.windowWidth = newValue.w;
+//
+//	            //el.css('min-height',$window.innerHeight - el.parents('.modal-content').innerHeight() + el.innerHeight() - 60);
+//	            
+////	            scope.resizeWithOffset = function (offsetH) {
+////
+////	                scope.$eval(attr.notifier);
+////
+////	                return { 
+////	                    'height': (newValue.h - offsetH) + 'px'
+////	                    //,'width': (newValue.w - 100) + 'px' 
+////	                };
+////	            };
+//
+//	        }, true);
+
+	        w.bind('resize', function () {
+	            //scope.$apply();
+	            el.css('min-height',$window.innerHeight - el.parents('.modal-content').innerHeight() + el.innerHeight() - paddingVertical);
+	        });
+		
+		
+		
+		
+//		modalHeight  = modalHeight;
+	    },0);
+	    
+//	    var $ig = angular.element(el), $dec = $ig.find('[data-type="decrement"]'), $inc = $ig.find('[data-type="increment"]'), $inp = $ig.find('.form-control'),
+//
+//	    step = attrDefault($ig, 'step', 1), min = attrDefault($ig, 'min', 0), max = attrDefault($ig, 'max', 0), umm = min < max;
+//
+//	    $dec.on('click', function(ev) {
+//		ev.preventDefault();
+//
+//		var num = new Number($inp.val()) - step;
+//
+//		if (umm && num <= min) {
+//		    num = min;
+//		}
+//
+//		$inp.val(num);
+//	    });
+//
+//	    $inc.on('click', function(ev) {
+//		ev.preventDefault();
+//
+//		var num = new Number($inp.val()) + step;
+//
+//		if (umm && num >= max) {
+//		    num = max;
+//		}
+//
+//		$inp.val(num);
+//	    });
+	}
+    }
 }).
 
 // Other Directives

@@ -2,6 +2,19 @@
 angular.module('xenon.controllers.orders', [])
 
 .controller('OrderSection', function($scope, $rootScope, $timeout, $filter, $state, $modal, $sails, Utility) { // $contact,
+
+    /// Check directives here, (debugging), $injector
+//    assertDirectives($injector, [ 'modalfullsreen' ]);
+//    function assertDirectives($injector, directives) {
+//	_.each(directives, function(directiveCamelCase) {
+//	    if (!$injector.has(directiveCamelCase + 'Directive')) {
+//		throw ("Directive " + directiveCamelCase + " is not available.")
+//	    } else {
+//		console.log("found-directives");
+//	    }
+//	});
+//    }
+
     $scope.helpers = public_vars.helpers;
     $rootScope.formPicklist = [];
 
@@ -44,20 +57,20 @@ angular.module('xenon.controllers.orders', [])
     $scope.isOverPicked = function(row) {
 	return $scope.getEntryPickedCount(row) > row.quantity;
     }
-    
-    $scope.getItemTitleColorClass = function(){
-	if(!$scope.formPicklist){
+
+    $scope.getItemTitleColorClass = function() {
+	if (!$scope.formPicklist) {
 	    return '';
 	}
 	var pickedCount = 0;
-	for(var i=0; i<$scope.formPicklist.length;i++){
-	    if(!isNaN(parseInt($scope.formPicklist[i].quantity))){
-		    pickedCount += parseInt($scope.formPicklist[i].quantity);
+	for (var i = 0; i < $scope.formPicklist.length; i++) {
+	    if (!isNaN(parseInt($scope.formPicklist[i].quantity))) {
+		pickedCount += parseInt($scope.formPicklist[i].quantity);
 	    }
 	}
-	if(pickedCount > $scope.formPicklistTotalQuantity){
+	if (pickedCount > $scope.formPicklistTotalQuantity) {
 	    return 'lotCountOverPicked';
-	}else if(pickedCount ==$scope.formPicklistTotalQuantity){
+	} else if (pickedCount == $scope.formPicklistTotalQuantity) {
 	    return 'lotFullyPicked';
 	}
     }
@@ -90,6 +103,10 @@ angular.module('xenon.controllers.orders', [])
 		    backdrop : true,
 		    scope : $scope
 		});
+
+		//$rootScope.currentModal
+
+		// Set modal height off $window.innerHeight
 		// empty and options entries
 
 		var picklistoptions = data.data;
@@ -292,7 +309,7 @@ angular.module('xenon.controllers.orders', [])
 		    // = null; // clear any selected states when they are
 		    // dropped
 		    $scope.pickedItems[0] = angular.copy($scope.pickedItems[0]);
-		    
+
 		}
 		$(object.item).removeClass('dragging');
 		console.log("list " + _listName + ": stop");// ,
