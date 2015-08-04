@@ -8,12 +8,17 @@
 module.exports = {
     destroy : function(req, res) {
 	var order = req.body.order;
-	Database.dataSproc('ODR_DeleteOrder', [ order.id, req.session.user.username], function(err, response) {
+	Database.dataSproc('ODR_DeleteOrder', [ order.id, req.session.user.username ], function(err, response) {
 	    if (err) {
 		console.log(err.toString());
-		return res.json({error:err.toString()},500);
+		return res.json({
+		    error : err.toString()
+		}, 500);
 	    }
-	   res.json({success:true,data:order});
+	    res.json({
+		success : true,
+		data : order
+	    });
 	});
     },
     save : function(req, res) {
@@ -26,7 +31,7 @@ module.exports = {
 	    Database.dataSproc('ODR_InsertOrder', [ order.nms_cur_contacts_id, req.session.user.username, 1, paramCreateId ], function(err, response) {
 		if (err)
 		    return console.log(err.toString());
-
+		// PUT ON ORDER ID!! TODO!!!!
 		processEntries(function(err) {
 		    if (err) {
 			console.log('Error processing entries:' + err.toString());
@@ -44,20 +49,27 @@ module.exports = {
 
 	    });
 	} else {
-	    Database.dataSproc('ODR_UpdateOrderStatus', [ order.id, order.odr_cfg_order_state_id, req.session.user.username ], function(err, response) {
+
+	    Database.dataSproc('ODR_UpdateOrder', [ order.id, order.nms_cur_contacts_id, req.session.user.username ], function(err, response) {
 		if (err)
 		    return console.log(err.toString());
-		processEntries(function(err) {
-		    if (err) {
-			console.log('Error processing entries:' + err.toString());
-			return res.json({
-			    error : err.toString()
-			}, 500);
-		    }
-		    sails.controllers.orders.doGetOrder(order.id, function(neworder) {
-			return res.json({
-			    success : true,
-			    "data" : neworder
+
+		Database.dataSproc('ODR_UpdateOrderStatus', [ order.id, order.odr_cfg_order_state_id, req.session.user.username ], function(err, response) {
+		    if (err)
+			return console.log(err.toString());
+
+		    processEntries(function(err) {
+			if (err) {
+			    console.log('Error processing entries:' + err.toString());
+			    return res.json({
+				error : err.toString()
+			    }, 500);
+			}
+			sails.controllers.orders.doGetOrder(order.id, function(neworder) {
+			    return res.json({
+				success : true,
+				"data" : neworder
+			    });
 			});
 		    });
 		});
@@ -65,18 +77,43 @@ module.exports = {
 	}
 
 	function processEntries(callback) {
-	    async.each(entries, function(entry, entrycallback) {
-		if (entry.id == 'new') {
-		    Database.dataSproc('ODR_InsertOrderEntry', [ order.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, '@outDummyParam' ], function(err, response) {
-			entrycallback(err, response);
+	    async.eachSeries(entries, function(entry, entrycallback) {
+		if (entry.id == 'new') { // New Entry
+		    var paramCreateId = '@out' + Math.floor((Math.random() * 1000000) + 1);
+		    Database.dataSproc('ODR_InsertOrderEntry', [ order.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, paramCreateId ], function(err, response) {
+			if (err) {
+			    entrycallback(err)
+			}
+			// Sprocs only allow for searching for available
+			// picklist options via order entryID
+			entry.id = response[1][paramCreateId]; // copy entry so
+			// that we can
+			// pick items
+			// processPickedItems(entry, function(err){
+			entrycallback(err);
+			// });
 		    });
-		} else if(entry.is_deleted){
-		    Database.dataSproc('ODR_DeleteOrderEntry', [ entry.id, req.session.user.username ], function(err, response) {
-			entrycallback(err, response);
+		} else if (entry.is_deleted) { // Delete Entry
+		    Database.dataSproc('ODR_GetPickListMappings', [ entry.id ], function(err, picklistresponse) {
+			if (err)
+			    return entrycallback(err);
+			async.each(picklistresponse[0], function(pickeditem, pickeditemcb) {
+			    Database.dataSproc('ODR_DeletePickListMapping', [ pickeditem.id, req.session.user.username ], function(err, response) {
+				pickeditemcb(err)
+			    });
+			}, function(err, response) {
+			    if (err)
+				return entrycallback(err);
+			    Database.dataSproc('ODR_DeleteOrderEntry', [ entry.id, req.session.user.username ], function(err, response) {
+				entrycallback(err, response);
+			    });
+			});
+
 		    });
-		}else{
+
+		} else { // Update Entry
 		    Database.dataSproc('ODR_UpdateOrderEntry', [ entry.id, entry.inv_cfg_mat_types_id, entry.inv_cfg_mat_brands_id, entry.quantity, entry.inv_cfg_uom_id, req.session.user.username ], function(err, response) {
-			entrycallback(null);
+			processPickedItems(entry, entrycallback);
 		    })
 		}
 	    }, function(err, result) {
@@ -84,17 +121,100 @@ module.exports = {
 	    })
 	}
 
+	function processPickedItems(entry, pickeditemscallback) {
+	    Database.dataSproc('ODR_GetPickListMappings', [ entry.id ], function(err, response) {
+		if (err) {
+		    pickeditemscallback(err);
+		}
+
+		async.parallel([ function(deleteAllCallback) {// Clear out
+		    // ones that are
+		    // already in
+		    // the database
+		    async.each(response[0], function(serverItem, deleteCallback) {
+			var foundrow = false;
+			for (var i = 0; i < entry.pickeditems.length; i++) {
+			    if (entry.pickeditems[i].id == serverItem.id) {
+				foundrow = true;
+				break;
+			    }
+			}
+			if (!foundrow) {
+			    Database.dataSproc('ODR_DeletePickListMapping', [ serverItem.id, req.session.user.username ], function(err, response) {
+				deleteCallback(err);
+			    });
+			    // deleting ones already there
+			} else {
+			    deleteCallback(null);
+			}
+		    }, deleteAllCallback);
+		}, function(insertAllCallback) {// Insert records that are
+		    // missing from the database
+		    async.each(entry.pickeditems, function(clientItem, addCallback) {
+			var foundrow = false;
+			for (var i = 0; i < response[0].length; i++) {
+			    if (response[0][i].id == clientItem.id) {
+				foundrow = true;
+				break;
+			    }
+			}
+			if (!foundrow) {
+			    Database.dataSproc('ODR_InsertPickListMapping', [ order.id, entry.id, clientItem.id, req.session.user.username ], function(err, response) {
+				addCallback(err);
+			    });
+			    // inserting missing ones
+			} else {
+			    addCallback(null);
+			}
+		    }, insertAllCallback);
+		} ], pickeditemscallback);
+	    });
+	}
     },
-    pushdestroyorder : function(req,res){
-	if(req.body.order){
-	    req.body.order.is_deleted = true; // sets flag that pushes to clients to let them know to delete
+    getpicklistmappings : function(req, res) {
+	if (req.body.entryID) {
+	    Database.dataSproc('ODR_GetPickListMappings', [ req.body.entryID ], function(err, response) {
+		if (err) {
+		    console.log(err);
+		    return res.json(500, {
+			error : err.toString()
+		    });
+		}
+		res.json({
+		    success : true,
+		    data : response[0]
+		});
+	    });
+	}
+    },
+    getpicklistoptions : function(req, res) {
+	if (req.body.entryID) {
+	    Database.dataSproc('ODR_GetPickListOptions', [ req.body.entryID ], function(err, response) {
+		if (err) {
+		    console.log(err);
+		    return res.json(500, {
+			error : err.toString()
+		    });
+		}
+		res.json({
+		    success : true,
+		    data : response[0]
+		});
+	    });
+	}
+    },
+    pushdestroyorder : function(req, res) {
+	if (req.body.order) {
+	    req.body.order.is_deleted = true; // sets flag that pushes to
+	    // clients to let them know to
+	    // delete
 	    console.log('pushing delete order:' + JSON.stringify(req.body.order));
 	    SecurityService.sendMessage(null, {
 		verb : 'orderUpdate',
 		data : req.body.order
 	    });
 	}
-	
+
     },
     pushorder : function(req, res) {
 	if (req.body.orderId) {
@@ -150,9 +270,12 @@ module.exports = {
 			    callback(null);
 			});
 		    }, function(callback) {
-			setTimeout(function() {
-			    callback(null, 'two');
-			}, 0);
+			Database.dataSproc('ODR_GetPickListMappings', [ entry.id ], function(err, result) {
+			    if (err)
+				return cb(err);
+			    entry.pickeditems = result[0];
+			    callback(null);
+			});
 		    } ], function(err, results) {
 			cb(err, results);
 		    });
