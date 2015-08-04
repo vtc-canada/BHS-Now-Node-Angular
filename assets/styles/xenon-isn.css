@@ -689,3 +689,7 @@ div.modal-body.modal-noselect{
 #entries_datatable > tbody > tr.ng-scope.picked.overpicked td {
 	background: rgba(219, 4, 4, 0.1);
 }
+
+.btn.btn-td{
+	width:100%;
+}

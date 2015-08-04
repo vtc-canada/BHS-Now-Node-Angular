@@ -582,8 +582,8 @@
 													<td><input type="number" class="form-control" ng-model="row.LPRICE" ng-model-options="" placeholder=""></td>
 													<td><input type="number" class="form-control" ng-model="row.LDISC" ng-model-options="" placeholder=""></td>
 													<td class="isn-line-total">{{ getLEXT(row); }}</td> <button class="btn btn-danger" ng-click="removeEntry($index)">Remove</button> -->
-													<td><button class="btn btn-orange" ng-if="row.id!='new'" ng-click="editPicklist($index)">{{pickListFraction(row)}}</button></td>
-													<td><button class="btn btn-danger" ng-click="removeEntry($index)">Remove</button></td>
+													<td><button class="btn btn-orange btn-td" ng-if="row.id!='new'" ng-click="editPicklist($index)">{{pickListFraction(row)}}</button></td>
+													<td><button class="btn btn-danger btn-td" ng-click="removeEntry($index)">Remove</button></td>
 													
 													
 												</tr>	
