@@ -1,4 +1,3 @@
-USE `nms`;
 DROP procedure IF EXISTS `ODR_GetOrderEntries`;
 
 DELIMITER $$
@@ -15,14 +14,19 @@ BEGIN
 		,odr_cur_order_entries.quantity
 		,inv_cfg_uom.uom
 		,odr_cur_order_entries.last_modified
-		,CAST(CONCAT_WS('/',(SELECT SUM(inv_cur_lots.quantity) 
+		,(SELECT SUM(inv_cur_lots.quantity) 
 			FROM inv_cur_lots
 			INNER JOIN odr_cur_pick_list_mapping ON (odr_cur_pick_list_mapping.inv_cur_lots_id = inv_cur_lots.id)
-			WHERE odr_cur_order_entries_id = odr_cur_order_entries.id),odr_cur_order_entries.quantity) AS CHAR) as 'pick_list'
+			WHERE odr_cur_order_entries_id = odr_cur_order_entries.id) as 'pick_list_quantity'
 		,(SELECT SUM(inv_cur_lots.price) 
 			FROM inv_cur_lots
 			INNER JOIN odr_cur_pick_list_mapping ON (odr_cur_pick_list_mapping.inv_cur_lots_id = inv_cur_lots.id)
 			WHERE odr_cur_order_entries_id = odr_cur_order_entries.id) as 'price'
+		, CASE WHEN (SELECT SUM(inv_cur_lots.quantity) 
+			FROM inv_cur_lots
+			INNER JOIN odr_cur_pick_list_mapping ON (odr_cur_pick_list_mapping.inv_cur_lots_id = inv_cur_lots.id)
+			WHERE odr_cur_order_entries_id = odr_cur_order_entries.id) = odr_cur_order_entries.quantity THEN 1
+		  ELSE 0 END 'satisfied'
 	FROM  odr_cur_order_entries
 		LEFT JOIN inv_cfg_mat_types ON (odr_cur_order_entries.inv_cfg_mat_types_id = inv_cfg_mat_types.id)
 		LEFT JOIN inv_cfg_mat_brands ON (odr_cur_order_entries.inv_cfg_mat_brands_id = inv_cfg_mat_brands.id)
