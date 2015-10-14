@@ -1,23 +1,23 @@
 /**
  * MainController
- * 
+ *
  * @description :: Server-side logic for managing mains
  * @help :: See http://links.sailsjs.org/docs/controllers
  */
 
 module.exports = {
-    index : function(req, res) {
-	if (req.session&&req.session.user) {
-            res.writeHead(302,{
-        	'Location':'/donortracker'
-            });
-            res.end();
-        } else {
-            res.writeHead(302,{
-        	'Location':'/auth'
-            });
-            res.end();
-        }
-	//res.view({preloaded:{first:'value'}});
+  index: function (req, res) {
+    if (req.session && req.session.user) {
+      res.writeHead(302, {
+        'Location': '/donortracker'
+      });
+      res.end();
+    } else {
+      res.writeHead(302, {
+        'Location': '/auth'
+      });
+      res.end();
     }
+    //res.view({preloaded:{first:'value'}});
+  }
 };
