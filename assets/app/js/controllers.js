@@ -4916,7 +4916,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
     // t table
     // i info
     // p pagination
-    vm.dtColumns = [DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('username').withTitle('Username'), DTColumnBuilder.newColumn('email').withTitle('Email'), DTColumnBuilder.newColumn('firstname').withTitle('First Name'),
+    vm.dtColumns = [DTColumnBuilder.newColumn('username').withTitle('Username'), DTColumnBuilder.newColumn('email').withTitle('Email'), DTColumnBuilder.newColumn('firstname').withTitle('First Name'),
       DTColumnBuilder.newColumn('lastname').withTitle('Last Name'), DTColumnBuilder.newColumn('active').withTitle('Active'), DTColumnBuilder.newColumn('loginattempts').withTitle('Login Attempts'), DTColumnBuilder.newColumn('locale').withTitle('Locale')];
 
     $scope.$on('event:dataTableLoaded', function (event, data) {
