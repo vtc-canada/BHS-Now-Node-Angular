@@ -5407,7 +5407,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
     // t table
     // i info
     // p pagination
-    vm.dtColumns = [DTColumnBuilder.newColumn('id').withTitle('ID'), DTColumnBuilder.newColumn('FIELD').withTitle('Field'), DTColumnBuilder.newColumn('CODE').withTitle('Code'), DTColumnBuilder.newColumn('DESC').withTitle('Description'),
+    vm.dtColumns = [DTColumnBuilder.newColumn('FIELD').withTitle('Field'), DTColumnBuilder.newColumn('CODE').withTitle('Code'), DTColumnBuilder.newColumn('DESC').withTitle('Description'),
       DTColumnBuilder.newColumn('CATEGORY').withTitle('Category')];
 
     $scope.$on('event:dataTableLoaded', function (event, data) {
