@@ -3437,7 +3437,7 @@
                            class="table-condensed focus-on table  table-bordered table-striped selectableisn">
                       <thead>
                       <tr>
-                        <th>id</th>
+                        <th style="display:none;">id</th>
                         <th>Sol Code</th>
                         <th>Mode</th>
                         <th>Envelope Number</th>
@@ -3449,7 +3449,7 @@
                       <tr ng-repeat="row in contact.dpgift"
                           ng-class="{ 'is_deleted':row.is_deleted == true, 'focused' : isDatatableRowFocused('dpgift',row)}"
                           ng-click="selectDataTableRow('dpgift',row)">
-                        <td>{{row.id}} | {{row.tempId}}</td>
+                        <td style="display:none;">{{row.id}} | {{row.tempId}}</td>
                         <td>{{row.SOL}}</td>
                         <td>{{row.MODE}}</td>
                         <td>{{row.ENVNO}}</td>
