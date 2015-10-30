@@ -631,7 +631,7 @@
 
         <div class="col-sm-10">
           <input type="text" class="form-control" id="link_contact.id" ng-model="link_contact.id" ng-model-options=""
-                 placeholder="Donor #, First name or Last name">
+                 placeholder="Donor #, First Name or Last Name">
         </div>
       </div>
 
@@ -1158,7 +1158,7 @@
           <div class="isn-button-seperator"></div>
         </div>
         <div class="pull-right pull-right-stack isn-panel-pull-right">
-          <div class="btn btn-white " ng-click="clearTemplates();">Clear</div>
+          <div class="btn btn-white " ng-click="clearTemplates(); clearLnSeries();">Clear</div>
         </div>
         <div class="pull-right pull-right-stack isn-panel-pull-right">
           <div class="btn btn-secondary" ng-click="saveTemplateModal()">Save Template</div>
@@ -1172,6 +1172,12 @@
                    ng-options="title.id as title.label for title in search_templates" ng-model="template"
                    placeholder="Search Templates..."></select2>
         </div>
+        <div class="pull-right pull-right-stack isn-panel-pull-right">
+          <!--<div class="btn btn-secondary" ng-click="">Choose</div>-->
+          <select2 class="form-control" id="select2_template" name="lnseries"
+                   ng-options="ln.id as ln.value for ln in lnseriesOptions" ng-model="lnseries"
+                   placeholder="Search LN Series Mailing..."></select2>
+        </div>
       </div>
       <div class="panel-body always-visible">
 
@@ -1179,13 +1185,11 @@
 
           <div class="form-group">
             <label class="col-sm-2 control-label" for="contact_id">Donor:</label>
-
             <div class="col-sm-10">
               <input type="text" class="form-control" id="contact_id" ng-model="contact.id" ng-model-options=""
-                     placeholder="Donor #, First name or Last name">
+                     placeholder="Donor #, First Name or Last Name">
             </div>
           </div>
-
         </form>
       </div>
       <div class="panel-heading panel-second-heading">

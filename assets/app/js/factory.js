@@ -211,6 +211,7 @@ angular.module('xenon.factory', []).factory('Utility', function ($rootScope, $wi
       this.PHONE = null;
       this.PHON2 = null;
       this.PHON3 = null;
+      this.SERIES = null;
       this.otherAddresses = [];
 
       // Quick Info

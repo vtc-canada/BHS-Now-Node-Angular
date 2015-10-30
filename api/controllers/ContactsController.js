@@ -1592,7 +1592,7 @@ module.exports = {
     var searchmode = (req.body.columns && req.body.order);
 
     var mode = req.body.contact.mode == 'true' ? 'and' : 'or';
-
+    var series = req.body.contact.SERIES; //Added for ECP 02 LN Mailing
     var dpothadd = req.body.contact.dpothadd;
     var dpordersummary = req.body.contact.dpordersummary;
     var dplang = req.body.contact.dplang;
@@ -1639,7 +1639,7 @@ module.exports = {
 
     var joinCount = 0; // Pre-Count of total number of innerSelect Joins
     var dpWheres = '';
-    addDpWheres();
+
 
     var dpothaddWheres = '';
     var dpordersummaryWheres = '';
@@ -1656,111 +1656,143 @@ module.exports = {
     var dtVols1Wheres = '';
     var notesWheres = '';
 
-    determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
-    // dpGiftWheres, dpother flag, dpOtherWheres
+      addDpWheres();
+      determineJoinsAndWheres(); // Sets up joinCount, dpgift flag,
+      // dpGiftWheres, dpother flag, dpOtherWheres
 
-    var innerSelect = ''; // Inner select builds on this variable
+      var innerSelect = ''; // Inner select builds on this variable
 
-    var selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP` '; // Outer
-    // Select
-    if (!searchmode) {
-      selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP`, `TITLE`, `SECLN`, `SAL`';
-    }
+      var selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP` '; // Outer
+      // Select
+      if (!searchmode) {
+        selectItems = '`dp`.`id`, `dp`.`FNAME`, `dp`.`LNAME`, `dp`.`ADD`, `dp`.`CITY`, `dp`.`ST`, `dp`.`COUNTRY`, `dp`.`ZIP`, `TITLE`, `SECLN`, `SAL`';
+      }
 
-    var innerOrderOffsetLimit = '';
-    if (searchmode) {// req.body.columns && req.body.order) {
-      innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
-    }
+      var innerOrderOffsetLimit = '';
+      if (searchmode) {// req.body.columns && req.body.order) {
+        innerOrderOffsetLimit = ' ORDER BY `' + req.body.columns[req.body.order[0].column].data + '` ' + req.body.order[0].dir + ' LIMIT ' + parseInt(req.body.length) + ' OFFSET ' + parseInt(req.body.start);
+      }
 
-    if (joinCount == 0) {
-      innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres != '' ? 'WHERE ' : ' ') + dpWheres;
-    } else {
-      if (mode == 'or') {
-        if (dpgiftFlag) {
-          innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
-        }
-        if (dpotherFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dtmailFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmail` ON `dp`.`id` = `dtmail`.`DONOR` ' + dtMailWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dpplgFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpplg` ON `dp`.`id` = `dpplg`.`DONOR` ' + dpPlgWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dpmiscFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpmisc` ON `dp`.`id` = `dpmisc`.`DONOR` ' + dpMiscWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dtvols1Flag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtvols1` ON `dp`.`id` = `dtvols1`.`DONOR` ' + dtVols1Wheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dpothaddFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpothadd` ON `dp`.`id` = `dpothadd`.`DONOR` ' + dpothaddWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dpordersummaryFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpordersummary` ON `dp`.`id` = `dpordersummary`.`DONOR` ' + dpordersummaryWheres
-            + (joinCount > 1 ? ')' : '');
-        }
-        if (dplangFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dplang` ON `dp`.`id` = `dplang`.`DONOR` ' + dplangWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dptransFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dptrans` ON `dp`.`id` = `dptrans`.`DONOR` ' + dptransWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dtmajorFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmajor` ON `dp`.`id` = `dtmajor`.`DONOR` ' + dtmajorWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (dtbishopFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtbishop` ON `dp`.`id` = `dtbishop`.`DONOR` ' + dtbishopWheres + (joinCount > 1 ? ')' : '');
-        }
-        if (notesFlag) {
-          innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `notes` ON `dp`.`id` = `notes`.`DONOR` ' + notesWheres + (joinCount > 1 ? ')' : '');
-        }
+    //ECP 001 #2 LN Mailing Series list filter
+      if (series != null && series != '') {
+        // LN Mailing query written here - does not use the other filtering.
+         innerSelect = "SELECT DISTINCT dp.id from dp " +
+           "INNER JOIN dtmail ON (dp.id = dtmail.DONOR) " +
+           "WHERE dp.`STATUS` = 'ACTIVE'" +  //Change to Active from New Temp - follow up with Jer
+           "AND dp.NM_REASON NOT IN ('CO','XS','XY','RL','RD','RR','XX','XD','XR')" +
+           "AND FLAGS NOT LIKE '%EV%'";
+          if (series == '1') {  //1ST  Mailing List (LN026)
+            innerSelect = innerSelect +
+              "AND dtmail.DONOR NOT IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL = 'LN026')";
+          }else if (series == '2') { //2ND Mailing List (LN028)
+            innerSelect = innerSelect +
+              "AND dtmail.DONOR IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL = 'LN026') AND dtmail.DONOR NOT IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL = 'LN028')";
+          }else if (series == '3') { //3rd Mailing List (LN023)
+              innerSelect = innerSelect +
+                "AND ( COUNTRY = 'United States' OR CLASS IN ('ID','IE','IF','IG','IH','II','IJ','IK'))"+
+                "AND dtmail.DONOR IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL IN ('LN026','LN028'))"+
+                "AND dtmail.DONOR NOT IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL = 'LN023')";
+          }else if (series == '4') { //4th Mailing List (LN029)
+              innerSelect = innerSelect +
+                "AND ( COUNTRY = 'United States' OR CLASS IN ('IC', 'ID','IE','IF','IG','IH','II','IJ','IK') OR (CLASS IN ('IB') AND COUNTRY = 'Canada'))"+
+                "AND dtmail.DONOR IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL IN ('LN026','LN028','LN023'))"+
+                "AND dtmail.DONOR NOT IN (SELECT DISTINCT DONOR FROM dtmail WHERE dtmail.SOL = 'LN029')";
+          }else {
+              innerSelect = ""; //TODO: What shoudl I do here?
+            }
+      }else {
 
-      } else if (mode == 'and') {
-        innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
+        if (joinCount == 0) {
+          innerSelect = 'SELECT `dp`.`id` from `dp`' + (mode == 'and' && dpWheres != '' ? 'WHERE ' : ' ') + dpWheres;
+        } else {
+          if (mode == 'or') {
+            if (dpgiftFlag) {
+              innerSelect = (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpgift` ON `dp`.`id` = `dpgift`.`DONOR` ' + dpGiftWheres + (joinCount > 1 ? ')' : '');// +;
+            }
+            if (dpotherFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpother` ON `dp`.`id` = `dpother`.`DONOR` ' + dpOtherWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dtmailFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmail` ON `dp`.`id` = `dtmail`.`DONOR` ' + dtMailWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dpplgFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpplg` ON `dp`.`id` = `dpplg`.`DONOR` ' + dpPlgWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dpmiscFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpmisc` ON `dp`.`id` = `dpmisc`.`DONOR` ' + dpMiscWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dtvols1Flag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtvols1` ON `dp`.`id` = `dtvols1`.`DONOR` ' + dtVols1Wheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dpothaddFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpothadd` ON `dp`.`id` = `dpothadd`.`DONOR` ' + dpothaddWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dpordersummaryFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dpordersummary` ON `dp`.`id` = `dpordersummary`.`DONOR` ' + dpordersummaryWheres
+                + (joinCount > 1 ? ')' : '');
+            }
+            if (dplangFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dplang` ON `dp`.`id` = `dplang`.`DONOR` ' + dplangWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dptransFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dptrans` ON `dp`.`id` = `dptrans`.`DONOR` ' + dptransWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dtmajorFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtmajor` ON `dp`.`id` = `dtmajor`.`DONOR` ' + dtmajorWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (dtbishopFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `dtbishop` ON `dp`.`id` = `dtbishop`.`DONOR` ' + dtbishopWheres + (joinCount > 1 ? ')' : '');
+            }
+            if (notesFlag) {
+              innerSelect = innerSelect + (innerSelect == '' ? '' : ' UNION ') + (joinCount > 1 ? '(' : '') + 'SELECT ' + (joinCount == 1 ? 'DISTINCT' : '') + ' `dp`.`id` from `dp` inner join `notes` ON `dp`.`id` = `notes`.`DONOR` ' + notesWheres + (joinCount > 1 ? ')' : '');
+            }
 
-        if (dpgiftFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
-        }
-        if (dpotherFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
-        }
-        if (dtmailFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dtmail` ON `dp`.`id` =  `dtmail`.`DONOR`' + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
-        }
-        if (dpplgFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpplg` ON `dp`.`id` =  `dpplg`.`DONOR`' + (dpPlgWheres == '' ? '' : ' AND ') + dpPlgWheres;
-        }
-        if (dpmiscFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpmisc` ON `dp`.`id` =  `dpmisc`.`DONOR`' + (dpMiscWheres == '' ? '' : ' AND ') + dpMiscWheres;
-        }
-        if (dtvols1Flag) {
-          innerSelect = innerSelect + ' INNER JOIN `dtvols1` ON `dp`.`id` =  `dtvols1`.`DONOR`' + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
-        }
-        if (dpothaddFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpothadd` ON `dp`.`id` =  `dpothadd`.`DONOR`' + (dpothaddWheres == '' ? '' : ' AND ') + dpothaddWheres;
-        }
-        if (dpordersummaryFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dpordersummary` ON `dp`.`id` =  `dpordersummary`.`DONOR`' + (dpordersummaryWheres == '' ? '' : ' AND ') + dpordersummaryWheres;
-        }
-        if (dplangFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dplang` ON `dp`.`id` =  `dplang`.`DONOR`' + (dplangWheres == '' ? '' : ' AND ') + dplangWheres;
-        }
-        if (dptransFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dptrans` ON `dp`.`id` =  `dptrans`.`DONOR`' + (dptransWheres == '' ? '' : ' AND ') + dptransWheres;
-        }
-        if (dtmajorFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dtmajor` ON `dp`.`id` =  `dtmajor`.`DONOR`' + (dtmajorWheres == '' ? '' : ' AND ') + dtmajorWheres;
-        }
-        if (dtbishopFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `dtbishop` ON `dp`.`id` =  `dtbishop`.`DONOR`' + (dtbishopWheres == '' ? '' : ' AND ') + dtbishopWheres;
-        }
-        if (notesFlag) {
-          innerSelect = innerSelect + ' INNER JOIN `notes` ON `dp`.`id` =  `notes`.`DONOR`' + (notesWheres == '' ? '' : ' AND ') + notesWheres;
+          } else if (mode == 'and') {
+            innerSelect = 'SELECT DISTINCT `dp`.`id` from `dp`';
+
+            if (dpgiftFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpgift` ON `dp`.`id` =  `dpgift`.`DONOR`' + (dpGiftWheres == '' ? '' : ' AND ') + dpGiftWheres;
+            }
+            if (dpotherFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpother` ON `dp`.`id` =  `dpother`.`DONOR`' + (dpOtherWheres == '' ? '' : ' AND ') + dpOtherWheres;
+            }
+            if (dtmailFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dtmail` ON `dp`.`id` =  `dtmail`.`DONOR`' + (dtMailWheres == '' ? '' : ' AND ') + dtMailWheres;
+            }
+            if (dpplgFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpplg` ON `dp`.`id` =  `dpplg`.`DONOR`' + (dpPlgWheres == '' ? '' : ' AND ') + dpPlgWheres;
+            }
+            if (dpmiscFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpmisc` ON `dp`.`id` =  `dpmisc`.`DONOR`' + (dpMiscWheres == '' ? '' : ' AND ') + dpMiscWheres;
+            }
+            if (dtvols1Flag) {
+              innerSelect = innerSelect + ' INNER JOIN `dtvols1` ON `dp`.`id` =  `dtvols1`.`DONOR`' + (dtVols1Wheres == '' ? '' : ' AND ') + dtVols1Wheres;
+            }
+            if (dpothaddFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpothadd` ON `dp`.`id` =  `dpothadd`.`DONOR`' + (dpothaddWheres == '' ? '' : ' AND ') + dpothaddWheres;
+            }
+            if (dpordersummaryFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dpordersummary` ON `dp`.`id` =  `dpordersummary`.`DONOR`' + (dpordersummaryWheres == '' ? '' : ' AND ') + dpordersummaryWheres;
+            }
+            if (dplangFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dplang` ON `dp`.`id` =  `dplang`.`DONOR`' + (dplangWheres == '' ? '' : ' AND ') + dplangWheres;
+            }
+            if (dptransFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dptrans` ON `dp`.`id` =  `dptrans`.`DONOR`' + (dptransWheres == '' ? '' : ' AND ') + dptransWheres;
+            }
+            if (dtmajorFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dtmajor` ON `dp`.`id` =  `dtmajor`.`DONOR`' + (dtmajorWheres == '' ? '' : ' AND ') + dtmajorWheres;
+            }
+            if (dtbishopFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `dtbishop` ON `dp`.`id` =  `dtbishop`.`DONOR`' + (dtbishopWheres == '' ? '' : ' AND ') + dtbishopWheres;
+            }
+            if (notesFlag) {
+              innerSelect = innerSelect + ' INNER JOIN `notes` ON `dp`.`id` =  `notes`.`DONOR`' + (notesWheres == '' ? '' : ' AND ') + notesWheres;
+            }
+          }
         }
       }
-    }
+
 
     console.log('SELECT ' + selectItems + ' FROM (' + innerSelect + innerOrderOffsetLimit + ') AS `dpIds` LEFT JOIN `dp` on `dpIds`.`id` = `dp`.`id`');
 
@@ -1841,7 +1873,7 @@ module.exports = {
 
       Object.keys(req.body.contact).forEach(function (key) {
         var val = req.body.contact[key];
-        if (key == 'id' || key == 'mode') { // Skip these guys
+        if (key == 'id' || key == 'mode' || key == 'SERIES') { // Skip these guys
           return;
         }
         if (key == 'PHONE' && val != null && val != '') {

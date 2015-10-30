@@ -518,6 +518,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
       PHTYPE1: $scope.contact.PHTYPE1,
       PHTYPE2: $scope.contact.PHTYPE2,
       PHTYPE3: $scope.contact.PHTYPE3,
+      SERIES: $scope.contact.SERIES,
       PHONE: $scope.contact.PHONE,
       PHON2: $scope.contact.PHON2,
       PHON3: $scope.contact.PHON3,
@@ -1855,6 +1856,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
       PHTYPE1: $scope.contact.PHTYPE1,
       PHTYPE2: $scope.contact.PHTYPE2,
       PHTYPE3: $scope.contact.PHTYPE3,
+      SERIES: $scope.contact.SERIES,
       PHONE: $scope.contact.PHONE,
       PHON2: $scope.contact.PHON2,
       PHON3: $scope.contact.PHON3,
@@ -2609,7 +2611,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
 
 }).controller('ContactsSearch', function ($scope, $rootScope, $sails, $modal, $timeout, $contact) {
   var vm = this;
-
+   $scope.lnseriesOptions = [{id:1, value:'1st Series Mailing'}, {id:2, value:'2nd Series Mailing'}, {id:3, value:'3rd Series Mailing'}, {id:4, value:'4th Series Mailing'}]
   $rootScope.shortSelectOptions = {
     minimumInputLength: 1
   };
@@ -2622,6 +2624,7 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
     total_donation_amount_MIN: null,
     total_donation_amount_MAX: null,
     PHONE: null,
+    SERIES: null, // Added for ECP #2, for LN Mailing list (Can't combine with search)
     mode: false,
     ADD: null,
     CITY: null,
@@ -3280,11 +3283,25 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
     }
   };
 
+  $scope.$watch('lnseries', function (newValue, oldValue) {
+
+    if(newValue != null){
+      $scope.clearTemplatesKeepSeries();
+      $scope.contact.SERIES = newValue;
+    }else
+    {
+      $scope.clearLnSeries();
+    }
+  });
+
   $scope.$watch('template', function (newValue, oldValue) {
+
     if (!angular.equals(newValue, oldValue)) {
       if (newValue == null) {
-        $scope.clearTemplates();
+         $scope.clearTemplatesKeepSeries();
       } else {
+        $scope.clearLnSeries();
+
         for (var i = 0; i < $scope.search_templates.length; i++) {
           if ($scope.search_templates[i].id == $scope.template) { // matching
             // one
@@ -3321,6 +3338,21 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
     }
   });
 
+  //function to clear LN Mailing Selection
+  $scope.clearLnSeries = function () {
+    $scope.lnseries = null;
+    $scope.contact.SERIES = null;
+  }
+
+  $scope.clearTemplatesKeepSeries = function() {
+       var series = $scope.contact.SERIES; //ECP # preserve LN Mailing number on clear
+      $rootScope.newTemplateModal.name = null;
+      $rootScope.newTemplateModal.id = null;
+      $scope.template = null;
+      $scope.contact = angular.copy(blankSearch); // clears
+      $scope.contact.SERIES = series;
+      $rootScope.search_contact = $scope.contact;
+  }
   $scope.clearTemplates = function () {
     $rootScope.newTemplateModal.name = null;
     $rootScope.newTemplateModal.id = null;
