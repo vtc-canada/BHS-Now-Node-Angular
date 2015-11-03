@@ -1678,7 +1678,7 @@ module.exports = {
         // LN Mailing query written here - does not use the other filtering.
          innerSelect = "SELECT DISTINCT dp.id from dp " +
            "INNER JOIN dtmail ON (dp.id = dtmail.DONOR) " +
-           "WHERE dp.`STATUS` = 'ACTIVE'" +  //Change to Active from New Temp - follow up with Jer
+           "WHERE dp.`STATUS` = 'NEW'" +  //Change to Active from New Temp - follow up with Jer
            "AND dp.NM_REASON NOT IN ('CO','XS','XY','RL','RD','RR','XX','XD','XR')" +
            "AND FLAGS NOT LIKE '%EV%'";
           if (series == '1') {  //1ST  Mailing List (LN026)
