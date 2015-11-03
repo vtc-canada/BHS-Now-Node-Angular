@@ -82,7 +82,7 @@ module.exports = {
     }
 
     // Select Data
-    Database.knex.select('dpcodes.id', 'dpcodes.FIELD', 'dpcodes.CODE', 'dpcodes.DESC', 'dpcodes.CATEGORY').from(function () {
+    Database.knex.select('dpcodes.id', 'dpcodes.FIELD', 'dpcodes.CODE', 'dpcodes.DESC', 'dpcodes.CATEGORY','dpcodes.CAMPTYPE' ).from(function () {
       var selectIds = this.select('id').from('dpcodes');
       // WHERE's
       doWheres(selectIds);
