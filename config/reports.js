@@ -3709,174 +3709,324 @@ module.exports.views = {
         }
       },
         {
-        id: 14,
-        name: {
-          locale_label: {
-            en: 'Miscellaneous Transactions Report Full'
-          }
-        },
-        title: {
-          logo: 'Fatima-Center-Logo.png'
-        },
-        footer: {
-          logo: 'default.png'
-        },
+          id: 15,
+          name: {
+            locale_label: {
+              en: 'Miscellaneous Transactions Report Summary'
+            }
+          },
+          title: {
+            logo: 'Fatima-Center-Logo.png'
+          },
+          footer: {
+            logo: 'default.png'
+          },
 
-        tables: [{
-          order: 0,
-          sproc: 'reports_DPMiscCount',
-          parameters: ['start_time', 'end_time'],
-          grouping: [{
-            column: 'type',
-            footer: {
-              columns: [{
-                type: 'column',
-                column: 'type'
-              }, {
-                type: 'custom',
-                column: ''
+          tables: [{
+            order: 0,
+            sproc: 'reports_DPMiscCountSummary',
+            parameters: ['start_time', 'end_time'],
+            grouping: [{
+              column: 'type',
+              footer: {
+                columns: [{
+                  type: 'column',
+                  column: 'type'
+                }, {
+                  type: 'custom',
+                  column: ''
+                },
+                  {
+                    type: 'custom',
+                    column: ''
+                  },
+                  {
+                    type: 'custom',
+                    column: ''
+                  },
+                  {
+                    type: 'sum',
+                    column: 'count'
+                  }
+                ]
+              }
+            }],
+            section: {
+              startrow: true,
+              endrow: true,
+              unbreakable: true,
+              groupheading: {
+                spantype: 'col-xs-12',
+                grid: [[{
+                  val: 'Miscellaneous Transactions Summary Grouped by Type',
+                  bold: true
+                }]]
               },
-                {
-                  type: 'custom',
-                  column: ''
+              table: {
+                searchenabled: true,
+                spantype: 'col-xs-12',
+                bottomborder: true,
+                topborder: true,
+                sorting: false
+              }
+            },
+            columns: {
+              type: {
+                locale: {
+                  en: "Type"
                 },
-                {
+                order: 0,
+                type: 'column',
+                column: 'type',
+                lastrow: {
                   type: 'custom',
-                  column: ''
-                },
-                {
-                  type: 'custom',
-                  column: ''
-                },
-                {
-                  type: 'sum',
-                  column: 'count'
+                  value: 'Totals',
+                  bold: true,
+                  bordertop: true
                 }
-              ]
+              },
+              code: {
+                locale: {
+                  en: "SOL Code"
+                }, order: 1,
+                type: 'column',
+                column: 'code',
+                lastrow: {
+                  type: 'custom',
+                  value: '',
+                  bold: true,
+                  bordertop: true
+                }
+              },
+              year: {
+                locale: {
+                  en: "Year"
+                }, order: 2,
+                type: 'column',
+                column: 'year',
+                lastrow: {
+                  type: 'custom',
+                  value: ' ',
+                  bold: true,
+                  bordertop: true
+                }
+              },
+              description: {
+                locale: {
+                  en: "Description"
+                }, order: 3,
+                type: 'column',
+                column: 'description',
+                lastrow: {
+                  type: 'custom',
+                  value: ' ',
+                  bold: true,
+                  bordertop: true
+                }
+
+              },
+              count: {
+                locale: {
+                  en: "Count"
+                }, order: 5,
+                type: 'column',
+                column: 'count',
+                lastrow: {
+                  type: 'sum',
+                  decimalplaces: 0,
+                  bold: true,
+                  bordertop: true
+                }
+              }
             }
           }],
-          section: {
-            startrow: true,
-            endrow: true,
-            unbreakable: true,
-            groupheading: {
-              spantype: 'col-xs-12',
-              grid: [[{
-                val: 'Miscellaneous Transactions Group by Type',
-                bold: true
-              }]]
-            },
-            table: {
-              searchenabled: true,
-              spantype: 'col-xs-12',
-              bottomborder: true,
-              topborder: true,
-              sorting: false
-            }
-          },
-          columns: {
-            type: {
-              locale: {
-                en: "Type"
-              },
+          parameters: {
+
+            'start_time': {
               order: 0,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'custom',
-                value: 'Totals',
-                bold: true,
-                bordertop: true
+              type: 'datetime',
+              locale_label: {
+                en: 'Start Time'
               }
             },
-            code: {
-              locale: {
-                en: "SOL Code"
-              }, order: 1,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'custom',
-                value: '',
-                bold: true,
-                bordertop: true
-              }
-            },
-            year: {
-              locale: {
-                en: "Year"
-              }, order: 2,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'custom',
-                value: ' ',
-                bold: true,
-                bordertop: true
-              }
-            }
-
-            ,
-            donor: {
-              locale: {
-                en: "Donor"
-              }, order: 3,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'custom',
-                value: ' ',
-                bold: true,
-                bordertop: true
-              }
-
-            },
-            name: {
-              locale: {
-                en: "Name"
-              }, order: 4,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'custom',
-                value: ' ',
-                bold: true,
-                bordertop: true
-              }
-            },
-            count: {
-              locale: {
-                en: "Count"
-              }, order: 5,
-              type: 'column',
-              column: 'type',
-              lastrow: {
-                type: 'sum',
-                decimalplaces: 0,
-                bold: true,
-                bordertop: true
+            'end_time': {
+              order: 1,
+              type: 'datetime',
+              locale_label: {
+                en: 'End Time'
               }
             }
           }
-        }],
-        parameters: {
-
-          'start_time': {
-            order: 0,
-            type: 'datetime',
+        },
+        {
+          id: 14,
+          name: {
             locale_label: {
-              en: 'Start Time'
+              en: 'Miscellaneous Transactions Report Full'
             }
           },
-          'end_time': {
-            order: 1,
-            type: 'datetime',
-            locale_label: {
-              en: 'End Time'
+          title: {
+            logo: 'Fatima-Center-Logo.png'
+          },
+          footer: {
+            logo: 'default.png'
+          },
+
+          tables: [{
+            order: 0,
+            sproc: 'reports_DPMiscCount',
+            parameters: ['start_time', 'end_time'],
+            grouping: [{
+              column: 'type',
+              footer: {
+                columns: [{
+                  type: 'column',
+                  column: 'type'
+                }, {
+                  type: 'custom',
+                  column: ''
+                },
+                  {
+                    type: 'custom',
+                    column: ''
+                  },
+                  {
+                    type: 'custom',
+                    column: ''
+                  },
+                  {
+                    type: 'custom',
+                    column: ''
+                  },
+                  {
+                    type: 'sum',
+                    column: 'count'
+                  }
+                ]
+              }
+            }],
+            section: {
+              startrow: true,
+              endrow: true,
+              unbreakable: true,
+              groupheading: {
+                spantype: 'col-xs-12',
+                grid: [[{
+                  val: 'Miscellaneous Transactions Grouped by Type',
+                  bold: true
+                }]]
+              },
+              table: {
+                searchenabled: true,
+                spantype: 'col-xs-12',
+                bottomborder: true,
+                topborder: true,
+                sorting: false
+              }
+            },
+            columns: {
+              type: {
+                locale: {
+                  en: "Type"
+                },
+                order: 0,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'custom',
+                  value: 'Totals',
+                  bold: true,
+                  bordertop: true
+                }
+              },
+              code: {
+                locale: {
+                  en: "SOL Code"
+                }, order: 1,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'custom',
+                  value: '',
+                  bold: true,
+                  bordertop: true
+                }
+              },
+              year: {
+                locale: {
+                  en: "Year"
+                }, order: 2,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'custom',
+                  value: ' ',
+                  bold: true,
+                  bordertop: true
+                }
+              }
+
+              ,
+              donor: {
+                locale: {
+                  en: "Donor"
+                }, order: 3,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'custom',
+                  value: ' ',
+                  bold: true,
+                  bordertop: true
+                }
+
+              },
+              name: {
+                locale: {
+                  en: "Name"
+                }, order: 4,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'custom',
+                  value: ' ',
+                  bold: true,
+                  bordertop: true
+                }
+              },
+              count: {
+                locale: {
+                  en: "Count"
+                }, order: 5,
+                type: 'column',
+                column: 'type',
+                lastrow: {
+                  type: 'sum',
+                  decimalplaces: 0,
+                  bold: true,
+                  bordertop: true
+                }
+              }
+            }
+          }],
+          parameters: {
+
+            'start_time': {
+              order: 0,
+              type: 'datetime',
+              locale_label: {
+                en: 'Start Time'
+              }
+            },
+            'end_time': {
+              order: 1,
+              type: 'datetime',
+              locale_label: {
+                en: 'End Time'
+              }
             }
           }
-        }
-      },
+        },
       ]
     }
   }
