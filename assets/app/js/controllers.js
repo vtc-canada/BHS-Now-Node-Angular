@@ -2611,7 +2611,11 @@ angular.module('xenon.controllers', []).controller('ContactSections', function (
 
 }).controller('ContactsSearch', function ($scope, $rootScope, $sails, $modal, $timeout, $contact) {
   var vm = this;
-   $scope.lnseriesOptions = [{id:1, value:'1st Series Mailing'}, {id:2, value:'2nd Series Mailing'}, {id:3, value:'3rd Series Mailing'}, {id:4, value:'4th Series Mailing'}]
+   $scope.lnseriesOptions = [{id:1, value:'1st Series Mailing'}, {id:2, value:'2nd Series Mailing'}
+     , {id:3, value:'3rd Series Mailing'}, {id:4, value:'4th Series Mailing'}
+     , {id:5, value:'Pledge Run Invoice'}, {id:6, value:'Please Run Renewals'}
+     , {id:7, value:'Pledge Run Thank You 1'}, {id:8, value:'Please Run Thank You 2'}
+     , {id:9, value:'Pledge Run Thank You 3'}, {id:10, value:'Please Run Thank You 4'}]
   $rootScope.shortSelectOptions = {
     minimumInputLength: 1
   };
