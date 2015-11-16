@@ -12,16 +12,16 @@ CREATE TABLE `dplang` (
   `LANGUAGE` VARCHAR(45) NOT NULL,
   `database_origin` INT(11) NOT NULL,
   PRIMARY KEY (`id`));
-ALTER TABLE `dplang` 
+ALTER TABLE `dplang`
 ADD INDEX `fk_dplang_dp_idx` (`DONOR` ASC, `LANGUAGE` ASC);
-ALTER TABLE `dplang` 
+ALTER TABLE `dplang`
 ADD CONSTRAINT `fk_dplang_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
 
-  
+
 #create Translate table
   CREATE TABLE `dptrans` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -29,17 +29,17 @@ ADD CONSTRAINT `fk_dplang_dp`
   `LANGUAGE` VARCHAR(45) NOT NULL,
   `database_origin` INT(11) NOT NULL,
   PRIMARY KEY (`id`));
-  
-ALTER TABLE `dptrans` 
+
+ALTER TABLE `dptrans`
 ADD INDEX `fk_dptrans_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dptrans` 
+ALTER TABLE `dptrans`
 ADD CONSTRAINT `fk_dptrans_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
 
-  
+
 CREATE TABLE `dpdonorstatushistory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `DONOR` int(11) DEFAULT NULL,
@@ -227,27 +227,27 @@ INSERT INTO `languages` VALUES(135, 'Zulu', 'zu');
 
 
 #Indexing maildrop
-ALTER TABLE `maildrop` 
+ALTER TABLE `maildrop`
 ADD INDEX `ix_maildrop_provcode_database_origin` (`PROVCODE` ASC, `database_origin` ASC);
 
 
 # ADDing columns  101 seconds
 
-ALTER TABLE `dp` 
+ALTER TABLE `dp`
 ADD COLUMN `ecc_enabled` TINYINT(1) NULL AFTER `database_origin`,
 ADD COLUMN `status` VARCHAR(255) NULL AFTER `database_origin`,
 ADD COLUMN `last_interaction` DATE NULL AFTER `database_origin`;
 
 
 # Indexing DP    138 seconds
-ALTER TABLE `dp` 
+ALTER TABLE `dp`
 ADD INDEX `index2` (`FNAME` ASC),
 ADD INDEX `index3` (`LNAME` ASC),
 ADD INDEX `ix_id_country` (`id` ASC, `COUNTRY` ASC),
 ADD FULLTEXT INDEX `index5` (`FNAME` ASC, `LNAME` ASC),
 ADD INDEX `index6` (`status` ASC);
 
-ALTER TABLE `dp` 
+ALTER TABLE `dp`
 ADD INDEX `ix_class_status_id` (`CLASS` ASC, `status` ASC, `COUNTRY` ASC, `id` ASC),
 ADD INDEX `ix_CLASS_LASTDON_status_id` (`CLASS` ASC, `LASTDON` ASC, `status` ASC, `id` ASC),
 ADD INDEX `ix_LANGUAGE` (`LANGUAGE` ASC);
@@ -261,14 +261,14 @@ UPDATE dp SET PHON3 = REPLACE(REPLACE(REPLACE(REPLACE(PHON3, '(', ''), ')', ''),
 
 
 #indexing dpcodes  0 seconds
-ALTER TABLE `dpcodes` 
+ALTER TABLE `dpcodes`
 ADD INDEX `index2` (`FIELD` ASC),
 ADD FULLTEXT INDEX `ix_code_full_text` (`FIELD` ASC, `CODE` ASC, `DESC` ASC, `CATEGORY` ASC);
-ALTER TABLE `dpcodes` 
+ALTER TABLE `dpcodes`
 ADD INDEX `ix_database_origin` (`database_origin` ASC);
 
 #Adding dpgift index to speed up missing dp IDs  -  10 seconds
-ALTER TABLE `dpgift` 
+ALTER TABLE `dpgift`
 ADD INDEX `index2` (`DONOR` ASC);
 
 #clearing IDs that are missing from dp  - Deletes 41 records  85 seconds
@@ -279,21 +279,21 @@ left outer join dp CONTACT on CONTACT.id = GIFT.DONOR) t
 WHERE t.id IS NULL);
 
 #remove dpgift temporary ID1
-ALTER TABLE `dpgift` 
+ALTER TABLE `dpgift`
 DROP INDEX `index2` ;
 
 #indexing dpgift   - 4 hours
-ALTER TABLE `dpgift` 
+ALTER TABLE `dpgift`
 ADD INDEX `index2` (`DONOR` ASC),
 ADD CONSTRAINT `fk_dpgift_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
- 
- 
+
+
   # dpgift donor date amount index
-  ALTER TABLE `dpgift` 
+  ALTER TABLE `dpgift`
 ADD INDEX `ix_donor_date_amt` (`DONOR` ASC, `DATE` ASC, `AMT` ASC),
 ADD INDEX `ix_date_transact` (`DATE` ASC, `TRANSACT` ASC),
 ADD INDEX `ix_DEMAND` (`DEMAND` ASC),
@@ -310,7 +310,7 @@ ADD FULLTEXT INDEX `ix_SOL_fulltext` (`SOL` ASC);
 
 
   #add temp index for dpother 0 seconds
-ALTER TABLE `dpother` 
+ALTER TABLE `dpother`
 ADD INDEX `index2` (`DONOR` ASC);
 
 #delete foreign-key breaking rows   120 rows, 75 seconds
@@ -321,21 +321,21 @@ left outer join dp CONTACT on CONTACT.id = OTHER.DONOR) t
 WHERE t.id IS NULL);
 
 #delete temporary index  0 seconds
-ALTER TABLE `dpother` 
+ALTER TABLE `dpother`
 DROP INDEX `index2` ;
 
   #indexing dpother  3 hours
-ALTER TABLE `dpother` 
+ALTER TABLE `dpother`
 ADD INDEX `index3` (`DONOR` ASC);
-  ALTER TABLE `dpother` 
+  ALTER TABLE `dpother`
 ADD CONSTRAINT `fk_dpother_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
+
   #adding dpother donor date amount index
-  ALTER TABLE `dpother` 
+  ALTER TABLE `dpother`
 ADD INDEX `ix_donor_date_amt` (`DONOR` ASC, `DATE` ASC, `AMT` ASC),
 ADD INDEX `ix_date` (`DATE` ASC),
 ADD INDEX `ix_demand` (`DEMAND` ASC),
@@ -346,12 +346,12 @@ ADD INDEX `ix_requests` (`REQUESTS` ASC),
 ADD INDEX `ix_tba_reqs` (`TBAREQS` ASC);
 ADD FULLTEXT INDEX `ix_sol_fulltext` (`SOL` ASC);
 
-  
+
 #indexing dplink
-ALTER TABLE `dplink` 
+ALTER TABLE `dplink`
 ADD INDEX `fk_dplink_dp_ID1_idx` (`ID1` ASC),
 ADD INDEX `fk_dplink_dp_ID2_idx` (`ID2` ASC);
-ALTER TABLE `dplink` 
+ALTER TABLE `dplink`
 ADD CONSTRAINT `fk_dplink_dp_ID1`
   FOREIGN KEY (`ID1`)
   REFERENCES `dp` (`id`)
@@ -364,22 +364,22 @@ ADD CONSTRAINT `fk_dplink_dp_ID2`
   ON UPDATE RESTRICT;
 
   #cleaning bad indexes
-  DELETE b FROM dpmisc b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+  DELETE b FROM dpmisc b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
-	  
+
   #indexing dpmisc
-ALTER TABLE `dpmisc` 
+ALTER TABLE `dpmisc`
 ADD INDEX `index2` (`DONOR` ASC);
-ALTER TABLE `dpmisc` 
+ALTER TABLE `dpmisc`
 ADD CONSTRAINT `fk_dpmisc_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
+
   #additional indexes
-  ALTER TABLE `dpmisc` 
+  ALTER TABLE `dpmisc`
 ADD INDEX `index3` (`MDATE` ASC),
 ADD INDEX `index4` (`SOL` ASC),
 ADD INDEX `index5` (`MTYPE` ASC),
@@ -389,58 +389,58 @@ ADD INDEX `index8` (`MYEAR` ASC);
 
 
 #indexing dpothadd
-ALTER TABLE `dpothadd` 
+ALTER TABLE `dpothadd`
 ADD INDEX `index2` (`DONOR` ASC);
-ALTER TABLE `dpothadd` 
+ALTER TABLE `dpothadd`
 ADD CONSTRAINT `fk_dpothadd_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
+
 #clean dpplg2 - 1 row
 
-DELETE b FROM dpplg b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+DELETE b FROM dpplg b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
 
 #dpplg
-ALTER TABLE `dpplg` 
+ALTER TABLE `dpplg`
 ADD INDEX `ix_dpplg_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dpplg` 
+ALTER TABLE `dpplg`
 ADD CONSTRAINT `ix_dpplg_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
+
 #clean dpplg2 - 1 row
-DELETE b FROM dpplg2 b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+DELETE b FROM dpplg2 b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
-      
+
 #dpplg2
-ALTER TABLE `dpplg2` 
+ALTER TABLE `dpplg2`
 ADD INDEX `fk_dpplg2_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dpplg2` 
+ALTER TABLE `dpplg2`
 ADD CONSTRAINT `fk_dpplg2_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
 
-	  
+
 #dtbishop
-ALTER TABLE `dtbishop` 
+ALTER TABLE `dtbishop`
 ADD INDEX `fk_dtbishop_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dtbishop` 
+ALTER TABLE `dtbishop`
 ADD CONSTRAINT `fk_dtbishop_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
-ALTER TABLE `dtbishop` 
+
+ALTER TABLE `dtbishop`
 ADD INDEX `index3` (`RESPONSE` ASC);
 
 
@@ -449,9 +449,9 @@ ADD INDEX `index3` (`RESPONSE` ASC);
 #dtdontmas
 
 #dtdonsum
-ALTER TABLE `dtdonsum` 
+ALTER TABLE `dtdonsum`
 ADD INDEX `fk_dtdonsum_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dtdonsum` 
+ALTER TABLE `dtdonsum`
 ADD CONSTRAINT `fk_dtdonsum_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
@@ -461,14 +461,14 @@ ADD CONSTRAINT `fk_dtdonsum_dp`
 
 #indexing DTMAIL
 
-ALTER TABLE `dtmail` 
+ALTER TABLE `dtmail`
 ADD INDEX `ix_DONOR_SOL_database_origin` (`DONOR` ASC, `SOL` ASC, `database_origin` ASC);
 
 
 
-#ALTER TABLE `dtmail` 
+#ALTER TABLE `dtmail`
 #ADD INDEX `fk_dtmail_dp_idx` (`DONOR` ASC);
-#ALTER TABLE `dtmail` 
+#ALTER TABLE `dtmail`
 #ADD CONSTRAINT `fk_dtmail_dp`
 #  FOREIGN KEY (`DONOR`)
 #  REFERENCES `dp` (`id`)
@@ -476,20 +476,20 @@ ADD INDEX `ix_DONOR_SOL_database_origin` (`DONOR` ASC, `SOL` ASC, `database_orig
 #  ON UPDATE RESTRICT;
 
 #additional indexes
-ALTER TABLE `dtmail` 
+ALTER TABLE `dtmail`
 ADD INDEX `index3` (`SOL` ASC);
 
 
 #clean DTMajor
 
-DELETE b FROM dpordersummary b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+DELETE b FROM dpordersummary b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
 
 #dtmajor
-ALTER TABLE `dtmajor` 
+ALTER TABLE `dtmajor`
 ADD INDEX `fk_dtmajor_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dtmajor` 
+ALTER TABLE `dtmajor`
 ADD CONSTRAINT `fk_dtmajor_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
@@ -497,11 +497,11 @@ ADD CONSTRAINT `fk_dtmajor_dp`
   ON UPDATE RESTRICT;
 
   #dtvolmas
-  
+
   #dtvolord
-  ALTER TABLE `dtvolord` 
+  ALTER TABLE `dtvolord`
 ADD INDEX `fk_dtvolord_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dtvolord` 
+ALTER TABLE `dtvolord`
 ADD CONSTRAINT `fk_dtvolord_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
@@ -509,21 +509,21 @@ ADD CONSTRAINT `fk_dtvolord_dp`
   ON UPDATE RESTRICT;
 
   # Clearout orphaned records
-  DELETE b FROM dtvols1 b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+  DELETE b FROM dtvols1 b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
-	  
+
   #dtvols1
-  ALTER TABLE `dtvols1` 
+  ALTER TABLE `dtvols1`
 ADD INDEX `fk_dtvols1_dp_idx` (`DONOR` ASC);
-ALTER TABLE `dtvols1` 
+ALTER TABLE `dtvols1`
 ADD CONSTRAINT `fk_dtvols1_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
-ALTER TABLE `dtvols1` 
+
+ALTER TABLE `dtvols1`
 ADD INDEX `index3` (`VORIGIN` ASC),
 ADD INDEX `index4` (`VSDATE` ASC),
 ADD INDEX `index5` (`VCATEG` ASC),
@@ -553,24 +553,24 @@ ADD INDEX `index22` (`VSPECTAL` ASC);
 call update_ContactStatus(null);
 
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
 
 
 
-# Updating Ecclisiastical tab column values  53 seconds, 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Updating Ecclisiastical tab column values  53 seconds,
 UPDATE dp SET ecc_enabled = true WHERE database_origin = 3 OR database_origin = 8 OR database_origin = 10 OR database_origin = 12;
 UPDATE dp SET ecc_enabled = false WHERE database_origin != 3 AND database_origin != 8 AND database_origin != 10 AND database_origin != 12;
 
@@ -615,15 +615,15 @@ CREATE TABLE `notes` (
   `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`));
 
-  ALTER TABLE `notes` 
+  ALTER TABLE `notes`
 ADD INDEX `fk_notes_dp_idx` (`DONOR` ASC);
-ALTER TABLE `notes` 
+ALTER TABLE `notes`
 ADD CONSTRAINT `fk_notes_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
-  
+
   ## copying over notes into layman tab
   INSERT INTO `notes`
 (
@@ -659,8 +659,8 @@ SELECT DONOR , 'Default', 'layman', VNOTES FROM dtvols1 WHERE VNOTES IS NOT NULL
 
 
 
-  
-  
+
+
 #Adding Country for American database
 
 UPDATE `dp`
@@ -694,7 +694,7 @@ DELETE FROM dtdonsum WHERE ORDNUM IS NULL;
 DELETE FROM dtdonsum WHERE ORDNUM LIKE 'Z%';  # deletes bad records..
 
 # Kill 97 duplicates 26 seconds
-ALTER IGNORE TABLE `dtdonsum` 
+ALTER IGNORE TABLE `dtdonsum`
 ADD UNIQUE INDEX `index2` (`ORDNUM` ASC, `database_origin` ASC);
 
 # 200 seconds
@@ -716,9 +716,9 @@ update dtdonsum SET id = ORDNUM + 13000000 WHERE database_origin = 12;
 
 
 #Dtdondet alteration
-ALTER TABLE `dtdondet` 
+ALTER TABLE `dtdondet`
 RENAME TO `dporderdetails` ;
-ALTER TABLE `dporderdetails` 
+ALTER TABLE `dporderdetails`
 ADD INDEX `index2` (`ORDNUMD` ASC);
 
 DELETE FROM dporderdetails WHERE ORDNUMD IS NULL;
@@ -747,7 +747,7 @@ FROM dtdonsum;
 
 # Add Index to dtvolord 5 seconds
 
-ALTER TABLE `dtvolord` 
+ALTER TABLE `dtvolord`
 ADD INDEX `ix_donor` (`DONOR` ASC);
 
 # Migrate Free Gift Order Summary Data to new order summary table
@@ -757,7 +757,7 @@ SELECT ORDERS.id,ORDERS.DONOR,ORDERS.SOL,ORDERS.`DATE`,ORDERS.ORDNUM,ORDERS.SHIP
 FROM dtvolord ORDERS inner join
 	dp CONTACT on ORDERS.DONOR = CONTACT.id;
 
-	
+
 # Migrate Free Gift Order Details Data to new order summary table for the first line entry approximately 30 seconds for all
 
 insert into dporderdetails(ORDNUMD,PAGED,LINED,DONORD,LQTY,SQTY,BQTY,LSTOC,LITEMP,LITEMD,LPRICE,LDISC,LCURR,LEXT,TSRECID,TSDATE,TSTIME,TSCHG,TSBASE,TSLOCAT,TSIDCODE,database_origin)
@@ -886,34 +886,34 @@ WHERE LQTY18 > 0;
 
 
 #add autoincrement to dpordersummary
-ALTER TABLE `dpordersummary` 
+ALTER TABLE `dpordersummary`
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;
 
 
 # ADD donor key
-ALTER TABLE `dpordersummary` 
+ALTER TABLE `dpordersummary`
 ADD INDEX `fk_dpordersummary_dp_idx` (`DONOR` ASC);
 
 # 132 records need cleaning to add KEY
-DELETE b FROM dpordersummary b 
-  LEFT JOIN dp f ON f.id = b.DONOR 
+DELETE b FROM dpordersummary b
+  LEFT JOIN dp f ON f.id = b.DONOR
       WHERE f.id IS NULL;
-	  
-ALTER IGNORE TABLE `dpordersummary` 
+
+ALTER IGNORE TABLE `dpordersummary`
 ADD CONSTRAINT `fk_dpordersummary_dp`
   FOREIGN KEY (`DONOR`)
   REFERENCES `dp` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
 
-ALTER TABLE `dpordersummary` 
+ALTER TABLE `dpordersummary`
 ADD FULLTEXT INDEX `fulltext_donor` (`FNAME` ASC, `LNAME` ASC);
 
-  ALTER TABLE `dpordersummary` 
+  ALTER TABLE `dpordersummary`
 ADD INDEX `ix_database_origin` (`database_origin` ASC),
 ADD INDEX `ix_SHIPFROM` (`SHIPFROM` ASC);
 
-  
+
 
 
 ## Exchange rates tables
@@ -925,7 +925,7 @@ CREATE TABLE `dpcurrency` (
   `symbol` VARCHAR(45) NOT NULL,
   `order` INT NOT NULL ,
   PRIMARY KEY (`id`));
-  
+
 INSERT INTO `dpcurrency` (`id`, `name`, `code`, `symbol`,1) VALUES ('U', 'United States Dollar', 'USD', '$');
 INSERT INTO `dpcurrency` (`id`, `name`, `code`, `symbol`,0) VALUES ('C', 'Canadian Dollar', 'CAD', '$');
 INSERT INTO `dpcurrency` (`id`, `name`, `code`, `symbol`,3) VALUES ('P', 'Philipine Peso', 'PHP', '₱');
@@ -960,10 +960,10 @@ INSERT INTO `dpexchange` (`id`, `currency_from`, `currency_to`, `date`, `exchang
 INSERT INTO `dpexchange` (`id`, `currency_from`, `currency_to`, `date`, `exchange_rate`) VALUES ('17', 'E', 'U', '2050-12-31', '1.304');
 
 
-ALTER TABLE `dpexchange` 
+ALTER TABLE `dpexchange`
 ADD INDEX `fk_dpexchange_dpcurrency_idx` (`currency_from` ASC),
 ADD INDEX `fk_dpexchange_dpcurrency_to_idx` (`currency_to` ASC);
-ALTER TABLE `dpexchange` 
+ALTER TABLE `dpexchange`
 ADD CONSTRAINT `fk_dpexchange_dpcurrency_from`
   FOREIGN KEY (`currency_from`)
   REFERENCES `dpcurrency` (`id`)
@@ -979,7 +979,7 @@ INSERT INTO `dpexchange` (`currency_from`, `currency_to`, `date`, `exchange_rate
 INSERT INTO `dpexchange` (`currency_from`, `currency_to`, `date`, `exchange_rate`) VALUES ('E', 'U', '1980-01-01', '1');
 INSERT INTO `dpexchange` (`currency_from`, `currency_to`, `date`, `exchange_rate`) VALUES ('P', 'U', '1980-01-01', '1');
 INSERT INTO `dpexchange` (`currency_from`, `currency_to`, `date`, `exchange_rate`) VALUES ('R', 'U', '1980-01-01', '1');
-  
+
 
 
 
@@ -991,8 +991,8 @@ CREATE TABLE `templates` (
   `data` TEXT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `index2` (`userId` ASC, `location` ASC));
-  
-  
+
+
 CREATE TABLE `dpexchange_history` (
 `id` INT NOT NULL AUTO_INCREMENT,
 `currency_from` VARCHAR(45) NULL,
@@ -1001,7 +1001,7 @@ CREATE TABLE `dpexchange_history` (
 `exchange_rate` FLOAT NULL,
 PRIMARY KEY (`id`));
 
-ALTER TABLE `dpexchange_history` 
+ALTER TABLE `dpexchange_history`
 ADD INDEX `ix_currency_from_date` (`currency_from` ASC, `date` ASC);
 
 
@@ -1205,23 +1205,23 @@ SELECT DISTINCT FIELD,`CODE`,12
 FROM dpcodes where database_origin = 12 AND (FIELD,`CODE`) NOT IN (SELECT FIELD,`CODE` FROM dpcodes2);
 
 /* 800 seconds */
-UPDATE dpcodes2 
+UPDATE dpcodes2
 INNER JOIN dpcodes ON dpcodes2.FIELD = dpcodes.FIELD AND dpcodes2.`CODE` = dpcodes.`CODE` AND dpcodes2.database_origin = dpcodes.database_origin
-SET dpcodes2.`DESC` = dpcodes.`DESC`, 
-dpcodes2.CATEGORY = dpcodes.CATEGORY, 
-dpcodes2.`LIST` = dpcodes.`LIST`, 
-dpcodes2.RECP=dpcodes.RECP, 
-dpcodes2.MCAT_HI = dpcodes.MCAT_HI, 
-dpcodes2.MCAT_LO = dpcodes.MCAT_LO, 
-dpcodes2.MCAT_GL = dpcodes.MCAT_GL, 
-dpcodes2.AMR_DROP = dpcodes.AMR_DROP, 
-dpcodes2.CDN_DROP = dpcodes.CDN_DROP, 
-dpcodes2.PRINTING = dpcodes.PRINTING, 
-dpcodes2.OTHER = dpcodes.OTHER, 
-dpcodes2.CODEDATE = dpcodes.CODEDATE, 
-dpcodes2.MAILED = dpcodes.MAILED, 
-dpcodes2.PLAYED = dpcodes.PLAYED, 
-dpcodes2.ACTNUMB = dpcodes.ACTNUMB, 
+SET dpcodes2.`DESC` = dpcodes.`DESC`,
+dpcodes2.CATEGORY = dpcodes.CATEGORY,
+dpcodes2.`LIST` = dpcodes.`LIST`,
+dpcodes2.RECP=dpcodes.RECP,
+dpcodes2.MCAT_HI = dpcodes.MCAT_HI,
+dpcodes2.MCAT_LO = dpcodes.MCAT_LO,
+dpcodes2.MCAT_GL = dpcodes.MCAT_GL,
+dpcodes2.AMR_DROP = dpcodes.AMR_DROP,
+dpcodes2.CDN_DROP = dpcodes.CDN_DROP,
+dpcodes2.PRINTING = dpcodes.PRINTING,
+dpcodes2.OTHER = dpcodes.OTHER,
+dpcodes2.CODEDATE = dpcodes.CODEDATE,
+dpcodes2.MAILED = dpcodes.MAILED,
+dpcodes2.PLAYED = dpcodes.PLAYED,
+dpcodes2.ACTNUMB = dpcodes.ACTNUMB,
 dpcodes2.`FORMAT` = dpcodes.`FORMAT`;
 
 DROP TABLE dpcodes;
@@ -1291,7 +1291,7 @@ INSERT INTO `dpcodes` (`FIELD`, `CODE`, `DESC`, `MCAT_HI`, `MCAT_LO`, `AMR_DROP`
 INSERT INTO `dpcodes` (`FIELD`, `CODE`, `DESC`, `MCAT_HI`, `MCAT_LO`, `AMR_DROP`, `CDN_DROP`, `PRINTING`, `OTHER`, `MAILED`, `PLAYED`, `database_origin`) VALUES ('CLASS', 'G1', 'Buyers-15', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '1');
 
 #Adding total_donation_amount and total_donation_records columns  ~800 Seconds
-ALTER TABLE `dp` 
+ALTER TABLE `dp`
 ADD COLUMN `total_donation_amount` FLOAT(8,2) NOT NULL AFTER `PERM_SOLS`,
 ADD COLUMN `total_donation_records` INT(11) NOT NULL AFTER `total_donation_amount`;
 
@@ -1357,7 +1357,7 @@ SELECT DISTINCT CAMPSOL,CAMPTYPE,12
 FROM campaign where database_origin = 12 AND (CAMPSOL,CAMPTYPE) NOT IN (SELECT CAMPSOL,CAMPTYPE FROM campaign2);
 
 /* 800 seconds */
-UPDATE campaign2 
+UPDATE campaign2
 INNER JOIN campaign ON campaign2.CAMPSOL = campaign.CAMPSOL AND campaign2.CAMPTYPE = campaign.CAMPTYPE AND campaign2.database_origin = campaign.database_origin
 SET campaign2.`CAMPDESC` = campaign.`CAMPDESC`;
 
@@ -1368,18 +1368,18 @@ RENAME TABLE campaign2 to campaign;
 
 #CAMPAIGN
 # Add column to dpcodes
-ALTER TABLE `dpcodes` 
+ALTER TABLE `dpcodes`
 ADD COLUMN `CAMPTYPE` VARCHAR(255) NULL DEFAULT NULL AFTER `ACTNUMB`;
 
 
 #CAMPAIGN - prep with index
-ALTER TABLE `campaign` 
+ALTER TABLE `campaign`
 ADD INDEX `ix_CAMPSOL` (`CAMPSOL` ASC);
 
 #CAMPAIGN
 # CAMPAIGN - Copy over from campaign import
 UPDATE dpcodes
-INNER JOIN campaign ON 
+INNER JOIN campaign ON
 (dpcodes.FIELD = 'SOL' AND dpcodes.CODE  = campaign.CAMPSOL)
 SET dpcodes.CAMPTYPE = campaign.CAMPTYPE;
 
@@ -1410,9 +1410,9 @@ CREATE TABLE `dpplg_pledmonhistory` (
   PRIMARY KEY (`id`));
 
 
-ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory` 
+ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory`
 ADD INDEX `fk_dpplg_pledmonhistory_idx` (`DONOR` ASC);
-ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory` 
+ALTER TABLE `fatima_center_donor_tracker_v2`.`dpplg_pledmonhistory`
 ADD CONSTRAINT `fk_dpplg_pledmonhistory`
   FOREIGN KEY (`DONOR`)
   REFERENCES `fatima_center_donor_tracker_v2`.`dp` (`id`)
@@ -1426,7 +1426,7 @@ CREATE TABLE `dpplg_pledmonhistory` (
   `id` INT NULL AUTO_INCREMENT,
   `DONOR` INT NOT NULL,
   `month` DATE NOT NULL,
-  
+
   // WRONG BELOW
   `prev_pledger` TINYINT(1) NOT NULL,
   `new` TINYINT(1) NOT NULL,
@@ -1438,6 +1438,12 @@ CREATE TABLE `dpplg_pledmonhistory` (
   `pledge_amount` FLOAT(8,2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC));
+
+
+  ###### DP Latitude and Longitude ######
+  UPDATE dp JOIN dp_coordinates ON LEFT(dp.ZIP,5) = dp_coordinates.zip
+  SET dp.address_lat = dp_coordinates.lat,
+  dp.address_lng = dp_coordinates.lng
 
 
 
