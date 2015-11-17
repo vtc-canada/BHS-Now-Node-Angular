@@ -3734,15 +3734,15 @@ module.exports.views = {
                   column: 'type'
                 }, {
                   type: 'custom',
-                  column: ''
+                  value: ''
                 },
                   {
                     type: 'custom',
-                    column: ''
+                    value: ''
                   },
                   {
                     type: 'custom',
-                    column: ''
+                    value: ''
                   },
                   {
                     type: 'sum',
@@ -3884,19 +3884,19 @@ module.exports.views = {
                   column: 'type'
                 }, {
                   type: 'custom',
-                  column: ''
+                  value: ''
                 },
                   {
                     type: 'custom',
-                    column: ''
+                    value: ''
                   },
                   {
                     type: 'custom',
-                    column: ''
+                    value: ''
                   },
                   {
                     type: 'custom',
-                    column: ''
+                    value: ''
                   },
                   {
                     type: 'sum',
